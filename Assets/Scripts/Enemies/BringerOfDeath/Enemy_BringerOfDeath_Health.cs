@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// Bringer of death enemy Stats and Health
@@ -11,6 +10,10 @@ public class Enemy_BringerOfDeath_Health : MonoBehaviour, IEnemy_Health
     public EnemyStats stats;
     public bool isDead;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip damageAudioClip;
+    [SerializeField] private float volume = 1f;
+
     private Enemy_BringerOfDeath_Movement movementComponent;
 
     private void Start()
@@ -20,6 +23,7 @@ public class Enemy_BringerOfDeath_Health : MonoBehaviour, IEnemy_Health
 
         movementComponent = GetComponent<Enemy_BringerOfDeath_Movement>();
     }
+
     private void OnEnable()
     {
         DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
@@ -46,12 +50,12 @@ public class Enemy_BringerOfDeath_Health : MonoBehaviour, IEnemy_Health
             isDead = true;
         }
 
-        // Play hurt animation when taking damage, but not during attack states
         if (amount < 0 && movementComponent != null)
         {
-            var manager = movementComponent.GetStateManager();
+            if(damageAudioClip != null)
+                SoundFXManager.Instance.PlaySoundFXClip(damageAudioClip, transform, volume);
 
-            // Only play hurt animation if not in attack or cast state
+            var manager = movementComponent.GetStateManager();
             if (manager.GetCurrentState() != Enemy_BringerOfDeath_State.Attack &&
                 manager.GetCurrentState() != Enemy_BringerOfDeath_State.Cast)
             {

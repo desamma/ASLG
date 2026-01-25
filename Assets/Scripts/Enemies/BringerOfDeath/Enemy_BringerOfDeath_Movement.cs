@@ -33,6 +33,13 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
     private float unstuckPatrolWaitTimer;
     private float waitTimer = 2f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip footstepAudioClip;
+    [SerializeField] private float volume = 1f;
+    [SerializeField] private float minAudioDistance = 1f;
+    [SerializeField] private float maxAudioDistance = 15f;
+    private AudioSource loopingAudioSource;
+
     private int facingDirection;
     private EnemyStats stats;
 
@@ -88,6 +95,10 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
         behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_BringerOfDeath_State>(animator, Enemy_BringerOfDeath_State.Idle);
+
+        stateManager.OnStateChanged += OnStateChanged;
+        stateManager.OnStateEnter += OnStateEnter;
+        stateManager.OnStateExit += OnStateExit;
     }
 
     private void Update()
@@ -114,13 +125,6 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
 
     private void OnEnable()
     {
-        if (stateManager != null)
-        {
-            stateManager.OnStateChanged += OnStateChanged;
-            stateManager.OnStateEnter += OnStateEnter;
-            stateManager.OnStateExit += OnStateExit;
-        }
-
         DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
     }
 
@@ -362,6 +366,34 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
             case Enemy_BringerOfDeath_State.Death:
                 Destroy(gameObject, 1.3f);
                 break;
+            case Enemy_BringerOfDeath_State.Chase:
+                {
+                    Debug.Log("Playing footstep sound in Chase state.");
+                    if (footstepAudioClip != null)
+                    {
+                        loopingAudioSource = SoundFXManager.Instance.PlayLoopingSoundFXClip(
+                            footstepAudioClip, transform, volume, minAudioDistance, maxAudioDistance);
+                        if (loopingAudioSource != null)
+                        {
+                            loopingAudioSource.transform.SetParent(transform);
+                        }
+                    }
+                }
+                break;
+            case Enemy_BringerOfDeath_State.Patrol:
+                {
+                    Debug.Log("Playing footstep sound in Patrol state.");
+                    if (footstepAudioClip != null)
+                    {
+                        loopingAudioSource = SoundFXManager.Instance.PlayLoopingSoundFXClip(
+                            footstepAudioClip, transform, volume, minAudioDistance, maxAudioDistance);
+                        if (loopingAudioSource != null)
+                        {
+                            loopingAudioSource.transform.SetParent(transform);
+                        }
+                    }
+                    break;
+                }
         }
     }
 
@@ -373,6 +405,19 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
 
     private void OnStateExit(Enemy_BringerOfDeath_State state)
     {
+        switch (state)
+        {
+            case Enemy_BringerOfDeath_State.Chase:
+                Debug.Log("Exiting Chase state - stopping footstep sound.");
+                SoundFXManager.Instance.StopAndDestroyAudioSource(loopingAudioSource);
+                loopingAudioSource = null;
+                break;
+            case Enemy_BringerOfDeath_State.Patrol:
+                Debug.Log("Exiting Patrol state - stopping footstep sound.");
+                SoundFXManager.Instance.StopAndDestroyAudioSource(loopingAudioSource);
+                loopingAudioSource = null;
+                break;
+        }
     }
 
     #endregion

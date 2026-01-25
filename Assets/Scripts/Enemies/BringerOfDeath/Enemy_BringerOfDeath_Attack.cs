@@ -16,6 +16,12 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
     [Header("Spell Cast")]
     [SerializeField] private GameObject spellPrefab;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip meleeAttackMissAudioClip;
+    [SerializeField] private AudioClip meleeAttackHitAudioClip;
+    [SerializeField] private AudioClip CastAudioClip;
+    [SerializeField] private float volume = 1f;
+
     private EnemyStats stats;
 
     private void Start()
@@ -46,16 +52,22 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
     
     public void MeleeAttack()
     {
-
+        bool audioPlayed = false;
         Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, stats.AttackRange, playerLayer);
 
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (hit.CompareTag("Player") && !audioPlayed)
             {
+                SoundFXManager.Instance.PlaySoundFXClip(meleeAttackHitAudioClip, transform, volume);
                 // TODO: Hook into player damage system
                 // Apply physical damage based on stats.Strength
+                audioPlayed = true;
             }
+        }
+        if (!audioPlayed)
+        {
+            SoundFXManager.Instance.PlaySoundFXClip(meleeAttackMissAudioClip, transform, volume);
         }
     }
 
@@ -72,6 +84,7 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
             float yOffset = -0.8f;
             var spawnPosition = new Vector3(player.position.x + xOffset, player.position.y + yOffset, player.position.z);
 
+            SoundFXManager.Instance.PlaySoundFXClip(CastAudioClip, transform, volume);
             Instantiate(spellPrefab, spawnPosition, Quaternion.identity);
         }
     }

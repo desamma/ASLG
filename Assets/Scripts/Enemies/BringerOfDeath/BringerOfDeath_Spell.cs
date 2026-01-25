@@ -10,6 +10,10 @@ public class BringerOfDeath_Spell : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private Collider2D spellCollider;
     private StateManager<Enemy_BringerOfDeath_State> stateManager;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip boomAudioClip;
+    [SerializeField] private float volume = 1f;
     private bool hitPlayer = false;
 
     private void Start()
@@ -40,6 +44,8 @@ public class BringerOfDeath_Spell : MonoBehaviour
             spellCollider.isTrigger = true;
             spellCollider.enabled = true;
         }
+
+        SoundFXManager.Instance.PlaySoundFXClip(boomAudioClip, transform, volume);
 
         Destroy(gameObject, destroyTime);
     }
