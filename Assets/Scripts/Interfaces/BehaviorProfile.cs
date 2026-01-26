@@ -27,11 +27,7 @@ public class BehaviorProfile
     [Range(0f, 2f)]
     public float Aggression = 1f;
 
-    [Tooltip("Minimum distance to maintain from player (defensive spacing)")]
-    public float MinimumDistance = 0f;
-
     [Header("Pattern Complexity")]
-
     [Tooltip("How likely to use movement abilities/teleports (0-1)")]
     [Range(0f, 1f)]
     public float MobilityUsageFrequency = 0.2f;
@@ -53,7 +49,6 @@ public class BehaviorProfile
         UltimateAttackFrequency = Mathf.Clamp01(UltimateAttackFrequency * modifier.Resolve(modifier.UltimateAttackFrequencyMultiplier));
 
         Aggression *= modifier.Resolve(modifier.AggressionMultiplier);
-        MinimumDistance *= modifier.Resolve(modifier.MinimumDistanceMultiplier);
 
         MobilityUsageFrequency = Mathf.Clamp01(MobilityUsageFrequency * modifier.Resolve(modifier.MobilityUsageFrequencyMultiplier));
 
