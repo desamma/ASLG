@@ -328,11 +328,11 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement
         {
             DetectionRange = 10f,
             ChaseRange = 8f,
-            SpecialAttackFrequency = 1f,
+            SpecialAttackFrequency = 0.3f,
             UltimateAttackFrequency = 0f,
-            Aggression = 1f,
+            Aggression = 1.1f,
             EnrageThreshold = 0f,
-            MobilityUsageFrequency = 1f
+            MobilityUsageFrequency = 0.5f
         };
     }
 

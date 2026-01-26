@@ -15,11 +15,9 @@ public class Enemy_Slime_Attack : MonoBehaviour
 
     [Header("Jump Attack")]
     [SerializeField] private float jumpForce = 8f;
-    [SerializeField] private float jumpForwardSpeed = 3f;
 
     [Header("Spin Attack")]
     [SerializeField] private float spinSpeed = 10f;
-
     [Header("Audio")]
     [SerializeField] private AudioClip jumpAttackAudioClip;
     [SerializeField] private AudioClip spinAttackAudioClip;
@@ -35,7 +33,6 @@ public class Enemy_Slime_Attack : MonoBehaviour
 
     private Vector2 velocity;
     private BehaviorProfile behaviorProfile;
-
     private void Start()
     {
         stats = GetComponent<Enemy_Slime_Health>().stats;
@@ -51,7 +48,7 @@ public class Enemy_Slime_Attack : MonoBehaviour
         {
             playerLayer = LayerMask.GetMask("Player");
         }
-        behaviorProfile = GetComponent<Enemy_Slime_Movement>().GetBehavior() ?? new BehaviorProfile { Aggression = 1f };
+        behaviorProfile = GetComponent<Enemy_Slime_Movement>().GetBehavior();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -107,8 +104,8 @@ public class Enemy_Slime_Attack : MonoBehaviour
         }
 
         Vector2 direction = (player.position - transform.position).normalized;
-        direction.x *= jumpForwardSpeed * behaviorProfile.Aggression;
-        direction.y = jumpForce * behaviorProfile.Aggression;
+        direction.x *= jumpForce * behaviorProfile.Aggression;
+        direction.y *= jumpForce * behaviorProfile.Aggression;
 
         rb.velocity = direction;
     }
@@ -126,19 +123,5 @@ public class Enemy_Slime_Attack : MonoBehaviour
             rb.velocity = direction * spinSpeed * behaviorProfile.Aggression;
         }
         velocity = rb.velocity;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if (attackPoint == null) return;
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPoint.position, 0.5f);
-
-        if (stats != null)
-        {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(transform.position, stats.AttackRange * 1.5f);
-        }
     }
 }
