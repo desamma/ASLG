@@ -16,9 +16,9 @@ GameObject:
   - component: {fileID: 3404049085707535281}
   - component: {fileID: 5404712226148250833}
   - component: {fileID: 2584051434560106519}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: BringerOfDeath
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -243,6 +243,8 @@ MonoBehaviour:
   patrolDistance: 5
   footstepAudioClip: {fileID: 8300000, guid: 5e98feae4e771c447b10ee129b6b284e, type: 3}
   volume: 1
+  minAudioDistance: 1
+  maxAudioDistance: 15
 --- !u!114 &2584051434560106519
 MonoBehaviour:
   m_ObjectHideFlags: 0
