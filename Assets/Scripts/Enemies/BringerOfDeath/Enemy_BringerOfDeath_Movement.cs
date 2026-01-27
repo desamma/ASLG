@@ -43,6 +43,8 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
     private int facingDirection;
     private EnemyStats stats;
 
+    private float castRange;
+
     private float attackCooldownTimer = 0f;
     private bool isRecovering = false;
 
@@ -82,6 +84,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
         }
 
         stats = health.stats;
+        castRange = stats.AttackRange * 2.5f;
 
         facingDirection = 1;
         transform.localScale = new Vector3(
@@ -227,10 +230,9 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
             player = hitColliders[0].transform;
 
             float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-            float spellRange = stats.AttackRange * 2.5f;
 
             // Player within spell range
-            if (distanceToPlayer <= spellRange)
+            if (distanceToPlayer <= castRange)
             {
                 rb.velocity = Vector2.zero;
 
@@ -241,7 +243,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
                 }
             }
             // Player outside spell range → chase
-            else if (distanceToPlayer > spellRange &&
+            else if (distanceToPlayer > castRange &&
                      !(stateManager.IsInState(Enemy_BringerOfDeath_State.Attack) ||
                        stateManager.IsInState(Enemy_BringerOfDeath_State.Cast)))
             {
@@ -273,7 +275,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
 
         if (random < behavior.SpecialAttackFrequency)
         {
-            if (distanceToPlayer <= stats.AttackRange * 1.5f)
+            if (distanceToPlayer <= castRange)
             {
                 stateManager.ChangeState(Enemy_BringerOfDeath_State.Cast);
             }
