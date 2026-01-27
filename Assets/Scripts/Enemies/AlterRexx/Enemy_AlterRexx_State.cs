@@ -1,4 +1,4 @@
-﻿public enum Enemy_Andromeda_State
+﻿public enum Enemy_AlterRexx_State
 {
     [StateAnimator("isAttack")]
     Attack,
@@ -9,14 +9,8 @@
     [StateAnimator("isWalk")]
     Chase,
 
-    [StateAnimator("isCast")]
-    Cast,
-
     [StateAnimator("isIdle")]
     Idle,
-
-    [StateAnimator("isWalk")]
-    Patrol,
 
     Knockback,
 }

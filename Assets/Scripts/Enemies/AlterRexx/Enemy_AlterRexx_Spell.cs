@@ -1,17 +1,21 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-public class Enemy_Andromeda_Spell : MonoBehaviour
+/// <summary>
+/// Lightning bolt spell for AlterRexx enemy.
+/// Deals magic damage to player on contact.
+/// </summary>
+public class Enemy_AlterRexx_Spell : MonoBehaviour
 {
     [Header("Spell Settings")]
-    [SerializeField] private float magicDamage = 40f;
-    [SerializeField] private float destroyTime = 0.55f;
+    [SerializeField] private float magicDamage = 25f;
+    [SerializeField] private float destroyTime = 0.42f;
 
     [Header("Components")]
     [SerializeField] private Animator animator;
     [SerializeField] private Collider2D spellCollider;
 
     [Header("Audio")]
-    [SerializeField] private AudioClip boomAudioClip;
+    [SerializeField] private AudioClip strikeAudioClip;
     [SerializeField] private float volume = 1f;
     private bool hitPlayer = false;
 
@@ -23,14 +27,11 @@ public class Enemy_Andromeda_Spell : MonoBehaviour
         if (spellCollider == null)
             spellCollider = GetComponent<Collider2D>();
 
-        // ensure collider starts disabled so it only detects when explicitly enabled
         if (spellCollider != null)
             spellCollider.enabled = false;
 
         var difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
         magicDamage *= difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
-
-        SoundFXManager.Instance.PlaySoundFXClip(boomAudioClip, transform, volume);
     }
 
     public void EnableTrigger()
@@ -44,14 +45,14 @@ public class Enemy_Andromeda_Spell : MonoBehaviour
             spellCollider.enabled = true;
         }
 
+        SoundFXManager.Instance.PlaySoundFXClip(strikeAudioClip, transform, volume);
+
         Destroy(gameObject, destroyTime);
     }
-
     public void DestroyGameObject()
     {
         Destroy(gameObject);
     }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision == null)
@@ -59,8 +60,8 @@ public class Enemy_Andromeda_Spell : MonoBehaviour
 
         if (collision.CompareTag("Player") && !hitPlayer)
         {
-            SoundFXManager.Instance.PlaySoundFXClip(boomAudioClip, transform, volume);
             hitPlayer = true;
+            // TODO: Hook into player damage system
             //var playerHealth = collision.GetComponent<PlayerHealth>();
             //if (playerHealth != null)
             //{

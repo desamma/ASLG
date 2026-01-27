@@ -8,10 +8,10 @@ using UnityEngine;
 public class BehaviorProfile
 {
     [Header("Detection & Engagement")]
-    [Tooltip("How far the enemy can detect the player (multiplier)")]
+    [Tooltip("How far the enemy can detect the player")]
     public float DetectionRange = 1f;
 
-    [Tooltip("How far the enemy will chase before giving up (multiplier)")]
+    [Tooltip("How far the enemy will chase before giving up")]
     public float ChaseRange = 1f;
 
     [Header("Combat Behavior")]
