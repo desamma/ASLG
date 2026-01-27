@@ -12,7 +12,7 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
     [SerializeField] private Transform attackPoint;
     [SerializeField] private List<Transform> players;
     [SerializeField] private LayerMask playerLayer;
-
+    [SerializeField] private Vector2 attackBoxSize;
     [Header("Spell Cast")]
     [SerializeField] private GameObject spellPrefab;
 
@@ -32,7 +32,7 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
         {
             players = new List<Transform>();
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            
+
             if (playerObj != null)
             {
                 players.Add(playerObj.transform);
@@ -43,17 +43,13 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
         {
             playerLayer = LayerMask.GetMask("Player");
         }
-
-        if (spellPrefab == null)
-        {
-            // Spell prefab not assigned
-        }
+        attackBoxSize = new Vector2(4, 3);
     }
-    
+
     public void MeleeAttack()
     {
         bool audioPlayed = false;
-        Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, stats.AttackRange, playerLayer);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(attackPoint.position, attackBoxSize, 0f, playerLayer);
 
         foreach (var hit in hits)
         {
@@ -91,9 +87,6 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPoint.position, stats.AttackRange);
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(attackPoint.position, stats.AttackRange * 2.5f);
+        Gizmos.DrawWireCube(attackPoint.position, new Vector3(4, 3, 0));
     }
 }
