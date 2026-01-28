@@ -9,11 +9,14 @@ public class Enemy_Andromeda_Spell : MonoBehaviour
     [Header("Components")]
     [SerializeField] private Animator animator;
     [SerializeField] private Collider2D spellCollider;
+    [SerializeField] private Enemy_Andromeda_Spell_State spellState;
 
     [Header("Audio")]
     [SerializeField] private AudioClip boomAudioClip;
     [SerializeField] private float volume = 1f;
     private bool hitPlayer = false;
+
+    private StateManager<Enemy_Andromeda_Spell_State> stateManager;
 
     private void Start()
     {
@@ -30,7 +33,10 @@ public class Enemy_Andromeda_Spell : MonoBehaviour
         var difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
         magicDamage *= difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
 
-        SoundFXManager.Instance.PlaySoundFXClip(boomAudioClip, transform, volume);
+        stateManager = new StateManager<Enemy_Andromeda_Spell_State>(animator, spellState);
+
+        if (boomAudioClip != null)
+            SoundFXManager.Instance.PlaySoundFXClip(boomAudioClip, transform, volume);
     }
 
     public void EnableTrigger()
@@ -59,7 +65,8 @@ public class Enemy_Andromeda_Spell : MonoBehaviour
 
         if (collision.CompareTag("Player") && !hitPlayer)
         {
-            SoundFXManager.Instance.PlaySoundFXClip(boomAudioClip, transform, volume);
+            if (boomAudioClip != null)
+                SoundFXManager.Instance.PlaySoundFXClip(boomAudioClip, transform, volume);
             hitPlayer = true;
             //var playerHealth = collision.GetComponent<PlayerHealth>();
             //if (playerHealth != null)
