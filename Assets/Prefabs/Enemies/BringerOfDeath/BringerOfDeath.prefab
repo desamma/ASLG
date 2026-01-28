@@ -202,6 +202,7 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
+  attackBoxSize: {x: 3, y: 3}
   spellPrefab: {fileID: 2533196488757132974, guid: b0a88a4895104f149b725c187d3304e6, type: 3}
   meleeAttackMissAudioClip: {fileID: 8300000, guid: ebc0e2607b7374f4a84fe50bf88e2bf3, type: 3}
   meleeAttackHitAudioClip: {fileID: 8300000, guid: d4d9b8d2078838f419a17eb536f733ef, type: 3}
@@ -226,7 +227,6 @@ MonoBehaviour:
     SpecialAttackFrequency: 0.4
     UltimateAttackFrequency: 0
     Aggression: 1
-    MinimumDistance: 2
     MobilityUsageFrequency: 0
     EnrageThreshold: 0
   hurtAnimationDuration: 0.5
@@ -327,7 +327,7 @@ Transform:
   m_GameObject: {fileID: 9125271999509457392}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.212, y: 0.404, z: 0}
+  m_LocalPosition: {x: 1.01, y: 0.455, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
