@@ -13,6 +13,7 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
     [SerializeField] private List<Transform> players;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private Vector2 attackBoxSize;
+
     [Header("Spell Cast")]
     [SerializeField] private GameObject spellPrefab;
 
