@@ -41,9 +41,6 @@ public class Enemy_Andromeda_Spell : MonoBehaviour
 
     public void EnableTrigger()
     {
-        if (spellCollider == null)
-            spellCollider = GetComponent<Collider2D>();
-
         if (spellCollider != null)
         {
             spellCollider.isTrigger = true;
