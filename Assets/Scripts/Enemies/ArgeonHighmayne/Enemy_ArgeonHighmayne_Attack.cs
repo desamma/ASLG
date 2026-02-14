@@ -18,7 +18,7 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
     [SerializeField] private float normalAttackRadius = 1f;
 
     [Header("WarSurge")]
-    [SerializeField] private GameObject warSurgeEffect;
+    //[SerializeField] private GameObject warSurgeMarkEffect;
     [SerializeField] private Transform warSurgeAttackPoint;
     [SerializeField] private float warSurgeRadius = 1f;
 
@@ -77,29 +77,23 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
         SoundFXManager.Instance.PlaySoundFXClip(normalAttackSwingAudioClip, transform, volume);
     }
 
-    public void WarSurge()
+    public void WarSurgeAttack()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        if (player != null)
+        var hits = Physics2D.OverlapCircleAll(warSurgeAttackPoint.position, warSurgeRadius, playerLayer);
+
+        foreach (var hit in hits)
         {
-            var hits = Physics2D.OverlapCircleAll(warSurgeAttackPoint.position, warSurgeRadius, playerLayer);
-
-            if (hits.Length > 0)
+            if (hit.CompareTag("Player"))
             {
+                player = hit.transform;
+                if (!hitPlayer)
+                {
+                    SoundFXManager.Instance.PlaySoundFXClip(normalAttackHitAudioClip, transform, volume);
+                    hitPlayer = true;
+                }
+                Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
                 //TODO: Deal Damage to Player
-                return;
             }
-
-            // Instantiate as inactive
-            GameObject spellInstance = Instantiate(warSurgeEffect, player.position, Quaternion.identity);
-
-            var warSurgeComponent = spellInstance.GetComponent<Enemy_ArgeonHighmayne_WarSurge>();
-            if (warSurgeComponent != null && health != null)
-            {
-                warSurgeComponent.Initialize(health.stats);
-            }
-
-            spellInstance.SetActive(true);
         }
     }
 

@@ -78,7 +78,7 @@ public class Enemy_ArgeonHighmayne_Health : MonoBehaviour, IEnemy_Health
             Speed = 2.5f,
             ExpReward = 200f,
             AttackCooldown = 2f,
-            AttackRange = 4f
+            AttackRange = 3f
         };
         isDead = false;
     }
