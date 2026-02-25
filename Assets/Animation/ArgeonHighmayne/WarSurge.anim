@@ -131,6 +131,13 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 1.5166667
+    functionName: PlayAudio
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 4
+    messageOptions: 0
+  - time: 2.75
     functionName: PlayWarSurgeChargeUpEffect
     data: 
     objectReferenceParameter: {fileID: 0}

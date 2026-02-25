@@ -12,7 +12,7 @@ public class Enemy_ArgeonHighmayne_Health : MonoBehaviour, IEnemy_Health
     public bool isDead;
 
     [Header("Components")]
-    private Enemy_Andromeda_Movement movementComponent;
+    private Enemy_ArgeonHighmayne_Movement movementComponent;
 
     private void Awake()
     {
@@ -23,7 +23,7 @@ public class Enemy_ArgeonHighmayne_Health : MonoBehaviour, IEnemy_Health
     {
         stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
-        movementComponent = GetComponent<Enemy_Andromeda_Movement>();
+        movementComponent = GetComponent<Enemy_ArgeonHighmayne_Movement>();
     }
 
     private void OnEnable()
@@ -60,7 +60,7 @@ public class Enemy_ArgeonHighmayne_Health : MonoBehaviour, IEnemy_Health
             if (movementComponent != null)
             {
                 var manager = movementComponent.GetStateManager();
-                manager.ChangeState(Enemy_Andromeda_State.Death);
+                manager.ChangeState(Enemy_ArgeonHighmayne_State.Death);
             }
         }
     }
@@ -76,7 +76,7 @@ public class Enemy_ArgeonHighmayne_Health : MonoBehaviour, IEnemy_Health
             Defense = 150f,
             MagicResist = 100f,
             Speed = 2.5f,
-            ExpReward = 200f,
+            ExpReward = 0f,
             AttackCooldown = 2f,
             AttackRange = 3f
         };

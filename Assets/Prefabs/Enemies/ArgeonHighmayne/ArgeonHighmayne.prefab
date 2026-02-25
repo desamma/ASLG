@@ -273,7 +273,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   player: {fileID: 0}
-  attackComponent: {fileID: 9001046993169077029}
+  attackComponent: {fileID: 0}
+  deathEffect: {fileID: 2538167804726959248, guid: d4a56b17f14761948b6e631739a29d16, type: 3}
+  deathSoundEffect: {fileID: 8300000, guid: 974ce541db63f824db3ae27614d7df62, type: 3}
+  phase2EntranceEffect: {fileID: 2013676730256567545, guid: 0f8ccdb5143e4b1499d221a5f4e5ce7b, type: 3}
+  delayToPhase2: 4
   warSurgeMarkEffect: {fileID: 5902410122037340534, guid: fe3f90d34d4f0e045a71c924e1da0e62, type: 3}
   warSurgeChargeUpEffect: {fileID: 7393147419667239206, guid: ff958f8af0689de43a07f50a74561134, type: 3}
   warSurgeAfterTPEffect: {fileID: 7138417041921805837, guid: 1f5b23ea890b83d44aeafe897048065a, type: 3}

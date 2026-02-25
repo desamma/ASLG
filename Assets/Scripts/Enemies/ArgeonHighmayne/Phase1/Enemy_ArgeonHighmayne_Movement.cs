@@ -20,8 +20,14 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private Transform player;
-    [SerializeField] private Enemy_ArgeonHighmayne_Attack attackComponent;
+    [SerializeField] private Enemy_ArgeonHighmayneMK2_Attack attackComponent;
     private List<AttackCategory> attackCategories;
+
+    [Header("Death Effects")]
+    [SerializeField] private GameObject deathEffect;
+    [SerializeField] private AudioClip deathSoundEffect;
+    [SerializeField] private GameObject phase2EntranceEffect;
+    [SerializeField] private float delayToPhase2 = 4f;
 
     [Header("WarSurgeTeleportAttack")]
     [SerializeField] private GameObject warSurgeMarkEffect;
@@ -111,7 +117,7 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
             animator = GetComponent<Animator>();
 
         if (attackComponent == null)
-            attackComponent = GetComponent<Enemy_ArgeonHighmayne_Attack>();
+            attackComponent = GetComponent<Enemy_ArgeonHighmayneMK2_Attack>();
 
         if (charCollider == null)
             charCollider = GetComponent<Collider2D>();
@@ -214,7 +220,7 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         }
 
         Vector2 direction = (player.position - transform.position).normalized;
-        rb.velocity = direction * stats.Speed;
+        rb.velocity = behavior.Aggression * stats.Speed * direction;
     }
 
     public void CheckForPlayer()
@@ -302,7 +308,6 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
 
             if (random < cumulativeProbability)
             {
-                // Filter by range AND move-count cooldown
                 var availableAttacks = category.Attacks
                     .Where(a => distanceToPlayer <= a.Range && !IsMoveOnCooldown(a.State))
                     .ToArray();
@@ -361,12 +366,10 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         behavior = new BehaviorProfile
         {
             DetectionRange = 15f,
-            ChaseRange = 8f,
             SpecialAttackFrequency = 0.3f,
             UltimateAttackFrequency = 0.2f,
             Aggression = 1f,
-            EnrageThreshold = 0f,
-            MobilityUsageFrequency = 0f,
+            MobilityUsageFrequency = 1f,
         };
 
         attackCategories = new List<AttackCategory>
@@ -384,9 +387,14 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
                 Frequency = behavior.SpecialAttackFrequency,
                 Attacks = new[]
                 {
-                    new AttackConfig { State = Enemy_ArgeonHighmayne_State.WarSurge, Range = stats.AttackRange, MoveCountCooldown = 3 },
-
                     new AttackConfig { State = Enemy_ArgeonHighmayne_State.SunBloom, Range = castRange, MoveCountCooldown = 4 },
+                }
+            },
+            new() {
+                Frequency = behavior.SpecialAttackFrequency * behavior.MobilityUsageFrequency,
+                Attacks = new[]
+                {
+                    new AttackConfig { State = Enemy_ArgeonHighmayne_State.WarSurge, Range = stats.AttackRange, MoveCountCooldown = 3 },
                 }
             },
             new() {
@@ -471,6 +479,7 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
                 break;
             case Enemy_ArgeonHighmayne_State.Death:
                 rb.velocity = Vector2.zero;
+                charCollider.enabled = false;
                 break;
         }
     }
@@ -479,6 +488,21 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
     {
     }
     #endregion
+
+    public void PlayLastJudgement()
+    {
+        var location = transform.position + new Vector3(0, 1.28f, 0);
+        Instantiate(deathEffect, location, Quaternion.identity);
+        SoundFXManager.Instance.PlaySoundFXClip(deathSoundEffect, transform, 1f);
+        StartCoroutine(DeathToPhase2());
+    }
+    private IEnumerator DeathToPhase2()
+    {
+        yield return new WaitForSeconds(delayToPhase2);
+        Destroy(gameObject);
+        var location = transform.position + new Vector3(0, 1.8f, 0);
+        Instantiate(phase2EntranceEffect, location, Quaternion.identity);
+    }
 
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {

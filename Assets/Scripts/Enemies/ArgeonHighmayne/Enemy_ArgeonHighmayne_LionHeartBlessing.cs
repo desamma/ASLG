@@ -9,17 +9,13 @@ public class Enemy_ArgeonHighmayne_LionHeartBlessing : MonoBehaviour
     [Header("Entrance Effects")]
     [SerializeField] private GameObject argeonHighmayne;
     [SerializeField] private Collider2D spellCollider;
-
+    [SerializeField] private bool isPhase2Offset = false;
     [Header("Audio")]
     [SerializeField] private AudioClip audioClip;
     [SerializeField] private float volume = 1f;
     private bool hitPlayer = false;
     private void Start()
     {
-        if (argeonHighmayne == null)
-        {
-            Debug.LogError("Enemy Prefabs is not assigned!");
-        }
 
         var difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
         magicDamage *= difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
@@ -32,13 +28,25 @@ public class Enemy_ArgeonHighmayne_LionHeartBlessing : MonoBehaviour
 
         Destroy(gameObject, destroyTime);
     }
+
     public void EntranceSpawn()
     {
-        float xOffset = transform.position.x < transform.position.x ? -0.1f : 0.1f;
-        float yOffset = -2f;
-        var spawnPosition = new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, transform.position.z);
+        if (isPhase2Offset)
+        {
+            float xOffset = transform.position.x < transform.position.x ? -0.1f : 0.1f;
+            float yOffset = -1.5f;
+            var spawnPosition = new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, transform.position.z);
 
-        Instantiate(argeonHighmayne, spawnPosition, Quaternion.identity);
+            Instantiate(argeonHighmayne, spawnPosition, Quaternion.identity);
+        }
+        else
+        {
+            float xOffset = transform.position.x < transform.position.x ? -0.1f : 0.1f;
+            float yOffset = -2f;
+            var spawnPosition = new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, transform.position.z);
+
+            Instantiate(argeonHighmayne, spawnPosition, Quaternion.identity);
+        }
     }
 
     public void EnableTrigger()

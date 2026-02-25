@@ -179,7 +179,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.45
-    functionName: PlayDecimateAudio
+    functionName: PlayAudio
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
@@ -193,11 +193,11 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 1.6333333
-    functionName: PlayDecimateAudio
+    functionName: PlayAudio
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 3
+    intParameter: 2
     messageOptions: 0
   - time: 2.45
     functionName: Decimate

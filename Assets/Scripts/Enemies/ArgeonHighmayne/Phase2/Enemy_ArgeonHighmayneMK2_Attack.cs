@@ -1,11 +1,11 @@
-﻿using UnityEditor.Timeline;
+﻿using System.Collections;
 using UnityEngine;
 
-public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
+public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
 {
     [Header("Components")]
     [SerializeField] private Animator animator;
-    [SerializeField] private Enemy_ArgeonHighmayne_Health health;
+    [SerializeField] private Enemy_ArgeonHighmayneMK2_Health health;
 
     [Header("Attack Settings")]
     [SerializeField] private LayerMask playerLayer;
@@ -15,28 +15,26 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
     [Header("NormalAttack")]
     [SerializeField] private GameObject normalAttackHitEffect;
     [SerializeField] private Transform normalAttackPoint;
-    [SerializeField] private float normalAttackRadius = 1f;
+    [SerializeField] private Vector3 normalAttackHitBox;
 
     [Header("WarSurge")]
     //[SerializeField] private GameObject warSurgeMarkEffect;
     [SerializeField] private Transform warSurgeAttackPoint;
     [SerializeField] private float warSurgeRadius = 1f;
 
-    [Header("AurynNexus")]
-    [SerializeField] private GameObject aurynNexusEffect;
-
-    [Header("SunBloom")]
-    [SerializeField] private GameObject sunBloomEffect;
+    [Header("DualCast Settings")]
+    [SerializeField] private GameObject dualCastEffect;
 
     [Header("Decimate")]
+    [SerializeField] private Transform decimateAttackPoint;
+    [SerializeField] private Vector3 decimateBoxSize;
     [SerializeField] private GameObject decimateEffect;
     [SerializeField] private GameObject decimateChargeUpEffect;
 
     [Header("Audio")]
     [SerializeField] private AudioClip normalAttackSwingAudioClip;
     [SerializeField] private AudioClip normalAttackHitAudioClip;
-    [SerializeField] private AudioClip decimateAudio1;
-    [SerializeField] private AudioClip decimateAudio3;
+    [SerializeField] private AudioClip decimateAudio;
     [SerializeField] private AudioClip aurynNexusAudioClip;
     [SerializeField] private float volume = 1f;
 
@@ -48,13 +46,13 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
             animator = GetComponent<Animator>();
 
         if (health == null)
-            health = GetComponent<Enemy_ArgeonHighmayne_Health>();
+            health = GetComponent<Enemy_ArgeonHighmayneMK2_Health>();
         castRange = health.stats.AttackRange * 3f;
     }
 
     public void NormalAttack()
     {
-        var hits = Physics2D.OverlapCircleAll(normalAttackPoint.position, normalAttackRadius, playerLayer);
+        var hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, 0f, playerLayer);
         foreach (var hit in hits)
         {
             if (hit.CompareTag("Player"))
@@ -66,15 +64,25 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
                     hitPlayer = true;
                 }
 
-                Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
                 //TODO: Deal Damage to Player
+
+                Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
             }
         }
         hitPlayer = false;
     }
-    public void PlayNormalAttackSwingAudio()
+
+    public void DualCast()
     {
-        SoundFXManager.Instance.PlaySoundFXClip(normalAttackSwingAudioClip, transform, volume);
+        GameObject spellInstance = Instantiate(dualCastEffect, transform.position, Quaternion.identity);
+
+        var dualCastComponent = spellInstance.GetComponent<Enemy_ArgeonHighmayne_DualCast>();
+        if (dualCastComponent != null && health != null)
+        {
+            dualCastComponent.Initialize(health.stats, health);
+        }
+
+        spellInstance.SetActive(true);
     }
 
     public void WarSurgeAttack()
@@ -91,51 +99,25 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
                     SoundFXManager.Instance.PlaySoundFXClip(normalAttackHitAudioClip, transform, volume);
                     hitPlayer = true;
                 }
+
                 Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
-                //TODO: Deal Damage to Player
             }
         }
+        hitPlayer = false;
     }
 
-    public void AurynNexus()
-    {
-        SoundFXManager.Instance.PlaySoundFXClip(aurynNexusAudioClip, transform, volume);
-
-        GameObject spellInstance = Instantiate(aurynNexusEffect, transform.position, Quaternion.identity);
-
-        var aurynNexusComponent = spellInstance.GetComponent<Enemy_ArgeonHighmayne_AurynNexus>();
-        if (aurynNexusComponent != null && health != null)
-        {
-            aurynNexusComponent.Initialize(health.stats, health);
-        }
-
-        spellInstance.SetActive(true);
-    }
-
-    public void SunBloom()
-    {
-        GameObject spellInstance = Instantiate(sunBloomEffect, transform.position, Quaternion.identity);
-
-        var sunBloomComponent = spellInstance.GetComponent<Enemy_ArgeonHighmayne_SunBloom>();
-        if (sunBloomComponent != null && health != null)
-        {
-            sunBloomComponent.Initialize(health.stats, health);
-        }
-
-        spellInstance.SetActive(true);
-    }
     public void Decimate()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         if (player != null)
         {
-            var hits = Physics2D.OverlapCircleAll(warSurgeAttackPoint.position, warSurgeRadius, playerLayer);
+            var hits = Physics2D.OverlapBoxAll(decimateAttackPoint.position, decimateBoxSize, playerLayer);
 
             if (hits.Length > 0)
             {
                 //TODO: Deal Damage to Player
-                return;
             }
+
             GameObject spellInstance = Instantiate(decimateEffect, player.position, Quaternion.identity);
 
             var decimateComponent = spellInstance.GetComponent<Enemy_ArgeonHighmayne_Decimate>();
@@ -148,21 +130,29 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
     }
     public void PlayDecimateChargeUp()
     {
-        if (decimateChargeUpEffect == null)
-        {
-            Debug.LogWarning("Decimate Charge Up Effect is not assigned!");
-            return;
-        }
         float offsetY = -1.2f;
         Instantiate(decimateChargeUpEffect, transform.position + new Vector3(0, offsetY, 0), Quaternion.identity);
     }
 
-    public void PlayDecimateAudio(int num)
+    public void PlayAudio(int num)
     {
-        if (num == 3 && decimateAudio3 != null)
-            SoundFXManager.Instance.PlaySoundFXClip(decimateAudio3, transform, volume);
-
-        else if (num == 1 && decimateAudio1 != null)
-            SoundFXManager.Instance.PlaySoundFXClip(decimateAudio1, transform, volume);
+        switch (num)
+        {
+            case 1:
+                if (decimateAudio != null)
+                    SoundFXManager.Instance.PlaySoundFXClip(decimateAudio, transform, volume);
+                break;
+            case 2:
+                if (normalAttackSwingAudioClip != null)
+                    SoundFXManager.Instance.PlaySoundFXClip(normalAttackSwingAudioClip, transform, volume);
+                break;
+            case 3:
+                if (aurynNexusAudioClip != null)
+                    SoundFXManager.Instance.PlaySoundFXClip(aurynNexusAudioClip, transform, volume);
+                break;
+            default:
+                Debug.LogWarning("Invalid audio number: " + num);
+                break;
+        }
     }
 }
