@@ -204,7 +204,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.012456417, y: -0.07888988}
+  m_Offset: {x: -0.018448502, y: -0.044435084}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -215,7 +215,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.53583837, y: 0.7434439}
+  m_Size: {x: 0.33210593, y: 0.6745343}
   m_EdgeRadius: 0
 --- !u!114 &5196454457071531072
 MonoBehaviour:
@@ -263,8 +263,9 @@ MonoBehaviour:
     Aggression: 1
     MobilityUsageFrequency: 0.2
     EnrageThreshold: 0.5
-  attackRecoveryDuration: 2
+  attackRecoveryDuration: 3
   auraFarmingDuration: 3
+  stoppingDistance: 2
   rb: {fileID: 4173689126913912952}
   charCollider: {fileID: 8939149112938453236}
   animator: {fileID: 3500164455753209458}
@@ -272,7 +273,16 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   player: {fileID: 0}
-  attackComponent: {fileID: 9001046993169077029}
+  attackComponent: {fileID: 0}
+  deathEffect: {fileID: 2538167804726959248, guid: d4a56b17f14761948b6e631739a29d16, type: 3}
+  deathSoundEffect: {fileID: 8300000, guid: 974ce541db63f824db3ae27614d7df62, type: 3}
+  phase2EntranceEffect: {fileID: 2013676730256567545, guid: 0f8ccdb5143e4b1499d221a5f4e5ce7b, type: 3}
+  delayToPhase2: 4
+  warSurgeMarkEffect: {fileID: 5902410122037340534, guid: fe3f90d34d4f0e045a71c924e1da0e62, type: 3}
+  warSurgeChargeUpEffect: {fileID: 7393147419667239206, guid: ff958f8af0689de43a07f50a74561134, type: 3}
+  warSurgeAfterTPEffect: {fileID: 7138417041921805837, guid: 1f5b23ea890b83d44aeafe897048065a, type: 3}
+  warSurgeSearchRadius: 50
+  warSurgeWaitTime: 3
   detectionPoint: {fileID: 4979612526641555784}
 --- !u!114 &9001046993169077029
 MonoBehaviour:
@@ -295,16 +305,17 @@ MonoBehaviour:
   normalAttackHitEffect: {fileID: 3846514605532310788, guid: dd07f3b382ad70949baa349cb5714dfd, type: 3}
   normalAttackPoint: {fileID: 2557345960031235543}
   normalAttackRadius: 1.2
-  warSurgeEffect: {fileID: 5902410122037340534, guid: fe3f90d34d4f0e045a71c924e1da0e62, type: 3}
   warSurgeAttackPoint: {fileID: 4428245483693766236}
   warSurgeRadius: 1
   aurynNexusEffect: {fileID: 2468789010517235435, guid: a2135000ee26e314b9866b2f9b006434, type: 3}
   sunBloomEffect: {fileID: 567142867543762435, guid: 4c670169499a2754bafc3605f087996b, type: 3}
   decimateEffect: {fileID: 7911447980327151908, guid: 4dc52ea82ec328144800611d45dd5238, type: 3}
+  decimateChargeUpEffect: {fileID: 7768705651709045384, guid: b5e0ebb8fa1d3134a94fdb493d2dcdf2, type: 3}
   normalAttackSwingAudioClip: {fileID: 8300000, guid: 04555c7a04a1ea14d89d20867fc22f2b, type: 3}
   normalAttackHitAudioClip: {fileID: 8300000, guid: 32e379c0a387a2140b4d9d1b1ca5ed09, type: 3}
   decimateAudio1: {fileID: 8300000, guid: 783d77c1458cc634fb009e93a7f789df, type: 3}
   decimateAudio3: {fileID: 8300000, guid: 9a651530c012ed44abdb3326c146c440, type: 3}
+  aurynNexusAudioClip: {fileID: 8300000, guid: 665f724111464de4883b38f50f11fac4, type: 3}
   volume: 1
 --- !u!1 &2355795031676004834
 GameObject:
