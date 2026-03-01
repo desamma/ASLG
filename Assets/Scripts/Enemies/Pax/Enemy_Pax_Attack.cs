@@ -124,6 +124,7 @@ public class Enemy_Pax_Attack : MonoBehaviour
         normalCollider.enabled = !normalCollider.enabled;
         attackCollider.enabled = !attackCollider.enabled;
     }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

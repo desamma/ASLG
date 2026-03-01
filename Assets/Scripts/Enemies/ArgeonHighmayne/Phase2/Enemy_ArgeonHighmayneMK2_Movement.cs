@@ -8,7 +8,6 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_ArgeonHighmayneMK2_Health health;
     [SerializeField] private BehaviorProfile behavior;
-    [SerializeField] private float attackRecoveryDuration = 3f;
     [SerializeField] private float auraFarmingDuration = 5f;
     [SerializeField] private float stoppingDistance = 2f;
 
@@ -338,7 +337,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
         stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle);
         rb.velocity = Vector2.zero;
 
-        yield return new WaitForSeconds(attackRecoveryDuration);
+        yield return new WaitForSeconds(stats.AttackCooldown);
         isRecovering = false;
     }
 

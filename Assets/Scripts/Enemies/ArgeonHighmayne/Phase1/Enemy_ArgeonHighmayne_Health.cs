@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// Andromeda enemy Stats and Health
+/// ArgeonHighmayne enemy Stats and Health
 /// </summary>
 [DisallowMultipleComponent]
 public class Enemy_ArgeonHighmayne_Health : MonoBehaviour, IEnemy_Health
