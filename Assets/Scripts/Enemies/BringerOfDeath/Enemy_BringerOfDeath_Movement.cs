@@ -47,6 +47,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
 
     private float attackCooldownTimer = 0f;
     private bool isRecovering = false;
+    private GameObject playerLock;
 
     private void Awake()
     {
@@ -219,39 +220,57 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
 
     public void CheckForPlayer()
     {
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(
-            detectionPoint.position,
-            behavior.DetectionRange,
-            playerLayer
-        );
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(detectionPoint.position, behavior.DetectionRange, playerLayer);
 
         if (hitColliders.Length > 0)
         {
-            player = hitColliders[0].transform;
+            float closestSqrDistance = float.MaxValue;
+            Transform closestTransform = null;
 
-            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-            // Player within spell range
-            if (distanceToPlayer <= castRange)
+            foreach (var collider in hitColliders)
             {
-                rb.velocity = Vector2.zero;
-
-                if (attackCooldownTimer <= 0)
+                float sqrDistance = (collider.transform.position - detectionPoint.position).sqrMagnitude;
+                if (sqrDistance < closestSqrDistance)
                 {
-                    DecideAttackType();
-                    attackCooldownTimer = stats.AttackCooldown;
+                    closestSqrDistance = sqrDistance;
+                    closestTransform = collider.transform;
                 }
             }
-            // Player outside spell range → chase
-            else if (distanceToPlayer > castRange &&
-                     !(stateManager.IsInState(Enemy_BringerOfDeath_State.Attack) ||
-                       stateManager.IsInState(Enemy_BringerOfDeath_State.Cast)))
+
+            if (closestTransform != null)
             {
-                stateManager.ChangeState(Enemy_BringerOfDeath_State.Chase);
+                // store the locked player so other logic uses the same target
+                player = closestTransform;
+                playerLock = closestTransform.gameObject;
+
+                float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+                // Player within spell range
+                if (distanceToPlayer <= castRange)
+                {
+                    rb.velocity = Vector2.zero;
+
+                    if (attackCooldownTimer <= 0)
+                    {
+                        DecideAttackType();
+                        attackCooldownTimer = stats.AttackCooldown;
+                    }
+                }
+                // Player outside spell range → chase
+                else if (distanceToPlayer > castRange &&
+                         !(stateManager.IsInState(Enemy_BringerOfDeath_State.Attack) ||
+                           stateManager.IsInState(Enemy_BringerOfDeath_State.Cast)))
+                {
+                    stateManager.ChangeState(Enemy_BringerOfDeath_State.Chase);
+                }
             }
         }
         else
         {
+            // Clear any previous lock
+            playerLock = null;
+            // Optionally keep the `player` reference for other systems, or set to null:
+            // player = null;
 
             if (!stateManager.IsInState(Enemy_BringerOfDeath_State.Patrol) &&
                 !stateManager.IsInState(Enemy_BringerOfDeath_State.Attack) &&
@@ -262,10 +281,6 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
         }
     }
 
-
-    /// <summary>
-    /// Decide between melee attack and spell cast based on behavior profile and distance
-    /// </summary>
     private void DecideAttackType()
     {
         if (player == null) return;

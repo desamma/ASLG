@@ -17,25 +17,25 @@ public class BehaviorProfile
     [Header("Combat Behavior")]
     [Tooltip("How likely to use special attacks (0-1, where 1 = always use when available)")]
     [Range(0f, 1f)]
-    public float SpecialAttackFrequency = 0.3f;
+    public float SpecialAttackFrequency = 0f;
 
     [Tooltip("How likely to use ultimate attacks (0-1)")]
     [Range(0f, 1f)]
-    public float UltimateAttackFrequency = 0.1f;
+    public float UltimateAttackFrequency = 0f;
 
     [Tooltip("How aggressively the enemy pursues the player (affects decision timing)")]
-    [Range(0f, 2f)]
+    [Range(0f, 5f)]
     public float Aggression = 1f;
 
     [Header("Pattern Complexity")]
-    [Tooltip("How likely to use movement abilities/teleports (0-1)")]
-    [Range(0f, 1f)]
-    public float MobilityUsageFrequency = 0.2f;
+    [Tooltip("How likely to use movement abilities/teleports (0-2)")]
+    [Range(0f, 2f)]
+    public float MobilityUsageFrequency = 0f;
 
     [Header("Health-Based Behavior")]
     [Tooltip("HP percentage threshold to trigger enraged/phase 2 behavior (0-1)")]
     [Range(0f, 1f)]
-    public float EnrageThreshold = 0.5f;
+    public float EnrageThreshold = 0f;
     
     /// <summary>
     /// Apply difficulty scaling to this behavior profile

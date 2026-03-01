@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -95,7 +95,154 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: fx_explosionorangesmoke_0
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 214
+        width: 59
+        height: 42
+      alignment: 9
+      pivot: {x: 0.4478125, y: 0.40150887}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cc6a960e5df7394caf5caca32d2bca7
+      internalID: 160049813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_explosionorangesmoke_1
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 133
+        width: 20
+        height: 19
+      alignment: 9
+      pivot: {x: 0.49582633, y: 0.4597714}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 047721a028a423848b63a8fa643584e2
+      internalID: -1579972932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_explosionorangesmoke_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 209
+        width: 45
+        height: 47
+      alignment: 9
+      pivot: {x: 0.51800823, y: 0.42081466}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33a7a9bcccc753242b1b92b52f788634
+      internalID: -1061177029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_explosionorangesmoke_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 168
+        width: 58
+        height: 39
+      alignment: 9
+      pivot: {x: 0.4128754, y: 0.4340785}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 176483649599e7b4eb29e67b918acb1a
+      internalID: -24819525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_explosionorangesmoke_4
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 81
+        width: 51
+        height: 38
+      alignment: 9
+      pivot: {x: 0.41431856, y: 0.39494404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06494820612e97c44acdf185d7c30d0d
+      internalID: -576645777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_explosionorangesmoke_5
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 41
+        width: 37
+        height: 26
+      alignment: 9
+      pivot: {x: 0.473942, y: 0.43643087}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d704a98df8f5de34ba2380637b9d22c0
+      internalID: 1392572742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_explosionorangesmoke_6
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 71
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 502c7374e0bd7d54d97e3a03c2e08b87
+      internalID: 1962522410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -106,7 +253,14 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      fx_explosionorangesmoke_0: 160049813
+      fx_explosionorangesmoke_1: -1579972932
+      fx_explosionorangesmoke_2: -1061177029
+      fx_explosionorangesmoke_3: -24819525
+      fx_explosionorangesmoke_4: -576645777
+      fx_explosionorangesmoke_5: 1392572742
+      fx_explosionorangesmoke_6: 1962522410
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

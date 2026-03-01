@@ -8,7 +8,6 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_ArgeonHighmayne_Health health;
     [SerializeField] private BehaviorProfile behavior;
-    [SerializeField] private float attackRecoveryDuration = 3f;
     [SerializeField] private float auraFarmingDuration = 5f;
     [SerializeField] private float stoppingDistance = 2f;
 
@@ -213,11 +212,7 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
             return;
         }
 
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-            player.position.x < transform.position.x && facingDirection == 1)
-        {
-            Flip();
-        }
+        Flip();
 
         Vector2 direction = (player.position - transform.position).normalized;
         rb.velocity = behavior.Aggression * stats.Speed * direction;
@@ -349,16 +344,20 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         stateManager.ChangeState(Enemy_ArgeonHighmayne_State.Idle);
         rb.velocity = Vector2.zero;
 
-        yield return new WaitForSeconds(attackRecoveryDuration);
+        yield return new WaitForSeconds(stats.AttackCooldown);
         isRecovering = false;
     }
 
     public void Flip()
     {
-        facingDirection *= -1;
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1;
-        transform.localScale = localScale;
+        if (player.position.x > transform.position.x && facingDirection == -1 ||
+            player.position.x < transform.position.x && facingDirection == 1)
+        {
+            facingDirection *= -1;
+            Vector3 localScale = transform.localScale;
+            localScale.x *= -1;
+            transform.localScale = localScale;
+        }
     }
 
     public void InitializeBehavior()
@@ -436,11 +435,7 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         Vector3 effectPosition = transform.position + new Vector3(0, -1f, 0);
         Instantiate(warSurgeAfterTPEffect, effectPosition, Quaternion.identity);
 
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-            player.position.x < transform.position.x && facingDirection == 1)
-        {
-            Flip();
-        }
+        Flip();
     }
 
     #region State Callbacks
@@ -454,24 +449,18 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         {
             case Enemy_ArgeonHighmayne_State.Attack:
                 rb.velocity = Vector2.zero;
-                if (player.position.x > transform.position.x && facingDirection == -1 ||
-                    player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
+                Flip();
                 break;
             case Enemy_ArgeonHighmayne_State.WarSurge:
                 rb.velocity = Vector2.zero;
-                if (player.position.x > transform.position.x && facingDirection == -1 ||
-                    player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
+                Flip();
                 WarSurgeTP();
                 break;
             case Enemy_ArgeonHighmayne_State.SunBloom:
                 rb.velocity = Vector2.zero;
                 break;
             case Enemy_ArgeonHighmayne_State.Decimated:
-                if (player.position.x > transform.position.x && facingDirection == -1 ||
-                    player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
+                Flip();
                 rb.velocity = Vector2.zero;
                 break;
             case Enemy_ArgeonHighmayne_State.AurynNexus:
