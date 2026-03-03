@@ -66,7 +66,6 @@ public class Enemy_ArgeonHighmayne_Decimate : MonoBehaviour
     {
         var delayTime = GetDelayTime(state);
         yield return new WaitForSeconds(delayTime);
-        Debug.Log("Decimate: Changing state to " + state);
         stateManager.ChangeState(state);
     }
 

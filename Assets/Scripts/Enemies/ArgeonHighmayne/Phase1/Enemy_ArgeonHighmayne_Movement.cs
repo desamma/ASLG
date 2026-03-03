@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
 {
     [Header("Stats and Behavior")]
@@ -19,7 +20,6 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private Transform player;
-    [SerializeField] private Enemy_ArgeonHighmayneMK2_Attack attackComponent;
     private List<AttackCategory> attackCategories;
 
     [Header("Death Effects")]
@@ -114,9 +114,6 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
 
         if (animator == null)
             animator = GetComponent<Animator>();
-
-        if (attackComponent == null)
-            attackComponent = GetComponent<Enemy_ArgeonHighmayneMK2_Attack>();
 
         if (charCollider == null)
             charCollider = GetComponent<Collider2D>();
