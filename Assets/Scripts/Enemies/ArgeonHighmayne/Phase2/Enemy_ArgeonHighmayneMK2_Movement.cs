@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
 {
     [Header("Stats and Behavior")]

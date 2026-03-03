@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
 {
     [Header("Components")]

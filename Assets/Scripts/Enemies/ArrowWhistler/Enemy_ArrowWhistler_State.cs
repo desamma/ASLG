@@ -1,18 +1,18 @@
 ﻿public enum Enemy_ArrowWhistler_State
 {
-    [StateAnimator("Idle")]
+    [StateAnimator("isIdle")]
     Idle,
 
-    [StateAnimator("Walk")]
+    [StateAnimator("isWalk")]
     Chase,
 
-    [StateAnimator("Death")]
+    [StateAnimator("isDeath")]
     Death,
 
-    [StateAnimator("Attack")]
+    [StateAnimator("isAttack")]
     Attack,
 
-    [StateAnimator("Walk")]
+    [StateAnimator("isWalk")]
     Patrol,
 
     Knockback,
