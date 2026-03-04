@@ -313,15 +313,16 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
                             Vector3 position = player.position + new Vector3(0, 1.8f, 0);
                             Instantiate(warSurgeMarkEffect, position, Quaternion.identity, player.transform);
                             warSurgeWaitTimer = warSurgeWaitTime;
+                            return;
                         }
                     }
                     else
                     {
                         stateManager.ChangeState(selectedAttack.State);
                         RegisterMoveUsed(selectedAttack.State);
+                        return;
                     }
                 }
-                return;
             }
         }
     }
