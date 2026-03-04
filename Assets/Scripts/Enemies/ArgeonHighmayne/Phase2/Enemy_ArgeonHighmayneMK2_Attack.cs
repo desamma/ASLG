@@ -19,12 +19,16 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
     [SerializeField] private Vector3 normalAttackHitBox;
 
     [Header("WarSurge")]
-    //[SerializeField] private GameObject warSurgeMarkEffect;
+    //[SerializeField] private GameObject warSurgeMarkEffect;'
     [SerializeField] private Transform warSurgeAttackPoint;
     [SerializeField] private float warSurgeRadius = 1f;
 
     [Header("DualCast Settings")]
     [SerializeField] private GameObject dualCastEffect;
+    [SerializeField] private GameObject heavlyStrikeEffect;
+
+    [Header("HeavenlyStrike")]
+    [SerializeField] private Transform[] heavenlyStrikeSpawnPoints = new Transform[8];
 
     [Header("Decimate")]
     [SerializeField] private Transform decimateAttackPoint;
@@ -49,6 +53,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
         if (health == null)
             health = GetComponent<Enemy_ArgeonHighmayneMK2_Health>();
         castRange = health.stats.AttackRange * 3f;
+        SpawnHeavenlyStrike();
     }
 
     public void NormalAttack()
@@ -133,6 +138,48 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
     {
         float offsetY = -1.2f;
         Instantiate(decimateChargeUpEffect, transform.position + new Vector3(0, offsetY, 0), Quaternion.identity);
+    }
+
+    private void SpawnHeavenlyStrike()
+    {
+        for (int i = 0; i < heavenlyStrikeSpawnPoints.Length; i++)
+        {
+            if (heavenlyStrikeSpawnPoints[i] != null)
+            {
+                GameObject strikeInstance = Instantiate(heavlyStrikeEffect, heavenlyStrikeSpawnPoints[i].position, Quaternion.identity, transform);
+
+                var strikeComponent = strikeInstance.GetComponent<Enemy_ArgeonHighmayneMK2_HeavenlyStrike>();
+                if (strikeComponent != null && health != null)
+                {
+                    strikeComponent.Initialize(health.stats);
+                }
+            }
+        }
+    }
+
+    public void ActiveHeavenlyStrikes()
+    {
+        StartCoroutine(ActivateHeavenlyStrikesCoroutine());
+    }
+
+    private IEnumerator ActivateHeavenlyStrikesCoroutine()
+    {
+        int activatedCount = 0;
+        int immediateActivationCount = 4;
+
+        foreach (Transform child in transform)
+        {
+            if (child.TryGetComponent<Enemy_ArgeonHighmayneMK2_HeavenlyStrike>(out var strikeComponent))
+            {
+                strikeComponent.gameObject.SetActive(true);
+                activatedCount++;
+
+                if (activatedCount == immediateActivationCount)
+                {
+                    yield return new WaitForSeconds(1f);
+                }
+            }
+        }
     }
 
     public void PlayAudio(int num)

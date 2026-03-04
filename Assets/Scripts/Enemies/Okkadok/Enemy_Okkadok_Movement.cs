@@ -237,8 +237,8 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
                     var chosen = available[Random.Range(0, available.Length)];
                     stateManager.ChangeState(chosen.State);
                     RegisterMoveUsed(chosen.State);
+                    return;
                 }
-                return;
             }
         }
     }

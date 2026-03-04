@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -43,12 +43,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -71,7 +71,7 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -95,7 +95,364 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: f1_tier2general_0
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 132
+        width: 70
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5074794, y: 0.7734382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4766b6212290eb443ae2324b33b82cdc
+      internalID: 1647695482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_1
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 233
+        width: 69
+        height: 56
+      alignment: 9
+      pivot: {x: 0.5172137, y: 0.59991676}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a5ea5b16c31c3a479dc07816e062c5a
+      internalID: 1225972816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_2
+      rect:
+        serializedVersion: 2
+        x: 1028
+        y: 334
+        width: 66
+        height: 57
+      alignment: 9
+      pivot: {x: 0.4992084, y: 0.587}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e68500f3f629b984b9136f8255226878
+      internalID: -512937997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_3
+      rect:
+        serializedVersion: 2
+        x: 1030
+        y: 435
+        width: 65
+        height: 56
+      alignment: 9
+      pivot: {x: 0.4788, y: 0.598}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4238974993b39d45a9866f9c6632f33
+      internalID: -1415521886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_4
+      rect:
+        serializedVersion: 2
+        x: 1035
+        y: 536
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.458, y: 0.608}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c9b6fb0397afc74f88b0addd099b544
+      internalID: -1179220267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_5
+      rect:
+        serializedVersion: 2
+        x: 1039
+        y: 637
+        width: 52
+        height: 71
+      alignment: 9
+      pivot: {x: 0.4332533, y: 0.48}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3844ed09682a824d9077c99f86fbf6a
+      internalID: -553884151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_6
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 738
+        width: 49
+        height: 73
+      alignment: 9
+      pivot: {x: 0.4, y: 0.46}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e0ff24a51c31c64dbf5700f3b44cf6d
+      internalID: 1198880987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_7
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 839
+        width: 49
+        height: 74
+      alignment: 9
+      pivot: {x: 0.4, y: 0.458}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3ce37d7454a37d4497c68f1835ab4a3
+      internalID: 1018097889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_8
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 31
+        width: 48
+        height: 75
+      alignment: 9
+      pivot: {x: 0.34, y: 0.449}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b48dbdab48ba61e4fa97f792f347cb16
+      internalID: 883500255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_9
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 738
+        width: 48
+        height: 75
+      alignment: 9
+      pivot: {x: 0.34, y: 0.449}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cc2249bbf916dd458d2ead62ba9cbfb
+      internalID: -1607461444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_10
+      rect:
+        serializedVersion: 2
+        x: 919
+        y: 834
+        width: 69
+        height: 61
+      alignment: 9
+      pivot: {x: 0.58, y: 0.63}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 071680dcb6a793440847686855c9e547
+      internalID: -2022254778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_11
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 935
+        width: 68
+        height: 58
+      alignment: 9
+      pivot: {x: 0.575, y: 0.67}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 280cc2a7517f4c54b9676e12f6d55521
+      internalID: 1809835031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_12
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 26
+        width: 68
+        height: 56
+      alignment: 9
+      pivot: {x: 0.575, y: 0.69}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b814665ac1d78b40a344a7400db4a77
+      internalID: -671008958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_13
+      rect:
+        serializedVersion: 2
+        x: 818
+        y: 127
+        width: 68
+        height: 58
+      alignment: 9
+      pivot: {x: 0.59, y: 0.66}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 543b481319c64da40927089583904a8c
+      internalID: 1479347704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_14
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 228
+        width: 67
+        height: 59
+      alignment: 9
+      pivot: {x: 0.575, y: 0.645}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c03b15c5f6cc634eb9793e0211fe7de
+      internalID: 1561789978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_15
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 332
+        width: 67
+        height: 57
+      alignment: 9
+      pivot: {x: 0.575, y: 0.62}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da4026a22fd7d3c4d8ee1d1afb5ae42b
+      internalID: -524660363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: f1_tier2general_16
+      rect:
+        serializedVersion: 2
+        x: 820
+        y: 435
+        width: 66
+        height: 53
+      alignment: 9
+      pivot: {x: 0.575, y: 0.64}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14d20e1358ef3424daed728cc1420dd4
+      internalID: -1393738787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -106,7 +463,24 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      f1_tier2general_0: 1647695482
+      f1_tier2general_1: 1225972816
+      f1_tier2general_10: -2022254778
+      f1_tier2general_11: 1809835031
+      f1_tier2general_12: -671008958
+      f1_tier2general_13: 1479347704
+      f1_tier2general_14: 1561789978
+      f1_tier2general_15: -524660363
+      f1_tier2general_16: -1393738787
+      f1_tier2general_2: -512937997
+      f1_tier2general_3: -1415521886
+      f1_tier2general_4: -1179220267
+      f1_tier2general_5: -553884151
+      f1_tier2general_6: 1198880987
+      f1_tier2general_7: 1018097889
+      f1_tier2general_8: 883500255
+      f1_tier2general_9: -1607461444
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

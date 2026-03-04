@@ -276,8 +276,8 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
                     var selectedAttack = availableAttacks[Random.Range(0, availableAttacks.Length)];
                     stateManager.ChangeState(selectedAttack.State);
                     RegisterMoveUsed(selectedAttack.State);
+                    return;                                                                                                                                                                      
                 }
-                return;
             }
         }
     }
