@@ -10,7 +10,6 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Enemy_ArgeonHighmayneMK2_Health health;
     [SerializeField] private BehaviorProfile behavior;
     [SerializeField] private float auraFarmingDuration = 5f;
-    [SerializeField] private float stoppingDistance = 2f;
 
     private StateManager<Enemy_ArgeonHighmayneMK2_State> stateManager;
 
@@ -20,7 +19,6 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private Transform player;
-    [SerializeField] private Enemy_ArgeonHighmayneMK2_Attack attackComponent;
     private List<AttackCategory> attackCategories;
 
     [Header("WarSurgeTeleportAttack")]
@@ -86,9 +84,6 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
 
         if (animator == null)
             animator = GetComponent<Animator>();
-
-        if (attackComponent == null)
-            attackComponent = GetComponent<Enemy_ArgeonHighmayneMK2_Attack>();
 
         if (charCollider == null)
             charCollider = GetComponent<Collider2D>();
@@ -177,7 +172,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        if (distanceToPlayer <= stoppingDistance)
+        if (distanceToPlayer <= stats.AttackRange)
         {
             rb.velocity = Vector2.zero;
             

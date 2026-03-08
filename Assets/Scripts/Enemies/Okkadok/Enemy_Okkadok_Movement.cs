@@ -33,6 +33,9 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
     private EnemyStats stats;
     private bool isRecovering = false;
     private bool runAwayAfterAttack = false;
+    private bool isScreamable = true;
+    private float screamCooldown = 5f;
+    private float screamCooldownTimer = 0;
     private EnemyMoveCooldownTracker<Enemy_Okkadok_State> moveCooldowns = new();
 
     #region Move Cooldowns
@@ -94,6 +97,11 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
     private void Update()
     {
         if (health.isDead) return;
+
+        if (screamCooldownTimer > 0)
+        {
+            screamCooldownTimer -= Time.deltaTime;
+        }
 
         if (!stateManager.IsInState(Enemy_Okkadok_State.Knockback) && !isRecovering)
             CheckForPlayer();
@@ -176,11 +184,17 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
                 else
                 {
                     // Safe distance reached
-                    if (!stateManager.IsInState(Enemy_Okkadok_State.Idle))
+                    if (!stateManager.IsInState(Enemy_Okkadok_State.Scream) && isScreamable && screamCooldownTimer <= 0)
                     {
-                        stateManager.ChangeState(Enemy_Okkadok_State.Idle);
-                        rb.velocity = Vector2.zero;
+                        stateManager.ChangeState(Enemy_Okkadok_State.Scream);
+                        isScreamable = false;
                     }
+                    else
+                    {
+                        if (!stateManager.IsInState(Enemy_Okkadok_State.Idle) && !stateManager.IsInState(Enemy_Okkadok_State.Scream))
+                            stateManager.ChangeState(Enemy_Okkadok_State.Idle);
+                    }
+                    rb.velocity = Vector2.zero;
                     Flip();
                 }
             }
@@ -246,6 +260,13 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
         StartCoroutine(AttackRecovery());
+    }
+
+    public void OnScreamAnimationComplete()
+    {
+        if (stateManager == null || !stateManager.IsInState(Enemy_Okkadok_State.Scream)) return;
+        screamCooldownTimer = screamCooldown;
+        stateManager.ChangeState(Enemy_Okkadok_State.Idle);
     }
 
     private IEnumerator AttackRecovery()
@@ -325,6 +346,10 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
                 rb.velocity = Vector2.zero;
                 Flip();
                 break;
+            case Enemy_Okkadok_State.Scream:
+                rb.velocity = Vector2.zero;
+                Flip();
+                break;
             case Enemy_Okkadok_State.Death:
                 rb.velocity = Vector2.zero;
                 charCollider.enabled = false;
@@ -332,7 +357,13 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         }
     }
 
-    private void OnStateExit(Enemy_Okkadok_State state) { }
+    private void OnStateExit(Enemy_Okkadok_State state)
+    {
+        if (state == Enemy_Okkadok_State.Scream)
+        {
+            isScreamable = true;
+        }
+    }
     #endregion
 
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)

@@ -66,20 +66,11 @@ public class Enemy_Okkadok_Attack : MonoBehaviour
                 }
             }
         }
+        SoundFXManager.Instance.PlayRandomSoundFXClips(attackAudio, transform, volume);
     }
 
-    public void PlayAudio(int num)
+    public void PlayScreamAudio()
     {
-        switch (num)
-        {
-            case 1:
-                if (attackAudio != null && attackAudio.Length > 0)
-                    SoundFXManager.Instance.PlayRandomSoundFXClips(attackAudio, transform, volume);
-                break;
-            case 2:
-                if (screamAudio != null && screamAudio.Length > 0)
-                    SoundFXManager.Instance.PlayRandomSoundFXClips(screamAudio, transform, volume);
-                break;
-        }
+        SoundFXManager.Instance.PlayRandomSoundFXClips(screamAudio, transform, volume);
     }
 }
