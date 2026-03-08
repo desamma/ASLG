@@ -294,10 +294,16 @@ MonoBehaviour:
   attackPoint: {fileID: 4639096325513837904}
   attackHitBox: {x: 2.2, y: 1.1, z: 0}
   attackHitEffect: {fileID: 6714486070070996579, guid: 5dfd3f3d30fb919498c6e6b15c42b7ac, type: 3}
-  attackAudio: []
-  screamAudio: []
+  attackAudio:
+  - {fileID: 8300000, guid: d4127b790a0256c42ba7f8932fa7aabd, type: 3}
+  - {fileID: 8300000, guid: 4356f1ef23929404daa87c6c5bbf882e, type: 3}
+  - {fileID: 8300000, guid: 14bb376748df13c4b8b5b82f6e77d558, type: 3}
+  screamAudio:
+  - {fileID: 8300000, guid: 6c3450b105ae52243aa3f4c726f3350b, type: 3}
+  - {fileID: 8300000, guid: 0f55d3402a9fc9f4e881087fc1eadfe3, type: 3}
+  - {fileID: 8300000, guid: e32715d7c1c215d42a33bd2a232911dc, type: 3}
   hitAudio: {fileID: 0}
-  volume: 1
+  volume: 0.8
 --- !u!114 &1634775778493180781
 MonoBehaviour:
   m_ObjectHideFlags: 0

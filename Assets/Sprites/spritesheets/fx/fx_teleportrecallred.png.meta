@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -95,7 +95,322 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: fx_teleportrecallred_0
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 187
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3705ebc564924bb47938ba94af92e5f1
+      internalID: 2011402936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_1
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 106
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9a3db101daa208418f7a564a9993d04
+      internalID: -1708573585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_2
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 187
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58028f99aca228c4f9fb2f5706fae1a6
+      internalID: -960179280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_3
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 106
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccf7c5e41ae9b934c84436048895fdb6
+      internalID: -1942532391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_4
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 25
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d0e066d4ca18c0478765dc9c3055b5d
+      internalID: 2145326939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_5
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 187
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fdf1a7ecf995ef469003621ba7234a4
+      internalID: 623089884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_6
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 106
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a6fca11688c07348a38fa56f168446f
+      internalID: 455932107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_7
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 25
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70947ac2d2678c74aa82330ffcb6c9f4
+      internalID: 1702719755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_8
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 25
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d0f18daee58c7e46af125a08292da8e
+      internalID: 121466856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_9
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 187
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3dbe80c7fe0dc8340b0a17e19464d494
+      internalID: 1827397089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_10
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 106
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd9d97d2bad69794ea51f0286b0c9b27
+      internalID: -371445689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_11
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 25
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66152f08a1e650a48b78df66e4734b02
+      internalID: -35279326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_12
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 106
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0894f20fd9bd621409596562964d18ef
+      internalID: 475165628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_13
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 187
+        width: 48
+        height: 69
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac2da76873162754881758dc3d773220
+      internalID: -1573527562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_teleportrecallred_14
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 35
+        width: 49
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 086b12b92ed548644aed36574f09c211
+      internalID: 2005629746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -106,7 +421,22 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      fx_teleportrecallred_0: 2011402936
+      fx_teleportrecallred_1: -1708573585
+      fx_teleportrecallred_10: -371445689
+      fx_teleportrecallred_11: -35279326
+      fx_teleportrecallred_12: 475165628
+      fx_teleportrecallred_13: -1573527562
+      fx_teleportrecallred_14: 2005629746
+      fx_teleportrecallred_2: -960179280
+      fx_teleportrecallred_3: -1942532391
+      fx_teleportrecallred_4: 2145326939
+      fx_teleportrecallred_5: 623089884
+      fx_teleportrecallred_6: 455932107
+      fx_teleportrecallred_7: 1702719755
+      fx_teleportrecallred_8: 121466856
+      fx_teleportrecallred_9: 1827397089
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

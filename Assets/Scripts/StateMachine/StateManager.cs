@@ -5,8 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// Generic state manager that works with any enum <typeparamref name="TState"/>. <para/>
-/// Attribute usages: See <see cref="Enemy_DemonKing_State"/> <para/>
-/// State Manager usages: See <see cref="Enemy_DemonKing_Movement"/>
+/// Attribute usages: See <see cref="Enemy_ArgeonHighmayne_State"/> <para/>
 /// </summary>
 /// <typeparam name="TState">The enum type representing states</typeparam>
 public class StateManager<TState> where TState : Enum
@@ -38,7 +37,7 @@ public class StateManager<TState> where TState : Enum
         {
             FieldInfo fieldInfo = enumType.GetField(state.ToString());
 
-            // Read the custom [StateAttribute("isIdle")]
+            // Read the custom [StateAnimator("isIdle")]
             StateAnimatorAttribute attribute = (StateAnimatorAttribute)Attribute.GetCustomAttribute(
                 fieldInfo, typeof(StateAnimatorAttribute));
 

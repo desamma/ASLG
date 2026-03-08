@@ -10,7 +10,6 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Enemy_ArgeonHighmayne_Health health;
     [SerializeField] private BehaviorProfile behavior;
     [SerializeField] private float auraFarmingDuration = 5f;
-    [SerializeField] private float stoppingDistance = 2f;
 
     private StateManager<Enemy_ArgeonHighmayne_State> stateManager;
 
@@ -202,7 +201,7 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        if (distanceToPlayer <= stoppingDistance)
+        if (distanceToPlayer <= stats.AttackRange)
         {
             rb.velocity = Vector2.zero;
             stateManager.ChangeState(Enemy_ArgeonHighmayne_State.Idle);
