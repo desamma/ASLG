@@ -9,7 +9,7 @@ public class StatsManager : MonoBehaviour
     //[SerializeField] private StatsUI statsUI;
 
     [Header("Health")]
-    [SerializeField] private float _maxHealth = 100f;
+    [SerializeField] private float _maxHealth = 2000f; //TODO: Change back to 100 
     public float maxHealth
     {
         get => _maxHealth;

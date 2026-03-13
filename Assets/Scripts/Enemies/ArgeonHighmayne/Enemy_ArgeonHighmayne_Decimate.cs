@@ -125,16 +125,12 @@ public class Enemy_ArgeonHighmayne_Decimate : MonoBehaviour
                 effect.transform.localScale = new Vector3(2f, 2f, 1f);
             }
 
-            // Calculate damage dynamically based on caster's current stats
             float totalMagicDamage = CalculateMagicDamage();
             float totalPhysicalDamage = CalculatePhysicalDamage();
 
-            //var playerHealth = collision.GetComponent<PlayerHealth>();
-            //if (playerHealth != null)
-            //{
-            //    playerHealth.ChangeHealth(-totalMagicDamage);
-            //    playerHealth.ChangeHealth(-totalPhysicalDamage);
-            //}
+            var totalDamage = totalMagicDamage + totalPhysicalDamage;
+
+            StatsManager.instance.TakeDamage(totalDamage);
         }
     }
 }

@@ -41,11 +41,11 @@ public class Enemy_ArgeonHighmayneMK2_HeavenlyStrike : MonoBehaviour
             {
                 if (hit.CompareTag("Player"))
                 {
-                    //hit.GetComponent<PlayerHealth>().TakeDamage(health.stats.AttackDamage * attackDamageMultiplier);
                     if (hitPlayer == false)
                     {
                         if (attackHitEffect != null)
                             Instantiate(attackHitEffect, hit.transform.position, Quaternion.identity);
+                        StatsManager.instance.TakeDamage(casterStats.Magic * attackDamageMultiplier);
                         hitPlayer = true;
                     }
                 }
@@ -53,6 +53,7 @@ public class Enemy_ArgeonHighmayneMK2_HeavenlyStrike : MonoBehaviour
         }
         SoundFXManager.Instance.PlaySoundFXClip(audioClip, transform, volume);
     }
+
     private void OnEnable()
     {
         StartCoroutine(SetInactiveAfterDelay());
