@@ -19,8 +19,8 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
     [SerializeField] private Vector3 normalAttackHitBox;
 
     [Header("WarSurge")]
-    //[SerializeField] private GameObject warSurgeMarkEffect;'
     [SerializeField] private Transform warSurgeAttackPoint;
+    [SerializeField] private float warSurgeDamageMultiplier = 1.2f;
     [SerializeField] private float warSurgeRadius = 1f;
 
     [Header("DualCast Settings")]
@@ -35,6 +35,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
     [SerializeField] private Vector3 decimateBoxSize;
     [SerializeField] private GameObject decimateEffect;
     [SerializeField] private GameObject decimateChargeUpEffect;
+    [SerializeField] private float decimateDamageMultiplier = 1.5f;
 
     [Header("Audio")]
     [SerializeField] private AudioClip normalAttackSwingAudioClip;
@@ -70,8 +71,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
                     hitPlayer = true;
                 }
 
-                //TODO: Deal Damage to Player
-
+                StatsManager.instance.TakeDamage(health.stats.Strength);
                 Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
             }
         }
@@ -105,7 +105,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
                     SoundFXManager.Instance.PlaySoundFXClip(normalAttackHitAudioClip, transform, volume);
                     hitPlayer = true;
                 }
-
+                StatsManager.instance.TakeDamage(health.stats.Strength * warSurgeDamageMultiplier);
                 Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
             }
         }
@@ -121,7 +121,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
 
             if (hits.Length > 0)
             {
-                //TODO: Deal Damage to Player
+                StatsManager.instance.TakeDamage((health.stats.Strength + health.stats.Magic) * decimateDamageMultiplier);
             }
 
             GameObject spellInstance = Instantiate(decimateEffect, player.position, Quaternion.identity);
@@ -134,6 +134,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
             spellInstance.SetActive(true);
         }
     }
+
     public void PlayDecimateChargeUp()
     {
         float offsetY = -1.2f;

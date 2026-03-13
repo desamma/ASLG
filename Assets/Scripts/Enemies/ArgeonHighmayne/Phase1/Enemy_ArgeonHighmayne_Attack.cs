@@ -18,8 +18,8 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
     [SerializeField] private float normalAttackRadius = 1f;
 
     [Header("WarSurge")]
-    //[SerializeField] private GameObject warSurgeMarkEffect;
     [SerializeField] private Transform warSurgeAttackPoint;
+    [SerializeField] private float warSurgeDamageMultiplier = 1.2f;
     [SerializeField] private float warSurgeRadius = 1f;
 
     [Header("AurynNexus")]
@@ -67,7 +67,7 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
                 }
 
                 Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
-                //TODO: Deal Damage to Player
+                StatsManager.instance.TakeDamage(health.stats.Strength);
             }
         }
         hitPlayer = false;
@@ -88,7 +88,7 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
                     hitPlayer = true;
                 }
                 Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
-                //TODO: Deal Damage to Player
+                StatsManager.instance.TakeDamage(health.stats.Strength * warSurgeDamageMultiplier);
             }
         }
     }

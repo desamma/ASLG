@@ -68,11 +68,7 @@ public class Enemy_ArgeonHighmayne_LionHeartBlessing : MonoBehaviour
         if (collision.CompareTag("Player") && !hitPlayer)
         {
             hitPlayer = true;
-            //var playerHealth = collision.GetComponent<PlayerHealth>();
-            //if (playerHealth != null)
-            //{
-            //    playerHealth.ChangeHealth(-magicDamage);
-            //}
+            StatsManager.instance.TakeDamage(magicDamage);
         }
     }
 }
