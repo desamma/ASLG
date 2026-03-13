@@ -434,8 +434,9 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
 
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
+        if(!isKnockbackable) return;
         stateManager.ChangeState(Enemy_BringerOfDeath_State.Knockback);
 
         StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
