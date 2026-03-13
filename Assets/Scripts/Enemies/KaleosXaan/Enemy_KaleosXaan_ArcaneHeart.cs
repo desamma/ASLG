@@ -22,10 +22,16 @@ public class Enemy_KaleosXaan_ArcaneHeart : MonoBehaviour
 
     private EnemyStats casterStats;
     private Enemy_KaleosXaan_Health casterHealth;
+    private Enemy_KaleosXaanMK2_Health casterPhase2Health;
     public void Initialize(EnemyStats stats, Enemy_KaleosXaan_Health health)
     {
         casterStats = stats;
         casterHealth = health;
+    }
+    public void Initialize(EnemyStats stats, Enemy_KaleosXaanMK2_Health health)
+    {
+        casterStats = stats;
+        casterPhase2Health = health;
     }
 
     private void Start()
@@ -65,7 +71,7 @@ public class Enemy_KaleosXaan_ArcaneHeart : MonoBehaviour
         // Heal the caster
         casterHealth.ChangeHealth(healthRegenAmount);
 
-        casterHealth.StartCoroutine(RemoveBuffAfterDuration(
+        casterHealth.StartCoroutine(RemoveBuffAfterDurationPhase1(
             strengthIncrease,
             magicIncrease,
             defenseIncrease,
@@ -75,7 +81,7 @@ public class Enemy_KaleosXaan_ArcaneHeart : MonoBehaviour
             buffDuration));
     }
 
-    private IEnumerator RemoveBuffAfterDuration(
+    private IEnumerator RemoveBuffAfterDurationPhase1(
         float strengthIncrease,
         float magicIncrease,
         float defenseIncrease,
@@ -87,6 +93,74 @@ public class Enemy_KaleosXaan_ArcaneHeart : MonoBehaviour
         yield return new WaitForSeconds(duration);
 
         if (casterStats != null && casterHealth != null)
+        {
+            casterStats.Strength -= strengthIncrease;
+            casterStats.Magic -= magicIncrease;
+            casterStats.Defense -= defenseIncrease;
+            casterStats.MagicResist -= magicResistIncrease;
+            casterStats.Speed -= speedIncrease;
+            casterStats.AttackCooldown -= attackCooldownIncrease;
+            casterStats.MaxHP -= maxHealthIncreaseAmount;
+
+            // Ensure current health doesn't exceed new max health
+            if (casterStats.CurrentHP > casterStats.MaxHP)
+            {
+                casterStats.CurrentHP = casterStats.MaxHP;
+            }
+        }
+    }
+    public void ApplyBuffPhase2()
+    {
+        if (casterStats == null || casterPhase2Health == null)
+        {
+            Debug.LogError("ArcaneHeart: Cannot apply buff - caster stats or health is null!");
+            return;
+        }
+
+        // Calculate buff amounts based on current stats
+        float strengthIncrease = casterStats.Strength * (strengthDecreaseMultiplier - 1f);
+        float magicIncrease = casterStats.Magic * (magicDecreaseMultiplier - 1f);
+        float defenseIncrease = casterStats.Defense * (defenseIncreaseMultiplier - 1f);
+        float magicResistIncrease = casterStats.MagicResist * (magicResistIncreaseMultiplier - 1f);
+        float speedIncrease = casterStats.Speed * (speedMultiplier - 1f);
+        float attackCooldownIncrease = casterStats.AttackCooldown * (attackCooldownMultiplier - 1f);
+
+        // Apply the buff
+        casterStats.Strength += strengthIncrease;
+        casterStats.Magic += magicIncrease;
+        casterStats.Defense += defenseIncrease;
+        casterStats.MagicResist += magicResistIncrease;
+        casterStats.Speed += speedIncrease;
+        casterStats.AttackCooldown += attackCooldownIncrease;
+
+        // Apply max health increase
+        casterStats.MaxHP += maxHealthIncreaseAmount;
+
+        // Heal the caster
+        casterPhase2Health.ChangeHealth(healthRegenAmount);
+
+        casterPhase2Health.StartCoroutine(RemoveBuffAfterDurationPhase2(
+            strengthIncrease,
+            magicIncrease,
+            defenseIncrease,
+            magicResistIncrease,
+            speedIncrease,
+            attackCooldownIncrease,
+            buffDuration));
+    }
+
+    private IEnumerator RemoveBuffAfterDurationPhase2(
+        float strengthIncrease,
+        float magicIncrease,
+        float defenseIncrease,
+        float magicResistIncrease,
+        float speedIncrease,
+        float attackCooldownIncrease,
+        float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        if (casterStats != null && casterPhase2Health != null)
         {
             casterStats.Strength -= strengthIncrease;
             casterStats.Magic -= magicIncrease;

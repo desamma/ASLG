@@ -391,8 +391,9 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
     }
 
     #endregion
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
+        if (!isKnockbackable) return;
         stateManager.ChangeState(Enemy_Dogehai_State.Knockback);
         StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
         Vector2 knockbackDirection = (transform.position - player.position).normalized;
