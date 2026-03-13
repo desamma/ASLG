@@ -366,8 +366,9 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
     }
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
+        if (!isKnockbackable) return;
         stateManager.ChangeState(Enemy_Okkadok_State.Knockback);
         StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
         Vector2 dir = (transform.position - player.position).normalized;

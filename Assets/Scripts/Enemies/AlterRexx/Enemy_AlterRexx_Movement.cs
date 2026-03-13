@@ -274,8 +274,9 @@ public class Enemy_AlterRexx_Movement : MonoBehaviour, IEnemy_Movement
 
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
+        if (!isKnockbackable) return;
         stateManager.ChangeState(Enemy_AlterRexx_State.Knockback);
 
         StartCoroutine(KnockBackCounter(knockbackTime, stunTime));

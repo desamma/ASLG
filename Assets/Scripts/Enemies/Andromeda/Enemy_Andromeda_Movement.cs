@@ -358,8 +358,10 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
 
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
+        if (!isKnockbackable) return;
+
         stateManager.ChangeState(Enemy_Andromeda_State.Knockback);
 
         StartCoroutine(KnockBackCounter(knockbackTime, stunTime));

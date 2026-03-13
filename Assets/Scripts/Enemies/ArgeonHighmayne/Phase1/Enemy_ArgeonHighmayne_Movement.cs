@@ -490,8 +490,9 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         Instantiate(phase2EntranceEffect, location, Quaternion.identity);
     }
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
+        if (!isKnockbackable) return;
         stateManager.ChangeState(Enemy_ArgeonHighmayne_State.Knockback);
         StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
         Vector2 knockbackDirection = (transform.position - player.position).normalized;

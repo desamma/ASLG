@@ -417,8 +417,9 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
         if (rand > 0.5f)
             SoundFXManager.Instance.PlaySoundFXClip(catMeow, transform, volume);
     }
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
+        if(!isKnockbackable) return;
         stateManager.ChangeState(Enemy_Pax_State.Knockback);
 
         StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
