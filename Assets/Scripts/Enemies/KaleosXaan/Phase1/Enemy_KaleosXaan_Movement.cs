@@ -40,6 +40,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement
     private float buffAbilitySharedCooldown = 0f;
     private bool isRecovering = false;
     private bool isAuraFarming = false;
+    private GameObject activeCompanion = null;
 
     private EnemyMoveCooldownTracker<Enemy_KaleosXaan_State> moveCooldowns = new();
 
@@ -53,7 +54,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement
     }
 
     private bool IsMoveOnCooldown(Enemy_KaleosXaan_State state) => moveCooldowns.IsOnCooldown(state);
-    #endregion
+    #endregion                                                      b
 
     #region Attack Configuration Classes
     private class AttackCategory
@@ -113,7 +114,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement
         stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
         stateManager.OnStateExit += OnStateExit;
-
+        StartCoroutine(AuraFarming());
     }
 
     private IEnumerator AuraFarming()
@@ -289,7 +290,8 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement
                 var availableAttacks = category.Attacks
                     .Where(a => distanceToPlayer <= a.Range &&
                                 !IsMoveOnCooldown(a.State) &&
-                                !IsBuffAbilityOnSharedCooldown(a.State))
+                                !IsBuffAbilityOnSharedCooldown(a.State) &&
+                                !IsCompanionActive(a.State))
                     .ToArray();
 
                 if (availableAttacks.Length > 0)
@@ -318,6 +320,25 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement
             return buffAbilitySharedCooldown > 0;
         }
         return false;
+    }
+
+    private bool IsCompanionActive(Enemy_KaleosXaan_State state)
+    {
+        if (state == Enemy_KaleosXaan_State.SummonCompanion)
+        {
+            return activeCompanion != null;
+        }
+        return false;
+    }
+
+    public void RegisterCompanion(GameObject companion)
+    {
+        activeCompanion = companion;
+    }
+
+    public void OnCompanionDestroyed()
+    {
+        activeCompanion = null;
     }
 
     public void OnAttackAnimationComplete()
@@ -444,8 +465,9 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement
     }
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
+        if (!isKnockbackable) return;
         stateManager.ChangeState(Enemy_KaleosXaan_State.Knockback);
         StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
         Vector2 knockbackDirection = (transform.position - player.position).normalized;

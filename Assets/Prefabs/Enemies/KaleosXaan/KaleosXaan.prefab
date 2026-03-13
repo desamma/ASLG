@@ -479,6 +479,7 @@ MonoBehaviour:
   - {fileID: 4183422448712997827}
   normalAttackSwingAudioClip: {fileID: 8300000, guid: 0397ec5b959f43243927a988af8645d5, type: 3}
   normalAttackHitAudioClip: {fileID: 8300000, guid: d4d9b8d2078838f419a17eb536f733ef, type: 3}
+  summonSound: {fileID: 8300000, guid: 8962e29bd25b59d4d8d60feaefb8eb3e, type: 3}
   volume: 1
 --- !u!114 &2228288817188914879
 MonoBehaviour:
@@ -534,6 +535,7 @@ MonoBehaviour:
     m_Bits: 64
   player: {fileID: 0}
   groundFire: {fileID: 6054722809446637969, guid: 4379f9407466d6646ae389d31573798f, type: 3}
+  phase2TransitionEffect: {fileID: 4739939819097573182, guid: 324480e6b9acdc34e960988b39535e98, type: 3}
   groundFireSound: {fileID: 8300000, guid: 9d145b5c7e6e95c4e8a7b3edf6719ebf, type: 3}
   volume: 1
   detectionPoint: {fileID: 2532189847842709098}

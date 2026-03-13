@@ -62,10 +62,10 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
     {
         stats = new EnemyStats
         {
-            MaxHP = 2f,
-            CurrentHP = 2f,
+            MaxHP = 2000f,
+            CurrentHP = 2000f,
             Strength = 200f,
-            Magic = 50f,
+            Magic = 100f,
             Defense = 120f,
             MagicResist = 120f,
             Speed = 3f,

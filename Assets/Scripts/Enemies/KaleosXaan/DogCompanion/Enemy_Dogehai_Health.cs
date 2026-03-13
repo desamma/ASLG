@@ -35,6 +35,15 @@ public class Enemy_Dogehai_Health : MonoBehaviour, IEnemy_Health
         DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
 
+    private void OnDestroy()
+    {
+        var boss = FindObjectOfType<Enemy_KaleosXaan_Movement>();
+        if (boss != null)
+        {
+            boss.OnCompanionDestroyed();
+        }
+    }
+
     public void ChangeHealth(float amount)
     {
         if (isDead) return;
