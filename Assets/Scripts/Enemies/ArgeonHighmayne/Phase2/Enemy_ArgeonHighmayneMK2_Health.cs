@@ -13,7 +13,7 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
     private BossHealthUI bossHealthUI;
 
     [Header("Components")]
-    private Enemy_ArgeonHighmayne_Movement movementComponent;
+    private Enemy_ArgeonHighmayneMK2_Movement movementComponent;
 
     private void Awake()
     {
@@ -24,7 +24,7 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
     {
         stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
-        movementComponent = GetComponent<Enemy_ArgeonHighmayne_Movement>();
+        movementComponent = GetComponent<Enemy_ArgeonHighmayneMK2_Movement>();
 
         bossHealthUI = FindFirstObjectByType<BossHealthUI>(FindObjectsInactive.Include);
 
@@ -70,7 +70,7 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
             if (movementComponent != null)
             {
                 var manager = movementComponent.GetStateManager();
-                manager.ChangeState(Enemy_ArgeonHighmayne_State.Death);
+                manager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Death);
             }
         }
     }
@@ -97,5 +97,10 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
     {
         if (newModifier == null) return;
         stats.ApplyDifficulty(newModifier);
+    }
+    public void DestroyEnemy()
+    {
+        Destroy(gameObject);
+        bossHealthUI.Hide();
     }
 }
