@@ -73,9 +73,16 @@ public class PlayerAttack : MonoBehaviour
     /// </summary>
     public void NormalAttack()
     {
-        var hits = Physics2D.OverlapCircleAll(normalAttackPoint.position, normalAttackRadius, enemyLayer);
+        // Gộp enemyLayer với Layer "Player" (và "Default") để đảm bảo quét trúng Alicia
+        int combinedLayer = enemyLayer | LayerMask.GetMask("Player", "Default", "NPC");
+        var hits = Physics2D.OverlapCircleAll(normalAttackPoint.position, normalAttackRadius, combinedLayer);
+
         foreach (var hit in hits)
         {
+            // CHỐT CHẶN: Bỏ qua chính bản thân Player
+            if (hit.gameObject == this.gameObject) continue;
+
+            // 1. Nếu chém trúng Quái (Cái này vẫn cần CompareTag vì quái có nhiều loại)
             if (hit.CompareTag("Enemy"))
             {
                 if (!hitEnemy)
@@ -89,6 +96,19 @@ public class PlayerAttack : MonoBehaviour
 
                 var enemyHealth = hit.GetComponent<IEnemy_Health>();
                 enemyHealth?.ChangeHealth(-StatsManager.instance.damage);
+            }
+            // 2. NẾU CHÉM TRÚNG BẤT CỨ AI CÓ SCRIPT "NPCCompanion" (Bao gồm Alicia)
+            else
+            {
+                var npc = hit.GetComponent<NPCCompanion>();
+                if (npc != null)
+                {
+                    // Trúng NPC rồi! Truyền sát thương của Player vào, báo True để trừ điểm
+                    npc.TakeDamage(StatsManager.instance.damage, true);
+
+                    if (normalAttackHitEffect != null)
+                        Instantiate(normalAttackHitEffect, hit.transform.position, Quaternion.identity, hit.transform);
+                }
             }
         }
 
