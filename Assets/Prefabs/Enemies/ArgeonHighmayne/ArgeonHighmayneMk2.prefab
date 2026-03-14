@@ -508,8 +508,9 @@ MonoBehaviour:
   player: {fileID: 0}
   normalAttackHitEffect: {fileID: 3846514605532310788, guid: dd07f3b382ad70949baa349cb5714dfd, type: 3}
   normalAttackPoint: {fileID: 4843012272018230186}
-  normalAttackHitBox: {x: 1.5, y: 2.5, z: 1}
+  normalAttackHitBox: {x: 2, y: 2.5, z: 1}
   warSurgeAttackPoint: {fileID: 6372392419954062954}
+  warSurgeDamageMultiplier: 1.2
   warSurgeRadius: 1
   dualCastEffect: {fileID: 4702624321240448751, guid: b1490f7d36d91ef4da9f0434c2465e73, type: 3}
   heavlyStrikeEffect: {fileID: 8735553362114787455, guid: f8516d255e2ad864685448edee2779b4, type: 3}
@@ -526,6 +527,7 @@ MonoBehaviour:
   decimateBoxSize: {x: 1.5, y: 2.5, z: 1}
   decimateEffect: {fileID: 7911447980327151908, guid: 4dc52ea82ec328144800611d45dd5238, type: 3}
   decimateChargeUpEffect: {fileID: 7768705651709045384, guid: b5e0ebb8fa1d3134a94fdb493d2dcdf2, type: 3}
+  decimateDamageMultiplier: 1.5
   normalAttackSwingAudioClip: {fileID: 8300000, guid: 04555c7a04a1ea14d89d20867fc22f2b, type: 3}
   normalAttackHitAudioClip: {fileID: 8300000, guid: 32e379c0a387a2140b4d9d1b1ca5ed09, type: 3}
   decimateAudio: {fileID: 8300000, guid: 783d77c1458cc634fb009e93a7f789df, type: 3}
@@ -553,7 +555,6 @@ MonoBehaviour:
     MobilityUsageFrequency: 0.2
     EnrageThreshold: 0.5
   auraFarmingDuration: 5
-  stoppingDistance: 1.5
   rb: {fileID: 5536710766152830819}
   charCollider: {fileID: 8709922363728949703}
   animator: {fileID: 2349841461943171467}
@@ -561,7 +562,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   player: {fileID: 0}
-  attackComponent: {fileID: 4510359280239683569}
   warSurgeMarkEffect: {fileID: 5902410122037340534, guid: fe3f90d34d4f0e045a71c924e1da0e62, type: 3}
   warSurgeChargeUpEffect: {fileID: 7393147419667239206, guid: ff958f8af0689de43a07f50a74561134, type: 3}
   warSurgeAfterTPEffect: {fileID: 7138417041921805837, guid: 1f5b23ea890b83d44aeafe897048065a, type: 3}
