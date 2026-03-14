@@ -11,9 +11,9 @@ public class NPCCompanion : MonoBehaviour
 
     [Header("Health & Respawn")]
     public float maxHealth = 500f;
-    [SerializeField] private float currentHealth; // Đã phơi bày ra Inspector!
+    [SerializeField] private float currentHealth;
     public float respawnTime = 60f;
-    [SerializeField] private bool isDead = false;
+    private bool isDead = false;
 
     [Header("Movement & Target")]
     public Transform playerTransform;
@@ -28,10 +28,14 @@ public class NPCCompanion : MonoBehaviour
     public float bulletDamage = 15f;
     private float attackTimer;
 
+    [Header("Healing Player")]
+    public float healCooldown = 10f;
+    private float healTimer;
+
     [Header("UI References")]
     public Slider healthSlider;
     public TMP_Text nameText;
-    public TMP_Text relationshipText; // Kéo object Text chứa Icon vào đây
+    public TMP_Text relationshipText;
     public GameObject talkIcon;
 
     private void Start()
@@ -47,6 +51,7 @@ public class NPCCompanion : MonoBehaviour
         if (talkIcon != null) talkIcon.SetActive(false);
         if (playerTransform == null) playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
+        // Gọi lần đầu để setup UI cảm xúc
         UpdateRelationshipUI();
     }
 
@@ -55,6 +60,7 @@ public class NPCCompanion : MonoBehaviour
         if (isDead || playerTransform == null) return;
 
         HandleMovement();
+        HandleRelationshipBehaviors();
         HandleCombat();
     }
 
@@ -80,12 +86,11 @@ public class NPCCompanion : MonoBehaviour
         currentHealth -= amount;
         if (healthSlider != null) healthSlider.value = currentHealth;
 
-        // Nếu bị Player chém trúng (Friendly Fire)
         if (isFromPlayer)
         {
             relationshipScore -= 1;
-            UpdateRelationshipUI(); // Cập nhật ngay lập tức
-            Debug.Log($"<color=orange>[Hệ thống]</color> Bạn chém trúng Alicia! Relationship: {relationshipScore}");
+            UpdateRelationshipUI(); // Phải gọi dòng này để icon đổi ngay
+            Debug.Log($"<color=orange>[Hệ thống]</color> Bạn vừa chém trúng Alicia! Relationship: {relationshipScore}");
         }
 
         if (currentHealth <= 0)
@@ -94,20 +99,18 @@ public class NPCCompanion : MonoBehaviour
         }
     }
 
-    // --- THUẬT TOÁN GIẢ CHẾT ---
     private void Die()
     {
         isDead = true;
         relationshipScore -= 10;
-        UpdateRelationshipUI();
-        Debug.Log($"<color=red>[Hệ thống]</color> Alicia tử trận! Bị trừ 10 điểm. Relationship: {relationshipScore}");
+        UpdateRelationshipUI(); // Phải gọi dòng này để icon đổi ngay
+        Debug.Log($"<color=red>[Hệ thống]</color> Alicia đã tử trận! Bị trừ 10 điểm. Relationship: {relationshipScore}");
+
         if (healthSlider != null) healthSlider.value = 0;
 
-        // Tắt Sprite và Collider (Để đạn xuyên qua)
         GetComponent<SpriteRenderer>().enabled = false;
         GetComponent<Collider2D>().enabled = false;
 
-        // Ẩn thanh máu và Canvas trên đầu
         foreach (Transform child in transform)
         {
             if (child.GetComponent<Canvas>() != null) child.gameObject.SetActive(false);
@@ -118,31 +121,32 @@ public class NPCCompanion : MonoBehaviour
 
     private IEnumerator RespawnRoutine()
     {
-        // Chờ đúng 60 giây
         yield return new WaitForSeconds(respawnTime);
 
-        // Hồi sinh tại vị trí Player
         transform.position = playerTransform.position;
         currentHealth = maxHealth;
         isDead = false;
 
-        // Bật lại thân xác
         GetComponent<SpriteRenderer>().enabled = true;
         GetComponent<Collider2D>().enabled = true;
+
         foreach (Transform child in transform)
         {
             if (child.GetComponent<Canvas>() != null) child.gameObject.SetActive(true);
         }
 
         if (healthSlider != null) healthSlider.value = currentHealth;
-        Debug.Log("<color=green>[Hệ thống]</color> Alicia đã hồi sinh bên cạnh bạn!");
+        Debug.Log("<color=green>[Hệ thống]</color> Alicia đã hồi sinh!");
     }
 
+    // --- CÁC HÀM XỬ LÝ HÀNH VI ---
     private void HandleMovement()
     {
-        if (relationshipScore <= -500) return; // Giận quá nghỉ đi theo
+        if (relationshipScore <= -500) return; // Dỗi, không đi theo
+
         float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
         if (talkIcon != null) talkIcon.SetActive(distanceToPlayer <= 2.5f);
+
         if (distanceToPlayer > followDistance)
         {
             transform.position = Vector2.MoveTowards(transform.position, playerTransform.position, moveSpeed * Time.deltaTime);
@@ -152,21 +156,42 @@ public class NPCCompanion : MonoBehaviour
         }
     }
 
+    private void HandleRelationshipBehaviors()
+    {
+        // Khi đạt 500 hảo cảm, hồi 1% máu mỗi 10 giây (theo code cũ của bạn)
+        if (relationshipScore >= 500)
+        {
+            healTimer -= Time.deltaTime;
+            if (healTimer <= 0f)
+            {
+                if (StatsManager.instance != null && !StatsManager.instance.IsDead)
+                {
+                    float healAmount = StatsManager.instance.maxHealth * 0.01f;
+                    StatsManager.instance.Heal(healAmount);
+                    healTimer = healCooldown;
+                    Debug.Log($"<color=green>[Alicia]</color> Đã buff {healAmount} HP cho bạn! ❤️");
+                }
+            }
+        }
+    }
+
     private void HandleCombat()
     {
         attackTimer -= Time.deltaTime;
         if (attackTimer > 0f) return;
 
-        // Nếu cực kỳ giận, quay sang bắn luôn Player!
+        // Nếu hảo cảm chạm đáy, bắn thẳng vào Player
         if (relationshipScore <= -500)
         {
             ShootAtTarget(playerTransform);
-            attackTimer = 9999f;
+            attackTimer = 9999f; // Bắn 1 phát rồi nghỉ chơi luôn
             return;
         }
 
+        // Tốc độ bắn x4 khi đạt 500 hảo cảm
         float currentCooldown = (relationshipScore >= 500) ? baseAttackCooldown / 4f : baseAttackCooldown;
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Enemy"));
+
         if (hits.Length > 0)
         {
             Transform closestEnemy = hits[0].transform;
