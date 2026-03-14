@@ -10,6 +10,7 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
     public EnemyStats stats;
     public float damageReductionPercentage = 0f;
     public bool isDead;
+    private BossHealthUI bossHealthUI;
 
     [Header("Components")]
     private Enemy_ArgeonHighmayne_Movement movementComponent;
@@ -24,6 +25,14 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
         stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         movementComponent = GetComponent<Enemy_ArgeonHighmayne_Movement>();
+
+        bossHealthUI = FindFirstObjectByType<BossHealthUI>(FindObjectsInactive.Include);
+
+        if (bossHealthUI != null)
+        {
+            bossHealthUI.Initialize("Argeon Highmayne", stats.MaxHP, Color.yellow, Color.red, Color.white);
+            bossHealthUI.Show();
+        }
     }
 
     private void OnEnable()
@@ -47,6 +56,7 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
         }
 
         stats.CurrentHP += amount;
+        bossHealthUI.UpdateHealth(stats.CurrentHP);
 
         if (stats.CurrentHP > stats.MaxHP)
         {
