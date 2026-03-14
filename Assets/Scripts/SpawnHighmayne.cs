@@ -7,6 +7,6 @@ public class Spawnhighmayne : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Instantiate(highmayne, transform.position, Quaternion.identity);
-        Destroy(gameObject, 2f);
+        Destroy(gameObject);
     }
 }
