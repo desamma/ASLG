@@ -112,7 +112,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 11
   m_Sprite: {fileID: 21300000, guid: aac37320c6d822c44977ffc74a97eb6f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -239,6 +239,7 @@ MonoBehaviour:
   normalAttackPoint: {fileID: 2557345960031235543}
   normalAttackRadius: 1
   warSurgeAttackPoint: {fileID: 4428245483693766236}
+  warSurgeDamageMultiplier: 1.2
   warSurgeRadius: 1
   aurynNexusEffect: {fileID: 2468789010517235435, guid: a2135000ee26e314b9866b2f9b006434, type: 3}
   sunBloomEffect: {fileID: 567142867543762435, guid: 4c670169499a2754bafc3605f087996b, type: 3}
@@ -297,7 +298,6 @@ MonoBehaviour:
     MobilityUsageFrequency: 0
     EnrageThreshold: 0
   auraFarmingDuration: 5
-  stoppingDistance: 2
   rb: {fileID: 4173689126913912952}
   charCollider: {fileID: 8939149112938453236}
   animator: {fileID: 3500164455753209458}

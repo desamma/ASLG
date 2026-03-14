@@ -364,7 +364,7 @@ GameObject:
   - component: {fileID: 7847230090761108383}
   m_Layer: 6
   m_Name: NPC_Alicia_Summoned
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -516,16 +516,16 @@ MonoBehaviour:
   relationshipScore: 0
   maxHealth: 500
   currentHealth: 0
-  respawnTime: 60
-  isDead: 0
+  respawnTime: 15
   playerTransform: {fileID: 0}
   followDistance: 4
   moveSpeed: 5
   magicBulletPrefab: {fileID: 4985830346478485982, guid: 37ddaa10e0a21324b8aaeb2aebfcf332, type: 3}
   firePoint: {fileID: 2962647063834380551}
-  attackRange: 15
-  baseAttackCooldown: 0.3
+  attackRange: 10
+  baseAttackCooldown: 2
   bulletDamage: 15
+  healCooldown: 5
   healthSlider: {fileID: 1806618056314092805}
   nameText: {fileID: 2041469525643754713}
   relationshipText: {fileID: 0}

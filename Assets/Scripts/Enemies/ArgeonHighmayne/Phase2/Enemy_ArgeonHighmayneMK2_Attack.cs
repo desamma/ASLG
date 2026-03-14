@@ -182,7 +182,11 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
             }
         }
     }
-
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(normalAttackPoint.position, normalAttackHitBox);
+    }
     public void PlayAudio(int num)
     {
         switch (num)
