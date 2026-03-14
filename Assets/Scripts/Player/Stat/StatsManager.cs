@@ -9,7 +9,7 @@ public class StatsManager : MonoBehaviour
     //[SerializeField] private StatsUI statsUI;
 
     [Header("Health")]
-    [SerializeField] private float _maxHealth = 2000f; //TODO: Change back to 100 
+    [SerializeField] private float _maxHealth = 2000f;
     public float maxHealth
     {
         get => _maxHealth;
@@ -88,8 +88,10 @@ public class StatsManager : MonoBehaviour
     public int currentExp { get => _currentExp; private set { _currentExp = Mathf.Max(0, value); OnStatsChanged(); } }
     public int upgradePoints { get => _upgradePoints; private set { _upgradePoints = Mathf.Max(0, value); OnStatsChanged(); } }
 
+    // --- SỰ KIỆN ---
     public event System.Action OnStatsChangedEvent;
     public event System.Action OnLevelUpEvent;
+    public event System.Action OnPlayerDeathEvent; // Báo tử
 
     private void Awake()
     {
@@ -109,6 +111,14 @@ public class StatsManager : MonoBehaviour
     {
         _currentHealth = _maxHealth;
         _currentStamina = _maxStamina;
+    }
+
+    // HÀM MỚI: Dùng để hồi sinh khi người chơi bấm Play lại từ Scene Start
+    public void ResetStats()
+    {
+        _currentHealth = _maxHealth;
+        _currentStamina = _maxStamina;
+        OnStatsChanged();
     }
 
     public void TakeDamage(float amount)
@@ -142,6 +152,7 @@ public class StatsManager : MonoBehaviour
     private void HandleDeath()
     {
         Debug.Log("Player has died.");
+        OnPlayerDeathEvent?.Invoke(); // Kích hoạt sự kiện để UI bắt lấy
     }
 
     private int CalculateExpToNextLevel(int nextLevel) =>

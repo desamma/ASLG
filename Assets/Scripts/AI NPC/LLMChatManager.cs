@@ -144,8 +144,10 @@ public class LLMChatManager : MonoBehaviour
         OpenAiRequest requestData = new OpenAiRequest();
 
         // System prompt configuration
+        // Chèn tên Player từ GameSession vào Prompt để AI nhận diện
         string systemPrompt =
-            $"You are Alicia, a female adventurer. Current Relationship Score: {aliciaScript.relationshipScore} (-1000 to +1000). " +
+            $"You are Alicia, a female adventurer traveling with a player named {GameSession.PlayerName}. " +
+            $"Current Relationship Score: {aliciaScript.relationshipScore} (-1000 to +1000). " +
             "Reply in 1-3 short sentences. You MUST include a tag [REL: X] at the exact end of your message.";
 
         requestData.messages.Add(new ChatMessage { role = "system", content = systemPrompt });
