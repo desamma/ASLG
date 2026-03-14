@@ -895,7 +895,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1492802115615131335, guid: c213aed68fe2572418b280b3c4a83e28, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2135362086171877439, guid: c213aed68fe2572418b280b3c4a83e28, type: 3}
       propertyPath: m_LocalPosition.x
@@ -935,6 +935,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2135362086171877439, guid: c213aed68fe2572418b280b3c4a83e28, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500164455753209458, guid: c213aed68fe2572418b280b3c4a83e28, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -990,7 +994,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8957c4fdaca57be48a8fecea99ac3109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  apiUrl: https://rom-consult-babies-additional.trycloudflare.com/v1/chat/completions
+  apiUrl: https://auction-jpg-vatican-remained.trycloudflare.com/v1/chat/completions
   chatCanvas: {fileID: 200730324}
   npcTextDisplay: {fileID: 1285259198}
   playerInputField: {fileID: 431417118}
