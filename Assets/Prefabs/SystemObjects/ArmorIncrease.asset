@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91ac6fc7089a49c47958073a3476b11a, type: 3}
+  m_Name: ArmorIncrease
+  m_EditorClassIdentifier: 
+  effectId: armor_increase
+  displayName: Armor Increase
+  description: Increase Armor Effect
+  effectType: 0
+  iconPrefab: {fileID: 7651458232791242578, guid: 4e49c11569f35e34b9045956b4fb1473, type: 3}
+  vfxPrefab: {fileID: 2517093668445280058, guid: f3669f2c78709d9408f9ad6b480fd60a, type: 3}
+  borderColor: {r: 0.07095921, g: 1, b: 0, a: 1}
+  iconLocalPosition: {x: 0, y: 0, z: 0}
+  iconLocalScale: {x: 1, y: 1, z: 1}
+  isPermanent: 0
+  baseDuration: 20
+  stackBehavior: 3
+  maxStacks: 1
+  hasTick: 0
+  tickInterval: 1
