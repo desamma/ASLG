@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Place this on a Canvas UI GameObject below the health bar.
-/// It spawns/destroys StatusEffectSlot instances as effects are added/removed.
-///
-/// Wire up:
-///   • slotPrefab  → the StatusEffectSlot prefab
-///   • slotContainer → a HorizontalLayoutGroup transform
+/// Place this on a Canvas UI GameObject below the health bar. <para/>
+/// Spawns/destroys <see cref="StatusEffectSlot"/> instances as effects are added/removed.
 /// </summary>
 public class StatusEffectHUD : MonoBehaviour
 {
@@ -19,26 +15,22 @@ public class StatusEffectHUD : MonoBehaviour
     [Tooltip("Buffs shown before debuffs when true.")]
     [SerializeField] private bool separateBuffsAndDebuffs = true;
 
-    private readonly Dictionary<string, StatusEffectSlot> _slots
-        = new Dictionary<string, StatusEffectSlot>();
-
-    // ── Public API called by StatusEffectManager ──────────────────────────
+    private readonly Dictionary<string, StatusEffectSlot> _slots = new();
 
     public void AddEffect(ActiveStatusEffect active)
     {
         if (_slots.ContainsKey(active.Definition.effectId)) return;
 
-        var go = Instantiate(slotPrefab, slotContainer);
-        var slot = go.GetComponent<StatusEffectSlot>();
-
-        if (slot == null)
+        var effectSlot = Instantiate(slotPrefab, slotContainer);
+        
+        if (!effectSlot.TryGetComponent<StatusEffectSlot>(out var slot))
         {
             Debug.LogError("[StatusEffectHUD] slotPrefab is missing StatusEffectSlot component.");
-            Destroy(go);
+            Destroy(effectSlot);
             return;
         }
 
-        slot.Initialise(active);
+        slot.Initialize(active);
         _slots[active.Definition.effectId] = slot;
 
         if (separateBuffsAndDebuffs)
@@ -58,10 +50,9 @@ public class StatusEffectHUD : MonoBehaviour
             slot.OnRefresh();
     }
 
-    // ── Private ───────────────────────────────────────────────────────────
     private void ReorderSlots()
     {
-        // Buffs first, then debuffs, then neutral
+        //buff -> debuff -> neutral
         int index = 0;
         foreach (var slot in _slots.Values)
         {

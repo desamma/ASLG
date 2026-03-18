@@ -2,8 +2,8 @@
 using System;
 
 /// <summary>
-/// Runtime instance of a StatusEffect currently applied to a character.
-/// Tracks remaining duration, stack count, and tick timing.
+/// Runtime instance of a StatusEffect currently applied to a character. <para/>
+/// Represent an active <see cref="StatusEffect"/> created and managed by <seealso cref="StatusEffectManager"/>.
 /// </summary>
 public class ActiveStatusEffect
 {
@@ -17,12 +17,7 @@ public class ActiveStatusEffect
     /// 0–1 fill amount for the icon timer ring.
     /// </summary>
     public float NormalizedTimeLeft => Definition.isPermanent? 1f: Mathf.Clamp01(RemainingDuration / TotalDuration);
-
-    public event Action<ActiveStatusEffect> OnTick;
-    public event Action<ActiveStatusEffect> OnExpired;
     public event Action<ActiveStatusEffect> OnStackChanged;
-
-    private float _tickTimer;
 
     public ActiveStatusEffect(StatusEffect definition, float duration)
     {
@@ -30,9 +25,7 @@ public class ActiveStatusEffect
         TotalDuration = duration;
         RemainingDuration = duration;
         StackCount = 1;
-        _tickTimer = 0f;
     }
-
 
     /// <summary>
     /// Called by StatusEffectManager each frame.
@@ -47,18 +40,7 @@ public class ActiveStatusEffect
             if (RemainingDuration <= 0f)
             {
                 RemainingDuration = 0f;
-                OnExpired?.Invoke(this);
                 return;
-            }
-        }
-
-        if (Definition.hasTick)
-        {
-            _tickTimer += deltaTime;
-            if (_tickTimer >= Definition.tickInterval)
-            {
-                _tickTimer -= Definition.tickInterval;
-                OnTick?.Invoke(this);
             }
         }
     }
@@ -99,7 +81,6 @@ public class ActiveStatusEffect
     public void ForceExpire()
     {
         RemainingDuration = 0f;
-        OnExpired?.Invoke(this);
     }
 
     public void SetStacks(int stacks)

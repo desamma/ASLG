@@ -9,49 +9,68 @@ public enum StatusEffectType
 
 public enum StackBehavior
 {
-    RefreshDuration,    // Resets timer on reapply
-    AddDuration,        // Adds duration on reapply
-    AddStack,           // Increases stack count (up to maxStacks)
-    Ignore              // Does nothing if already active
+    RefreshDuration,
+    AddDuration,
+    AddStack,
+    Ignore
 }
 
-/// <summary>
-/// ScriptableObject defining a status effect's properties.
-/// Create via: Assets > Create > StatusEffectSystem > StatusEffect
-/// </summary>
 [CreateAssetMenu(fileName = "New StatusEffect", menuName = "StatusEffectSystem/StatusEffect")]
 public class StatusEffect : ScriptableObject
 {
     [Header("Identity")]
-    public string effectId;                         // Unique ID, e.g. "poison", "shield_buff"
+    public string effectId;
     public string displayName;
-    [TextArea(2, 4)]
-    public string description;
     public StatusEffectType effectType = StatusEffectType.Debuff;
 
+    [Header("Tooltip Description")]
+    [TextArea(2, 4)]
+    [Tooltip("Main description shown at the top of the tooltip.")]
+    public string description;
+
+    [TextArea(1, 2)]
+    [Tooltip("Short flavour line shown below the description in italics. Leave blank to hide.")]
+    public string flavourText;
+
+    [Tooltip("Stat bullet lines, e.g. '-5 HP per second', '+30% Move Speed'.\n" +
+             "Each entry is one bullet point. Supports rich text tags like <color=red>.")]
+    public string[] statLines;
+
+    [Tooltip("Show a live 'Duration: X.Xs' line in the tooltip.")]
+    public bool showDurationInTooltip = true;
+
+    [Tooltip("Show a 'Stacks: N' line when stack count > 1.")]
+    public bool showStacksInTooltip = true;
+
     [Header("Visuals")]
-    [Tooltip("Prefab instantiated inside the HUD slot. Can have Animator, particles, sprites — anything.")]
-    public GameObject iconPrefab;                   // Animated GameObject shown in the HUD slot
-    public GameObject vfxPrefab;                    // Optional VFX spawned on the character body
+    [Tooltip("Prefab instantiated inside the HUD slot.")]
+    public GameObject iconPrefab;
+    public GameObject vfxPrefab;
     public Color borderColor = Color.white;
 
+    [Header("Tooltip Visuals")]
+    [Tooltip("Optional sprite shown in the tooltip header area.")]
+    public Sprite tooltipIcon;
+    [Tooltip("Header colour in the tooltip. Uses borderColor if left as clear.")]
+    public Color tooltipHeaderColor = Color.clear;
+
     [Header("Icon Prefab Overrides")]
-    [Tooltip("Local position offset applied to the spawned icon inside the slot.")]
     public Vector3 iconLocalPosition = Vector3.zero;
-    [Tooltip("Local scale of the spawned icon. Use to fit your art into the slot.")]
     public Vector3 iconLocalScale = Vector3.one;
 
     [Header("Duration")]
-    public bool isPermanent = false;                // Never expires
-    public float baseDuration = 5f;                 // Seconds
+    public bool isPermanent = false;
+    public float baseDuration = 5f;
 
     [Header("Stacking")]
     public StackBehavior stackBehavior = StackBehavior.RefreshDuration;
     public int maxStacks = 1;
 
-    [Header("Tick")]
-    public bool hasTick = false;                    // Does this effect do something each tick?
-    public float tickInterval = 1f;                 // Seconds between ticks
+    /// <summary>
+    /// Resolved header colour: tooltipHeaderColor if set, else borderColor.
+    /// </summary>
+    public Color ResolvedHeaderColor =>
+        tooltipHeaderColor == Color.clear ? borderColor : tooltipHeaderColor;
 
     private void OnValidate()
     {
