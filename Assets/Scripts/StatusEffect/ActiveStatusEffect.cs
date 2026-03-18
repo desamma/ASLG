@@ -19,7 +19,6 @@ public class ActiveStatusEffect
     public float NormalizedTimeLeft => Definition.isPermanent? 1f: Mathf.Clamp01(RemainingDuration / TotalDuration);
 
     public event Action<ActiveStatusEffect> OnTick;
-    public event Action<ActiveStatusEffect> OnExpired;
     public event Action<ActiveStatusEffect> OnStackChanged;
 
     private float _tickTimer;
@@ -47,7 +46,6 @@ public class ActiveStatusEffect
             if (RemainingDuration <= 0f)
             {
                 RemainingDuration = 0f;
-                OnExpired?.Invoke(this);
                 return;
             }
         }
@@ -99,7 +97,6 @@ public class ActiveStatusEffect
     public void ForceExpire()
     {
         RemainingDuration = 0f;
-        OnExpired?.Invoke(this);
     }
 
     public void SetStacks(int stacks)
