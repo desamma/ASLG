@@ -42,13 +42,12 @@ public class StatusEffectManager : MonoBehaviour
         foreach (var id in _toRemove)
             RemoveEffectInternal(id);
     }
-
     /// <summary>
     /// Apply a status effect to this character. <para/>
     /// If <paramref name="duration"/> is not set, uses the SO's baseDuration.
     /// </summary>
     /// <returns>New active status object</returns>
-    public ActiveStatusEffect ApplyEffect(StatusEffect definition, bool spawnVFX = true ,  float duration = -1f)
+    public ActiveStatusEffect ApplyEffect(StatusEffect definition, bool spawnVFX = true, float duration = -1f)
     {
         if (definition == null)
         {
@@ -77,7 +76,6 @@ public class StatusEffectManager : MonoBehaviour
         OnEffectApplied?.Invoke(active);
         return active;
     }
-
     /// <summary>
     /// Remove a specific effect by its effectId immediately.
     /// </summary>

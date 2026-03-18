@@ -51,8 +51,6 @@ public class StatusEffect : ScriptableObject
     [Header("Tooltip Visuals")]
     [Tooltip("Optional sprite shown in the tooltip header area.")]
     public Sprite tooltipIcon;
-    [Tooltip("Header colour in the tooltip. Uses borderColor if left as clear.")]
-    public Color tooltipHeaderColor = Color.clear;
 
     [Header("Icon Prefab Overrides")]
     public Vector3 iconLocalPosition = Vector3.zero;
@@ -65,12 +63,6 @@ public class StatusEffect : ScriptableObject
     [Header("Stacking")]
     public StackBehavior stackBehavior = StackBehavior.RefreshDuration;
     public int maxStacks = 1;
-
-    /// <summary>
-    /// Resolved header colour: tooltipHeaderColor if set, else borderColor.
-    /// </summary>
-    public Color ResolvedHeaderColor =>
-        tooltipHeaderColor == Color.clear ? borderColor : tooltipHeaderColor;
 
     private void OnValidate()
     {
