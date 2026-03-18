@@ -12,12 +12,12 @@ public class StatusEffectManager : MonoBehaviour
     [Header("HUD Reference")]
     [SerializeField] private StatusEffectHUD hud;
 
-    [Header("VFX Anchor (optional — defaults to this transform)")]
+    [Header("VFX Anchor")]
+    [Tooltip("Leave empty to use this transform")]
     [SerializeField] private Transform vfxAnchor;
 
     public event Action<ActiveStatusEffect> OnEffectApplied;
     public event Action<ActiveStatusEffect> OnEffectRemoved;
-    public event Action<ActiveStatusEffect> OnEffectTick;
 
     private readonly Dictionary<string, ActiveStatusEffect> _activeEffects = new();
 
@@ -66,7 +66,6 @@ public class StatusEffectManager : MonoBehaviour
         }
 
         var active = new ActiveStatusEffect(definition, d);
-        active.OnTick += HandleTick;
 
         _activeEffects[definition.effectId] = active;
 
@@ -128,9 +127,6 @@ public class StatusEffectManager : MonoBehaviour
         hud.RemoveEffect(active);
         OnEffectRemoved?.Invoke(active);
     }
-
-    private void HandleTick(ActiveStatusEffect effect)
-        => OnEffectTick?.Invoke(effect);
 
     private void SpawnVFX(StatusEffect definition)
     {

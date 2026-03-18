@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Place this on a Canvas UI GameObject below the health bar.
-/// Spawns/destroys StatusEffectSlot instances as effects are added/removed.
+/// Place this on a Canvas UI GameObject below the health bar. <para/>
+/// Spawns/destroys <see cref="StatusEffectSlot"/> instances as effects are added/removed.
 /// </summary>
 public class StatusEffectHUD : MonoBehaviour
 {
@@ -52,7 +52,7 @@ public class StatusEffectHUD : MonoBehaviour
 
     private void ReorderSlots()
     {
-        // Buffs first, then debuffs, then neutral
+        //buff -> debuff -> neutral
         int index = 0;
         foreach (var slot in _slots.Values)
         {

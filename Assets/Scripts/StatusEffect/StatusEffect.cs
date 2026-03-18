@@ -66,10 +66,6 @@ public class StatusEffect : ScriptableObject
     public StackBehavior stackBehavior = StackBehavior.RefreshDuration;
     public int maxStacks = 1;
 
-    [Header("Tick")]
-    public bool hasTick = false;
-    public float tickInterval = 1f;
-
     /// <summary>
     /// Resolved header colour: tooltipHeaderColor if set, else borderColor.
     /// </summary>

@@ -125,15 +125,15 @@ public class StatusEffectSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
         _iconInstance.transform.SetLocalPositionAndRotation(def.iconLocalPosition, Quaternion.identity);
         _iconInstance.transform.localScale = def.iconLocalScale;
 
-        if (_iconInstance.TryGetComponent<RectTransform>(out var rt) && iconRoot != null)
-        {
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = Vector2.zero;
-            rt.offsetMax = Vector2.zero;
-            rt.localScale = def.iconLocalScale;
-            rt.localPosition = def.iconLocalPosition;
-        }
+        //if (_iconInstance.TryGetComponent<RectTransform>(out var rt) && iconRoot != null)
+        //{
+        //    rt.anchorMin = Vector2.zero;
+        //    rt.anchorMax = Vector2.one;
+        //    rt.offsetMin = Vector2.zero;
+        //    rt.offsetMax = Vector2.zero;
+        //    rt.localScale = def.iconLocalScale;
+        //    rt.localPosition = def.iconLocalPosition;
+        //}
     }
 
     private void UpdateStackBadge()
