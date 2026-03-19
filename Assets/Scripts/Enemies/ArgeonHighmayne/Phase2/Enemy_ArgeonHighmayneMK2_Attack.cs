@@ -26,6 +26,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
     [Header("DualCast Settings")]
     [SerializeField] private GameObject dualCastEffect;
     [SerializeField] private GameObject heavlyStrikeEffect;
+    [SerializeField] private StatusEffect dualCastStatusEffect;
 
     [Header("HeavenlyStrike")]
     [SerializeField] private Transform[] heavenlyStrikeSpawnPoints = new Transform[8];
@@ -44,12 +45,16 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
     [SerializeField] private AudioClip aurynNexusAudioClip;
     [SerializeField] private float volume = 1f;
 
+    private StatusEffectManager effectManager;
     private bool hitPlayer = false;
 
     private void Start()
     {
         if (animator == null)
             animator = GetComponent<Animator>();
+
+        if (effectManager == null)
+            effectManager = GetComponent<StatusEffectManager>();
 
         if (health == null)
             health = GetComponent<Enemy_ArgeonHighmayneMK2_Health>();
@@ -88,6 +93,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
             dualCastComponent.Initialize(health.stats, health);
         }
 
+        effectManager.ApplyEffect(dualCastStatusEffect, true, 20f);
         spellInstance.SetActive(true);
     }
 
@@ -181,11 +187,6 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
                 }
             }
         }
-    }
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(normalAttackPoint.position, normalAttackHitBox);
     }
     public void PlayAudio(int num)
     {

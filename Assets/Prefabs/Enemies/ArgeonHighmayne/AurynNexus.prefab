@@ -48,8 +48,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyTime: 5
-  strengthIncreaseMultiplier: 1.3
-  magicIncreaseMultiplier: 1.3
   defenseIncreaseMultiplier: 1.5
   magicResistIncreaseMultiplier: 1.5
   damageReductionPercentage: 0.4
@@ -144,8 +142,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyTime: 0
-  strengthIncreaseMultiplier: 0
-  magicIncreaseMultiplier: 0
   defenseIncreaseMultiplier: 0
   magicResistIncreaseMultiplier: 0
   damageReductionPercentage: 0
@@ -274,8 +270,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyTime: 0
-  strengthIncreaseMultiplier: 0
-  magicIncreaseMultiplier: 0
   defenseIncreaseMultiplier: 0
   magicResistIncreaseMultiplier: 0
   damageReductionPercentage: 0
@@ -407,12 +401,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyTime: 2
-  strengthIncreaseMultiplier: 1.5
-  magicIncreaseMultiplier: 1.5
-  defenseIncreaseMultiplier: 1.5
-  magicResistIncreaseMultiplier: 1.5
-  damageReductionPercentage: 0.3
-  buffDuration: 15
+  defenseIncreaseMultiplier: 1.3
+  magicResistIncreaseMultiplier: 1.15
+  damageReductionPercentage: 0.2
+  buffDuration: 20
   animator: {fileID: 9052019913414726891}
   state: 1
   audioClip: {fileID: 8300000, guid: 53a3022fe132c104a88782f92be25ae3, type: 3}
@@ -516,8 +508,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyTime: 0
-  strengthIncreaseMultiplier: 0
-  magicIncreaseMultiplier: 0
   defenseIncreaseMultiplier: 0
   magicResistIncreaseMultiplier: 0
   damageReductionPercentage: 0

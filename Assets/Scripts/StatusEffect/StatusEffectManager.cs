@@ -15,6 +15,7 @@ public class StatusEffectManager : MonoBehaviour
     [Header("VFX Anchor")]
     [Tooltip("Leave empty to use this transform")]
     [SerializeField] private Transform vfxAnchor;
+    [SerializeField] private float destroyDelay = 2f;
 
     public event Action<ActiveStatusEffect> OnEffectApplied;
     public event Action<ActiveStatusEffect> OnEffectRemoved;
@@ -129,6 +130,18 @@ public class StatusEffectManager : MonoBehaviour
     private void SpawnVFX(StatusEffect definition)
     {
         if (definition.vfxPrefab == null) return;
-        Instantiate(definition.vfxPrefab, vfxAnchor.position, Quaternion.identity, vfxAnchor);
+        var effect = Instantiate(definition.vfxPrefab, vfxAnchor.position, Quaternion.identity, vfxAnchor);
+        Vector3 originalScale = definition.vfxPrefab.transform.localScale;
+
+        var parentScale = transform.localScale;
+
+        // Compensate for parent scale
+        effect.transform.localScale = new Vector3(
+            originalScale.x / parentScale.x,
+            originalScale.y / parentScale.y,
+            originalScale.z / parentScale.z
+        );
+
+        Destroy(effect, destroyDelay);
     }
 }

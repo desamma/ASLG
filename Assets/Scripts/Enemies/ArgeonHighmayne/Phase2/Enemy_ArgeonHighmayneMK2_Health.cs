@@ -85,8 +85,8 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
             Magic = 200f,
             Defense = 300f,
             MagicResist = 150f,
-            Speed = 2.5f,
-            ExpReward = 200f,
+            Speed = 4f,
+            ExpReward = 2000f,
             AttackCooldown = 2.5f,
             AttackRange = 2f
         };
