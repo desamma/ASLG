@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &843818777598217334
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 388141658716951560}
+  m_Layer: 3
+  m_Name: VFX anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &388141658716951560
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843818777598217334}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.024, y: 0.522, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1661130943792739151}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1165572306455747919
 GameObject:
   m_ObjectHideFlags: 0
@@ -388,6 +419,7 @@ GameObject:
   - component: {fileID: 8709922363728949703}
   - component: {fileID: 5536710766152830819}
   - component: {fileID: 138740221894863608}
+  - component: {fileID: 2875516226409168715}
   m_Layer: 3
   m_Name: ArgeonHighmayneMk2
   m_TagString: Enemy
@@ -413,6 +445,7 @@ Transform:
   - {fileID: 6109075609508176842}
   - {fileID: 5054758133513106539}
   - {fileID: 1538769711802359952}
+  - {fileID: 388141658716951560}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4145950770086587691
@@ -514,6 +547,7 @@ MonoBehaviour:
   warSurgeRadius: 1
   dualCastEffect: {fileID: 4702624321240448751, guid: b1490f7d36d91ef4da9f0434c2465e73, type: 3}
   heavlyStrikeEffect: {fileID: 8735553362114787455, guid: f8516d255e2ad864685448edee2779b4, type: 3}
+  dualCastStatusEffect: {fileID: 11400000, guid: e073e5be55d9df14288814c855f88373, type: 2}
   heavenlyStrikeSpawnPoints:
   - {fileID: 3398969891644845262}
   - {fileID: 2703072196809506549}
@@ -665,6 +699,21 @@ MonoBehaviour:
     AttackCooldown: 0
   damageReductionPercentage: 0
   isDead: 0
+--- !u!114 &2875516226409168715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8904349886267690301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 604776c40de33374d9f9ccad97873323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hud: {fileID: 0}
+  vfxAnchor: {fileID: 388141658716951560}
+  destroyDelay: 2
 --- !u!1 &8929079070104321598
 GameObject:
   m_ObjectHideFlags: 0

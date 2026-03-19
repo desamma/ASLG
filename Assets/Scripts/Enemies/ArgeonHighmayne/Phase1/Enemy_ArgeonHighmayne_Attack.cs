@@ -10,7 +10,6 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private Transform player;
-    private float castRange;
 
     [Header("NormalAttack")]
     [SerializeField] private GameObject normalAttackHitEffect;
@@ -24,9 +23,12 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
 
     [Header("AurynNexus")]
     [SerializeField] private GameObject aurynNexusEffect;
+    [SerializeField] private StatusEffect aurynBuffEffect;
 
     [Header("SunBloom")]
     [SerializeField] private GameObject sunBloomEffect;
+    [SerializeField] private StatusEffect damageIncrease;
+    [SerializeField] private StatusEffect magicIncrease;
 
     [Header("Decimate")]
     [SerializeField] private GameObject decimateEffect;
@@ -41,15 +43,17 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
     [SerializeField] private float volume = 1f;
 
     private bool hitPlayer = false;
-
+    private StatusEffectManager effectManager;
     private void Start()
     {
         if (animator == null)
             animator = GetComponent<Animator>();
 
+        if (effectManager == null)
+            effectManager = GetComponent<StatusEffectManager>();
+
         if (health == null)
             health = GetComponent<Enemy_ArgeonHighmayne_Health>();
-        castRange = health.stats.AttackRange * 3f;
     }
 
     public void NormalAttack()
@@ -105,6 +109,7 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
             aurynNexusComponent.Initialize(health.stats, health);
         }
 
+        effectManager.ApplyEffect(aurynBuffEffect);
         spellInstance.SetActive(true);
     }
 
@@ -117,6 +122,12 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
         {
             sunBloomComponent.Initialize(health.stats, health);
         }
+
+        effectManager.ApplyEffect(damageIncrease, false, 15f)
+            .WithStatLines(new string[] { "+ 20% Strength" });
+
+        effectManager.ApplyEffect(magicIncrease, false, 15f)
+            .WithStatLines(new string[] {"+ 20% Magic" });
 
         spellInstance.SetActive(true);
     }

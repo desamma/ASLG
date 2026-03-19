@@ -12,26 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91ac6fc7089a49c47958073a3476b11a, type: 3}
   m_Name: DamageIncrease
   m_EditorClassIdentifier: 
-  effectId: damageincrease
-  displayName: 
-  effectType: 1
-  description: 
+  effectId: damage_increase
+  displayName: Damage Increase
+  effectType: 0
+  description: Increase damage
   flavourText: 
-  statLines: []
+  statLines:
+  - + 10% Strength
   showDurationInTooltip: 1
   showStacksInTooltip: 1
   iconPrefab: {fileID: 2212770062704283165, guid: ec8dd707a939a8640a84c4f62d07ab57, type: 3}
   vfxPrefab: {fileID: 5165783704491726005, guid: 7e2b5e448f1003d46a5b4622ba8353ae, type: 3}
-  borderColor: {r: 0, g: 0, b: 0, a: 1}
-  tooltipIcon: {fileID: 21300000, guid: 7fe5b389199f5c340b0f91172b538477, type: 3}
-  tooltipHeaderColor: {r: 0, g: 0, b: 0, a: 0}
+  borderColor: {r: 0.3137255, g: 1, b: 0, a: 1}
+  tooltipIcon: {fileID: 21300000, guid: 1b39641bd80f61b468b0857bc1ac0037, type: 3}
   iconLocalPosition: {x: 0, y: 0, z: 0}
   iconLocalScale: {x: 1, y: 1, z: 1}
-  animatorTriggerOnApply: 
-  animatorTriggerOnRefresh: 
   isPermanent: 0
   baseDuration: 5
   stackBehavior: 0
   maxStacks: 1
-  hasTick: 0
-  tickInterval: 1
