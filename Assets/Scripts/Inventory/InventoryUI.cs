@@ -71,7 +71,6 @@ public class InventoryUI : MonoBehaviour
 
     private void Start()
     {
-        inventoryPanel.SetActive(false);
         btn_nextPage?.onClick.AddListener(NextPage);
         btn_prevPage?.onClick.AddListener(PrevPage);
         btn_drop?.onClick.AddListener(DropSelected);
@@ -79,12 +78,17 @@ public class InventoryUI : MonoBehaviour
         if (StatsManager.instance != null)
             StatsManager.instance.OnStatsChangedEvent += RefreshStats;
 
-        SpawnSlots();
+        SpawnSlots(); // spawn trước
+        inventoryPanel.SetActive(false); // tắt sau
     }
 
     private void Update()
     {
+        if (Input.anyKeyDown)
+            Debug.Log($"Key pressed: {Input.inputString}");
+
         if (Input.GetKeyDown(KeyCode.E)) Toggle();
+
     }
 
     // ── Mở / Đóng ────────────────────────────────────────────────────────
@@ -93,6 +97,7 @@ public class InventoryUI : MonoBehaviour
         isOpen = !isOpen;
         inventoryPanel.SetActive(isOpen);
         if (isOpen) { currentPage = 0; RefreshAll(); }
+        Debug.Log($"Toggle called, isOpen={isOpen}, panel active={inventoryPanel.activeSelf}");
     }
 
     // ── Refresh ───────────────────────────────────────────────────────────
