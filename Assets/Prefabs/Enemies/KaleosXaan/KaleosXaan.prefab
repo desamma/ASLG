@@ -64,6 +64,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7550361457572031487}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5030956384542548552
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 141581072792197951}
+  m_Layer: 3
+  m_Name: vfx anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &141581072792197951
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5030956384542548552}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.005, y: 0.657, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7550361457572031487}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5106481814562269279
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,6 +301,7 @@ GameObject:
   - component: {fileID: 2048644327592013652}
   - component: {fileID: 2228288817188914879}
   - component: {fileID: 6989506709051732757}
+  - component: {fileID: 4309368711462250971}
   m_Layer: 3
   m_Name: KaleosXaan
   m_TagString: Enemy
@@ -293,6 +325,7 @@ Transform:
   - {fileID: 2532189847842709098}
   - {fileID: 3051001883158047362}
   - {fileID: 8723741613579107358}
+  - {fileID: 141581072792197951}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2665741417545422808
@@ -454,6 +487,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 2708948377375565613}
   health: {fileID: 2228288817188914879}
+  stackStatusFX: {fileID: 11400000, guid: c944ec38da11bfb4f89d5221262d2cd2, type: 2}
+  maxStack: 9999
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -466,10 +501,12 @@ MonoBehaviour:
     attackRadius: 1.9
     duration: 0.3
   hitEffect: {fileID: 6714486070070996579, guid: 5dfd3f3d30fb919498c6e6b15c42b7ac, type: 3}
-  normalAttackDamage: 10
+  normalAttackDamageMultiplier: 0.3
   damageInterval: 0.3
   arcaneHeartPrefab: {fileID: 3058061546381346635, guid: c82ccd7671dcb3f45b499f3fe4fac5f1, type: 3}
+  arcaneHeartStatusFX: {fileID: 11400000, guid: bf526cb657ef1734099fdff5fd524bd0, type: 2}
   blinkEnhancePrefab: {fileID: 3010793654433731489, guid: 000fd2e0197f8a644b6337f55790f1b2, type: 3}
+  blinkEnhanceStatusFX: {fileID: 11400000, guid: 32d607ae2e49a784685bd3b640413799, type: 2}
   daemonicLurePrefab: {fileID: 8399247909314430548, guid: 3a13b3abfe1bb664f83f43c1edfcd0d9, type: 3}
   companionPrefab: {fileID: 6162069556044509143, guid: 4788f8d0a81ccd24cb69791789d4375a, type: 3}
   companionSpawnPoints:
@@ -481,6 +518,8 @@ MonoBehaviour:
   normalAttackHitAudioClip: {fileID: 8300000, guid: d4d9b8d2078838f419a17eb536f733ef, type: 3}
   summonSound: {fileID: 8300000, guid: 8962e29bd25b59d4d8d60feaefb8eb3e, type: 3}
   volume: 1
+  damageStack: 0
+  stackIncreaseEachHit: 2
 --- !u!114 &2228288817188914879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -505,6 +544,8 @@ MonoBehaviour:
     AttackRange: 0
     AttackCooldown: 0
   isDead: 0
+  deathAudio: {fileID: 8300000, guid: f0c74342a16178f42b7da76fa0e87db7, type: 3}
+  volume: 1
 --- !u!114 &6989506709051732757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -539,6 +580,21 @@ MonoBehaviour:
   groundFireSound: {fileID: 8300000, guid: 9d145b5c7e6e95c4e8a7b3edf6719ebf, type: 3}
   volume: 1
   detectionPoint: {fileID: 2532189847842709098}
+--- !u!114 &4309368711462250971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7815599334424515753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 604776c40de33374d9f9ccad97873323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlayer: 0
+  vfxAnchor: {fileID: 141581072792197951}
+  destroyDelay: 2
 --- !u!1 &9040916549728392913
 GameObject:
   m_ObjectHideFlags: 0

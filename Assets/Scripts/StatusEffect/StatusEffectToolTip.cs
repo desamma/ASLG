@@ -24,7 +24,6 @@ public class StatusEffectTooltip : MonoBehaviour
 
     [Header("Layout")]
     [SerializeField] private Vector2 cursorOffset = new(12f, -12f);
-    [SerializeField] private float screenPadding = 8f;
 
     [Header("Fade")]
     [SerializeField] private float fadeInDuration = 0.12f;

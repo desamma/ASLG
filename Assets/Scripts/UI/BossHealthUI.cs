@@ -61,15 +61,7 @@ public class BossHealthUI : MonoBehaviour
         bossName.color = textColor;
         _originalNameColor = textColor;
     }
-    public void Initialize(string name, float maxHealth, Color gradTopColor, Color gradBottomColor)
-    {
-        Setup(name, maxHealth);
-        bossName.color = Color.white;
-        _originalNameColor = Color.white;
-        this.gradTopColor = gradTopColor;
-        this.gradBottomColor = gradBottomColor;
-        ApplyVertexGradient();
-    }
+
     public void Initialize(string name, float maxHealth, Color textColor, Color gradTopColor, Color gradBottomColor)
     {
         Setup(name, maxHealth);
@@ -78,6 +70,15 @@ public class BossHealthUI : MonoBehaviour
         this.gradTopColor = gradTopColor;
         this.gradBottomColor = gradBottomColor;
         ApplyVertexGradient();
+    }
+
+    public void Initialize(string name, float maxHealth, Color textColor, Color topLeft, Color topRight, Color bottomLeft, Color bottomRight)
+    {
+        Setup(name, maxHealth);
+        bossName.color = textColor;
+        _originalNameColor = textColor;
+        enableVertexGrad = true;
+        ApplyVertexGradient(topLeft, topRight, bottomLeft, bottomRight);
     }
 
     #endregion
@@ -225,5 +226,11 @@ public class BossHealthUI : MonoBehaviour
         bossName.colorGradient = new VertexGradient(
             gradTopColor, gradTopColor,
             gradBottomColor, gradBottomColor);
+    }
+    private void ApplyVertexGradient(Color topLeft, Color topRight, Color bottomLeft, Color bottomRight)
+    {
+        if (!enableVertexGrad) return;
+        bossName.enableVertexGradient = true;
+        bossName.colorGradient = new VertexGradient(topLeft, topRight, bottomLeft, bottomRight);
     }
 }
