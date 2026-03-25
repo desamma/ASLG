@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 /// <summary>
 /// KaleosXaanMK2 enemy Stats and Health
@@ -11,7 +12,16 @@ public class Enemy_KaleosXaanMK2_Health : MonoBehaviour, IEnemy_Health
     public bool isDead;
 
     [Header("Components")]
+    [SerializeField] private GameObject parryEffect;
+    [SerializeField] private AudioClip parryAudioClip;
+    [SerializeField] private AudioClip deathAudio;
+    [SerializeField] private float volume = 1f;
+
     private Enemy_KaleosXaanMK2_Movement movementComponent;
+    private BossHealthUI bossHealthUI;
+    private StatusEffectManager effectManager;
+    public bool isParry;
+    public float parryTimer = 0f;
 
     private void Awake()
     {
@@ -23,6 +33,19 @@ public class Enemy_KaleosXaanMK2_Health : MonoBehaviour, IEnemy_Health
         stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         movementComponent = GetComponent<Enemy_KaleosXaanMK2_Movement>();
+
+        effectManager = GetComponent<StatusEffectManager>();
+
+        bossHealthUI = FindFirstObjectByType<BossHealthUI>(FindObjectsInactive.Include);
+
+        if (bossHealthUI != null)
+        {
+            ColorUtility.TryParseHtmlString("#00C19A", out Color topLeft);
+            ColorUtility.TryParseHtmlString("#CE2038", out Color bottomRight);
+
+            bossHealthUI.Initialize("Kaleos Xaan", stats.MaxHP, Color.white, topLeft, Color.red, Color.black, bottomRight);
+            bossHealthUI.Show();
+        }
     }
 
     private void OnEnable()
@@ -35,11 +58,31 @@ public class Enemy_KaleosXaanMK2_Health : MonoBehaviour, IEnemy_Health
         DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
 
+    private void Update()
+    {
+        if (parryTimer > 0)
+        {
+            parryTimer -= Time.deltaTime;
+        }
+    }
     public void ChangeHealth(float amount)
     {
         if (isDead) return;
 
+        if (isParry && parryTimer <= 0)
+        {
+            if (parryEffect != null)
+            {
+                parryEffect.SetActive(true);
+                parryTimer = 1.5f;
+            }
+            SoundFXManager.Instance.PlaySoundFXClip(parryAudioClip, transform, volume);
+            return;
+        }
+
         stats.CurrentHP += amount;
+
+        bossHealthUI.UpdateHealth(stats.CurrentHP);
 
         if (stats.CurrentHP > stats.MaxHP)
         {
@@ -54,8 +97,27 @@ public class Enemy_KaleosXaanMK2_Health : MonoBehaviour, IEnemy_Health
             {
                 var manager = movementComponent.GetStateManager();
                 manager.ChangeState(Enemy_KaleosXaanMK2_State.Death);
+                StartCoroutine(HandleDeathCoroutine());
             }
         }
+    }
+
+    private IEnumerator HandleDeathCoroutine()
+    {
+        yield return new WaitForSeconds(0.45f);
+        SoundFXManager.Instance.PlaySoundFXClip(deathAudio, transform, volume);
+
+        if (effectManager != null)
+        {
+            effectManager.RemoveAll();
+        }
+
+        yield return new WaitForSeconds(5f);
+        if (bossHealthUI != null)
+        {
+            bossHealthUI.Hide();
+        }
+        Destroy(gameObject);
     }
 
     public void InitializeStats()

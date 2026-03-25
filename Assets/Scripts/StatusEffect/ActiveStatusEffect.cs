@@ -35,12 +35,12 @@ public class ActiveStatusEffect
     public string[] ResolvedStatLines => StatLinesOverride ?? Definition.statLines;
     #endregion
 
-    public ActiveStatusEffect(StatusEffect definition, float duration)
+    public ActiveStatusEffect(StatusEffect definition, float duration, int stack = 1)
     {
         Definition = definition;
         TotalDuration = duration;
         RemainingDuration = duration;
-        StackCount = 1;
+        StackCount = stack;
     }
 
     public void Tick(float deltaTime)
@@ -54,7 +54,7 @@ public class ActiveStatusEffect
         }
     }
 
-    public void Reapply(float newDuration)
+    public void Reapply(float newDuration, int stackCount = 1)
     {
         switch (Definition.stackBehavior)
         {
@@ -69,7 +69,7 @@ public class ActiveStatusEffect
             case StackBehavior.AddStack:
                 if (StackCount < Definition.maxStacks)
                 {
-                    StackCount++;
+                    StackCount += stackCount;
                     OnStackChanged?.Invoke(this);
                 }
                 RemainingDuration = newDuration;

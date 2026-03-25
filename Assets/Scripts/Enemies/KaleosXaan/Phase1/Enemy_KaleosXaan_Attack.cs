@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
+using UnityEngine;
 
 [DisallowMultipleComponent]
 public class Enemy_KaleosXaan_Attack : MonoBehaviour
@@ -7,6 +8,8 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
     [Header("Components")]
     [SerializeField] private Animator animator;
     [SerializeField] private Enemy_KaleosXaan_Health health;
+    [SerializeField] private StatusEffect stackStatusFX;
+    [SerializeField] private int maxStack = 9999;
 
     [Header("General Attack Settings")]
     [SerializeField] private LayerMask playerLayer;
@@ -15,14 +18,16 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
     [Header("Normal Attack")]
     [SerializeField] private NormalAttackPhase[] normalAttackPhases;
     [SerializeField] private GameObject hitEffect;
-    [SerializeField] private float normalAttackDamage = 10f;
+    [SerializeField] private float normalAttackDamageMultiplier = 0.3f;
     [SerializeField] private float damageInterval = 0.3f;
 
     [Header("Arcane Heart")]
     [SerializeField] private GameObject arcaneHeartPrefab;
+    [SerializeField] private StatusEffect arcaneHeartStatusFX;
 
     [Header("Blink Enhance")]
     [SerializeField] private GameObject blinkEnhancePrefab;
+    [SerializeField] private StatusEffect blinkEnhanceStatusFX;
 
     [Header("Daemonic Lure")]
     [SerializeField] private GameObject daemonicLurePrefab;
@@ -37,11 +42,18 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
     [SerializeField] private AudioClip summonSound;
     [SerializeField] private float volume = 1f;
 
-    private Coroutine attackCoroutine;
-    private bool hitSoundPlayed = false;
-    private NormalAttackPhase currentPhase;
+    [Header("Damage Stack")]
+    [SerializeField] private int damageStack;
+    [SerializeField] private int stackIncreaseEachHit = 2;
 
-    [System.Serializable]
+    private DifficultyModifier difficultyModifier;
+    private StatusEffectManager effectManager;
+    private Coroutine attackCoroutine;
+    private NormalAttackPhase currentPhase;
+    private bool hitSoundPlayed = false;
+    private bool isFirstTimeSpawnFX = true;
+
+    [Serializable]
     private class NormalAttackPhase
     {
         public Transform attackPoint;
@@ -53,8 +65,14 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
     {
         if (animator == null)
             animator = GetComponent<Animator>();
+
         if (health == null)
             health = GetComponent<Enemy_KaleosXaan_Health>();
+
+        if (effectManager == null)
+            effectManager = GetComponent<StatusEffectManager>();
+
+        difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
     }
 
     public void StartNormalAttack()
@@ -106,8 +124,6 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
 
     private void NormalAttackTick(NormalAttackPhase phase)
     {
-        if (phase.attackPoint == null) return;
-
         var hits = Physics2D.OverlapCircleAll(
             phase.attackPoint.position,
             phase.attackRadius,
@@ -122,15 +138,14 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
 
             if (!hitSoundPlayed)
             {
-                SoundFXManager.Instance.PlaySoundFXClip(normalAttackHitAudioClip, transform, volume * 0.2f);
+                PlayAudio(1);
                 hitSoundPlayed = true;
             }
 
             if (hitEffect != null)
                 Instantiate(hitEffect, player.position, Quaternion.identity, player.transform);
 
-            //if (hit.TryGetComponent<PlayerHealth>(out var playerHealth))
-            //    playerHealth.TakeDamage(normalAttackDamage);
+            DealDamage(false, normalAttackDamageMultiplier);
         }
     }
 
@@ -146,6 +161,14 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
         }
 
         spellInstance.SetActive(true);
+        StartCoroutine(DelayStatusEffect(1f, () =>
+        {
+            if (TryGetComponent<StatusEffectManager>(out var effectManager))
+            {
+                AddStatusFX(1);
+            }
+        }
+        ));
     }
 
     public void BinkEnhance()
@@ -160,6 +183,20 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
         }
 
         spellInstance.SetActive(true);
+        StartCoroutine(DelayStatusEffect(1f, () =>
+        {
+            if (TryGetComponent<StatusEffectManager>(out var effectManager))
+            {
+                AddStatusFX(2);
+            }
+        }
+        ));
+    }
+
+    private IEnumerator DelayStatusEffect(float duration, Action action)
+    {
+        yield return new WaitForSeconds(duration);
+        action?.Invoke();
     }
 
     public void DaemonicLure()
@@ -208,17 +245,73 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
             if (!overlapChecker.IsOverlappingAnything(spawnPoint, 0.5f))
             {
                 Instantiate(companionPrefab, spawnPoint.position, spawnPoint.rotation);
-                SoundFXManager.Instance.PlaySoundFXClip(summonSound, transform, volume);
+                PlayAudio(2);
                 return;
             }
         }
     }
-    public void PlayAudio(int num)
+
+    private void DealDamage(bool isMagic, float damageMultiplier = 1f)
+    {
+        if (isMagic)
+        {
+            StatsManager.instance.TakeDamage((health.stats.Magic + damageStack) * damageMultiplier * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier));
+        }
+        else
+        {
+            StatsManager.instance.TakeDamage((health.stats.Strength + damageStack) * damageMultiplier * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier));
+        }
+
+        damageStack += stackIncreaseEachHit;
+
+        if (damageStack > maxStack)
+        {
+            damageStack = maxStack;
+        }
+        else
+        {
+            AddStatusFX(0);
+        }
+    }
+
+    private void AddStatusFX(int num)
     {
         switch (num)
         {
             case 0:
-                SoundFXManager.Instance.PlaySoundFXClip(normalAttackSwingAudioClip, transform, volume);
+                if (isFirstTimeSpawnFX)
+                {
+                    isFirstTimeSpawnFX = false;
+                    effectManager.ApplyEffect(stackStatusFX, false, stackCount: stackIncreaseEachHit, stackBehavior: StackBehavior.AddStack, maxStacks: maxStack, isPermanent: true)
+                    .WithTooltip(
+                        description: "Add a damage stack with each successful hit to increase strength",
+                        statLines: new string[] { "+ 1 Strength each stack" });
+                }
+                else
+                {
+                    effectManager.ApplyEffect(stackStatusFX, false, stackCount: stackIncreaseEachHit, stackBehavior: StackBehavior.AddStack, maxStacks: maxStack, isPermanent: true);
+                }
+                break;
+            case 1:
+                effectManager.ApplyEffect(arcaneHeartStatusFX, false, 22f);
+                break;
+            case 2:
+                effectManager.ApplyEffect(blinkEnhanceStatusFX, false, 22f);
+                break;
+        }
+    }
+    public void PlayAudio(int num, float volumeOverride = -1f)
+    {
+        switch (num)
+        {
+            case 0:
+                SoundFXManager.Instance.PlaySoundFXClip(normalAttackSwingAudioClip, transform, volumeOverride > 0 ? volumeOverride : volume);
+                break;
+            case 1:
+                SoundFXManager.Instance.PlaySoundFXClip(normalAttackHitAudioClip, transform, volumeOverride > 0 ? volumeOverride : volume);
+                break;
+            case 2:
+                SoundFXManager.Instance.PlaySoundFXClip(summonSound, transform, volumeOverride > 0 ? volumeOverride : volume);
                 break;
             default:
                 Debug.LogWarning("Invalid audio number: " + num);

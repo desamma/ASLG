@@ -122,12 +122,12 @@ MonoBehaviour:
   destroyTime: 5.5
   buffDuration: 20
   healthRegenAmount: 50
-  defenseIncreaseMultiplier: 0.8
-  magicResistIncreaseMultiplier: 0.9
-  strengthDecreaseMultiplier: 1.3
-  magicDecreaseMultiplier: 1.2
+  defenseDecreaseMultiplier: 0.75
+  magicResistDecreaseMultiplier: 0.65
+  strengthIncreaseMultiplier: 1.3
+  magicIncreaseMultiplier: 1.2
   speedMultiplier: 1.5
   attackCooldownMultiplier: 0.7
   blinkEnhanceAudio: {fileID: 8300000, guid: ff44cb3819ea735429541e4f9897b187, type: 3}
   explosionAudio: {fileID: 8300000, guid: 29d1b1fe2d2d7dc4a9729259f8c841a1, type: 3}
-  volume: 1
+  volume: 0.6

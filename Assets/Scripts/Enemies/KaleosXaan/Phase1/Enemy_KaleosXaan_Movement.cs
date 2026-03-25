@@ -54,7 +54,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement
     }
 
     private bool IsMoveOnCooldown(Enemy_KaleosXaan_State state) => moveCooldowns.IsOnCooldown(state);
-    #endregion                                                      b
+    #endregion
 
     #region Attack Configuration Classes
     private class AttackCategory
@@ -414,10 +414,6 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement
     {
         var position = transform.position + new Vector3(0f, 1.2f, 0f);
         Instantiate(phase2TransitionEffect, position, Quaternion.identity);
-    }
-    public void DestroyObject()
-    {
-        Destroy(gameObject);
     }
 
     #region State Callbacks

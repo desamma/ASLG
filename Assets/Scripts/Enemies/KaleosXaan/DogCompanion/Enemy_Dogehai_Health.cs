@@ -37,10 +37,17 @@ public class Enemy_Dogehai_Health : MonoBehaviour, IEnemy_Health
 
     private void OnDestroy()
     {
-        var boss = FindObjectOfType<Enemy_KaleosXaan_Movement>();
-        if (boss != null)
+        var bossMovementPhase2 = FindObjectOfType<Enemy_KaleosXaanMK2_Movement>();
+        if (bossMovementPhase2 != null)
         {
-            boss.OnCompanionDestroyed();
+            bossMovementPhase2.OnCompanionDestroyed();
+            return;
+        }
+
+        var bossMovementPhase1 = FindObjectOfType<Enemy_KaleosXaan_Movement>();
+        if (bossMovementPhase1 != null)
+        {
+            bossMovementPhase1.OnCompanionDestroyed();
         }
     }
 

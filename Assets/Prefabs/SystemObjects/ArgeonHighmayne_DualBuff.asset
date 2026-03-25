@@ -18,7 +18,12 @@ MonoBehaviour:
   description: Massively Increase Argeon's killing power, you have awaken something
     terrifing in him
   flavourText: I am inevitable
-  statLines: []
+  statLines:
+  - + 30% Strength
+  - + 30% Magic
+  - + 50%  Defense
+  - + 50%  Magic Resist
+  - + 40%  Damage Reduction
   showDurationInTooltip: 1
   showStacksInTooltip: 1
   iconPrefab: {fileID: 5125089596393718683, guid: 96d60baee7368014ca4bc69fce0b438d, type: 3}

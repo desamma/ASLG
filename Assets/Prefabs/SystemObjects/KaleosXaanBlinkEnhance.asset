@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91ac6fc7089a49c47958073a3476b11a, type: 3}
+  m_Name: KaleosXaanBlinkEnhance
+  m_EditorClassIdentifier: 
+  effectId: kaleosxaan_blinkenhance
+  displayName: Blink Enhance
+  effectType: 2
+  description: "As swift as a sword\u2019s flash, surging with power while leaving
+    defenses exposed."
+  flavourText: In the blink of an eye, fate is decided
+  statLines:
+  - + 50 Heath Regen
+  - + 30% Strength
+  - + 20% Magic
+  - + 50% Speed
+  - '- 30% Cooldown'
+  - '- 25% Defense'
+  - '- 35% Magic Resist'
+  showDurationInTooltip: 1
+  showStacksInTooltip: 0
+  iconPrefab: {fileID: 307044035025428459, guid: 3cade4668f75a794bb4b55417f6cd1e0, type: 3}
+  vfxPrefab: {fileID: 0}
+  borderColor: {r: 0.24705882, g: 0.24705882, b: 0.24705882, a: 1}
+  tooltipIcon: {fileID: 21300000, guid: a68343f50dbcfd44986651e54b3df285, type: 3}
+  iconLocalPosition: {x: 0, y: 0, z: 0}
+  iconLocalScale: {x: 1, y: 1, z: 1}
+  isPermanent: 0
+  baseDuration: 20
+  stackBehavior: 0
+  maxStacks: 1

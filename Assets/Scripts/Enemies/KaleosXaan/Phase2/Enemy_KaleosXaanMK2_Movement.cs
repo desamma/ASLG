@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Kaleos Xaan Phase 2 Movement.
+/// </summary>
 [DisallowMultipleComponent]
 public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
 {
@@ -10,6 +13,7 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Enemy_KaleosXaanMK2_Health health;
     [SerializeField] private BehaviorProfile behavior;
     [SerializeField] private float auraFarmingDuration = 5f;
+    [SerializeField] private float sawSpeedDecrease = 0.5f;
 
     private StateManager<Enemy_KaleosXaanMK2_State> stateManager;
 
@@ -24,21 +28,24 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
     [Header("Effects")]
 
     [Header("Audio")]
-    [SerializeField] private float volume;
+    [SerializeField] private float volume = 1f;
 
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
+    [SerializeField] private float pivotDownward = 1.5f;
 
-    private int facingDirection;
+    private Vector3 AdjustedPosition => transform.position + Vector3.down * pivotDownward;
+
+    public int facingDirection;
     private EnemyStats stats;
     private float castRange;
     private float midRange;
 
     private float attackCooldownTimer = 0f;
-    private float warSurgeWaitTimer = 0f;
     private float buffAbilitySharedCooldown = 0f;
     private bool isRecovering = false;
     private bool isAuraFarming = false;
+    private bool priorityAttack = true;
     private GameObject activeCompanion = null;
 
     private EnemyMoveCooldownTracker<Enemy_KaleosXaanMK2_State> moveCooldowns = new();
@@ -74,10 +81,11 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
     {
         return stateManager.IsInState(Enemy_KaleosXaanMK2_State.Attack) ||
                stateManager.IsInState(Enemy_KaleosXaanMK2_State.ArcaneHeart) ||
-               stateManager.IsInState(Enemy_KaleosXaanMK2_State.Saw) ||
                stateManager.IsInState(Enemy_KaleosXaanMK2_State.BlinkEnhance) ||
                stateManager.IsInState(Enemy_KaleosXaanMK2_State.Disappear) ||
-               stateManager.IsInState(Enemy_KaleosXaanMK2_State.ThreeHitCombo);
+               stateManager.IsInState(Enemy_KaleosXaanMK2_State.ThreeHitCombo)
+               //|| stateManager.IsInState(Enemy_KaleosXaanMK2_State.Saw)
+               ;
     }
 
     private void Start()
@@ -101,7 +109,7 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
 
         castRange = stats.AttackRange * 3.5f;
         midRange = stats.AttackRange * 2.5f;
-        
+
         facingDirection = 1;
         transform.localScale = new Vector3(
             Mathf.Abs(transform.localScale.x),
@@ -113,7 +121,6 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
         behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_KaleosXaanMK2_State>(animator, Enemy_KaleosXaanMK2_State.Idle);
-        stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
         stateManager.OnStateExit += OnStateExit;
         StartCoroutine(AuraFarming());
@@ -133,15 +140,22 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
 
     private void Update()
     {
-        if (health.isDead || isAuraFarming || IsInAnyAttackState()) return;
+        if (health.isDead || isAuraFarming) return;
+
+        if (stateManager.GetCurrentState() == Enemy_KaleosXaanMK2_State.Saw)
+        {
+            priorityAttack = false;
+            if (attackCooldownTimer > 0) attackCooldownTimer -= Time.deltaTime;
+            Chase();
+            return;
+        }
+
+        if (IsInAnyAttackState()) return;
 
         if (attackCooldownTimer > 0)
             attackCooldownTimer -= Time.deltaTime;
 
-        if (warSurgeWaitTimer > 0)
-            warSurgeWaitTimer -= Time.deltaTime;
-
-        if (buffAbilitySharedCooldown > 0)
+        if (buffAbilitySharedCooldown > 0) 
             buffAbilitySharedCooldown -= Time.deltaTime;
 
         if (!stateManager.IsInState(Enemy_KaleosXaanMK2_State.Knockback) && !isRecovering)
@@ -160,7 +174,6 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (stateManager != null)
         {
-            stateManager.OnStateChanged -= OnStateChanged;
             stateManager.OnStateEnter -= OnStateEnter;
             stateManager.OnStateExit -= OnStateExit;
         }
@@ -177,24 +190,27 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (player == null) return;
 
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        float distanceToPlayer = Vector2.Distance(AdjustedPosition, player.position);
 
-        if (distanceToPlayer <= stats.AttackRange)
+        if (priorityAttack)
         {
-            rb.velocity = Vector2.zero;
+            if (distanceToPlayer <= stats.AttackRange)
+            {
+                rb.velocity = Vector2.zero;
 
-            // If close enough and not already attacking, perform immediate attack
-            if (!IsInAnyAttackState() && !isRecovering)
-            {
-                stateManager.ChangeState(Enemy_KaleosXaanMK2_State.Attack);
-                RegisterMoveUsed(Enemy_KaleosXaanMK2_State.Attack);
-                attackCooldownTimer = stats.AttackCooldown;
+                // If close enough and not already attacking, perform immediate attack
+                if (!IsInAnyAttackState() && !isRecovering)
+                {
+                    stateManager.ChangeState(Enemy_KaleosXaanMK2_State.Attack);
+                    RegisterMoveUsed(Enemy_KaleosXaanMK2_State.Attack);
+                    attackCooldownTimer = stats.AttackCooldown;
+                }
+                else if (!IsInAnyAttackState())
+                {
+                    stateManager.ChangeState(Enemy_KaleosXaanMK2_State.Idle);
+                }
+                return;
             }
-            else if (!IsInAnyAttackState())
-            {
-                stateManager.ChangeState(Enemy_KaleosXaanMK2_State.Idle);
-            }
-            return;
         }
 
         if (player.position.x > transform.position.x && facingDirection == -1 ||
@@ -202,9 +218,16 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
         {
             Flip();
         }
-
-        Vector2 direction = (player.position - transform.position).normalized;
-        rb.velocity = behavior.Aggression * stats.Speed * direction;
+        
+        Vector2 direction = (player.position - AdjustedPosition).normalized;
+        if (stateManager.IsInState(Enemy_KaleosXaanMK2_State.Saw))
+        {
+            rb.velocity = behavior.Aggression * stats.Speed * sawSpeedDecrease * direction;
+        }
+        else
+        {
+            rb.velocity = behavior.Aggression * stats.Speed * direction;
+        }
     }
 
     public void CheckForPlayer()
@@ -292,8 +315,8 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
                 var availableAttacks = category.Attacks
                     .Where(a => distanceToPlayer <= a.Range &&
                                 !IsMoveOnCooldown(a.State) &&
-                                !IsBuffAbilityOnSharedCooldown(a.State)
-                                //!IsCompanionActive(a.State)
+                                !IsBuffAbilityOnSharedCooldown(a.State) &&
+                                !IsCompanionActive()
                                 )
                     .ToArray();
 
@@ -325,14 +348,10 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
         return false;
     }
 
-    //private bool IsCompanionActive(Enemy_KaleosXaanMK2_State state)
-    //{
-    //    if (state == Enemy_KaleosXaanMK2_State.SummonCompanion)
-    //    {
-    //        return activeCompanion != null;
-    //    }
-    //    return false;
-    //}
+    public bool IsCompanionActive()
+    {
+        return activeCompanion != null;
+    }
 
     public void RegisterCompanion(GameObject companion)
     {
@@ -346,7 +365,11 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
 
     public void OnAttackAnimationComplete()
     {
-        if (stateManager == null || !IsInAnyAttackState()) return;
+        if (stateManager == null) return;
+
+        bool isSaw = stateManager.IsInState(Enemy_KaleosXaanMK2_State.Saw);
+        if (!IsInAnyAttackState() && !isSaw) return;
+
         StartCoroutine(AttackRecovery());
     }
 
@@ -373,8 +396,8 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
         behavior = new BehaviorProfile
         {
             DetectionRange = 15f,
-            SpecialAttackFrequency = 0.3f,
-            UltimateAttackFrequency = 0.3f,
+            SpecialAttackFrequency = 0.4f,
+            UltimateAttackFrequency = 0.2f,
             Aggression = 1f,
             MobilityUsageFrequency = 1f,
         };
@@ -385,8 +408,22 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
                 Frequency = behavior.UltimateAttackFrequency,
                 Attacks = new[]
                 {
-                    new AttackConfig { State = Enemy_KaleosXaanMK2_State.Disappear, Range = castRange, MoveCountCooldown = 10 },
                     new AttackConfig { State = Enemy_KaleosXaanMK2_State.ThreeHitCombo, Range = midRange, MoveCountCooldown = 3 }
+                }
+            },
+            new() {
+                Frequency = behavior.UltimateAttackFrequency * behavior.MobilityUsageFrequency,
+                Attacks = new[]
+                {
+                    new AttackConfig { State = Enemy_KaleosXaanMK2_State.Disappear, Range = castRange, MoveCountCooldown = 10 },
+                }
+            },
+            new() {
+                Frequency = behavior.SpecialAttackFrequency * behavior.MobilityUsageFrequency,
+                Attacks = new[]
+                {
+                    new AttackConfig { State = Enemy_KaleosXaanMK2_State.Saw, Range = midRange, MoveCountCooldown = 3 },
+
                 }
             },
             new() {
@@ -395,7 +432,6 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
                 {
                     new AttackConfig { State = Enemy_KaleosXaanMK2_State.ArcaneHeart, Range = castRange, MoveCountCooldown = 6 },
                     new AttackConfig { State = Enemy_KaleosXaanMK2_State.BlinkEnhance, Range = castRange, MoveCountCooldown = 6 },
-                    new AttackConfig { State = Enemy_KaleosXaanMK2_State.Saw, Range = midRange, MoveCountCooldown = 3 },
 
                 }
             },
@@ -415,12 +451,7 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
         .Select(a => a.State));
 
     }
-
     #region State Callbacks
-    private void OnStateChanged(Enemy_KaleosXaanMK2_State previousState, Enemy_KaleosXaanMK2_State newState)
-    {
-    }
-
     private void OnStateEnter(Enemy_KaleosXaanMK2_State state)
     {
         switch (state)
@@ -431,36 +462,31 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
                     player.position.x < transform.position.x && facingDirection == 1)
                     Flip();
                 break;
-            case Enemy_KaleosXaanMK2_State.ArcaneHeart:
-                rb.velocity = Vector2.zero;
-                break;
-            case Enemy_KaleosXaanMK2_State.BlinkEnhance:
-                rb.velocity = Vector2.zero;
-                break;
-            case Enemy_KaleosXaanMK2_State.Saw:
+            case Enemy_KaleosXaanMK2_State.ThreeHitCombo:
                 if (player.position.x > transform.position.x && facingDirection == -1 ||
                 player.position.x < transform.position.x && facingDirection == 1)
                     Flip();
-                rb.velocity = Vector2.zero;
-                break;
-            case Enemy_KaleosXaanMK2_State.ThreeHitCombo:
-                if (player.position.x > transform.position.x && facingDirection == -1 ||
-    player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
-                rb.velocity = Vector2.zero;
-                break;
-            case Enemy_KaleosXaanMK2_State.Disappear:
                 rb.velocity = Vector2.zero;
                 break;
             case Enemy_KaleosXaanMK2_State.Death:
                 rb.velocity = Vector2.zero;
                 charCollider.enabled = false;
                 break;
+            default:
+                rb.velocity = Vector2.zero;
+                break;
         }
     }
 
     private void OnStateExit(Enemy_KaleosXaanMK2_State state)
     {
+        switch (state)
+        {
+            case Enemy_KaleosXaanMK2_State.Saw:
+                priorityAttack = true;
+                rb.velocity = Vector2.zero;
+                break;
+        }
     }
     #endregion
 
