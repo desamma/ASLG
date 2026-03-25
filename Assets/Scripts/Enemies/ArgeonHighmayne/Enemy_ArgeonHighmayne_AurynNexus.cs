@@ -5,12 +5,10 @@ public class Enemy_ArgeonHighmayne_AurynNexus : MonoBehaviour
 {
     [Header("Spell Settings")]
     [SerializeField] private float destroyTime = 5f;
-    [SerializeField] private float strengthIncreaseMultiplier = 1.3f;
-    [SerializeField] private float magicIncreaseMultiplier = 1.3f;
-    [SerializeField] private float defenseIncreaseMultiplier = 1.5f;
-    [SerializeField] private float magicResistIncreaseMultiplier = 1.5f;
+    [SerializeField] private float defenseIncreaseMultiplier = 1.3f;
+    [SerializeField] private float magicResistIncreaseMultiplier = 1.15f;
 
-    [SerializeField] private float damageReductionPercentage = 0.4f;
+    [SerializeField] private float damageReductionPercentage = 0.1f;
     [SerializeField] private float buffDuration = 20f;
 
     [Header("Effect Settings")]
@@ -81,29 +79,23 @@ public class Enemy_ArgeonHighmayne_AurynNexus : MonoBehaviour
         }
 
         // Calculate buff amounts based on current stats
-        float strengthIncrease = casterStats.Strength * (strengthIncreaseMultiplier - 1f);
-        float magicIncrease = casterStats.Magic * (magicIncreaseMultiplier - 1f);
         float defenseIncrease = casterStats.Defense * (defenseIncreaseMultiplier - 1f);
         float magicResistIncrease = casterStats.MagicResist * (magicResistIncreaseMultiplier - 1f);
 
         // Apply the buff
-        casterStats.Strength += strengthIncrease;
-        casterStats.Magic += magicIncrease;
         casterStats.Defense += defenseIncrease;
         casterStats.MagicResist += magicResistIncrease;
         casterHealth.damageReductionPercentage = damageReductionPercentage;
 
-        casterHealth.StartCoroutine(RemoveBuffAfterDuration(strengthIncrease, magicIncrease, defenseIncrease, magicResistIncrease, buffDuration));
+        casterHealth.StartCoroutine(RemoveBuffAfterDuration(defenseIncrease, magicResistIncrease, buffDuration));
     }
 
-    private IEnumerator RemoveBuffAfterDuration(float strengthIncrease, float magicIncrease, float defenseIncrease, float magicResistIncrease, float duration)
+    private IEnumerator RemoveBuffAfterDuration(float defenseIncrease, float magicResistIncrease, float duration)
     {
         yield return new WaitForSeconds(duration);
 
         if (casterStats != null && casterHealth != null)
         {
-            casterStats.Strength -= strengthIncrease;
-            casterStats.Magic -= magicIncrease;
             casterStats.Defense -= defenseIncrease;
             casterStats.MagicResist -= magicResistIncrease;
             casterHealth.damageReductionPercentage = 0f;

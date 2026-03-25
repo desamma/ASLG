@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 5196454457071531072}
   - component: {fileID: 8708754496514025349}
   - component: {fileID: 9001046993169077029}
+  - component: {fileID: 7880492345133475769}
   m_Layer: 3
   m_Name: ArgeonHighmayne
   m_TagString: Enemy
@@ -70,6 +71,7 @@ Transform:
   - {fileID: 4979612526641555784}
   - {fileID: 2557345960031235543}
   - {fileID: 4428245483693766236}
+  - {fileID: 5234564009758256889}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6519068858070482976
@@ -157,7 +159,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 999
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -242,7 +244,10 @@ MonoBehaviour:
   warSurgeDamageMultiplier: 1.2
   warSurgeRadius: 1
   aurynNexusEffect: {fileID: 2468789010517235435, guid: a2135000ee26e314b9866b2f9b006434, type: 3}
+  aurynBuffEffect: {fileID: 11400000, guid: df2291592bdddc743ac0b343e8ff6e82, type: 2}
   sunBloomEffect: {fileID: 567142867543762435, guid: 4c670169499a2754bafc3605f087996b, type: 3}
+  damageIncrease: {fileID: 11400000, guid: c944ec38da11bfb4f89d5221262d2cd2, type: 2}
+  magicIncrease: {fileID: 11400000, guid: 03304e27edbad3649b7e0274b6dfa6b8, type: 2}
   decimateEffect: {fileID: 7911447980327151908, guid: 4dc52ea82ec328144800611d45dd5238, type: 3}
   decimateChargeUpEffect: {fileID: 7768705651709045384, guid: b5e0ebb8fa1d3134a94fdb493d2dcdf2, type: 3}
   normalAttackSwingAudioClip: {fileID: 8300000, guid: 04555c7a04a1ea14d89d20867fc22f2b, type: 3}
@@ -315,6 +320,21 @@ MonoBehaviour:
   warSurgeSearchRadius: 50
   warSurgeWaitTime: 3
   detectionPoint: {fileID: 4979612526641555784}
+--- !u!114 &7880492345133475769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1492802115615131335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 604776c40de33374d9f9ccad97873323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hud: {fileID: 0}
+  vfxAnchor: {fileID: 5234564009758256889}
+  destroyDelay: 2
 --- !u!1 &2355795031676004834
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,6 +361,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.148, y: -0.01, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2135362086171877439}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4568295191331329749
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5234564009758256889}
+  m_Layer: 3
+  m_Name: VFX anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5234564009758256889
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4568295191331329749}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.022, y: 0.584, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -121,13 +121,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyTime: 3
   buffDuration: 10
-  maxHealthIncreaseAmount: 150
-  healthRegenAmount: 100
-  defenseIncreaseMultiplier: 1.3
+  maxHealthIncreaseAmount: 200
+  healthRegenAmount: 150
+  defenseIncreaseMultiplier: 1.5
   magicResistIncreaseMultiplier: 1.3
-  strengthDecreaseMultiplier: 0.9
-  magicDecreaseMultiplier: 0.8
-  speedMultiplier: 0.7
+  strengthDecreaseMultiplier: 0.8
+  magicDecreaseMultiplier: 0.5
+  speedMultiplier: 0.85
   attackCooldownMultiplier: 1.3
   arcaneHeartAudio: {fileID: 8300000, guid: fc15313a2e0b26f4bbac24ba8802ef24, type: 3}
   explosionAudio: {fileID: 8300000, guid: 29d1b1fe2d2d7dc4a9729259f8c841a1, type: 3}

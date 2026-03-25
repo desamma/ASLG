@@ -153,8 +153,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyTime: 3
   magicMultiplier: 0.7
+  bindTime: 2.5
   attackPoint: {fileID: 9119537212136289276}
   catchHitEffect: {fileID: 7718595876433132964, guid: 440ade763bb67e94495875154ae963e6, type: 3}
+  playerCatchHitStatusFX: {fileID: 11400000, guid: 760e7babe8bb7fc46b4fc5126ce54a8d, type: 2}
   attackHitBox: {x: 1.5, y: 2, z: 0}
   rotateLassoSound: {fileID: 8300000, guid: 997e167aab0be334e8e993564b5d8488, type: 3}
-  volume: 0.2
+  volume: 0.1

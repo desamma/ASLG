@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91ac6fc7089a49c47958073a3476b11a, type: 3}
+  m_Name: ArgeonHighmayne_AurynNexus
+  m_EditorClassIdentifier: 
+  effectId: argeonhighmayne_aurynnexus
+  displayName: Auryn Nexus
+  effectType: 0
+  description: Increase defense,  magic resist and damage reduction  as well as strength
+    end magic
+  flavourText: You better RUN
+  statLines:
+  - + 30% Defense
+  - + 15% Magic Resist
+  - + 10% Damage Reduction
+  showDurationInTooltip: 1
+  showStacksInTooltip: 1
+  iconPrefab: {fileID: 3952067665238448684, guid: dbaf344f9f691504aa8ad0f481b4a0a0, type: 3}
+  vfxPrefab: {fileID: 8157547606244148218, guid: 7b21c7c8604819a4d8b2707d6b43bb83, type: 3}
+  borderColor: {r: 0.3137255, g: 1, b: 0, a: 1}
+  tooltipIcon: {fileID: 21300000, guid: 0211b7b3c8ac8764aaf1a46cc6241c64, type: 3}
+  iconLocalPosition: {x: 0, y: 0, z: 0}
+  iconLocalScale: {x: 1, y: 1, z: 1}
+  isPermanent: 0
+  baseDuration: 20
+  stackBehavior: 0
+  maxStacks: 1

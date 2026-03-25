@@ -5,16 +5,18 @@ public class Enemy_KaleosXaan_DaemonicLure : MonoBehaviour
     [Header("General Settings")]
     [SerializeField] private float destroyTime = 5.5f;
     [SerializeField] private float magicMultiplier = 0.7f;
+    [SerializeField] private float bindTime = 2.5f;
 
     [Header("Catch Settings")]
     [SerializeField] private Transform attackPoint;
     [SerializeField] private GameObject catchHitEffect;
+    [SerializeField] private StatusEffect playerCatchHitStatusFX;
     [SerializeField] private Vector3 attackHitBox;
 
     [Header("Audio")]
     [SerializeField] private AudioClip rotateLassoSound;
     [SerializeField] private float volume = 1f;
-
+    
     private EnemyStats casterStats;
     public void Initialize(EnemyStats stats)
     {
@@ -44,8 +46,20 @@ public class Enemy_KaleosXaan_DaemonicLure : MonoBehaviour
                 if (hitCollider.CompareTag("Player"))
                 {
                     Instantiate(catchHitEffect, hitCollider.transform.position, Quaternion.identity, hitCollider.transform);
-                    //TODO: Dealdamge & bind
-                    break;
+                    
+                    var statusFXManager = hitCollider.GetComponent<StatusEffectManager>();
+
+                    if(statusFXManager != null)
+                    {
+                        statusFXManager.ApplyEffect(playerCatchHitStatusFX, true, duration: bindTime);
+                    }
+
+                    StatsManager.instance.TakeDamage(casterStats.Magic * magicMultiplier);
+                    if (hitCollider.TryGetComponent<PlayerMovement>(out var playerMovement))
+                    {
+                        playerMovement.StopMovement(bindTime);
+                    }
+
                 }
             }
         }

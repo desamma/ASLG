@@ -3,11 +3,12 @@ using UnityEngine.UI;
 using TMPro;
 using System.Text;
 using System.Collections;
-using System;
 
 /// <summary>
-/// Singleton tooltip panel that StatusEffectSlot shows/hides on hover.
-///</summary>
+/// Singleton tooltip panel shown when hovering a StatusEffectSlot.
+/// Reads per-instance overrides from ActiveStatusEffect first,
+/// falling back to the SO definition — the SO is never modified.
+/// </summary>
 public class StatusEffectTooltip : MonoBehaviour
 {
     public static StatusEffectTooltip Instance { get; private set; }
@@ -19,19 +20,15 @@ public class StatusEffectTooltip : MonoBehaviour
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private TextMeshProUGUI statLinesText;
     [SerializeField] private TextMeshProUGUI flavourText;
-    [SerializeField] private TextMeshProUGUI metaText;       // duration + stacks
+    [SerializeField] private TextMeshProUGUI metaText;
 
     [Header("Layout")]
-    [Tooltip("Pixel offset from the slot so the tooltip doesn't overlap it.")]
     [SerializeField] private Vector2 cursorOffset = new(12f, -12f);
-    [Tooltip("Keep the tooltip this many pixels inside the screen edge.")]
-    [SerializeField] private float screenPadding = 8f;
 
     [Header("Fade")]
     [SerializeField] private float fadeInDuration = 0.12f;
     [SerializeField] private float fadeOutDuration = 0.08f;
 
-    //State
     private CanvasGroup _canvasGroup;
     private RectTransform _rectTransform;
     private Canvas _rootCanvas;
@@ -40,11 +37,7 @@ public class StatusEffectTooltip : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
 
         _canvasGroup = GetComponent<CanvasGroup>();
@@ -54,26 +47,17 @@ public class StatusEffectTooltip : MonoBehaviour
         if (_canvasGroup == null)
             _canvasGroup = gameObject.AddComponent<CanvasGroup>();
 
-        // hide initially
         gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        if (_currentEffect == null)
-            return;
-
+        if (_currentEffect == null) return;
         FollowCursor();
-
         Show();
-
-        // Refresh duration / stacks each frame
         RefreshMetaLine();
     }
 
-    /// <summary>
-    /// Call from StatusEffectSlot.OnPointerEnter.
-    /// </summary>
     public void BeginHover(ActiveStatusEffect effect)
     {
         _currentEffect = effect;
@@ -82,9 +66,6 @@ public class StatusEffectTooltip : MonoBehaviour
         FollowCursor();
     }
 
-    /// <summary>
-    /// Call from StatusEffectSlot.OnPointerExit.
-    /// </summary>
     public void EndHover()
     {
         _currentEffect = null;
@@ -93,37 +74,30 @@ public class StatusEffectTooltip : MonoBehaviour
 
     private void PopulateContent(ActiveStatusEffect active)
     {
-        var definition = active.Definition;
-        
-        // Header colour
-        if (headerPanel != null)
-            headerPanel.color = definition.ResolvedHeaderColor;
+        var def = active.Definition;
 
-        // Title
-        if (titleText != null)
-            titleText.text = definition.displayName;
+        if (headerPanel != null) headerPanel.color = def.borderColor;
+        if (titleText != null) titleText.text = def.displayName;
 
-        // Tooltip icon
         if (tooltipIconImage != null)
         {
-            tooltipIconImage.sprite = definition.tooltipIcon;
-            tooltipIconImage.enabled = definition.tooltipIcon != null;
+            tooltipIconImage.sprite = def.tooltipIcon;
+            tooltipIconImage.enabled = def.tooltipIcon != null;
         }
 
-        // Description
         if (descriptionText != null)
         {
-            descriptionText.text = definition.description;
-            descriptionText.enabled = !string.IsNullOrEmpty(definition.description);
+            descriptionText.text = active.ResolvedDescription;
+            descriptionText.enabled = !string.IsNullOrEmpty(active.ResolvedDescription);
         }
 
-        // Stat lines — build bullet list
         if (statLinesText != null)
         {
-            if (definition.statLines != null && definition.statLines.Length > 0)
+            var lines = active.ResolvedStatLines;
+            if (lines != null && lines.Length > 0)
             {
                 var sb = new StringBuilder();
-                foreach (var line in definition.statLines)
+                foreach (var line in lines)
                     if (!string.IsNullOrWhiteSpace(line))
                         sb.AppendLine($"• {line}");
                 statLinesText.text = sb.ToString().TrimEnd();
@@ -135,13 +109,11 @@ public class StatusEffectTooltip : MonoBehaviour
             }
         }
 
-        // Flavour text
         if (flavourText != null)
         {
-            flavourText.text = !string.IsNullOrEmpty(definition.flavourText)
-                ? $"<i>{definition.flavourText}</i>"
-                : string.Empty;
-            flavourText.enabled = !string.IsNullOrEmpty(definition.flavourText);
+            var fv = active.ResolvedFlavour;
+            flavourText.text = !string.IsNullOrEmpty(fv) ? $"<i>{fv}</i>" : string.Empty;
+            flavourText.enabled = !string.IsNullOrEmpty(fv);
         }
 
         RefreshMetaLine();
@@ -151,34 +123,32 @@ public class StatusEffectTooltip : MonoBehaviour
     {
         if (metaText == null || _currentEffect == null) return;
 
-        var definition = _currentEffect.Definition;
-        var stringBuilder = new StringBuilder();
+        var def = _currentEffect.Definition;
+        var sb = new StringBuilder();
 
-        if (definition.showDurationInTooltip)
+        if (def.showDurationInTooltip)
         {
-            if (definition.isPermanent)
-                stringBuilder.AppendLine("Duration: <b>Permanent</b>");
+            if (def.isPermanent)
+                sb.AppendLine("Duration: <b>Permanent</b>");
             else
-                stringBuilder.AppendLine($"Duration: <b>{_currentEffect.RemainingDuration:F1}s</b>");
+                sb.AppendLine($"Duration: <b>{_currentEffect.RemainingDuration:F1}s</b>");
         }
 
-        if (definition.showStacksInTooltip && _currentEffect.StackCount > 1)
-            stringBuilder.AppendLine($"Stacks: <b>{_currentEffect.StackCount} / {definition.maxStacks}</b>");
+        if (def.showStacksInTooltip && _currentEffect.StackCount > 1)
+            sb.AppendLine($"Stacks: <b>{_currentEffect.StackCount} / {def.maxStacks}</b>");
 
-        metaText.text = stringBuilder.ToString().TrimEnd();
-        metaText.enabled = stringBuilder.Length > 0;
+        metaText.text = sb.ToString().TrimEnd();
+        metaText.enabled = sb.Length > 0;
     }
 
     private void FollowCursor()
     {
         if (_rootCanvas == null) return;
-
-        // Convert mouse position to canvas local point
-        RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)_rootCanvas.transform, Input.mousePosition,
-        _rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _rootCanvas.worldCamera, out Vector2 localPoint);
-
-        Vector2 target = localPoint + cursorOffset;
-        _rectTransform.anchoredPosition = target;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            (RectTransform)_rootCanvas.transform, Input.mousePosition,
+            _rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _rootCanvas.worldCamera,
+            out Vector2 localPoint);
+        _rectTransform.anchoredPosition = localPoint + cursorOffset;
     }
 
     private void Show()
@@ -190,27 +160,21 @@ public class StatusEffectTooltip : MonoBehaviour
     private void Hide()
     {
         if (_fadeCoroutine != null) StopCoroutine(_fadeCoroutine);
-
-        if (!gameObject.activeInHierarchy)
-        {
-            _canvasGroup.alpha = 0f;
-            return;
-        }
-
+        if (!gameObject.activeInHierarchy) { _canvasGroup.alpha = 0f; return; }
         _fadeCoroutine = StartCoroutine(FadeTo(0f, fadeOutDuration));
     }
 
-    private IEnumerator FadeTo(float targetAlpha, float duration)
+    private IEnumerator FadeTo(float target, float duration)
     {
         float start = _canvasGroup.alpha;
         float t = 0f;
         while (t < duration)
         {
             t += Time.deltaTime;
-            _canvasGroup.alpha = Mathf.Lerp(start, targetAlpha, t / duration);
+            _canvasGroup.alpha = Mathf.Lerp(start, target, t / duration);
             yield return null;
         }
-        _canvasGroup.alpha = targetAlpha;
-        gameObject.SetActive(false);
+        _canvasGroup.alpha = target;
+        if (target == 0f) gameObject.SetActive(false);
     }
 }

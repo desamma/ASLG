@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91ac6fc7089a49c47958073a3476b11a, type: 3}
+  m_Name: MagicIncrease
+  m_EditorClassIdentifier: 
+  effectId: magic_increase
+  displayName: Magic Increase
+  effectType: 0
+  description: Increase Magic
+  flavourText: 
+  statLines:
+  - + 10% Magic
+  showDurationInTooltip: 1
+  showStacksInTooltip: 1
+  iconPrefab: {fileID: 1753764363323320967, guid: 11c65d32ca83da3449f0067c9e77b4dc, type: 3}
+  vfxPrefab: {fileID: 3160715503849303438, guid: d3e17f6499c427c4e837330a36d4a64c, type: 3}
+  borderColor: {r: 0.3137255, g: 1, b: 0, a: 1}
+  tooltipIcon: {fileID: 21300000, guid: a3227a3f1623a0e4d9a476186bb2d7c5, type: 3}
+  iconLocalPosition: {x: 0, y: 0, z: 0}
+  iconLocalScale: {x: 1, y: 1, z: 1}
+  isPermanent: 0
+  baseDuration: 5
+  stackBehavior: 0
+  maxStacks: 1

@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -95,7 +95,847 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: fx_ringswirl_0
+      rect:
+        serializedVersion: 2
+        x: 926
+        y: 120
+        width: 136
+        height: 173
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 499a56a9f623e5b46ac5e240d771a6dc
+      internalID: -1536472888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_1
+      rect:
+        serializedVersion: 2
+        x: 919
+        y: 302
+        width: 157
+        height: 176
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d68051e43897a9248b108b5224154360
+      internalID: -873242064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_2
+      rect:
+        serializedVersion: 2
+        x: 1106
+        y: 314
+        width: 141
+        height: 155
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf90850b3f5ebd94ca78e4adac654a32
+      internalID: -228931879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_3
+      rect:
+        serializedVersion: 2
+        x: 1107
+        y: 491
+        width: 139
+        height: 161
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 909ccdfb611cb08408221fdee7cab1c1
+      internalID: -747200987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_4
+      rect:
+        serializedVersion: 2
+        x: 1117
+        y: 849
+        width: 119
+        height: 167
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 949281f0059c70e428e416b81975a35c
+      internalID: -47250218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_5
+      rect:
+        serializedVersion: 2
+        x: 917
+        y: 483
+        width: 161
+        height: 153
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f882bf1ec26fa784f91739fafd746beb
+      internalID: -487042349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_6
+      rect:
+        serializedVersion: 2
+        x: 1301
+        y: 850
+        width: 113
+        height: 145
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40164b54f95634b44b52356fc39b0217
+      internalID: 1573106531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_7
+      rect:
+        serializedVersion: 2
+        x: 1290
+        y: 674
+        width: 127
+        height: 141
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75bf737e6f965c844bcf0df2dd1174da
+      internalID: 1143564980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_8
+      rect:
+        serializedVersion: 2
+        x: 1113
+        y: 675
+        width: 129
+        height: 159
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ffdcdb0e6c837934f9a8f57fded1c923
+      internalID: 1580052667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_9
+      rect:
+        serializedVersion: 2
+        x: 1292
+        y: 491
+        width: 126
+        height: 114
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25803cf6c88486e4382836b8a22fab53
+      internalID: 758706083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_10
+      rect:
+        serializedVersion: 2
+        x: 1311
+        y: 314
+        width: 90
+        height: 132
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da4325bdd595f2941a60b156cb0dc213
+      internalID: 415439197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_11
+      rect:
+        serializedVersion: 2
+        x: 1299
+        y: 140
+        width: 121
+        height: 149
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a0b3d62291c22b4b9aaaf4c78d1a1f4
+      internalID: 948249840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_12
+      rect:
+        serializedVersion: 2
+        x: 1121
+        y: 130
+        width: 111
+        height: 154
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a176dbfcc38b3464abbdc44fa69d2ef1
+      internalID: 1988032342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_13
+      rect:
+        serializedVersion: 2
+        x: 918
+        y: 846
+        width: 159
+        height: 154
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9dd83839e329ea48b644ee3320625d0
+      internalID: 563649515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_14
+      rect:
+        serializedVersion: 2
+        x: 917
+        y: 662
+        width: 161
+        height: 156
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b74fa528cf31bd46aa6692c6382014a
+      internalID: -1717751865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_15
+      rect:
+        serializedVersion: 2
+        x: 738
+        y: 310
+        width: 157
+        height: 151
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 950124033c1e3f7458ec45d66419ff9b
+      internalID: -1939000631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_16
+      rect:
+        serializedVersion: 2
+        x: 737
+        y: 123
+        width: 159
+        height: 171
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21627eb07d5663f44a289ab215232299
+      internalID: 1180493000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_17
+      rect:
+        serializedVersion: 2
+        x: 748
+        y: 858
+        width: 137
+        height: 153
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3ae66aa5f99d9a42a1ee2cea6dbff87
+      internalID: -864935473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_18
+      rect:
+        serializedVersion: 2
+        x: 591
+        y: 884
+        width: 89
+        height: 134
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8df1cb8ada8586849812057307ef04f7
+      internalID: -836910328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_19
+      rect:
+        serializedVersion: 2
+        x: 748
+        y: 681
+        width: 137
+        height: 145
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bdac11a57352e144b4cff09734180da
+      internalID: 49295937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_20
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 691
+        width: 105
+        height: 145
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d34d1669ae6b9148a015538482b35f9
+      internalID: -588464185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_21
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 505
+        width: 105
+        height: 149
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8775db0cda6f3c84b93c6c498bf8943b
+      internalID: 2042712730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_22
+      rect:
+        serializedVersion: 2
+        x: 738
+        y: 499
+        width: 157
+        height: 144
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bcb5f4c2266e6841b933e21f1bf5a24
+      internalID: -299103432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_23
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 141
+        width: 57
+        height: 104
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a6329904afdda448bee206e448e1086
+      internalID: 788114629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_24
+      rect:
+        serializedVersion: 2
+        x: 575
+        y: 320
+        width: 121
+        height: 152
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f55505d1e4eb54418b817373221728f
+      internalID: 669311058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_25
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 877
+        width: 102
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: effbea0a7cf425343b960db4b36deb55
+      internalID: 3844669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_26
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 691
+        width: 96
+        height: 121
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a52ac5df2ab0a07469834683ebcb88e9
+      internalID: -1980415984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_27
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 508
+        width: 81
+        height: 122
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52a7ce4f214805d4c919394e710e025a
+      internalID: -160379176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_28
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 323
+        width: 73
+        height: 125
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c2cb58319b1014449f34768b4cc53ae
+      internalID: 1660648723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_29
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 144
+        width: 89
+        height: 151
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8ef5d1d250f6da4e8d5fd20f31a6c26
+      internalID: 1107455604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_30
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 153
+        width: 106
+        height: 118
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b958f1caa0297394c82f3a24d8ec2e41
+      internalID: 306456244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_31
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 332
+        width: 99
+        height: 110
+      alignment: 9
+      pivot: {x: 0.45695943, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea4c3ff5ee2b0e147a2af2b5b7daf13e
+      internalID: -1445270904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_32
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 516
+        width: 93
+        height: 108
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e8b294a1600ff045abc7c819561ebc5
+      internalID: 340511420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_33
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 698
+        width: 87
+        height: 102
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62896af2cfd4ee243bf67dd2ad632dd8
+      internalID: -1479179809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_34
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 881
+        width: 78
+        height: 102
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48da072db5a347f408a57661f0ed1c74
+      internalID: 135178056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_35
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 157
+        width: 81
+        height: 103
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35780f4bf1e5f82488365d2a87200153
+      internalID: -1109726088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_36
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 340
+        width: 83
+        height: 102
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 832bd93b1e60395459d2394229686f74
+      internalID: 1847797154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_37
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 526
+        width: 24
+        height: 98
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41e8d4e3a85ac99418944fb8b08686e9
+      internalID: -11897664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_38
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 709
+        width: 24
+        height: 100
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3dfa0ec75666a704980e6dbdfdcd1ff1
+      internalID: 1465231128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_ringswirl_39
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 890
+        width: 24
+        height: 90
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25fa7ad64f254724f8d429a7e37e3093
+      internalID: 988356491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -106,7 +946,47 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      fx_ringswirl_0: -1536472888
+      fx_ringswirl_1: -873242064
+      fx_ringswirl_10: 415439197
+      fx_ringswirl_11: 948249840
+      fx_ringswirl_12: 1988032342
+      fx_ringswirl_13: 563649515
+      fx_ringswirl_14: -1717751865
+      fx_ringswirl_15: -1939000631
+      fx_ringswirl_16: 1180493000
+      fx_ringswirl_17: -864935473
+      fx_ringswirl_18: -836910328
+      fx_ringswirl_19: 49295937
+      fx_ringswirl_2: -228931879
+      fx_ringswirl_20: -588464185
+      fx_ringswirl_21: 2042712730
+      fx_ringswirl_22: -299103432
+      fx_ringswirl_23: 788114629
+      fx_ringswirl_24: 669311058
+      fx_ringswirl_25: 3844669
+      fx_ringswirl_26: -1980415984
+      fx_ringswirl_27: -160379176
+      fx_ringswirl_28: 1660648723
+      fx_ringswirl_29: 1107455604
+      fx_ringswirl_3: -747200987
+      fx_ringswirl_30: 306456244
+      fx_ringswirl_31: -1445270904
+      fx_ringswirl_32: 340511420
+      fx_ringswirl_33: -1479179809
+      fx_ringswirl_34: 135178056
+      fx_ringswirl_35: -1109726088
+      fx_ringswirl_36: 1847797154
+      fx_ringswirl_37: -11897664
+      fx_ringswirl_38: 1465231128
+      fx_ringswirl_39: 988356491
+      fx_ringswirl_4: -47250218
+      fx_ringswirl_5: -487042349
+      fx_ringswirl_6: 1573106531
+      fx_ringswirl_7: 1143564980
+      fx_ringswirl_8: 1580052667
+      fx_ringswirl_9: 758706083
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

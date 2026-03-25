@@ -6,13 +6,13 @@ public class Enemy_KaleosXaan_ArcaneHeart : MonoBehaviour
     [Header("Spell Settings")]
     [SerializeField] private float destroyTime = 5.5f;
     [SerializeField] private float buffDuration = 20f;
-    [SerializeField] private float maxHealthIncreaseAmount = 150f;
-    [SerializeField] private float healthRegenAmount = 100f;
-    [SerializeField] private float defenseIncreaseMultiplier = 1.3f;
+    [SerializeField] private float maxHealthIncreaseAmount = 200f;
+    [SerializeField] private float healthRegenAmount = 150f;
+    [SerializeField] private float defenseIncreaseMultiplier = 1.5f;
     [SerializeField] private float magicResistIncreaseMultiplier = 1.3f;
-    [SerializeField] private float strengthDecreaseMultiplier = 0.9f;
-    [SerializeField] private float magicDecreaseMultiplier = 0.8f;
-    [SerializeField] private float speedMultiplier = 0.7f;
+    [SerializeField] private float strengthDecreaseMultiplier = 0.8f;
+    [SerializeField] private float magicDecreaseMultiplier = 0.5f;
+    [SerializeField] private float speedMultiplier = 0.85f;
     [SerializeField] private float attackCooldownMultiplier = 1.3f;
 
     [Header("Audio")]
@@ -21,8 +21,9 @@ public class Enemy_KaleosXaan_ArcaneHeart : MonoBehaviour
     [SerializeField] private float volume = 1f;
 
     private EnemyStats casterStats;
-    private Enemy_KaleosXaan_Health casterHealth;
-    private Enemy_KaleosXaanMK2_Health casterPhase2Health;
+    private Enemy_KaleosXaan_Health casterHealth = null;
+    private Enemy_KaleosXaanMK2_Health casterPhase2Health = null;
+
     public void Initialize(EnemyStats stats, Enemy_KaleosXaan_Health health)
     {
         casterStats = stats;
@@ -38,16 +39,23 @@ public class Enemy_KaleosXaan_ArcaneHeart : MonoBehaviour
     {
         if (destroyTime > 0f)
             Destroy(gameObject, destroyTime);
-        ApplyBuff();
+
+        if(casterPhase2Health != null)
+            StartCoroutine(ApplyBuffPhase2());
+
+        else if (casterHealth != null)
+            StartCoroutine(ApplyBuff());
     }
 
-    public void ApplyBuff()
+    public IEnumerator ApplyBuff()
     {
         if (casterStats == null || casterHealth == null)
         {
             Debug.LogError("ArcaneHeart: Cannot apply buff - caster stats or health is null!");
-            return;
+            yield break;
         }
+
+        yield return new WaitForSeconds(1.5f);
 
         // Calculate buff amounts based on current stats
         float strengthIncrease = casterStats.Strength * (strengthDecreaseMultiplier - 1f);
@@ -109,14 +117,14 @@ public class Enemy_KaleosXaan_ArcaneHeart : MonoBehaviour
             }
         }
     }
-    public void ApplyBuffPhase2()
+    public IEnumerator ApplyBuffPhase2()
     {
         if (casterStats == null || casterPhase2Health == null)
         {
             Debug.LogError("ArcaneHeart: Cannot apply buff - caster stats or health is null!");
-            return;
+            yield break;
         }
-
+        yield return new WaitForSeconds(1.5f);
         // Calculate buff amounts based on current stats
         float strengthIncrease = casterStats.Strength * (strengthDecreaseMultiplier - 1f);
         float magicIncrease = casterStats.Magic * (magicDecreaseMultiplier - 1f);

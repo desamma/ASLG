@@ -186,6 +186,22 @@ public class PlayerMovement : MonoBehaviour
 
     public StateManager<PlayerState> GetStateManager() => stateManager;
 
+    public void StopMovement(float duration)
+    {
+        StopCoroutine(nameof(StopMovementRoutine));
+        StartCoroutine(StopMovementRoutine(duration));
+    }
+
+    private IEnumerator StopMovementRoutine(float duration)
+    {
+        moveInput = Vector2.zero;
+        rb.velocity = Vector2.zero;
+
+        yield return new WaitForSeconds(duration);
+
+        moveInput = Vector2.zero;
+    }
+
     #region State Callbacks
     private void OnStateChanged(PlayerState previousState, PlayerState newState)
     {

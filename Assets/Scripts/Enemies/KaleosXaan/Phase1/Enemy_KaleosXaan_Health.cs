@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// KaleosXaan enemy Stats and Health
@@ -11,8 +13,12 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
     public bool isDead;
 
     [Header("Components")]
-    private Enemy_KaleosXaan_Movement movementComponent;
+    [SerializeField] private AudioClip deathAudio;
+    [SerializeField] private float volume = 1f;
 
+    private Enemy_KaleosXaan_Movement movementComponent;
+    private BossHealthUI bossHealthUI;
+    private StatusEffectManager effectManager;
     private void Awake()
     {
         InitializeStats();
@@ -23,6 +29,17 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
         stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         movementComponent = GetComponent<Enemy_KaleosXaan_Movement>();
+
+        effectManager = GetComponent<StatusEffectManager>();
+
+        bossHealthUI = FindFirstObjectByType<BossHealthUI>(FindObjectsInactive.Include);
+
+        if (bossHealthUI != null)
+        {
+            ColorUtility.TryParseHtmlString("#CCCCCC", out Color bottom);
+            bossHealthUI.Initialize("Kaleos Xaan", stats.MaxHP, Color.white, Color.red, bottom);
+            bossHealthUI.Show();
+        }
     }
 
     private void OnEnable()
@@ -40,6 +57,7 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
         if (isDead) return;
 
         stats.CurrentHP += amount;
+        bossHealthUI.UpdateHealth(stats.CurrentHP);
 
         if (stats.CurrentHP > stats.MaxHP)
         {
@@ -54,10 +72,28 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
             {
                 var manager = movementComponent.GetStateManager();
                 manager.ChangeState(Enemy_KaleosXaan_State.Death);
+                StartCoroutine(HandleDeathCoroutine());
             }
         }
     }
 
+    private IEnumerator HandleDeathCoroutine()
+    {
+        yield return new WaitForSeconds(0.3f);
+        SoundFXManager.Instance.PlaySoundFXClip(deathAudio, transform, volume);
+
+        if (effectManager != null)
+        {
+            effectManager.RemoveAll();
+        }
+
+        yield return new WaitForSeconds(5f);
+        if (bossHealthUI != null)
+        {
+            bossHealthUI.Hide();
+        }
+        Destroy(gameObject);
+    }
     public void InitializeStats()
     {
         stats = new EnemyStats

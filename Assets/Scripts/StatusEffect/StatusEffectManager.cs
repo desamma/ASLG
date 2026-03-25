@@ -4,72 +4,98 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Attach this to only PLAYER and BOSS GameObjects. 
+/// Attach this to only PLAYER and BOSS GameObjects.
 /// Manages all active status effects and drives the HUD display.
 /// </summary>
 public class StatusEffectManager : MonoBehaviour
 {
-    [Header("HUD Reference")]
-    [SerializeField] private StatusEffectHUD hud;
+    [Header("HUD")]
+    [SerializeField] private bool isPlayer = false;
+    private StatusEffectHUD hud;
 
     [Header("VFX Anchor")]
     [Tooltip("Leave empty to use this transform")]
     [SerializeField] private Transform vfxAnchor;
+    [SerializeField] private float destroyDelay = 2f;
 
     public event Action<ActiveStatusEffect> OnEffectApplied;
     public event Action<ActiveStatusEffect> OnEffectRemoved;
 
-    private readonly Dictionary<string, ActiveStatusEffect> _activeEffects = new();
-
-    private readonly List<string> _toRemove = new();
+    private readonly Dictionary<string, ActiveStatusEffect> activeEffects = new();
+    private readonly List<string> toRemove = new();
 
     private void Awake()
     {
         if (vfxAnchor == null) vfxAnchor = transform;
+
+        string containerName = isPlayer ? "PlayerStatusEffectContainer" : "BossStatusEffectContainer";
+        var container = GameObject.Find(containerName);
+
+        if (container == null)
+            Debug.LogWarning($"[StatusEffectManager] Could not find GameObject named '{containerName}'.");
+        else
+            hud = container.GetComponent<StatusEffectHUD>();
     }
 
     private void Update()
     {
-        _toRemove.Clear();
+        toRemove.Clear();
 
-        foreach (var kvp in _activeEffects)
+        foreach (var kvp in activeEffects)
         {
             kvp.Value.Tick(Time.deltaTime);
             if (kvp.Value.IsExpired)
-                _toRemove.Add(kvp.Key);
+                toRemove.Add(kvp.Key);
         }
 
-        foreach (var id in _toRemove)
+        foreach (var id in toRemove)
             RemoveEffectInternal(id);
     }
-
     /// <summary>
-    /// Apply a status effect to this character. <para/>
-    /// If <paramref name="duration"/> is not set, uses the SO's baseDuration.
+    /// Apply a status effect to this character.
     /// </summary>
     /// <returns>New active status object</returns>
-    public ActiveStatusEffect ApplyEffect(StatusEffect definition, bool spawnVFX = true ,  float duration = -1f)
+    public ActiveStatusEffect ApplyEffect(StatusEffect definition, bool spawnVFX = true, float duration = -1f, bool isPermanent = false, int stackCount = -1
+        , StackBehavior stackBehavior = StackBehavior.Ignore, int maxStacks = 1)
     {
         if (definition == null)
         {
             Debug.LogWarning("[StatusEffectManager] ApplyEffect called with null definition.");
             return null;
         }
+        // Handle overrides
+        var dur = duration < 0f ? definition.baseDuration : duration;
 
-        float d = duration < 0f ? definition.baseDuration : duration;
-
-        if (_activeEffects.TryGetValue(definition.effectId, out var existing))
+        if (definition.isPermanent != isPermanent)
         {
-            existing.Reapply(d);
+            if (isPermanent)
+            {
+                definition.isPermanent = true;
+            }
+            else if (!isPermanent && dur > 0f)
+            {
+                definition.isPermanent = false;
+            }
+        }
+
+        var stacks = stackCount < 0 ? 1 : stackCount;
+        definition.maxStacks = maxStacks <= 1 ? definition.maxStacks : maxStacks;
+
+        if (stackBehavior != StackBehavior.Ignore)
+            definition.stackBehavior = stackBehavior;
+
+        if (activeEffects.TryGetValue(definition.effectId, out var existing))
+        {
+            existing.Reapply(dur, stacks);
             hud.RefreshEffect(existing);
             return existing;
         }
 
-        var active = new ActiveStatusEffect(definition, d);
+        var active = new ActiveStatusEffect(definition, dur, stacks);
 
-        _activeEffects[definition.effectId] = active;
+        activeEffects[definition.effectId] = active;
 
-        if(spawnVFX)
+        if (spawnVFX)
             SpawnVFX(definition);
 
         hud.AddEffect(active);
@@ -83,7 +109,7 @@ public class StatusEffectManager : MonoBehaviour
     /// </summary>
     public void RemoveEffect(string effectId)
     {
-        if (_activeEffects.ContainsKey(effectId))
+        if (activeEffects.ContainsKey(effectId))
             RemoveEffectInternal(effectId);
     }
 
@@ -92,7 +118,7 @@ public class StatusEffectManager : MonoBehaviour
     /// </summary>
     public void RemoveAllOfType(StatusEffectType type)
     {
-        var ids = _activeEffects
+        var ids = activeEffects
             .Where(kvp => kvp.Value.Definition.effectType == type)
             .Select(kvp => kvp.Key)
             .ToList();
@@ -106,23 +132,23 @@ public class StatusEffectManager : MonoBehaviour
     /// </summary>
     public void RemoveAll()
     {
-        foreach (var id in _activeEffects.Keys.ToList())
+        foreach (var id in activeEffects.Keys.ToList())
             RemoveEffectInternal(id);
     }
 
     public bool HasEffect(string effectId)
-        => _activeEffects.ContainsKey(effectId);
+        => activeEffects.ContainsKey(effectId);
 
     public ActiveStatusEffect GetEffect(string effectId)
-        => _activeEffects.TryGetValue(effectId, out var e) ? e : null;
+        => activeEffects.TryGetValue(effectId, out var e) ? e : null;
 
     public IReadOnlyCollection<ActiveStatusEffect> GetAllEffects()
-        => _activeEffects.Values;
+        => activeEffects.Values;
 
     private void RemoveEffectInternal(string id)
     {
-        if (!_activeEffects.TryGetValue(id, out var active)) return;
-        _activeEffects.Remove(id);
+        if (!activeEffects.TryGetValue(id, out var active)) return;
+        activeEffects.Remove(id);
 
         hud.RemoveEffect(active);
         OnEffectRemoved?.Invoke(active);
@@ -131,6 +157,18 @@ public class StatusEffectManager : MonoBehaviour
     private void SpawnVFX(StatusEffect definition)
     {
         if (definition.vfxPrefab == null) return;
-        Instantiate(definition.vfxPrefab, vfxAnchor.position, Quaternion.identity, vfxAnchor);
+        var effect = Instantiate(definition.vfxPrefab, vfxAnchor.position, Quaternion.identity, vfxAnchor);
+        Vector3 originalScale = definition.vfxPrefab.transform.localScale;
+
+        var parentScale = transform.localScale;
+
+        // Compensate for parent scale
+        effect.transform.localScale = new Vector3(
+            originalScale.x / parentScale.x,
+            originalScale.y / parentScale.y,
+            originalScale.z / parentScale.z
+        );
+
+        Destroy(effect, destroyDelay);
     }
 }
