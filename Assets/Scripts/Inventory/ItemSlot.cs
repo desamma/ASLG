@@ -20,7 +20,7 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [Header("Kéo thả vào đây trong Inspector")]
     [SerializeField] private Image slotBackground;
     [SerializeField] private Image rarityBorder;
-    [SerializeField] private TextMeshProUGUI txt_icon;
+    [SerializeField] private Image icon;
     [SerializeField] private TextMeshProUGUI txt_qty;
 
     private ItemData _item;
@@ -41,7 +41,7 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         _item = item; _onHovered = onHoveredCallback; _hasItem = true;
         if (slotBackground) slotBackground.color = BG_EMPTY;
         if (rarityBorder) rarityBorder.color = RarityColor(item.rarity);
-        if (txt_icon) { txt_icon.text = item.emojiIcon; txt_icon.enabled = true; }
+       if (icon) { icon.sprite = item.icon; icon.enabled = item.icon != null; }
         bool showQty = item.isStackable && item.currentStack > 1;
         if (txt_qty) { txt_qty.text = showQty ? $"x{item.currentStack}" : ""; txt_qty.enabled = showQty; }
     }
@@ -51,7 +51,7 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         _item = null; _onHovered = null; _hasItem = false;
         if (slotBackground) slotBackground.color = BG_EMPTY;
         if (rarityBorder) rarityBorder.color = COL_EMPTY;
-        if (txt_icon) { txt_icon.text = ""; txt_icon.enabled = false; }
+       if (icon) { icon.sprite = null; icon.enabled = false; }
         if (txt_qty) { txt_qty.text = ""; txt_qty.enabled = false; }
     }
 

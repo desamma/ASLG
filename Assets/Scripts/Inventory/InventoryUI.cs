@@ -30,7 +30,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txt_moveSpeed;
     [SerializeField] private TextMeshProUGUI txt_range;
     [SerializeField] private TextMeshProUGUI txt_cooldown;
-    [SerializeField] private TextMeshProUGUI txt_knockback;
+    
     [SerializeField] private TextMeshProUGUI txt_upgradePoints;
 
     // ── INVENTORY PANEL ──────────────────────────────────────────────────
@@ -82,14 +82,14 @@ public class InventoryUI : MonoBehaviour
         inventoryPanel.SetActive(false); // tắt sau
     }
 
-    private void Update()
-    {
-        if (Input.anyKeyDown)
-            Debug.Log($"Key pressed: {Input.inputString}");
+    //private void Update()
+    //{
+    //    if (Input.anyKeyDown)
+    //        Debug.Log($"Key pressed: {Input.inputString}");
 
-        if (Input.GetKeyDown(KeyCode.E)) Toggle();
+    //    if (Input.GetKeyDown(KeyCode.E)) Toggle();
 
-    }
+    //}
 
     // ── Mở / Đóng ────────────────────────────────────────────────────────
     public void Toggle()
@@ -125,7 +125,7 @@ public class InventoryUI : MonoBehaviour
         txt_moveSpeed?.SetText($"{s.moveSpeed:F1}");
         txt_range?.SetText($"{s.weaponRange:F1}");
         txt_cooldown?.SetText($"{s.cooldown:F2}s");
-        txt_knockback?.SetText($"{s.knockbackForce:F1}");
+       
         txt_upgradePoints?.SetText($"{s.upgradePoints} pts");
     }
 
