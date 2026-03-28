@@ -47,7 +47,8 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
     private bool isAuraFarming = false;
 
     private Dictionary<Enemy_ArgeonHighmayne_State, int> moveCooldownCounters = new();
-
+    private KnockbackHandler knockbackHandler;
+    private EnemyAttackRecovery attackRecovery;
     #region Move Cooldowns
     private void RegisterMoveUsed(Enemy_ArgeonHighmayne_State usedState)
     {
@@ -137,9 +138,10 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_ArgeonHighmayne_State>(animator, Enemy_ArgeonHighmayne_State.Idle);
-        stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
-        stateManager.OnStateExit += OnStateExit;
+
+        knockbackHandler = new KnockbackHandler(this, rb);
+        attackRecovery = new EnemyAttackRecovery(this, rb);
 
         StartCoroutine(AuraFarming());
     }
@@ -182,9 +184,7 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (stateManager != null)
         {
-            stateManager.OnStateChanged -= OnStateChanged;
             stateManager.OnStateEnter -= OnStateEnter;
-            stateManager.OnStateExit -= OnStateExit;
         }
         DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
@@ -208,7 +208,7 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
             return;
         }
 
-        Flip();
+        facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
 
         Vector2 direction = (player.position - transform.position).normalized;
         rb.velocity = behavior.Aggression * stats.Speed * direction;
@@ -224,25 +224,8 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         }
         else
         {
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(detectionPoint.position, behavior.DetectionRange, playerLayer);
-
-            if (hitColliders.Length > 0)
-            {
-                float closestSqrDistance = float.MaxValue;
-                Transform closestTransform = null;
-
-                foreach (var collider in hitColliders)
-                {
-                    float sqrDistance = (collider.transform.position - detectionPoint.position).sqrMagnitude;
-                    if (sqrDistance < closestSqrDistance)
-                    {
-                        closestSqrDistance = sqrDistance;
-                        closestTransform = collider.transform;
-                    }
-                }
-
-                player = closestTransform;
-            }
+            var closest = TransformHelper.FindClosestInRange(detectionPoint.position, behavior.DetectionRange, playerLayer);
+            player = closest;
         }
 
         if (player != null)
@@ -332,29 +315,15 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
-        StartCoroutine(AttackRecovery());
-    }
-
-    private IEnumerator AttackRecovery()
-    {
-        isRecovering = true;
-        stateManager.ChangeState(Enemy_ArgeonHighmayne_State.Idle);
-        rb.velocity = Vector2.zero;
-
-        yield return new WaitForSeconds(stats.AttackCooldown);
-        isRecovering = false;
-    }
-
-    public void Flip()
-    {
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-            player.position.x < transform.position.x && facingDirection == 1)
+        attackRecovery.StartRecovery(stats.AttackCooldown, () =>
         {
-            facingDirection *= -1;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1;
-            transform.localScale = localScale;
-        }
+            stateManager.ChangeState(Enemy_ArgeonHighmayne_State.Idle); 
+            isRecovering = true;
+        },
+        () =>
+        {
+            isRecovering = false;
+        });
     }
 
     public void InitializeBehavior()
@@ -432,13 +401,10 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         Vector3 effectPosition = transform.position + new Vector3(0, -1f, 0);
         Instantiate(warSurgeAfterTPEffect, effectPosition, Quaternion.identity);
 
-        Flip();
+        facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
     }
 
     #region State Callbacks
-    private void OnStateChanged(Enemy_ArgeonHighmayne_State previousState, Enemy_ArgeonHighmayne_State newState)
-    {
-    }
 
     private void OnStateEnter(Enemy_ArgeonHighmayne_State state)
     {
@@ -446,18 +412,18 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         {
             case Enemy_ArgeonHighmayne_State.Attack:
                 rb.velocity = Vector2.zero;
-                Flip();
+                facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
                 break;
             case Enemy_ArgeonHighmayne_State.WarSurge:
                 rb.velocity = Vector2.zero;
-                Flip();
+                facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
                 WarSurgeTP();
                 break;
             case Enemy_ArgeonHighmayne_State.SunBloom:
                 rb.velocity = Vector2.zero;
                 break;
             case Enemy_ArgeonHighmayne_State.Decimated:
-                Flip();
+                facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
                 rb.velocity = Vector2.zero;
                 break;
             case Enemy_ArgeonHighmayne_State.AurynNexus:
@@ -470,9 +436,6 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
         }
     }
 
-    private void OnStateExit(Enemy_ArgeonHighmayne_State state)
-    {
-    }
     #endregion
 
     public void PlayLastJudgement()
@@ -492,19 +455,11 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement
 
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
-        if (!isKnockbackable) return;
-        stateManager.ChangeState(Enemy_ArgeonHighmayne_State.Knockback);
-        StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
-        Vector2 knockbackDirection = (transform.position - player.position).normalized;
-        rb.velocity = knockbackDirection * knockbackForce;
-    }
+        if (!isKnockbackable || knockbackHandler == null) return;
 
-    IEnumerator KnockBackCounter(float knockbackTime, float stunTime)
-    {
-        yield return new WaitForSeconds(knockbackTime);
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(stunTime);
-        stateManager.ChangeState(Enemy_ArgeonHighmayne_State.Idle);
+        knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
+            () => stateManager.ChangeState(Enemy_ArgeonHighmayne_State.Knockback),
+            () => stateManager.ChangeState(Enemy_ArgeonHighmayne_State.Idle));
     }
 
     #region Getters

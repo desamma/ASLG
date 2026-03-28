@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -38,6 +37,8 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
     private float attackCooldownTimer = 0f;
     private bool isRecovering = false;
 
+    private EnemyAttackRecovery attackRecovery;
+    private KnockbackHandler knockbackHandler;
     private void Awake()
     {
         originalPosition = transform.position;
@@ -82,9 +83,9 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
         behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_Andromeda_State>(animator, Enemy_Andromeda_State.Idle);
-        
+
         castRange = stats.AttackRange * 2.5f;
-    
+
         stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
         stateManager.OnStateExit += OnStateExit;
@@ -138,11 +139,7 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (player == null) return;
 
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-            player.position.x < transform.position.x && facingDirection == 1)
-        {
-            Flip();
-        }
+        facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
 
         Vector2 direction = (player.position - transform.position).normalized;
         rb.velocity = direction * stats.Speed;
@@ -180,11 +177,7 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
             Vector3 direction = (targetPos - transform.position).normalized;
             rb.velocity = direction * stats.Speed;
 
-            if ((targetPos.x > transform.position.x && facingDirection == -1) ||
-                (targetPos.x < transform.position.x && facingDirection == 1))
-            {
-                Flip();
-            }
+            facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
 
             if (Vector2.Distance(transform.position, targetPos) < 0.1f)
             {
@@ -291,26 +284,17 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
             !stateManager.IsInState(Enemy_Andromeda_State.Cast))
             return;
 
-        StartCoroutine(AttackRecovery());
-    }
-
-    private IEnumerator AttackRecovery()
-    {
-        isRecovering = true;
-        stateManager.ChangeState(Enemy_Andromeda_State.Idle);
-        rb.velocity = Vector2.zero;
-
-        yield return new WaitForSeconds(attackRecoveryDuration);
-
-        isRecovering = false;
-    }
-
-    public void Flip()
-    {
-        facingDirection *= -1;
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1;
-        transform.localScale = localScale;
+        attackRecovery.StartRecovery(attackRecoveryDuration,
+            () =>
+            {
+                isRecovering = true;
+                stateManager.ChangeState(Enemy_Andromeda_State.Idle);
+                rb.velocity = Vector2.zero;
+            },
+            () =>
+            {
+                isRecovering = false;
+            });
     }
 
     public void InitializeBehavior()
@@ -360,24 +344,13 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
 
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
-        if (!isKnockbackable) return;
+        if (!isKnockbackable || knockbackHandler == null) return;
 
-        stateManager.ChangeState(Enemy_Andromeda_State.Knockback);
-
-        StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
-
-        Vector2 knockbackDirection = (transform.position - player.position).normalized;
-        rb.velocity = knockbackDirection * knockbackForce;
+        knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
+            () => stateManager.ChangeState(Enemy_Andromeda_State.Knockback),
+            () => stateManager.ChangeState(Enemy_Andromeda_State.Idle));
     }
 
-    IEnumerator KnockBackCounter(float knockbackTime, float stunTime)
-    {
-        yield return new WaitForSeconds(knockbackTime);
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(stunTime);
-
-        stateManager.ChangeState(Enemy_Andromeda_State.Idle);
-    }
     #region Getters
     public StateManager<Enemy_Andromeda_State> GetStateManager()
     {

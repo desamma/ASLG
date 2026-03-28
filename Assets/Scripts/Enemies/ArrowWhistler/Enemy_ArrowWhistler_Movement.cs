@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
@@ -32,6 +33,9 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
     private bool canMoveAway = false;   // resets true after each attack
     private bool isMovingAway = false;  // prevents re-triggering mid-move
     private EnemyMoveCooldownTracker<Enemy_ArrowWhistler_State> moveCooldowns = new();
+    private KnockbackHandler knockbackHandler;
+    private EnemyAttackRecovery attackRecovery;
+
 
     #region Move Cooldowns
     private void RegisterMoveUsed(Enemy_ArrowWhistler_State usedState)
@@ -79,6 +83,9 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
         if (charCollider == null)
             charCollider = GetComponent<Collider2D>();
 
+        knockbackHandler = new KnockbackHandler(this, rb);
+        attackRecovery = new EnemyAttackRecovery(this, rb);
+
         if (playerLayer != LayerMask.GetMask("Player"))
             playerLayer = LayerMask.GetMask("Player");
 
@@ -98,9 +105,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
         behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_ArrowWhistler_State>(animator, Enemy_ArrowWhistler_State.Idle);
-        stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
-        stateManager.OnStateExit += OnStateExit;
 
         health.OnEnraged += OnEnraged;
     }
@@ -125,9 +130,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (stateManager != null)
         {
-            stateManager.OnStateChanged -= OnStateChanged;
             stateManager.OnStateEnter -= OnStateEnter;
-            stateManager.OnStateExit -= OnStateExit;
         }
         DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
 
@@ -146,7 +149,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
     public void Chase()
     {
         if (player == null) return;
-        Flip();
+        facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
 
         Vector2 direction = (player.position - transform.position).normalized;
         rb.velocity = behavior.Aggression * stats.Speed * direction;
@@ -230,7 +233,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
             float dist = Vector2.Distance(transform.position, player.position);
             if (dist >= moveAwayDistance) break;
 
-            FlipAwayFromPlayer();
+            facingDirection = TransformHelper.FlipAway(transform, player, facingDirection);
 
             Vector2 direction = (transform.position - player.position).normalized;
             rb.velocity = behavior.Aggression * stats.Speed * direction;
@@ -239,18 +242,6 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
             yield return null;
         }
         isMovingAway = false;
-    }
-
-    private void FlipAwayFromPlayer()
-    {
-        if (player.position.x > transform.position.x && facingDirection == 1 ||
-            player.position.x < transform.position.x && facingDirection == -1)
-        {
-            facingDirection *= -1;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1;
-            transform.localScale = localScale;
-        }
     }
 
     private void DecideAttackType()
@@ -276,7 +267,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
                     var selectedAttack = availableAttacks[Random.Range(0, availableAttacks.Length)];
                     stateManager.ChangeState(selectedAttack.State);
                     RegisterMoveUsed(selectedAttack.State);
-                    return;                                                                                                                                                                      
+                    return;
                 }
             }
         }
@@ -285,8 +276,20 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
-        StartCoroutine(AttackRecovery());
+
+        attackRecovery.StartRecovery(stats.AttackCooldown,
+            () =>
+            {
+                isRecovering = true;
+                stateManager.ChangeState(Enemy_ArrowWhistler_State.Idle);
+            },
+            () =>
+            {
+                isRecovering = false;
+                canMoveAway = true;
+            });
     }
+
     private void OnEnraged()
     {
         behavior.Aggression *= 1.1f;
@@ -296,28 +299,6 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
         stats.Strength *= 1.2f;
     }
 
-    private IEnumerator AttackRecovery()
-    {
-        isRecovering = true;
-        stateManager.ChangeState(Enemy_ArrowWhistler_State.Idle);
-        rb.velocity = Vector2.zero;
-
-        yield return new WaitForSeconds(stats.AttackCooldown);
-        isRecovering = false;
-        canMoveAway = true; // ← allow move-away until next attack
-    }
-
-    public void Flip()
-    {
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-            player.position.x < transform.position.x && facingDirection == 1)
-        {
-            facingDirection *= -1;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1;
-            transform.localScale = localScale;
-        }
-    }
     public void InitializeBehavior()
     {
         behavior = new BehaviorProfile
@@ -347,9 +328,6 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
 
 
     #region State Callbacks
-    private void OnStateChanged(Enemy_ArrowWhistler_State previousState, Enemy_ArrowWhistler_State newState)
-    {
-    }
 
     private void OnStateEnter(Enemy_ArrowWhistler_State state)
     {
@@ -357,7 +335,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
         {
             case Enemy_ArrowWhistler_State.Attack:
                 rb.velocity = Vector2.zero;
-                Flip();
+                facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
                 break;
             case Enemy_ArrowWhistler_State.Death:
                 rb.velocity = Vector2.zero;
@@ -365,28 +343,15 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement
                 break;
         }
     }
-
-    private void OnStateExit(Enemy_ArrowWhistler_State state)
-    {
-    }
-
     #endregion
 
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
-        if (!isKnockbackable) return;
-        stateManager.ChangeState(Enemy_ArrowWhistler_State.Knockback);
-        StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
-        Vector2 knockbackDirection = (transform.position - player.position).normalized;
-        rb.velocity = knockbackDirection * knockbackForce;
-    }
+        if (!isKnockbackable || knockbackHandler == null) return;
 
-    IEnumerator KnockBackCounter(float knockbackTime, float stunTime)
-    {
-        yield return new WaitForSeconds(knockbackTime);
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(stunTime);
-        stateManager.ChangeState(Enemy_ArrowWhistler_State.Idle);
+        knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
+            () => stateManager.ChangeState(Enemy_ArrowWhistler_State.Knockback),
+            () => stateManager.ChangeState(Enemy_ArrowWhistler_State.Idle));
     }
 
     #region Getters

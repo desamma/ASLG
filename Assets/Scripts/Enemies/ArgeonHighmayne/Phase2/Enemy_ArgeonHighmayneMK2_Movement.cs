@@ -41,6 +41,8 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
     private bool isAuraFarming = false;
 
     private EnemyMoveCooldownTracker<Enemy_ArgeonHighmayneMK2_State> moveCooldowns = new();
+    private EnemyAttackRecovery attackRecovery;
+    private KnockbackHandler knockbackHandler;
 
     #region Move Cooldowns
     private void RegisterMoveUsed(Enemy_ArgeonHighmayneMK2_State usedState)
@@ -108,9 +110,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
         behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_ArgeonHighmayneMK2_State>(animator, Enemy_ArgeonHighmayneMK2_State.Idle);
-        stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
-        stateManager.OnStateExit += OnStateExit;
 
         StartCoroutine(AuraFarming());
     }
@@ -153,9 +153,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (stateManager != null)
         {
-            stateManager.OnStateChanged -= OnStateChanged;
             stateManager.OnStateEnter -= OnStateEnter;
-            stateManager.OnStateExit -= OnStateExit;
         }
         DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
@@ -193,7 +191,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
         if (player.position.x > transform.position.x && facingDirection == -1 ||
             player.position.x < transform.position.x && facingDirection == 1)
         {
-            Flip();
+            facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
         }
 
         Vector2 direction = (player.position - transform.position).normalized;
@@ -338,14 +336,6 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
         isRecovering = false;
     }
 
-    public void Flip()
-    {
-        facingDirection *= -1;
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1;
-        transform.localScale = localScale;
-    }
-
     public void InitializeBehavior()
     {
         behavior = new BehaviorProfile
@@ -417,15 +407,11 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
         if (player.position.x > transform.position.x && facingDirection == -1 ||
             player.position.x < transform.position.x && facingDirection == 1)
         {
-            Flip();
+            facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
         }
     }
 
     #region State Callbacks
-    private void OnStateChanged(Enemy_ArgeonHighmayneMK2_State previousState, Enemy_ArgeonHighmayneMK2_State newState)
-    {
-    }
-
     private void OnStateEnter(Enemy_ArgeonHighmayneMK2_State state)
     {
         switch (state)
@@ -434,19 +420,19 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
                 rb.velocity = Vector2.zero;
                 if (player.position.x > transform.position.x && facingDirection == -1 ||
                     player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
+                    facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
                 break;
             case Enemy_ArgeonHighmayneMK2_State.WarSurge:
                 rb.velocity = Vector2.zero;
                 if (player.position.x > transform.position.x && facingDirection == -1 ||
                     player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
+                    facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
                 WarSurgeTP();
                 break;
             case Enemy_ArgeonHighmayneMK2_State.Decimated:
                 if (player.position.x > transform.position.x && facingDirection == -1 ||
                     player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
+                    facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
                 rb.velocity = Vector2.zero;
                 break;
             case Enemy_ArgeonHighmayneMK2_State.DualCast:
@@ -458,27 +444,15 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
                 break;
         }
     }
-
-    private void OnStateExit(Enemy_ArgeonHighmayneMK2_State state)
-    {
-    }
     #endregion
 
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
-        if (!isKnockbackable) return;
-        stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Knockback);
-        StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
-        Vector2 knockbackDirection = (transform.position - player.position).normalized;
-        rb.velocity = knockbackDirection * knockbackForce;
-    }
+        if (!isKnockbackable || knockbackHandler == null) return;
 
-    IEnumerator KnockBackCounter(float knockbackTime, float stunTime)
-    {
-        yield return new WaitForSeconds(knockbackTime);
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(stunTime);
-        stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle);
+        knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
+            () => stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Knockback),
+            () => stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle));
     }
 
     #region Getters

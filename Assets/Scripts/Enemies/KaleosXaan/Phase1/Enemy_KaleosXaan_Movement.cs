@@ -195,11 +195,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement
             return;
         }
 
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-            player.position.x < transform.position.x && facingDirection == 1)
-        {
-            Flip();
-        }
+        facingDirection = TransformHelper.FlipAway(transform, player, facingDirection);
 
         Vector2 direction = (player.position - transform.position).normalized;
         rb.velocity = behavior.Aggression * stats.Speed * direction;
@@ -215,25 +211,8 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement
         }
         else
         {
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(detectionPoint.position, behavior.DetectionRange, playerLayer);
-
-            if (hitColliders.Length > 0)
-            {
-                float closestSqrDistance = float.MaxValue;
-                Transform closestTransform = null;
-
-                foreach (var collider in hitColliders)
-                {
-                    float sqrDistance = (collider.transform.position - detectionPoint.position).sqrMagnitude;
-                    if (sqrDistance < closestSqrDistance)
-                    {
-                        closestSqrDistance = sqrDistance;
-                        closestTransform = collider.transform;
-                    }
-                }
-
-                player = closestTransform;
-            }
+            var closestTransform = TransformHelper.FindClosestInRange(detectionPoint.position, behavior.DetectionRange, playerLayer);
+            player = closestTransform;
         }
 
         if (player != null)

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 /// <summary>
 /// KaleosXaan enemy Stats and Health
@@ -19,6 +18,7 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
     private Enemy_KaleosXaan_Movement movementComponent;
     private BossHealthUI bossHealthUI;
     private StatusEffectManager effectManager;
+
     private void Awake()
     {
         InitializeStats();

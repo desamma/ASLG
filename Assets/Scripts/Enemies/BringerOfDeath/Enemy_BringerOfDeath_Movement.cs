@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -49,6 +50,8 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
     private bool isRecovering = false;
     private GameObject playerLock;
 
+    private KnockbackHandler knockbackHandler;
+    private EnemyAttackRecovery attackRecovery;
     private void Awake()
     {
         originalPosition = transform.position;
@@ -156,11 +159,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
 
     public void Chase()
     {
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-                player.position.x < transform.position.x && facingDirection == 1)
-        {
-            Flip();
-        }
+        facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
 
         Vector2 direction = (player.position - transform.position).normalized;
         rb.velocity = direction * stats.Speed;
@@ -198,11 +197,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
             Vector3 direction = (targetPos - transform.position).normalized;
             rb.velocity = direction * stats.Speed;
 
-            if ((targetPos.x > transform.position.x && facingDirection == -1) ||
-                (targetPos.x < transform.position.x && facingDirection == 1))
-            {
-                Flip();
-            }
+            facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
 
             if (Vector2.Distance(transform.position, targetPos) < 0.1f)
             {
@@ -319,31 +314,21 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null) return;
-
+        isRecovering = true;
         // Only transition out of attack states
         if (!stateManager.IsInState(Enemy_BringerOfDeath_State.Attack) &&
             !stateManager.IsInState(Enemy_BringerOfDeath_State.Cast))
             return;
-        StartCoroutine(AttackRecovery());
-    }
-
-    private IEnumerator AttackRecovery()
-    {
-        isRecovering = true;
-        stateManager.ChangeState(Enemy_BringerOfDeath_State.Idle);
-        rb.velocity = Vector2.zero;
-
-        yield return new WaitForSeconds(attackRecoveryDuration);
-
-        isRecovering = false;
-    }
-
-    public void Flip()
-    {
-        facingDirection *= -1;
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1;
-        transform.localScale = localScale;
+        attackRecovery.StartRecovery(stats.AttackCooldown,
+            () =>
+            {
+                isRecovering = true;
+                stateManager.ChangeState(Enemy_BringerOfDeath_State.Idle);
+            },
+            () =>
+            {
+                isRecovering = false;
+            });
     }
 
     public void InitializeBehavior()

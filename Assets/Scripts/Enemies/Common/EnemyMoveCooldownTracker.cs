@@ -48,5 +48,5 @@ public class EnemyMoveCooldownTracker<TState> where TState : Enum
 
     public bool IsOnCooldown(TState state) =>
         counters.TryGetValue(state, out int count) && count > 0;
-    
+
 }

@@ -43,6 +43,8 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
     private bool isAuraFarming = false;
 
     private EnemyMoveCooldownTracker<Enemy_Dogehai_State> moveCooldowns = new();
+    private KnockbackHandler knockbackHandler;
+    private EnemyAttackRecovery attackRecovery;
 
     #region Move Cooldowns
     private void RegisterMoveUsed(Enemy_Dogehai_State usedState)
@@ -103,13 +105,14 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
             transform.localScale.z
         );
 
+        knockbackHandler = new KnockbackHandler(this, rb);
+        attackRecovery = new EnemyAttackRecovery(this, rb);
+
         InitializeBehavior();
         behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_Dogehai_State>(animator, Enemy_Dogehai_State.Idle);
-        stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
-        stateManager.OnStateExit += OnStateExit;
         StartCoroutine(AuraFarming());
     }
     private IEnumerator AuraFarming()
@@ -149,9 +152,7 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (stateManager != null)
         {
-            stateManager.OnStateChanged -= OnStateChanged;
             stateManager.OnStateEnter -= OnStateEnter;
-            stateManager.OnStateExit -= OnStateExit;
         }
         DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
@@ -297,17 +298,20 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
-        StartCoroutine(AttackRecovery());
+        attackRecovery.StartRecovery(stats.AttackCooldown, 
+            () =>
+            {
+                isRecovering = true;
+                stateManager.ChangeState(Enemy_Dogehai_State.Idle);
+            },
+            () =>
+            {
+                StartCoroutine(DigCoroutine());
+            });
     }
 
-    private IEnumerator AttackRecovery()
+    private IEnumerator DigCoroutine()
     {
-        isRecovering = true;
-        stateManager.ChangeState(Enemy_Dogehai_State.Idle);
-        rb.velocity = Vector2.zero;
-
-        yield return new WaitForSeconds(stats.AttackCooldown);
-        
         // Random chance to dig after attack recovery
         if (Random.value < digChance)
         {
@@ -355,10 +359,6 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
     }
 
     #region State Callbacks
-    private void OnStateChanged(Enemy_Dogehai_State previousState, Enemy_Dogehai_State newState)
-    {
-    }
-
     private void OnStateEnter(Enemy_Dogehai_State state)
     {
         switch (state)
@@ -386,26 +386,15 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
         }
     }
 
-    private void OnStateExit(Enemy_Dogehai_State state)
-    {
-    }
-
     #endregion
+
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
-        if (!isKnockbackable) return;
-        stateManager.ChangeState(Enemy_Dogehai_State.Knockback);
-        StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
-        Vector2 knockbackDirection = (transform.position - player.position).normalized;
-        rb.velocity = knockbackDirection * knockbackForce;
-    }
+        if (!isKnockbackable || knockbackHandler == null) return;
 
-    IEnumerator KnockBackCounter(float knockbackTime, float stunTime)
-    {
-        yield return new WaitForSeconds(knockbackTime);
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(stunTime);
-        stateManager.ChangeState(Enemy_Dogehai_State.Idle);
+        knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
+            () => stateManager.ChangeState(Enemy_Dogehai_State.Knockback),
+            () => stateManager.ChangeState(Enemy_Dogehai_State.Idle));
     }
 
     #region Getters

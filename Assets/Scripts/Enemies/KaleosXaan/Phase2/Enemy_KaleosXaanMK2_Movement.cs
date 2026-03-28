@@ -25,11 +25,6 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Transform player;
     private List<AttackCategory> attackCategories;
 
-    [Header("Effects")]
-
-    [Header("Audio")]
-    [SerializeField] private float volume = 1f;
-
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
     [SerializeField] private float pivotDownward = 1.5f;
@@ -49,6 +44,8 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
     private GameObject activeCompanion = null;
 
     private EnemyMoveCooldownTracker<Enemy_KaleosXaanMK2_State> moveCooldowns = new();
+    private EnemyAttackRecovery attackRecovery;
+    private KnockbackHandler knockbackHandler;
 
     #region Move Cooldowns
     private void RegisterMoveUsed(Enemy_KaleosXaanMK2_State usedState)
@@ -106,6 +103,9 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
             health = GetComponent<Enemy_KaleosXaanMK2_Health>();
 
         stats = health.stats;
+
+        attackRecovery = new EnemyAttackRecovery(this, rb);
+        knockbackHandler = new KnockbackHandler(this, rb);
 
         castRange = stats.AttackRange * 3.5f;
         midRange = stats.AttackRange * 2.5f;
@@ -240,25 +240,8 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement
         }
         else
         {
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(detectionPoint.position, behavior.DetectionRange, playerLayer);
-
-            if (hitColliders.Length > 0)
-            {
-                float closestSqrDistance = float.MaxValue;
-                Transform closestTransform = null;
-
-                foreach (var collider in hitColliders)
-                {
-                    float sqrDistance = (collider.transform.position - detectionPoint.position).sqrMagnitude;
-                    if (sqrDistance < closestSqrDistance)
-                    {
-                        closestSqrDistance = sqrDistance;
-                        closestTransform = collider.transform;
-                    }
-                }
-
-                player = closestTransform;
-            }
+            var closest = TransformHelper.FindClosestInRange(detectionPoint.position, behavior.DetectionRange, playerLayer);
+            player = closest;
         }
 
         if (player != null)
