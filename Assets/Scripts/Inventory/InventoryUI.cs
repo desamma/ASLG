@@ -30,7 +30,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txt_moveSpeed;
     [SerializeField] private TextMeshProUGUI txt_range;
     [SerializeField] private TextMeshProUGUI txt_cooldown;
-    
+
     [SerializeField] private TextMeshProUGUI txt_upgradePoints;
 
     // ── INVENTORY PANEL ──────────────────────────────────────────────────
@@ -125,7 +125,7 @@ public class InventoryUI : MonoBehaviour
         txt_moveSpeed?.SetText($"{s.moveSpeed:F1}");
         txt_range?.SetText($"{s.weaponRange:F1}");
         txt_cooldown?.SetText($"{s.cooldown:F2}s");
-       
+
         txt_upgradePoints?.SetText($"{s.upgradePoints} pts");
     }
 
@@ -153,7 +153,11 @@ public class InventoryUI : MonoBehaviour
             var slot = spawnedSlots[i].GetComponent<ItemSlot>();
             int idx = start + i;
             if (idx < playerItems.Count)
-                slot?.SetItem(playerItems[idx], () => ShowPreview(playerItems[idx]));
+            {
+                // Capture the exact ItemData value now to avoid calling into the list later
+                var data = playerItems[idx];
+                slot?.SetItem(data, () => ShowPreview(data));
+            }
             else
                 slot?.SetEmpty();
         }
@@ -165,6 +169,14 @@ public class InventoryUI : MonoBehaviour
     // ── Preview ───────────────────────────────────────────────────────────
     private void ShowPreview(ItemData item)
     {
+        // Guard against null item to prevent NullReferenceException
+        if (item == null)
+        {
+            Debug.LogWarning("[Inventory] ShowPreview called with null item.");
+            ShowEmptyPreview();
+            return;
+        }
+
         selectedItem = item;
         emptyHint?.SetActive(false);
         previewContent?.SetActive(true);

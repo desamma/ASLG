@@ -8,13 +8,7 @@ using System;
 /// ItemSlot - KHÔNG cần sprite asset nào.
 /// Dùng Image màu thuần + TextMeshPro emoji làm icon tạm.
 ///
-/// Hierarchy của prefab:
-///   ItemSlot  [Image + ItemSlot.cs]
-///   ├── Background  [Image]
-///   ├── RarityGlow  [Image]
-///   ├── TXT_Icon    [TextMeshPro]  ← emoji tạm
-///   └── TXT_Qty     [TextMeshPro]  ← góc phải dưới
-/// </summary>
+
 public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("Kéo thả vào đây trong Inspector")]
@@ -38,10 +32,21 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void SetItem(ItemData item, Action onHoveredCallback)
     {
-        _item = item; _onHovered = onHoveredCallback; _hasItem = true;
+        if (item == null)
+        {
+            Debug.LogWarning("[ItemSlot] SetItem called with null item. Clearing slot.");
+            SetEmpty();
+            return;
+        }
+
+        _item = item;
+        _onHovered = onHoveredCallback;
+        _hasItem = true;
+
         if (slotBackground) slotBackground.color = BG_EMPTY;
         if (rarityBorder) rarityBorder.color = RarityColor(item.rarity);
-       if (icon) { icon.sprite = item.icon; icon.enabled = item.icon != null; }
+        if (icon) { icon.sprite = item.icon; icon.enabled = item.icon != null; }
+
         bool showQty = item.isStackable && item.currentStack > 1;
         if (txt_qty) { txt_qty.text = showQty ? $"x{item.currentStack}" : ""; txt_qty.enabled = showQty; }
     }
@@ -51,7 +56,7 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         _item = null; _onHovered = null; _hasItem = false;
         if (slotBackground) slotBackground.color = BG_EMPTY;
         if (rarityBorder) rarityBorder.color = COL_EMPTY;
-       if (icon) { icon.sprite = null; icon.enabled = false; }
+        if (icon) { icon.sprite = null; icon.enabled = false; }
         if (txt_qty) { txt_qty.text = ""; txt_qty.enabled = false; }
     }
 
