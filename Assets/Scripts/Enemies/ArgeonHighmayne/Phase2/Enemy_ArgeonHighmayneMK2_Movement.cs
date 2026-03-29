@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
+public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovementContext
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_ArgeonHighmayneMK2_Health health;
@@ -19,7 +19,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private Transform player;
-    private List<AttackCategory> attackCategories;
+    private List<AttackCategory<Enemy_ArgeonHighmayneMK2_State>> attackCategories;
 
     [Header("WarSurgeTeleportAttack")]
     [SerializeField] private GameObject warSurgeMarkEffect;
@@ -32,17 +32,29 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
 
-    private int facingDirection;
     private EnemyStats stats;
     private float castRange;
     private float attackCooldownTimer = 0f;
     private float warSurgeWaitTimer = 0f;
-    private bool isRecovering = false;
     private bool isAuraFarming = false;
 
     private EnemyMoveCooldownTracker<Enemy_ArgeonHighmayneMK2_State> moveCooldowns = new();
+    private EnemyAttackRecovery attackRecovery;
+    private KnockbackHandler knockbackHandler;
 
-    #region Move Cooldowns
+    // enemy movement helper
+    public Transform PlayerTransform { get => player; set => player = value; }
+    public bool IsRecovering { get; set; }
+    public int FacingDirection { get; set; }
+
+    // readonly properties for helper
+    public Rigidbody2D Rb => rb;
+    public BehaviorProfile Behavior => behavior;
+    public EnemyStats Stats => stats;
+    public Transform DetectionPoint => detectionPoint;
+    public LayerMask PlayerLayer => playerLayer;
+    public Transform SelfTransform => transform;
+
     private void RegisterMoveUsed(Enemy_ArgeonHighmayneMK2_State usedState)
     {
         var allAttacks = attackCategories
@@ -51,25 +63,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
         moveCooldowns.Register(usedState, allAttacks);
     }
 
-    private bool IsMoveOnCooldown(Enemy_ArgeonHighmayneMK2_State state) => moveCooldowns.IsOnCooldown(state);
-    #endregion
-
-    #region Attack Configuration Classes
-    private class AttackCategory
-    {
-        public float Frequency;
-        public AttackConfig[] Attacks;
-    }
-
-    private class AttackConfig
-    {
-        public Enemy_ArgeonHighmayneMK2_State State;
-        public float Range;
-        public int MoveCountCooldown;
-    }
-    #endregion
-
-    private bool IsInAnyAttackState()
+    public bool IsInAnyAttackState()
     {
         return stateManager.IsInState(Enemy_ArgeonHighmayneMK2_State.Attack) ||
                stateManager.IsInState(Enemy_ArgeonHighmayneMK2_State.WarSurge) ||
@@ -97,7 +91,8 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
         stats = health.stats;
         castRange = stats.AttackRange * 3f;
 
-        facingDirection = 1;
+        IsRecovering = false;
+        FacingDirection = 1;
         transform.localScale = new Vector3(
             Mathf.Abs(transform.localScale.x),
             transform.localScale.y,
@@ -108,9 +103,10 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
         behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_ArgeonHighmayneMK2_State>(animator, Enemy_ArgeonHighmayneMK2_State.Idle);
-        stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
-        stateManager.OnStateExit += OnStateExit;
+
+        attackRecovery = new EnemyAttackRecovery(this, rb);
+        knockbackHandler = new KnockbackHandler(this, rb);
 
         StartCoroutine(AuraFarming());
     }
@@ -137,7 +133,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
         if (warSurgeWaitTimer > 0)
             warSurgeWaitTimer -= Time.deltaTime;
 
-        if (!stateManager.IsInState(Enemy_ArgeonHighmayneMK2_State.Knockback) && !isRecovering)
+        if (!stateManager.IsInState(Enemy_ArgeonHighmayneMK2_State.Knockback) && !IsRecovering)
             CheckForPlayer();
 
         if (stateManager.IsInState(Enemy_ArgeonHighmayneMK2_State.Chase))
@@ -153,9 +149,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (stateManager != null)
         {
-            stateManager.OnStateChanged -= OnStateChanged;
             stateManager.OnStateEnter -= OnStateEnter;
-            stateManager.OnStateExit -= OnStateExit;
         }
         DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
@@ -168,182 +162,96 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
 
     public void Chase()
     {
-        if (player == null) return;
-
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-        if (distanceToPlayer <= stats.AttackRange)
-        {
-            rb.velocity = Vector2.zero;
-            
-            // If close enough and not already attacking, perform immediate attack
-            if (!IsInAnyAttackState() && !isRecovering)
+        EnemyMovementHelper.Chase(this,
+            OnEnterAttackRange: () =>
             {
-                stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Attack);
-                RegisterMoveUsed(Enemy_ArgeonHighmayneMK2_State.Attack);
-                attackCooldownTimer = stats.AttackCooldown;
-            }
-            else if (!IsInAnyAttackState())
-            {
-                stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle);
-            }
-            return;
-        }
-
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-            player.position.x < transform.position.x && facingDirection == 1)
-        {
-            Flip();
-        }
-
-        Vector2 direction = (player.position - transform.position).normalized;
-        rb.velocity = behavior.Aggression * stats.Speed * direction;
-    }
-
-    public void CheckForPlayer()
-    {
-        if (player != null)
-        {
-            float distanceToLockedPlayer = Vector2.Distance(transform.position, player.position);
-            if (distanceToLockedPlayer > behavior.DetectionRange)
-                player = null;
-        }
-        else
-        {
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(detectionPoint.position, behavior.DetectionRange, playerLayer);
-
-            if (hitColliders.Length > 0)
-            {
-                float closestSqrDistance = float.MaxValue;
-                Transform closestTransform = null;
-
-                foreach (var collider in hitColliders)
-                {
-                    float sqrDistance = (collider.transform.position - detectionPoint.position).sqrMagnitude;
-                    if (sqrDistance < closestSqrDistance)
-                    {
-                        closestSqrDistance = sqrDistance;
-                        closestTransform = collider.transform;
-                    }
-                }
-
-                player = closestTransform;
-            }
-        }
-
-        if (player != null)
-        {
-            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-            if (distanceToPlayer <= castRange)
-            {
-                if (!stateManager.IsInState(Enemy_ArgeonHighmayneMK2_State.Chase))
-                    stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Chase);
-
-                // Prioritize immediate attack when within attack range, ignoring cooldown
-                if (distanceToPlayer <= stats.AttackRange && !IsInAnyAttackState() && !isRecovering)
+                if (!IsInAnyAttackState() && !IsRecovering)
                 {
                     stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Attack);
                     RegisterMoveUsed(Enemy_ArgeonHighmayneMK2_State.Attack);
                     attackCooldownTimer = stats.AttackCooldown;
                 }
+                else if (!IsInAnyAttackState())
+                {
+                    stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle);
+                }
+            });
+    }
+
+    public void CheckForPlayer()
+    {
+        EnemyMovementHelper.CheckForPlayer(this, distanceToPlayer =>
+        {
+            if (distanceToPlayer <= castRange)
+            {
+                ChangeToChaseState();
+
+                if (distanceToPlayer <= Stats.AttackRange && !IsInAnyAttackState() && !IsRecovering)
+                {
+                    stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Attack);
+                    RegisterMoveUsed(Enemy_ArgeonHighmayneMK2_State.Attack);
+                    attackCooldownTimer = Stats.AttackCooldown;
+                }
                 else if (attackCooldownTimer <= 0 && !IsInAnyAttackState())
                 {
                     DecideAttackType();
-                    attackCooldownTimer = stats.AttackCooldown;
+                    attackCooldownTimer = Stats.AttackCooldown;
                 }
             }
             else if (!IsInAnyAttackState())
             {
-                stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Chase);
+                ChangeToChaseState();
             }
-        }
-        else
-        {
-            if (!stateManager.IsInState(Enemy_ArgeonHighmayneMK2_State.Idle))
-            {
-                stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle);
-                rb.velocity = Vector2.zero;
-            }
-        }
+        });
     }
 
     private void DecideAttackType()
     {
-        if (player == null) return;
-
-        if (warSurgeTarget != null && warSurgeWaitTimer <= 0 && !IsInAnyAttackState())
-        {
-            stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.WarSurge);
-            player = warSurgeTarget;
-            warSurgeTarget = null;
-            RegisterMoveUsed(Enemy_ArgeonHighmayneMK2_State.WarSurge);
-
-            return;
-        }
-
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        float random = Random.value;
-        float cumulativeProbability = 0f;
-
-        foreach (var category in attackCategories)
-        {
-            cumulativeProbability += category.Frequency;
-
-            if (random < cumulativeProbability)
+        EnemyMovementHelper.DecideAttackType(this, attackCategories, moveCooldowns,
+            OnPriorityCodeBeforeRoll: () =>
             {
-                var availableAttacks = category.Attacks
-                    .Where(a => distanceToPlayer <= a.Range && !IsMoveOnCooldown(a.State))
-                    .ToArray();
-
-                if (availableAttacks.Length > 0)
+                if (warSurgeTarget != null && warSurgeWaitTimer <= 0 && !IsInAnyAttackState())
                 {
-                    var selectedAttack = availableAttacks[Random.Range(0, availableAttacks.Length)];
-
-                    if (selectedAttack.State == Enemy_ArgeonHighmayneMK2_State.WarSurge && warSurgeTarget == null)
-                    {
-                        if (distanceToPlayer <= warSurgeSearchRadius)
-                        {
-                            warSurgeTarget = player;
-                            Vector3 position = player.position + new Vector3(0, 1.8f, 0);
-                            Instantiate(warSurgeMarkEffect, position, Quaternion.identity, player.transform);
-                            warSurgeWaitTimer = warSurgeWaitTime;
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        stateManager.ChangeState(selectedAttack.State);
-                        RegisterMoveUsed(selectedAttack.State);
-                        return;
-                    }
+                    stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.WarSurge);
+                    PlayerTransform = warSurgeTarget;
+                    warSurgeTarget = null;
+                    RegisterMoveUsed(Enemy_ArgeonHighmayneMK2_State.WarSurge);
                 }
-            }
-        }
+            },
+            OnAttackSelected: state =>
+            {
+                if (state == Enemy_ArgeonHighmayneMK2_State.WarSurge && warSurgeTarget == null)
+                {
+                    float distanceToPlayer = Vector2.Distance(transform.position, PlayerTransform.position);
+                    if (distanceToPlayer <= warSurgeSearchRadius)
+                    {
+                        warSurgeTarget = PlayerTransform;
+                        Vector3 position = PlayerTransform.position + new Vector3(0, 1.8f, 0);
+                        Instantiate(warSurgeMarkEffect, position, Quaternion.identity, PlayerTransform.transform);
+                        warSurgeWaitTimer = warSurgeWaitTime;
+                    }
+                    return;
+                }
+
+                stateManager.ChangeState(state);
+                RegisterMoveUsed(state);
+            });
     }
 
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
-        StartCoroutine(AttackRecovery());
-    }
-
-    private IEnumerator AttackRecovery()
-    {
-        isRecovering = true;
-        stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle);
-        rb.velocity = Vector2.zero;
-
-        yield return new WaitForSeconds(stats.AttackCooldown);
-        isRecovering = false;
-    }
-
-    public void Flip()
-    {
-        facingDirection *= -1;
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1;
-        transform.localScale = localScale;
+        attackRecovery.StartRecovery(stats.AttackCooldown,
+            () =>
+            {
+                IsRecovering = true;
+                stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle);
+                rb.velocity = Vector2.zero;
+            },
+            () =>
+            {
+                IsRecovering = false;
+            });
     }
 
     public void InitializeBehavior()
@@ -357,33 +265,33 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
             MobilityUsageFrequency = 1f,
         };
 
-        attackCategories = new List<AttackCategory>
-        {
-            new() {
-                Frequency = behavior.UltimateAttackFrequency,
-                Attacks = new[]
-                {
-                    new AttackConfig { State = Enemy_ArgeonHighmayneMK2_State.Decimated,   Range = castRange, MoveCountCooldown = 5 },
+        attackCategories = new List<AttackCategory<Enemy_ArgeonHighmayneMK2_State>>
+         {
+             new() {
+                 Frequency = behavior.UltimateAttackFrequency,
+                 Attacks = new[]
+                 {
+                     new AttackConfig<Enemy_ArgeonHighmayneMK2_State> { State = Enemy_ArgeonHighmayneMK2_State.Decimated,   Range = castRange, MoveCountCooldown = 5 },
 
-                    new AttackConfig { State = Enemy_ArgeonHighmayneMK2_State.DualCast,  Range = castRange, MoveCountCooldown = 5 }
-                }
-            },
-            new() {
-                Frequency = behavior.SpecialAttackFrequency * behavior.MobilityUsageFrequency,
-                Attacks = new[]
-                {
-                    new AttackConfig { State = Enemy_ArgeonHighmayneMK2_State.WarSurge, Range = castRange, MoveCountCooldown = 4 },
-                }
-            },
-            new() {
-                Frequency = 1f,
-                Attacks = new[]
-                {
-                    // Basic Attack: no count cooldown
-                    new AttackConfig { State = Enemy_ArgeonHighmayneMK2_State.Attack, Range = stats.AttackRange, MoveCountCooldown = 0 }
-                }
-            }
-        };
+                     new AttackConfig<Enemy_ArgeonHighmayneMK2_State> { State = Enemy_ArgeonHighmayneMK2_State.DualCast,  Range = castRange, MoveCountCooldown = 5 }
+                 }
+             },
+             new() {
+                 Frequency = behavior.SpecialAttackFrequency * behavior.MobilityUsageFrequency,
+                 Attacks = new[]
+                 {
+                     new AttackConfig<Enemy_ArgeonHighmayneMK2_State> { State = Enemy_ArgeonHighmayneMK2_State.WarSurge, Range = castRange, MoveCountCooldown = 4 },
+                 }
+             },
+             new() {
+                 Frequency = 1f,
+                 Attacks = new[]
+                 {
+                     // Basic Attack: no count cooldown
+                     new AttackConfig<Enemy_ArgeonHighmayneMK2_State> { State = Enemy_ArgeonHighmayneMK2_State.Attack, Range = stats.AttackRange, MoveCountCooldown = 0 }
+                 }
+             }
+         };
 
         // Pre-populate counters so all attacks are available at the start
         moveCooldowns.Initialize(attackCategories
@@ -400,9 +308,10 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
 
     private void WarSurgeTP()
     {
-        float playerFacingDirection = player.localScale.x > 0 ? 1f : -1f;
+        if (PlayerTransform == null) return;
+        float playerFacingDirection = PlayerTransform.localScale.x > 0 ? 1f : -1f;
         float offsetDistance = 1.5f;
-        Vector3 targetPosition = player.position + new Vector3(-playerFacingDirection * offsetDistance, 0f, 0f);
+        Vector3 targetPosition = PlayerTransform.position + new Vector3(-playerFacingDirection * offsetDistance, 0f, 0f);
         StartCoroutine(WarSurgeTPWaitTime(targetPosition));
     }
 
@@ -414,39 +323,26 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
         Vector3 effectPosition = transform.position + new Vector3(0, -1.3f, 0);
         Instantiate(warSurgeAfterTPEffect, effectPosition, Quaternion.identity);
 
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-            player.position.x < transform.position.x && facingDirection == 1)
-        {
-            Flip();
-        }
+        if (PlayerTransform != null)
+            FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
     }
 
     #region State Callbacks
-    private void OnStateChanged(Enemy_ArgeonHighmayneMK2_State previousState, Enemy_ArgeonHighmayneMK2_State newState)
-    {
-    }
-
     private void OnStateEnter(Enemy_ArgeonHighmayneMK2_State state)
     {
         switch (state)
         {
             case Enemy_ArgeonHighmayneMK2_State.Attack:
                 rb.velocity = Vector2.zero;
-                if (player.position.x > transform.position.x && facingDirection == -1 ||
-                    player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
+                FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
                 break;
             case Enemy_ArgeonHighmayneMK2_State.WarSurge:
                 rb.velocity = Vector2.zero;
-                if (player.position.x > transform.position.x && facingDirection == -1 ||
-                    player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
+                FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
                 WarSurgeTP();
                 break;
             case Enemy_ArgeonHighmayneMK2_State.Decimated:
-                if (player.position.x > transform.position.x && facingDirection == -1 ||
-                    player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
+                FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
                 rb.velocity = Vector2.zero;
                 break;
             case Enemy_ArgeonHighmayneMK2_State.DualCast:
@@ -458,27 +354,27 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement
                 break;
         }
     }
-
-    private void OnStateExit(Enemy_ArgeonHighmayneMK2_State state)
-    {
-    }
     #endregion
 
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
-        if (!isKnockbackable) return;
-        stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Knockback);
-        StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
-        Vector2 knockbackDirection = (transform.position - player.position).normalized;
-        rb.velocity = knockbackDirection * knockbackForce;
+        if (!isKnockbackable || knockbackHandler == null) return;
+
+        knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
+            () => stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Knockback),
+            () => stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle));
     }
 
-    IEnumerator KnockBackCounter(float knockbackTime, float stunTime)
+    public void ChangeToChaseState()
     {
-        yield return new WaitForSeconds(knockbackTime);
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(stunTime);
-        stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle);
+        if (!stateManager.IsInState(Enemy_ArgeonHighmayneMK2_State.Chase))
+            stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Chase);
+    }
+
+    public void ChangeToIdleState()
+    {
+        if (!stateManager.IsInState(Enemy_ArgeonHighmayneMK2_State.Idle))
+            stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Idle);
     }
 
     #region Getters

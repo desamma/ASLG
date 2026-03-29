@@ -53,7 +53,7 @@ public class AnimatorParameterSetup : EditorWindow
 
         // Optional state script selection
         stateScript = (MonoScript)EditorGUILayout.ObjectField(
-            "State Script (optional)",
+            "State Script",
             stateScript,
             typeof(MonoScript),
             false);

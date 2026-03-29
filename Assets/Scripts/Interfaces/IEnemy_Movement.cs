@@ -17,11 +17,6 @@ public interface IEnemy_Movement
     void OnDifficultyChanged(DifficultyModifier newModifier);
 
     /// <summary>
-    /// Reverses the orientation or state of the object.
-    /// </summary>
-    void Flip();
-
-    /// <summary>
     /// Checks for the presence of a player in the relevant context.
     /// </summary>
     void CheckForPlayer();

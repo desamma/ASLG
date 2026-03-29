@@ -12,8 +12,8 @@ public class Enemy_ArgeonHighmayne_Health : MonoBehaviour, IEnemy_Health
     public bool isDead;
     private BossHealthUI bossHealthUI;
 
-    [Header("Components")]
     private Enemy_ArgeonHighmayne_Movement movementComponent;
+    private StatusEffectManager effectManager;
 
     private void Awake()
     {
@@ -25,6 +25,7 @@ public class Enemy_ArgeonHighmayne_Health : MonoBehaviour, IEnemy_Health
         stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         movementComponent = GetComponent<Enemy_ArgeonHighmayne_Movement>();
+        effectManager = GetComponent<StatusEffectManager>();
 
         bossHealthUI = FindFirstObjectByType<BossHealthUI>(FindObjectsInactive.Include);
 
@@ -72,6 +73,11 @@ public class Enemy_ArgeonHighmayne_Health : MonoBehaviour, IEnemy_Health
             {
                 var manager = movementComponent.GetStateManager();
                 manager.ChangeState(Enemy_ArgeonHighmayne_State.Death);
+
+                if (effectManager != null)
+                {
+                    effectManager.RemoveAll();
+                }
             }
         }
     }
