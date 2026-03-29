@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
+public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovementContext
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_Dogehai_Health health;
@@ -18,8 +18,7 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Collider2D charCollider;
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private Transform player;
-    private List<AttackCategory> attackCategories;
+    private List<AttackCategory<Enemy_Dogehai_State>> attackCategories;
 
     [Header("Dig Settings")]
     [SerializeField] private float digChance = 0.5f;
@@ -34,17 +33,28 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private AudioClip cryAudio;
     [SerializeField] private float volume = 0.8f;
 
-    private int facingDirection;
     private EnemyStats stats;
     private float castRange;
     private float attackCooldownTimer = 0f;
     private float warSurgeWaitTimer = 0f;
-    private bool isRecovering = false;
     private bool isAuraFarming = false;
 
     private EnemyMoveCooldownTracker<Enemy_Dogehai_State> moveCooldowns = new();
     private KnockbackHandler knockbackHandler;
     private EnemyAttackRecovery attackRecovery;
+
+    // enemy movement helper
+    public Transform PlayerTransform { get; set; }
+    public bool IsRecovering { get; set; }
+    public int FacingDirection { get; set; }
+
+    // readonly properties for helper
+    public Rigidbody2D Rb => rb;
+    public BehaviorProfile Behavior => behavior;
+    public EnemyStats Stats => stats;
+    public Transform DetectionPoint => detectionPoint;
+    public LayerMask PlayerLayer => playerLayer;
+    public Transform SelfTransform => transform;
 
     #region Move Cooldowns
     private void RegisterMoveUsed(Enemy_Dogehai_State usedState)
@@ -54,26 +64,9 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
             .Select(a => (a.State, a.MoveCountCooldown));
         moveCooldowns.Register(usedState, allAttacks);
     }
-
-    private bool IsMoveOnCooldown(Enemy_Dogehai_State state) => moveCooldowns.IsOnCooldown(state);
     #endregion
 
-    #region Attack Configuration Classes
-    private class AttackCategory
-    {
-        public float Frequency;
-        public AttackConfig[] Attacks;
-    }
-
-    private class AttackConfig
-    {
-        public Enemy_Dogehai_State State;
-        public float Range;
-        public int MoveCountCooldown;
-    }
-    #endregion
-
-    private bool IsInAnyAttackState()
+    public bool IsInAnyAttackState()
     {
         return stateManager.IsInState(Enemy_Dogehai_State.Attack);
     }
@@ -98,7 +91,8 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
         stats = health.stats;
         castRange = stats.AttackRange * 3f;
 
-        facingDirection = 1;
+        IsRecovering = false;
+        FacingDirection = 1;
         transform.localScale = new Vector3(
             Mathf.Abs(transform.localScale.x),
             transform.localScale.y,
@@ -136,7 +130,7 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
         if (warSurgeWaitTimer > 0)
             warSurgeWaitTimer -= Time.deltaTime;
 
-        if (!stateManager.IsInState(Enemy_Dogehai_State.Knockback) && !isRecovering)
+        if (!stateManager.IsInState(Enemy_Dogehai_State.Knockback) && !IsRecovering)
             CheckForPlayer();
 
         if (stateManager.IsInState(Enemy_Dogehai_State.Chase))
@@ -165,80 +159,31 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
 
     public void Chase()
     {
-        if (player == null) return;
-
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-        if (distanceToPlayer <= stats.AttackRange)
-        {
-            rb.velocity = Vector2.zero;
-
-            // If close enough and not already attacking, perform immediate attack
-            if (!IsInAnyAttackState() && !isRecovering)
+        EnemyMovementHelper.Chase(this,
+            OnEnterAttackRange: () =>
             {
-                stateManager.ChangeState(Enemy_Dogehai_State.Attack);
-                RegisterMoveUsed(Enemy_Dogehai_State.Attack);
-                attackCooldownTimer = stats.AttackCooldown;
-            }
-            else if (!IsInAnyAttackState())
-            {
-                stateManager.ChangeState(Enemy_Dogehai_State.Idle);
-            }
-            return;
-        }
-
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-            player.position.x < transform.position.x && facingDirection == 1)
-        {
-            Flip();
-        }
-
-        Vector2 direction = (player.position - transform.position).normalized;
-        rb.velocity = behavior.Aggression * stats.Speed * direction;
+                if (!IsInAnyAttackState() && !IsRecovering)
+                {
+                    stateManager.ChangeState(Enemy_Dogehai_State.Attack);
+                    RegisterMoveUsed(Enemy_Dogehai_State.Attack);
+                    attackCooldownTimer = stats.AttackCooldown;
+                }
+                else if (!IsInAnyAttackState())
+                {
+                    stateManager.ChangeState(Enemy_Dogehai_State.Idle);
+                }
+            });
     }
 
     public void CheckForPlayer()
     {
-        if (player != null)
+        EnemyMovementHelper.CheckForPlayer(this, distanceToPlayer =>
         {
-            float distanceToLockedPlayer = Vector2.Distance(transform.position, player.position);
-            if (distanceToLockedPlayer > behavior.DetectionRange)
-                player = null;
-        }
-        else
-        {
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(detectionPoint.position, behavior.DetectionRange, playerLayer);
-
-            if (hitColliders.Length > 0)
-            {
-                float closestSqrDistance = float.MaxValue;
-                Transform closestTransform = null;
-
-                foreach (var collider in hitColliders)
-                {
-                    float sqrDistance = (collider.transform.position - detectionPoint.position).sqrMagnitude;
-                    if (sqrDistance < closestSqrDistance)
-                    {
-                        closestSqrDistance = sqrDistance;
-                        closestTransform = collider.transform;
-                    }
-                }
-
-                player = closestTransform;
-            }
-        }
-
-        if (player != null)
-        {
-            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
             if (distanceToPlayer <= castRange)
             {
-                if (!stateManager.IsInState(Enemy_Dogehai_State.Chase))
-                    stateManager.ChangeState(Enemy_Dogehai_State.Chase);
+                ChangeToChaseState();
 
-                // Prioritize immediate attack when within attack range, ignoring cooldown
-                if (distanceToPlayer <= stats.AttackRange && !IsInAnyAttackState() && !isRecovering)
+                if (distanceToPlayer <= Stats.AttackRange && !IsInAnyAttackState() && !IsRecovering)
                 {
                     stateManager.ChangeState(Enemy_Dogehai_State.Attack);
                     RegisterMoveUsed(Enemy_Dogehai_State.Attack);
@@ -252,62 +197,34 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
             }
             else if (!IsInAnyAttackState())
             {
-                stateManager.ChangeState(Enemy_Dogehai_State.Chase);
+                ChangeToChaseState();
             }
-        }
-        else
-        {
-            if (!stateManager.IsInState(Enemy_Dogehai_State.Idle))
-            {
-                stateManager.ChangeState(Enemy_Dogehai_State.Idle);
-                rb.velocity = Vector2.zero;
-            }
-        }
+        });
     }
 
     private void DecideAttackType()
     {
-        if (player == null) return;
-
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        float random = Random.value;
-        float cumulativeProbability = 0f;
-
-        foreach (var category in attackCategories)
-        {
-            cumulativeProbability += category.Frequency;
-
-            if (random < cumulativeProbability)
+        EnemyMovementHelper.DecideAttackType(this, attackCategories, moveCooldowns,
+            OnAttackSelected: state =>
             {
-                var availableAttacks = category.Attacks
-                    .Where(a => distanceToPlayer <= a.Range && !IsMoveOnCooldown(a.State))
-                    .ToArray();
-
-                if (availableAttacks.Length > 0)
-                {
-                    var selectedAttack = availableAttacks[Random.Range(0, availableAttacks.Length)];
-
-                    stateManager.ChangeState(selectedAttack.State);
-                    RegisterMoveUsed(selectedAttack.State);
-                    return;
-                }
-            }
-        }
+                stateManager.ChangeState(state);
+                RegisterMoveUsed(state);
+            });
     }
 
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
-        attackRecovery.StartRecovery(stats.AttackCooldown, 
-            () =>
-            {
-                isRecovering = true;
-                stateManager.ChangeState(Enemy_Dogehai_State.Idle);
-            },
-            () =>
-            {
-                StartCoroutine(DigCoroutine());
-            });
+        attackRecovery.StartRecovery(stats.AttackCooldown,
+             () =>
+             {
+                 IsRecovering = true;
+                 stateManager.ChangeState(Enemy_Dogehai_State.Idle);
+             },
+             () =>
+             {
+                 StartCoroutine(DigCoroutine());
+             });
     }
 
     private IEnumerator DigCoroutine()
@@ -318,13 +235,13 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
             stateManager.ChangeState(Enemy_Dogehai_State.Dig);
             yield return new WaitForSeconds(digDuration);
         }
-        
-        isRecovering = false;
+
+        IsRecovering = false;
     }
 
     public void Flip()
     {
-        facingDirection *= -1;
+        FacingDirection *= -1;
         Vector3 localScale = transform.localScale;
         localScale.x *= -1;
         transform.localScale = localScale;
@@ -339,14 +256,14 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
             MobilityUsageFrequency = 0f,
         };
 
-        attackCategories = new List<AttackCategory>
+        attackCategories = new List<AttackCategory<Enemy_Dogehai_State>>
         {
             new() {
                 Frequency = 1f,
                 Attacks = new[]
                 {
                     // Basic Attack: no count cooldown
-                    new AttackConfig { State = Enemy_Dogehai_State.Attack, Range = stats.AttackRange, MoveCountCooldown = 0 }
+                    new AttackConfig<Enemy_Dogehai_State> { State = Enemy_Dogehai_State.Attack, Range = stats.AttackRange, MoveCountCooldown = 0 }
                 }
             }
         };
@@ -373,9 +290,8 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
                 break;
             case Enemy_Dogehai_State.Attack:
                 rb.velocity = Vector2.zero;
-                if (player.position.x > transform.position.x && facingDirection == -1 ||
-                    player.position.x < transform.position.x && facingDirection == 1)
-                    Flip();
+                if (PlayerTransform != null)
+                    FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
                 SoundFXManager.Instance.PlaySoundFXClip(barkAudio, transform, volume);
                 break;
             case Enemy_Dogehai_State.Death:
@@ -395,6 +311,18 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement
         knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
             () => stateManager.ChangeState(Enemy_Dogehai_State.Knockback),
             () => stateManager.ChangeState(Enemy_Dogehai_State.Idle));
+    }
+
+    public void ChangeToChaseState()
+    {
+        if (!stateManager.IsInState(Enemy_Dogehai_State.Chase))
+            stateManager.ChangeState(Enemy_Dogehai_State.Chase);
+    }
+
+    public void ChangeToIdleState()
+    {
+        if (!stateManager.IsInState(Enemy_Dogehai_State.Idle))
+            stateManager.ChangeState(Enemy_Dogehai_State.Idle);
     }
 
     #region Getters

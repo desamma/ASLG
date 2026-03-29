@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
+public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovementContext
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_Andromeda_Health health;
@@ -14,7 +14,6 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private Transform player;
     [SerializeField] private Enemy_Andromeda_Attack attackComponent;
 
     [Header("Transforms")]
@@ -31,15 +30,27 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
     private float unstuckPatrolWaitTimer;
     private float waitTimer = 0f;
 
-    private int facingDirection;
     private EnemyStats stats;
     private float castRange;
     private float attackCooldownTimer = 0f;
-    private bool isRecovering = false;
 
     private EnemyAttackRecovery attackRecovery;
     private KnockbackHandler knockbackHandler;
-    private void Awake()
+
+    // enemy movement helper
+    public Transform PlayerTransform { get; set; }
+    public bool IsRecovering { get; set; }
+    public int FacingDirection { get; set; }
+
+    // readonly properties for helper
+    public Rigidbody2D Rb => rb;
+    public BehaviorProfile Behavior => behavior;
+    public EnemyStats Stats => stats;
+    public Transform DetectionPoint => detectionPoint;
+    public LayerMask PlayerLayer => playerLayer;
+    public Transform SelfTransform => transform;
+
+    private void Start()
     {
         originalPosition = transform.position;
 
@@ -48,10 +59,7 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
         patrolPoints[1] = originalPosition + Vector2.down * patrolDistance;
         patrolPoints[2] = originalPosition + Vector2.left * patrolDistance;
         patrolPoints[3] = originalPosition + Vector2.right * patrolDistance;
-    }
 
-    private void Start()
-    {
         if (rb == null)
             rb = GetComponent<Rigidbody2D>();
 
@@ -66,12 +74,16 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
             playerLayer = LayerMask.GetMask("Player");
         }
 
+        attackRecovery = new EnemyAttackRecovery(this, rb);
+        knockbackHandler = new KnockbackHandler(this, rb);
+
         if (health == null)
             health = GetComponent<Enemy_Andromeda_Health>();
 
         stats = health.stats;
 
-        facingDirection = 1;
+        FacingDirection = 1;
+
         transform.localScale = new Vector3(
             Mathf.Abs(transform.localScale.x),
             transform.localScale.y,
@@ -86,9 +98,7 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
 
         castRange = stats.AttackRange * 2.5f;
 
-        stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
-        stateManager.OnStateExit += OnStateExit;
     }
 
     private void Update()
@@ -98,7 +108,7 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
         if (attackCooldownTimer > 0)
             attackCooldownTimer -= Time.deltaTime;
 
-        if (!stateManager.IsInState(Enemy_Andromeda_State.Knockback) && !isRecovering)
+        if (!stateManager.IsInState(Enemy_Andromeda_State.Knockback) && !IsRecovering)
         {
             CheckForPlayer();
         }
@@ -122,9 +132,7 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (stateManager != null)
         {
-            stateManager.OnStateChanged -= OnStateChanged;
             stateManager.OnStateEnter -= OnStateEnter;
-            stateManager.OnStateExit -= OnStateExit;
         }
         DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
@@ -137,116 +145,54 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
 
     public void Chase()
     {
-        if (player == null) return;
-
-        facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
-
-        Vector2 direction = (player.position - transform.position).normalized;
-        rb.velocity = direction * stats.Speed;
+        EnemyMovementHelper.Chase(this, isStopOnAttackRange: false);
     }
 
-    void Patrol()
+    private void Patrol()
     {
-        if (isWaiting)
-        {
-            stateManager.ChangeState(Enemy_Andromeda_State.Idle);
-            waitTimer += Time.deltaTime;
-
-            if (waitTimer >= idleToPatrolWaitTime)
-            {
-                isWaiting = false;
-                waitTimer = 0f;
-
-                int newIndex;
-                do
-                {
-                    newIndex = Random.Range(0, patrolPoints.Length);
-                } while (newIndex == currentPatrolIndex);
-
-                currentPatrolIndex = newIndex;
-                stateManager.ChangeState(Enemy_Andromeda_State.Patrol);
-            }
-            return;
-        }
-
-        if (unstuckPatrolWaitTimer > 0)
-        {
-            unstuckPatrolWaitTimer -= Time.deltaTime;
-
-            Vector3 targetPos = patrolPoints[currentPatrolIndex];
-            Vector3 direction = (targetPos - transform.position).normalized;
-            rb.velocity = direction * stats.Speed;
-
-            facingDirection = TransformHelper.FlipTowards(transform, player, facingDirection);
-
-            if (Vector2.Distance(transform.position, targetPos) < 0.1f)
-            {
-                rb.velocity = Vector2.zero;
-                isWaiting = true;
-            }
-        }
-        else
-        {
-            rb.velocity = Vector2.zero;
-            unstuckPatrolWaitTimer = unstuckPatrolWaitTime;
-            isWaiting = true;
-        }
+        EnemyMovementHelper.Patrol(this, patrolPoints, ref currentPatrolIndex, ref isWaiting, ref waitTimer, ref unstuckPatrolWaitTimer,
+            idleToPatrolWaitTime, unstuckPatrolWaitTime,
+            () => stateManager.ChangeState(Enemy_Andromeda_State.Idle),
+            () => stateManager.ChangeState(Enemy_Andromeda_State.Patrol));
     }
 
     public void CheckForPlayer()
     {
-        // Don't check if currently attacking or recovering
-        if (stateManager.IsInState(Enemy_Andromeda_State.Attack) ||
-            stateManager.IsInState(Enemy_Andromeda_State.Cast) ||
-            isRecovering)
-        {
-            return;
-        }
-
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(detectionPoint.position, behavior.DetectionRange, playerLayer);
-
-        if (hitColliders.Length > 0)
-        {
-            player = hitColliders[0].transform;
-
-            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-            // Player within cast range
-            if (distanceToPlayer <= castRange)
+        EnemyMovementHelper.CheckForPlayer(this,
+            OnPlayerFound: distanceToPlayer =>
             {
-                rb.velocity = Vector2.zero;
-
-                if (attackCooldownTimer <= 0)
+                if (distanceToPlayer <= castRange)
                 {
-                    DecideAttackType();
-                    attackCooldownTimer = stats.AttackCooldown;
+                    rb.velocity = Vector2.zero;
+
+                    if (attackCooldownTimer <= 0)
+                    {
+                        DecideAttackType();
+                        attackCooldownTimer = stats.AttackCooldown;
+                    }
                 }
-            }
-            // Player outside cast range ? chase
-            else if (distanceToPlayer > castRange &&
-                     !(stateManager.IsInState(Enemy_Andromeda_State.Attack) ||
-                       stateManager.IsInState(Enemy_Andromeda_State.Cast)))
+                else if (distanceToPlayer > castRange &&
+                         !IsInAnyAttackState())
+                {
+                    stateManager.ChangeState(Enemy_Andromeda_State.Chase);
+                }
+            }, true,
+            OnPatrolInsteadOfIdle: () =>
             {
-                stateManager.ChangeState(Enemy_Andromeda_State.Chase);
-            }
-        }
-        else
-        {
-            if (!stateManager.IsInState(Enemy_Andromeda_State.Patrol) &&
-                !stateManager.IsInState(Enemy_Andromeda_State.Attack) &&
-                !stateManager.IsInState(Enemy_Andromeda_State.Cast))
-            {
-                stateManager.ChangeState(Enemy_Andromeda_State.Patrol);
-            }
-        }
+                if (!stateManager.IsInState(Enemy_Andromeda_State.Patrol) &&
+                    !IsInAnyAttackState())
+                {
+                    stateManager.ChangeState(Enemy_Andromeda_State.Patrol);
+                }
+            });
     }
 
     private void DecideAttackType()
     {
-        if (player == null) return;
+        if (PlayerTransform == null) return;
 
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        float random = Random.value;
+        float distanceToPlayer = Vector2.Distance(transform.position, PlayerTransform.position);
+        float random = UnityEngine.Random.value;
 
         // Cast is the special attack
         if (random < behavior.SpecialAttackFrequency)
@@ -287,13 +233,13 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
         attackRecovery.StartRecovery(attackRecoveryDuration,
             () =>
             {
-                isRecovering = true;
+                IsRecovering = true;
                 stateManager.ChangeState(Enemy_Andromeda_State.Idle);
                 rb.velocity = Vector2.zero;
             },
             () =>
             {
-                isRecovering = false;
+                IsRecovering = false;
             });
     }
 
@@ -312,20 +258,10 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
     }
 
     #region State Callbacks
-    private void OnStateChanged(Enemy_Andromeda_State previousState, Enemy_Andromeda_State newState)
-    {
-    }
-
     private void OnStateEnter(Enemy_Andromeda_State state)
     {
         switch (state)
         {
-            case Enemy_Andromeda_State.Attack:
-                rb.velocity = Vector2.zero;
-                break;
-            case Enemy_Andromeda_State.Cast:
-                rb.velocity = Vector2.zero;
-                break;
             case Enemy_Andromeda_State.Death:
                 rb.velocity = Vector2.zero;
                 Destroy(gameObject, 1.3f);
@@ -333,13 +269,11 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
             case Enemy_Andromeda_State.Patrol:
                 unstuckPatrolWaitTimer = unstuckPatrolWaitTime;
                 break;
+            default:
+                rb.velocity = Vector2.zero;
+                break;
         }
     }
-
-    private void OnStateExit(Enemy_Andromeda_State state)
-    {
-    }
-
     #endregion
 
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
@@ -349,6 +283,22 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement
         knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
             () => stateManager.ChangeState(Enemy_Andromeda_State.Knockback),
             () => stateManager.ChangeState(Enemy_Andromeda_State.Idle));
+    }
+
+    public bool IsInAnyAttackState() =>
+        stateManager.IsInState(Enemy_Andromeda_State.Attack) ||
+        stateManager.IsInState(Enemy_Andromeda_State.Cast);
+
+    public void ChangeToChaseState()
+    {
+        if (!stateManager.IsInState(Enemy_Andromeda_State.Chase))
+            stateManager.ChangeState(Enemy_Andromeda_State.Chase);
+    }
+
+    public void ChangeToIdleState()
+    {
+        if (!stateManager.IsInState(Enemy_Andromeda_State.Idle))
+            stateManager.ChangeState(Enemy_Andromeda_State.Idle);
     }
 
     #region Getters

@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
+public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovementContext
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_Pax_Health health;
@@ -15,13 +15,11 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private Transform player;
     [SerializeField] private Enemy_Pax_Attack attackComponent;
 
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
     private Vector2 originalPosition;
-    private int facingDirection;
 
     [Header("Patrol Settings")]
     [SerializeField] private float idleToPatrolWaitTime = 5f;
@@ -44,21 +42,22 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
 
     private EnemyStats stats;
     private float attackCooldownTimer = 0f;
-    private bool isRecovering = false;
     private float idleTimer = 0f;
     private readonly float idleToLickPawTime = 5f;
     private bool isAttacked = false;
 
-    private void Awake()
-    {
-        originalPosition = transform.position;
+    // enemy movement helper
+    public Transform PlayerTransform { get; set; }
+    public bool IsRecovering { get; set; }
+    public int FacingDirection { get; set; }
 
-        patrolPoints = new Vector2[4];
-        patrolPoints[0] = originalPosition + Vector2.up * patrolDistance;
-        patrolPoints[1] = originalPosition + Vector2.down * patrolDistance;
-        patrolPoints[2] = originalPosition + Vector2.left * patrolDistance;
-        patrolPoints[3] = originalPosition + Vector2.right * patrolDistance;
-    }
+    // readonly properties for helper
+    public Rigidbody2D Rb => rb;
+    public BehaviorProfile Behavior => behavior;
+    public EnemyStats Stats => stats;
+    public Transform DetectionPoint => detectionPoint;
+    public LayerMask PlayerLayer => playerLayer;
+    public Transform SelfTransform => transform;
 
     private void Start()
     {
@@ -80,7 +79,16 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
             health = GetComponent<Enemy_Pax_Health>();
         stats = health.stats;
 
-        facingDirection = 1;
+        originalPosition = transform.position;
+
+        patrolPoints = new Vector2[4];
+        patrolPoints[0] = originalPosition + Vector2.up * patrolDistance;
+        patrolPoints[1] = originalPosition + Vector2.down * patrolDistance;
+        patrolPoints[2] = originalPosition + Vector2.left * patrolDistance;
+        patrolPoints[3] = originalPosition + Vector2.right * patrolDistance;
+
+        IsRecovering = false;
+        FacingDirection = 1;
         transform.localScale = new Vector3(
             Mathf.Abs(transform.localScale.x),
             transform.localScale.y,
@@ -93,7 +101,7 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
 
         stateManager = new StateManager<Enemy_Pax_State>(animator, Enemy_Pax_State.Idle);
 
-        stateManager.OnStateChanged += OnStateChanged;
+
         stateManager.OnStateEnter += OnStateEnter;
         stateManager.OnStateExit += OnStateExit;
 
@@ -138,7 +146,7 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
             }
         }
 
-        if (!stateManager.IsInState(Enemy_Pax_State.Knockback) && !isRecovering)
+        if (!stateManager.IsInState(Enemy_Pax_State.Knockback) && !IsRecovering)
         {
             CheckForPlayer();
         }
@@ -163,7 +171,6 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
     {
         if (stateManager != null)
         {
-            stateManager.OnStateChanged -= OnStateChanged;
             stateManager.OnStateEnter -= OnStateEnter;
             stateManager.OnStateExit -= OnStateExit;
         }
@@ -185,110 +192,47 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
 
     public void Chase()
     {
-        if (player == null) return;
-
-        if (player.position.x > transform.position.x && facingDirection == -1 ||
-            player.position.x < transform.position.x && facingDirection == 1)
-        {
-            Flip();
-        }
-
-        Vector2 direction = (player.position - transform.position).normalized;
-        rb.velocity = direction * stats.Speed;
+        EnemyMovementHelper.Chase(this, isStopOnAttackRange: false);
     }
 
-    void Patrol()
+    private void Patrol()
     {
-        if (isWaiting)
-        {
-            stateManager.ChangeState(Enemy_Pax_State.Idle);
-            waitTimer += Time.deltaTime;
-
-            if (waitTimer >= idleToPatrolWaitTime)
-            {
-                isWaiting = false;
-                waitTimer = 0f;
-
-                int newIndex;
-                do
-                {
-                    newIndex = Random.Range(0, patrolPoints.Length);
-                } while (newIndex == currentPatrolIndex);
-
-                currentPatrolIndex = newIndex;
-                stateManager.ChangeState(Enemy_Pax_State.Patrol);
-            }
-            return;
-        }
-
-        if (unstuckPatrolWaitTimer > 0)
-        {
-            unstuckPatrolWaitTimer -= Time.deltaTime;
-
-            Vector3 targetPos = patrolPoints[currentPatrolIndex];
-            Vector3 direction = (targetPos - transform.position).normalized;
-            rb.velocity = direction * stats.Speed;
-
-            if ((targetPos.x > transform.position.x && facingDirection == -1) ||
-                (targetPos.x < transform.position.x && facingDirection == 1))
-            {
-                Flip();
-            }
-
-            if (Vector2.Distance(transform.position, targetPos) < 0.1f)
-            {
-                rb.velocity = Vector2.zero;
-                isWaiting = true;
-            }
-        }
-        else
-        {
-            rb.velocity = Vector2.zero;
-            unstuckPatrolWaitTimer = unstuckPatrolWaitTime;
-            isWaiting = true;
-        }
+        EnemyMovementHelper.Patrol(this, patrolPoints, ref currentPatrolIndex, ref isWaiting, ref waitTimer, ref unstuckPatrolWaitTimer,
+            idleToPatrolWaitTime, unstuckPatrolWaitTime,
+            () => stateManager.ChangeState(Enemy_Pax_State.Idle),
+            () => stateManager.ChangeState(Enemy_Pax_State.Patrol));
     }
 
     public void CheckForPlayer()
     {
-        // Don't check if currently attacking or recovering
-        if (stateManager.IsInState(Enemy_Pax_State.Attack) || isRecovering || !isAttacked)
-        {
-            return;
-        }
+        if (IsInAnyAttackState()) return;
 
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(detectionPoint.position, behavior.DetectionRange, playerLayer);
-        if (hitColliders.Length > 0)
-        {
-            player = hitColliders[0].transform;
-
-            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-            // Player within cast range
-            if (distanceToPlayer <= stats.AttackRange)
+        EnemyMovementHelper.CheckForPlayer(this,
+            OnPlayerFound: distanceToPlayer =>
             {
-
-                if (attackCooldownTimer <= 0)
+                if (distanceToPlayer <= stats.AttackRange)
                 {
-                    stateManager.ChangeState(Enemy_Pax_State.Attack);
-                    attackCooldownTimer = stats.AttackCooldown;
-                }
-            }
-            else
-            {
-                stateManager.ChangeState(Enemy_Pax_State.Chase);
-            }
-        }
-        else
-        {
-            if (!stateManager.IsInState(Enemy_Pax_State.Patrol) &&
-                !stateManager.IsInState(Enemy_Pax_State.Attack))
-            {
-                stateManager.ChangeState(Enemy_Pax_State.Patrol);
-            }
-        }
-    }
 
+                    if (attackCooldownTimer <= 0)
+                    {
+                        stateManager.ChangeState(Enemy_Pax_State.Attack);
+                        attackCooldownTimer = stats.AttackCooldown;
+                    }
+                }
+                else
+                {
+                    stateManager.ChangeState(Enemy_Pax_State.Chase);
+                }
+            }, true,
+            OnPatrolInsteadOfIdle: () =>
+            {
+                if (!stateManager.IsInState(Enemy_Pax_State.Patrol) &&
+                    !IsInAnyAttackState())
+                {
+                    stateManager.ChangeState(Enemy_Pax_State.Patrol);
+                }
+            });
+    }
     /// <summary>
     /// Called by animation event when attack animation completes
     /// </summary>
@@ -304,21 +248,13 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
 
     private IEnumerator AttackRecovery()
     {
-        isRecovering = true;
+        IsRecovering = true;
         stateManager.ChangeState(Enemy_Pax_State.Idle);
         rb.velocity = Vector2.zero;
 
         yield return new WaitForSeconds(attackRecoveryDuration);
 
-        isRecovering = false;
-    }
-
-    public void Flip()
-    {
-        facingDirection *= -1;
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1;
-        transform.localScale = localScale;
+        IsRecovering = false;
     }
 
     public void InitializeBehavior()
@@ -336,20 +272,14 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
     }
 
     #region State Callbacks
-    private void OnStateChanged(Enemy_Pax_State previousState, Enemy_Pax_State newState)
-    {
-    }
-
     private void OnStateEnter(Enemy_Pax_State state)
     {
         switch (state)
         {
             case Enemy_Pax_State.Attack:
                 rb.velocity = Vector2.zero;
-                if (player.position.x > transform.position.x && facingDirection == -1 ||player.position.x < transform.position.x && facingDirection == 1)
-                {
-                    Flip();
-                }
+                if (PlayerTransform != null)
+                    FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
                 break;
             case Enemy_Pax_State.Death:
                 rb.velocity = Vector2.zero;
@@ -385,6 +315,9 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
                     }
                     break;
                 }
+            default:
+                rb.velocity = Vector2.zero;
+                break;
         }
     }
 
@@ -399,6 +332,9 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
             case Enemy_Pax_State.Patrol:
                 SoundFXManager.Instance.StopAndDestroyAudioSource(loopingAudioSource);
                 loopingAudioSource = null;
+                break;
+            default: 
+                rb .velocity = Vector2.zero;
                 break;
         }
     }
@@ -419,7 +355,7 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
     }
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
     {
-        if(!isKnockbackable) return;
+        if (!isKnockbackable) return;
         stateManager.ChangeState(Enemy_Pax_State.Knockback);
 
         StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
@@ -444,6 +380,23 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement
     public BehaviorProfile GetBehavior()
     {
         return behavior;
+    }
+
+    public bool IsInAnyAttackState()
+    {
+        return stateManager.IsInState(Enemy_Pax_State.Attack);
+    }
+
+    public void ChangeToChaseState()
+    {
+        if (!stateManager.IsInState(Enemy_Pax_State.Chase))
+            stateManager.ChangeState(Enemy_Pax_State.Chase);
+    }
+
+    public void ChangeToIdleState()
+    {
+        if (!stateManager.IsInState(Enemy_Pax_State.Idle))
+            stateManager.ChangeState(Enemy_Pax_State.Idle);
     }
     #endregion
 }

@@ -34,6 +34,31 @@ public static class TransformHelper
     }
 
     /// <summary>
+    /// Flips the transform to face towards the target on the X axis.
+    /// </summary>
+    /// <param name="self">The transform of the object to flip.</param>
+    /// <param name="target">The transform of the target to face.</param>
+    /// <param name="currentFacing">The current facing direction (1 for right, -1 for left).</param>
+    /// <returns>The new facing direction after flipping.</returns>
+    public static int FlipTowards(Transform self, Vector3 target, int currentFacing)
+    {
+        if (self == null || target == null)
+            return currentFacing;
+
+        bool shouldFlipRight = target.x > self.position.x && currentFacing == -1;
+        bool shouldFlipLeft = target.x < self.position.x && currentFacing == 1;
+
+        if (shouldFlipRight || shouldFlipLeft)
+        {
+            currentFacing *= -1;
+            Vector3 localScale = self.localScale;
+            localScale.x *= -1;
+            self.localScale = localScale;
+        }
+
+        return currentFacing;
+    }
+    /// <summary>
     /// Flips the transform to face away from the target on the X axis.
     /// </summary>
     /// <param name="self">The transform of the object to flip.</param>

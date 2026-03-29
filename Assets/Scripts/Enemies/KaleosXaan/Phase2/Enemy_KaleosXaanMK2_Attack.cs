@@ -197,9 +197,7 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
                 DealDamage(false);
             }
         }
-        if (player.position.x > transform.position.x && movementComponent.facingDirection == -1 ||
-        player.position.x < transform.position.x && movementComponent.facingDirection == 1)
-            movementComponent.Flip();
+        movementComponent.FacingDirection = TransformHelper.FlipTowards(transform, player, movementComponent.FacingDirection);
         hitPlayer = false;
     }
 

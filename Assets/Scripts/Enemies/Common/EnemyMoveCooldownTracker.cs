@@ -5,11 +5,6 @@ using System.Linq;
 /// <summary>
 /// To replace the uses of dictionary to a more generic class
 /// </summary>
-/// <remarks>
-/// Old dictionary usage reference: <see cref="Enemy_ArgeonHighmayne_Movement"/>
-/// <para/>
-/// New usage reference: <seealso cref="Enemy_ArgeonHighmayneMK2_Movement"/>
-/// </remarks>
 /// <typeparam name="TState">Enemy's Enum State</typeparam>
 public class EnemyMoveCooldownTracker<TState> where TState : Enum
 {
@@ -48,5 +43,4 @@ public class EnemyMoveCooldownTracker<TState> where TState : Enum
 
     public bool IsOnCooldown(TState state) =>
         counters.TryGetValue(state, out int count) && count > 0;
-
 }

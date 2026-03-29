@@ -50,6 +50,7 @@ public class BossHealthUI : MonoBehaviour
     private Coroutine _shakeCoroutine;
 
     #region Overloads initialize
+
     public void Initialize(string name, float maxHealth)
     {
         Setup(name, maxHealth);
