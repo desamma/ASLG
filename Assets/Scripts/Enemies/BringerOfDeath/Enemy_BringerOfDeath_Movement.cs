@@ -6,7 +6,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_BringerOfDeath_Health health;
-    [SerializeField] private BehaviorProfile behavior;
+    [SerializeField] private bool isKnockbackable = true;
     [SerializeField] private float hurtAnimationDuration = 0.4f;
 
     private StateManager<Enemy_BringerOfDeath_State> stateManager;
@@ -27,8 +27,8 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
     public float patrolDistance;
     int currentPatrolIndex = 0;
     private bool isWaiting = false;
-    private readonly float unstuckPatrolWaitTime = 1f;
-    private float unstuckPatrolWaitTimer;
+    private float stuckCheckTimer = 0f;
+    private Vector2 lastCheckedPosition;
     private float waitTimer = 2f;
 
     [Header("Audio")]
@@ -37,8 +37,6 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
     [SerializeField] private float minAudioDistance = 1f;
     [SerializeField] private float maxAudioDistance = 15f;
     private AudioSource loopingAudioSource;
-
-    private EnemyStats stats;
 
     private float castRange;
 
@@ -55,8 +53,8 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
 
     // readonly properties for helper
     public Rigidbody2D Rb => rb;
-    public BehaviorProfile Behavior => behavior;
-    public EnemyStats Stats => stats;
+    public BehaviorProfile Behavior => health.behavior;
+    public EnemyStats Stats => health.stats;
     public Transform DetectionPoint => detectionPoint;
     public LayerMask PlayerLayer => playerLayer;
     public Transform SelfTransform => transform;
@@ -93,8 +91,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
         patrolPoints[2] = originalPosition + Vector2.left * patrolDistance;
         patrolPoints[3] = originalPosition + Vector2.right * patrolDistance;
 
-        stats = health.stats;
-        castRange = stats.AttackRange * 2.5f;
+        castRange = health.stats.AttackRange * 2.5f;
 
         FacingDirection = 1;
         transform.localScale = new Vector3(
@@ -102,10 +99,6 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
             transform.localScale.y,
             transform.localScale.z
         );
-
-        InitializeBehavior();
-
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_BringerOfDeath_State>(animator, Enemy_BringerOfDeath_State.Idle);
 
@@ -138,11 +131,6 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
         }
     }
 
-    private void OnEnable()
-    {
-        DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
-    }
-
     private void OnDisable()
     {
         if (stateManager != null)
@@ -150,7 +138,6 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
             stateManager.OnStateEnter -= OnStateEnter;
             stateManager.OnStateExit -= OnStateExit;
         }
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -158,69 +145,25 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
         stateManager.ChangeState(Enemy_BringerOfDeath_State.Idle);
     }
 
-    public void OnDifficultyChanged(DifficultyModifier newModifier)
-    {
-        if (newModifier == null) return;
-        behavior.ApplyDifficulty(newModifier);
-    }
-
     public void Chase()
     {
         EnemyMovementHelper.Chase(this, isStopOnAttackRange: false);
     }
 
-    void Patrol()
+    private void Patrol()
     {
-        if (isWaiting)
-        {
-            stateManager.ChangeState(Enemy_BringerOfDeath_State.Idle);
-            waitTimer += Time.deltaTime;
-
-            if (waitTimer >= idleToPatrolWaitTime)
-            {
-                isWaiting = false;
-                waitTimer = 0f;
-
-                // Pick a new random patrol index (different from current)
-                int newIndex;
-                do
-                {
-                    newIndex = Random.Range(0, patrolPoints.Length);
-                } while (newIndex == currentPatrolIndex);
-
-                currentPatrolIndex = newIndex;
-                stateManager.ChangeState(Enemy_BringerOfDeath_State.Patrol);
-            }
-            return;
-        }
-        if (unstuckPatrolWaitTimer > 0)
-        {
-            unstuckPatrolWaitTimer -= Time.deltaTime;
-
-            Vector3 targetPos = patrolPoints[currentPatrolIndex];
-            Vector3 direction = (targetPos - transform.position).normalized;
-            rb.velocity = direction * stats.Speed;
-
-            if (PlayerTransform != null)
-                FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
-
-            if (Vector2.Distance(transform.position, targetPos) < 0.1f)
-            {
-                rb.velocity = Vector2.zero;
-                isWaiting = true;
-            }
-        }
-        else
-        {
-            rb.velocity = Vector2.zero;
-            unstuckPatrolWaitTimer = unstuckPatrolWaitTime;
-            isWaiting = true;
-        }
+        EnemyMovementHelper.Patrol(this, patrolPoints, ref currentPatrolIndex, ref isWaiting, ref waitTimer,
+            ref stuckCheckTimer, ref lastCheckedPosition,
+            idleToPatrolWaitTime,
+            unstuckCheckInterval: 1.0f,   // check every 1 second
+            stuckThreshold: 0.3f,          // must move at least 0.3 units per check
+            () => stateManager.ChangeState(Enemy_BringerOfDeath_State.Idle),
+            () => stateManager.ChangeState(Enemy_BringerOfDeath_State.Patrol));
     }
 
     public void CheckForPlayer()
     {
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(detectionPoint.position, behavior.DetectionRange, playerLayer);
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(detectionPoint.position, health.behavior.DetectionRange, playerLayer);
 
         if (hitColliders.Length > 0)
         {
@@ -253,7 +196,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
                     if (attackCooldownTimer <= 0)
                     {
                         DecideAttackType();
-                        attackCooldownTimer = stats.AttackCooldown;
+                        attackCooldownTimer = health.stats.AttackCooldown;
                     }
                 }
                 // Player outside spell range → chase
@@ -288,7 +231,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
         float distanceToPlayer = Vector2.Distance(transform.position, PlayerTransform.position);
         float random = Random.value;
 
-        if (random < behavior.SpecialAttackFrequency)
+        if (random < health.behavior.SpecialAttackFrequency)
         {
             if (distanceToPlayer <= castRange)
             {
@@ -302,7 +245,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
 
         else
         {
-            if (distanceToPlayer <= stats.AttackRange)
+            if (distanceToPlayer <= health.stats.AttackRange)
             {
                 stateManager.ChangeState(Enemy_BringerOfDeath_State.Attack);
             }
@@ -324,7 +267,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
         if (!stateManager.IsInState(Enemy_BringerOfDeath_State.Attack) &&
             !stateManager.IsInState(Enemy_BringerOfDeath_State.Cast))
             return;
-        attackRecovery.StartRecovery(stats.AttackCooldown,
+        attackRecovery.StartRecovery(health.stats.AttackCooldown,
             () =>
             {
                 IsRecovering = true;
@@ -336,22 +279,7 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
             });
     }
 
-    public void InitializeBehavior()
-    {
-        behavior = new BehaviorProfile
-        {
-            DetectionRange = 15f,
-            ChaseRange = 10f,
-            SpecialAttackFrequency = 0.3f,
-            UltimateAttackFrequency = 0f,
-            Aggression = 1f,
-            EnrageThreshold = 0f,
-            MobilityUsageFrequency = 0f
-        };
-    }
-
     #region State Callbacks
-
     private void OnStateEnter(Enemy_BringerOfDeath_State state)
     {
         switch (state)
@@ -384,6 +312,8 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
                 break;
             case Enemy_BringerOfDeath_State.Patrol:
                 {
+                    stuckCheckTimer = 0f;
+                    lastCheckedPosition = transform.position;
                     if (footstepAudioClip != null)
                     {
                         loopingAudioSource = SoundFXManager.Instance.PlayLoopingSoundFXClip(
@@ -418,37 +348,19 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
                 break;
         }
     }
-
     #endregion
-
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
-        if(!isKnockbackable) return;
-        stateManager.ChangeState(Enemy_BringerOfDeath_State.Knockback);
+        if (!isKnockbackable || knockbackHandler == null) return;
 
-        StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
-
-        Vector2 knockbackDirection = (transform.position - player.position).normalized;
-        rb.velocity = knockbackDirection * knockbackForce;
-    }
-
-    IEnumerator KnockBackCounter(float knockbackTime, float stunTime)
-    {
-        yield return new WaitForSeconds(knockbackTime);
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(stunTime);
-
-        stateManager.ChangeState(Enemy_BringerOfDeath_State.Idle);
+        knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
+            () => stateManager.ChangeState(Enemy_BringerOfDeath_State.Knockback),
+            () => stateManager.ChangeState(Enemy_BringerOfDeath_State.Idle));
     }
 
     public StateManager<Enemy_BringerOfDeath_State> GetStateManager()
     {
         return stateManager;
-    }
-
-    public BehaviorProfile GetBehavior()
-    {
-        return behavior;
     }
 
     public bool IsInAnyAttackState() =>

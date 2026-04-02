@@ -6,6 +6,7 @@ public class Enemy_AlterRexx_Movement : MonoBehaviour, IEnemy_Movement
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_AlterRexx_Health health;
+    [SerializeField] private bool isKnockbackable = true;
     [SerializeField] private BehaviorProfile behavior;
     [SerializeField] private float attackRecoveryDuration = 1f;
 
@@ -274,7 +275,7 @@ public class Enemy_AlterRexx_Movement : MonoBehaviour, IEnemy_Movement
 
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
         if (!isKnockbackable) return;
         stateManager.ChangeState(Enemy_AlterRexx_State.Knockback);

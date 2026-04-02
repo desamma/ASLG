@@ -9,6 +9,8 @@ public class Enemy_KaleosXaanMK2_Health : MonoBehaviour, IEnemy_Health
 {
     [Header("Enemy Stats")]
     public EnemyStats stats;
+    public BehaviorProfile behavior;
+    public int currentLevel = 1;
     public bool isDead;
 
     [Header("Components")]
@@ -30,8 +32,6 @@ public class Enemy_KaleosXaanMK2_Health : MonoBehaviour, IEnemy_Health
 
     private void Start()
     {
-        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
-
         movementComponent = GetComponent<Enemy_KaleosXaanMK2_Movement>();
 
         effectManager = GetComponent<StatusEffectManager>();
@@ -122,19 +122,13 @@ public class Enemy_KaleosXaanMK2_Health : MonoBehaviour, IEnemy_Health
 
     public void InitializeStats()
     {
-        stats = new EnemyStats
-        {
-            MaxHP = 3500f,
-            CurrentHP = 3500f,
-            Strength = 300f,
-            Magic = 200f,
-            Defense = 300f,
-            MagicResist = 150f,
-            Speed = 3f,
-            ExpReward = 1000f,
-            AttackCooldown = 2.5f,
-            AttackRange = 2f
-        };
+        var data = EnemyDataRepository.LoadEnemy("KaleosXaanMK2");
+
+        stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
+        behavior = data.Behavior;
+
+        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
         isDead = false;
     }
 
@@ -142,5 +136,6 @@ public class Enemy_KaleosXaanMK2_Health : MonoBehaviour, IEnemy_Health
     {
         if (newModifier == null) return;
         stats.ApplyDifficulty(newModifier);
+        behavior.ApplyDifficulty(newModifier);
     }
 }

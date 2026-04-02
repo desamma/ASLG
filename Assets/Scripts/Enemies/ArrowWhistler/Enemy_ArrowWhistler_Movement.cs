@@ -7,7 +7,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_ArrowWhistler_Health health;
-    [SerializeField] private BehaviorProfile behavior;
+    [SerializeField] private bool isKnockbackable = true;
     [SerializeField] private float moveAwayDistance = 5f;
     [SerializeField] private float moveAwayDuration = 1f;
 
@@ -25,7 +25,6 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
 
-    private EnemyStats stats;
     private bool canMoveAway = false;   // resets true after each attack
     private bool isMovingAway = false;  // prevents re-triggering mid-move
 
@@ -40,8 +39,8 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
 
     // readonly properties for helper
     public Rigidbody2D Rb => rb;
-    public BehaviorProfile Behavior => behavior;
-    public EnemyStats Stats => stats;
+    public BehaviorProfile Behavior => health.behavior;
+    public EnemyStats Stats => health.stats;
     public Transform DetectionPoint => detectionPoint;
     public LayerMask PlayerLayer => playerLayer;
     public Transform SelfTransform => transform;
@@ -84,8 +83,6 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
         if (health == null)
             health = GetComponent<Enemy_ArrowWhistler_Health>();
 
-        stats = health.stats;
-
         FacingDirection = 1;
         transform.localScale = new Vector3(
             Mathf.Abs(transform.localScale.x),
@@ -93,8 +90,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
             transform.localScale.z
         );
 
-        InitializeBehavior();
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        InitializeAttacks();
 
         stateManager = new StateManager<Enemy_ArrowWhistler_State>(animator, Enemy_ArrowWhistler_State.Idle);
         stateManager.OnStateEnter += OnStateEnter;
@@ -113,29 +109,17 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
             Chase();
     }
 
-    private void OnEnable()
-    {
-        DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
-    }
-
     private void OnDisable()
     {
         if (stateManager != null)
         {
             stateManager.OnStateEnter -= OnStateEnter;
         }
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
 
         if (health != null)
         {
             health.OnEnraged -= OnEnraged;
         }
-    }
-
-    public void OnDifficultyChanged(DifficultyModifier newModifier)
-    {
-        if (newModifier == null) return;
-        behavior.ApplyDifficulty(newModifier);
     }
 
     public void Chase()
@@ -181,7 +165,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
             FacingDirection = TransformHelper.FlipAway(transform, PlayerTransform, FacingDirection);
 
             Vector2 direction = (transform.position - PlayerTransform.position).normalized;
-            rb.velocity = behavior.Aggression * stats.Speed * direction;
+            rb.velocity = Behavior.Aggression * Stats.Speed * direction;
 
             elapsed += Time.deltaTime;
             yield return null;
@@ -203,7 +187,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
 
-        attackRecovery.StartRecovery(stats.AttackCooldown,
+        attackRecovery.StartRecovery(Stats.AttackCooldown,
             () =>
             {
                 IsRecovering = true;
@@ -218,22 +202,15 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
 
     private void OnEnraged()
     {
-        behavior.Aggression *= 1.1f;
-        stats.Speed *= 1.2f;
-        stats.AttackRange *= 1.2f;
-        stats.AttackCooldown *= 0.9f;
-        stats.Strength *= 1.2f;
+        Behavior.Aggression *= 1.1f;
+        Stats.Speed *= 1.2f;
+        Stats.AttackRange *= 1.2f;
+        Stats.AttackCooldown *= 0.9f;
+        Stats.Strength *= 1.2f;
     }
 
-    public void InitializeBehavior()
+    public void InitializeAttacks()
     {
-        behavior = new BehaviorProfile
-        {
-            DetectionRange = 10f,
-            EnrageThreshold = 0.5f,
-            Aggression = 1f
-        };
-
         attackCategories = new List<AttackCategory<Enemy_ArrowWhistler_State>>
         {
             new() {
@@ -241,7 +218,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
                 Attacks = new[]
                 {
                     // Basic Attack: no count cooldown
-                    new AttackConfig<Enemy_ArrowWhistler_State> { State = Enemy_ArrowWhistler_State.Attack, Range = stats.AttackRange, MoveCountCooldown = 0 }
+                    new AttackConfig<Enemy_ArrowWhistler_State> { State = Enemy_ArrowWhistler_State.Attack, Range = Stats.AttackRange, MoveCountCooldown = 0 }
                 }
             }
         };
@@ -272,7 +249,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
     }
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
         if (!isKnockbackable || knockbackHandler == null) return;
 
@@ -295,6 +272,6 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
 
     #region Getters
     public StateManager<Enemy_ArrowWhistler_State> GetStateManager() => stateManager;
-    public BehaviorProfile GetBehavior() => behavior;
+    public BehaviorProfile GetBehavior() => health.behavior;
     #endregion
 }

@@ -1,11 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Attack logic for Andromeda enemy.
-/// Attack performs 360° AOE damage around the enemy.
-/// Cast is a special ranged spell attack.
-/// </summary>
 [DisallowMultipleComponent]
 public class Enemy_Andromeda_Attack : MonoBehaviour
 {
@@ -52,10 +47,6 @@ public class Enemy_Andromeda_Attack : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Performs a 360° AOE attack around the enemy's position
-    /// Called by animation event
-    /// </summary>
     public void AOEAttack()
     {
         if (aoeAttackAudioClip != null)
@@ -70,17 +61,11 @@ public class Enemy_Andromeda_Attack : MonoBehaviour
         {
             if (hit.CompareTag("Player"))
             {
-                // TODO: Hook into player damage system
-                // Apply physical damage based on stats.Strength
-                Debug.Log($"Andromeda AOE hit player: {hit.name}");
+                StatsManager.instance.TakeDamage(stats.Magic);
             }
         }
     }
 
-    /// <summary>
-    /// Casts a spell at the player's location
-    /// Called by animation event
-    /// </summary>
     public void CastSpell()
     {
         if (players == null || players.Count == 0)
@@ -111,20 +96,6 @@ public class Enemy_Andromeda_Attack : MonoBehaviour
             }
 
             Instantiate(spellPrefab, spawnPosition, Quaternion.identity);
-        }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        // Draw 360 AOE attack range
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, aoeRadius);
-
-        // Draw cast detection range
-        if (stats != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, stats.AttackRange * 2.5f);
         }
     }
 }

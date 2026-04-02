@@ -96,6 +96,8 @@ public class PlayerAttack : MonoBehaviour
 
                 var enemyHealth = hit.GetComponent<IEnemy_Health>();
                 enemyHealth?.ChangeHealth(-StatsManager.instance.damage);
+                var enemyMovement = hit.GetComponent<IEnemy_Movement>();
+                enemyMovement.KnockBack(transform, StatsManager.instance.knockbackForce, StatsManager.instance.knockbackTime, StatsManager.instance.stunTime);
             }
             // 2. NẾU CHÉM TRÚNG BẤT CỨ AI CÓ SCRIPT "NPCCompanion" (Bao gồm Alicia)
             else

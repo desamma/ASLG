@@ -8,6 +8,7 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMove
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_Dogehai_Health health;
+    [SerializeField] private bool isKnockbackable = true;
     [SerializeField] private BehaviorProfile behavior;
     [SerializeField] private float auraFarmingDuration = 2f;
 
@@ -304,7 +305,7 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMove
 
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
         if (!isKnockbackable || knockbackHandler == null) return;
 

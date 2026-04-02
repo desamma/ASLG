@@ -8,7 +8,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_KaleosXaan_Health health;
-    [SerializeField] private BehaviorProfile behavior;
+    [SerializeField] private bool isKnockbackable = false;
     [SerializeField] private float auraFarmingDuration = 5f;
 
     private StateManager<Enemy_KaleosXaan_State> stateManager;
@@ -32,7 +32,6 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
     [SerializeField] private Transform detectionPoint;
 
     //private
-    private EnemyStats stats;
     private float castRange;
     private float attackCooldownTimer = 0f;
     private float buffAbilitySharedCooldown = 0f;
@@ -50,8 +49,8 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
 
     //readonly properties for helper
     public Rigidbody2D Rb => rb;
-    public BehaviorProfile Behavior => behavior;
-    public EnemyStats Stats => stats;
+    public BehaviorProfile Behavior => health.behavior;
+    public EnemyStats Stats => health.stats;
     public Transform DetectionPoint => detectionPoint;
     public LayerMask PlayerLayer => playerLayer;
     public Transform SelfTransform => transform;
@@ -104,8 +103,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
         if (health == null)
             health = GetComponent<Enemy_KaleosXaan_Health>();
 
-        stats = health.stats;
-        castRange = stats.AttackRange * 3f;
+        castRange = health.stats.AttackRange * 3f;
         IsRecovering = false;
         FacingDirection = 1;
 
@@ -118,8 +116,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
         attackRecovery = new EnemyAttackRecovery(this, rb);
         knockbackHandler = new KnockbackHandler(this, rb);
 
-        InitializeBehavior();
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        InitializeAttacks();
 
         stateManager = new StateManager<Enemy_KaleosXaan_State>(animator, Enemy_KaleosXaan_State.Idle);
 
@@ -156,24 +153,12 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
             Chase();
     }
 
-    private void OnEnable()
-    {
-        DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
-    }
-
     private void OnDisable()
     {
         if (stateManager != null)
         {
             stateManager.OnStateEnter -= OnStateEnter;
         }
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
-    }
-
-    public void OnDifficultyChanged(DifficultyModifier newModifier)
-    {
-        if (newModifier == null) return;
-        behavior.ApplyDifficulty(newModifier);
     }
 
     public void Chase()
@@ -186,7 +171,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
                 {
                     stateManager.ChangeState(Enemy_KaleosXaan_State.Attack);
                     RegisterMoveUsed(Enemy_KaleosXaan_State.Attack);
-                    attackCooldownTimer = stats.AttackCooldown;
+                    attackCooldownTimer = Stats.AttackCooldown;
                 }
                 else if (!IsInAnyAttackState())
                 {
@@ -271,7 +256,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
-        attackRecovery.StartRecovery(stats.AttackCooldown,
+        attackRecovery.StartRecovery(Stats.AttackCooldown,
             () =>
             {
                 IsRecovering = true;
@@ -283,28 +268,19 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
             });
     }
 
-    public void InitializeBehavior()
+    public void InitializeAttacks()
     {
-        behavior = new BehaviorProfile
-        {
-            DetectionRange = 15f,
-            SpecialAttackFrequency = 0.4f,
-            UltimateAttackFrequency = 0.3f,
-            Aggression = 1f,
-            MobilityUsageFrequency = 1f,
-        };
-
         attackCategories = new List<AttackCategory<Enemy_KaleosXaan_State>>
         {
             new() {
-                Frequency = behavior.UltimateAttackFrequency,
+                Frequency = Behavior.UltimateAttackFrequency,
                 Attacks = new[]
                 {
                     new AttackConfig<Enemy_KaleosXaan_State> { State = Enemy_KaleosXaan_State.SummonCompanion, Range = castRange, MoveCountCooldown = 15 }
                 }
             },
             new() {
-                Frequency = behavior.SpecialAttackFrequency,
+                Frequency = Behavior.SpecialAttackFrequency,
                 Attacks = new[]
                 {
                     new AttackConfig<Enemy_KaleosXaan_State> { State = Enemy_KaleosXaan_State.ArcaneHeart, Range = castRange, MoveCountCooldown = 5 },
@@ -317,7 +293,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
                 Attacks = new[]
                 {
                     // Basic Attack: no count cooldown
-                    new AttackConfig<Enemy_KaleosXaan_State> { State = Enemy_KaleosXaan_State.Attack, Range = stats.AttackRange, MoveCountCooldown = 0 }
+                    new AttackConfig<Enemy_KaleosXaan_State> { State = Enemy_KaleosXaan_State.Attack, Range = Stats.AttackRange, MoveCountCooldown = 0 }
                 }
             }
         };
@@ -370,7 +346,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
     }
 
     #endregion
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
         if (!isKnockbackable || knockbackHandler == null) return;
 
@@ -381,6 +357,6 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
 
     #region Getters
     public StateManager<Enemy_KaleosXaan_State> GetStateManager() => stateManager;
-    public BehaviorProfile GetBehavior() => behavior;
+    public BehaviorProfile GetBehavior() => health.behavior;
     #endregion
 }

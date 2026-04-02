@@ -9,6 +9,8 @@ public class Enemy_Okkadok_Health : MonoBehaviour, IEnemy_Health
 {
     [Header("Enemy Stats")]
     public EnemyStats stats;
+    public BehaviorProfile behavior;
+    public int currentLevel = 1;
     public float damageReductionPercentage = 0f;
     public bool isDead = false;
 
@@ -22,8 +24,6 @@ public class Enemy_Okkadok_Health : MonoBehaviour, IEnemy_Health
 
     private void Start()
     {
-        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
-
         movementComponent = GetComponent<Enemy_Okkadok_Movement>();
     }
 
@@ -70,25 +70,20 @@ public class Enemy_Okkadok_Health : MonoBehaviour, IEnemy_Health
 
     public void InitializeStats()
     {
-        stats = new EnemyStats
-        {
-            MaxHP = 100f,
-            CurrentHP = 100f,
-            Strength = 35f,
-            Magic = 0,
-            Defense = 25f,
-            MagicResist = 20f,
-            Speed = 5f,
-            ExpReward = 30f,
-            AttackCooldown = 1.5f,
-            AttackRange = 1.3f
-        };
+        var data = EnemyDataRepository.LoadEnemy("Okkadok");
+
+        stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
+        behavior = data.Behavior;
+
+        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
     }
 
     public void OnDifficultyChanged(DifficultyModifier newModifier)
     {
         if (newModifier == null) return;
         stats.ApplyDifficulty(newModifier);
+        behavior.ApplyDifficulty(newModifier);
     }
 
     public void OnDestroyAfterDeath(float seconds)

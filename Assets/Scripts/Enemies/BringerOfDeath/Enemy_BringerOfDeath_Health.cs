@@ -8,6 +8,8 @@ public class Enemy_BringerOfDeath_Health : MonoBehaviour, IEnemy_Health
 {
     [Header("Enemy Stats")]
     public EnemyStats stats;
+    public BehaviorProfile behavior;
+    public int currentLevel = 1;
     public bool isDead;
 
     [Header("Audio")]
@@ -16,11 +18,13 @@ public class Enemy_BringerOfDeath_Health : MonoBehaviour, IEnemy_Health
 
     private Enemy_BringerOfDeath_Movement movementComponent;
 
-    private void Start()
+    private void Awake()
     {
         InitializeStats();
-        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+    }
 
+    private void Start()
+    {
         movementComponent = GetComponent<Enemy_BringerOfDeath_Movement>();
     }
 
@@ -52,7 +56,7 @@ public class Enemy_BringerOfDeath_Health : MonoBehaviour, IEnemy_Health
 
         if (amount < 0 && movementComponent != null)
         {
-            if(damageAudioClip != null)
+            if (damageAudioClip != null)
                 SoundFXManager.Instance.PlaySoundFXClip(damageAudioClip, transform, volume);
 
             var manager = movementComponent.GetStateManager();
@@ -63,22 +67,16 @@ public class Enemy_BringerOfDeath_Health : MonoBehaviour, IEnemy_Health
             }
         }
     }
-
     public void InitializeStats()
     {
-        stats = new EnemyStats
-        {
-            MaxHP = 550f,
-            CurrentHP = 550f,
-            Strength = 50f,
-            Magic = 50f,
-            Defense = 40f,
-            MagicResist = 100f,
-            Speed = 2f,
-            ExpReward = 50f,
-            AttackCooldown = 2.5f,
-            AttackRange = 3f
-        };
+        var data = EnemyDataRepository.LoadEnemy("BringerOfDeath");
+
+        stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
+        behavior = data.Behavior;
+
+        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+
         isDead = false;
     }
 
@@ -86,5 +84,6 @@ public class Enemy_BringerOfDeath_Health : MonoBehaviour, IEnemy_Health
     {
         if (newModifier == null) return;
         stats.ApplyDifficulty(newModifier);
+        behavior.ApplyDifficulty(newModifier);
     }
 }
