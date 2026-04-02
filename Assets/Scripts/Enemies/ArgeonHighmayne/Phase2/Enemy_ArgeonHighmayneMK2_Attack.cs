@@ -76,7 +76,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
                     hitPlayer = true;
                 }
 
-                StatsManager.instance.TakeDamage(health.stats.Strength);
+                DealDamage(false, isKnockback: true);
                 Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
             }
         }
@@ -111,7 +111,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
                     SoundFXManager.Instance.PlaySoundFXClip(normalAttackHitAudioClip, transform, volume);
                     hitPlayer = true;
                 }
-                StatsManager.instance.TakeDamage(health.stats.Strength * warSurgeDamageMultiplier);
+                DealDamage(false, warSurgeDamageMultiplier, true);
                 Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
             }
         }
@@ -127,7 +127,7 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
 
             if (hits.Length > 0)
             {
-                StatsManager.instance.TakeDamage((health.stats.Strength + health.stats.Magic) * decimateDamageMultiplier);
+                DealDamage(false, decimateDamageMultiplier, true);
             }
 
             GameObject spellInstance = Instantiate(decimateEffect, player.position, Quaternion.identity);
@@ -188,6 +188,24 @@ public class Enemy_ArgeonHighmayneMK2_Attack : MonoBehaviour
             }
         }
     }
+    private void DealDamage(bool isMagic = false, float damageMultiplier = 1f, bool isKnockback = true)
+    {
+        if (isMagic)
+        {
+            StatsManager.instance.TakeDamage(health.stats.Magic * damageMultiplier);
+        }
+        else
+        {
+            StatsManager.instance.TakeDamage(health.stats.Strength * damageMultiplier);
+        }
+        player.TryGetComponent<PlayerMovement>(out var playerMovement);
+
+        if (playerMovement != null && isKnockback)
+        {
+            playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
+        }
+    }
+
     public void PlayAudio(int num)
     {
         switch (num)
