@@ -42,14 +42,14 @@ public class Enemy_Okkadok_Attack : MonoBehaviour
                 {
                     switch (attackNumber)
                     {
-                        case 1:
-                            //hit.GetComponent<PlayerHealth>().TakeDamage(health.stats.AttackDamage * firstAttackMultiplier);
+                        case 1:        
+                            StatsManager.instance.TakeDamage(health.stats.Strength * firstAttackMultiplier);
                             break;
                         case 2:
-                            //hit.GetComponent<PlayerHealth>().TakeDamage(health.stats.AttackDamage * secondAttackMultiplier);
+                            StatsManager.instance.TakeDamage(health.stats.Strength * secondAttackMultiplier);
                             break;
                         default:
-                            //hit.GetComponent<PlayerHealth>().TakeDamage(health.stats.AttackDamage);
+                            StatsManager.instance.TakeDamage(health.stats.Strength);
                             break;
                     }
 

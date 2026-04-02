@@ -23,7 +23,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector2 moveInput;
     private Vector2 dashDirection;
-
+    private KnockbackHandler knockbackHandler;
     private void Awake()
     {
         rb = rb != null ? rb : GetComponent<Rigidbody2D>();
@@ -35,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         stateManager = new StateManager<PlayerState>(animator, PlayerState.Idle);
+        knockbackHandler = new KnockbackHandler(this, rb);
 
         stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
@@ -152,25 +153,11 @@ public class PlayerMovement : MonoBehaviour
         stateManager.ChangeState(PlayerState.Idle);
     }
 
-    public void KnockBack(Transform enemy, float force, float stunTime)
+    public void KnockBack(Transform enemy, float knockbackForce, float knockbackTime, float stunTime)
     {
-        if (stateManager.IsInState(PlayerState.Knockback)) return;
-
-        StopCoroutine(nameof(KnockbackRoutine));
-        StartCoroutine(KnockbackRoutine(enemy, force, stunTime));
-    }
-
-    private IEnumerator KnockbackRoutine(Transform enemy, float force, float stunTime)
-    {
-        stateManager.ChangeState(PlayerState.Knockback);
-
-        Vector2 direction = ((Vector2)(transform.position - enemy.position)).normalized;
-        rb.velocity = direction * force;
-
-        yield return new WaitForSeconds(stunTime);
-
-        rb.velocity = Vector2.zero;
-        stateManager.ChangeState(PlayerState.Idle);
+        knockbackHandler.ApplyKnockback(transform, enemy, knockbackForce, knockbackTime, stunTime,
+            () => stateManager.ChangeState(PlayerState.Knockback),
+            () => stateManager.ChangeState(PlayerState.Idle));
     }
 
     /// <summary>

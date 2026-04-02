@@ -85,9 +85,4 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
             Instantiate(spellPrefab, spawnPosition, Quaternion.identity);
         }
     }
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(attackPoint.position, new Vector3(4, 3, 0));
-    }
 }

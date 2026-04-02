@@ -439,6 +439,7 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
         {
             StatsManager.instance.TakeDamage((health.stats.Strength + damageStack) * damageMultiplier * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier));
         }
+
         damageStack += stackIncreaseEachHit;
 
         if (damageStack > maxStack)
@@ -449,6 +450,7 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
         {
             AddStatusFX(0);
         }
+
     }
 
     private void AddStatusFX(int num)

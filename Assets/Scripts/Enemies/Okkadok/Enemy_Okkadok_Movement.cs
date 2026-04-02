@@ -8,7 +8,7 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_Okkadok_Health health;
-    [SerializeField] private BehaviorProfile behavior;
+    [SerializeField] private bool isKnockbackable = true;
 
     [Header("Be a chicken parameters")]
     [SerializeField] private float retreatSafeDistance = 6f;
@@ -30,7 +30,6 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Transform detectionPoint;
 
     private int facingDirection;
-    private EnemyStats stats;
     private bool isRecovering = false;
     private bool runAwayAfterAttack = false;
     private bool isScreamable = true;
@@ -80,8 +79,6 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         attackRecovery ??= new EnemyAttackRecovery(this, rb);
         knockbackHandler ??= new KnockbackHandler(this, rb);
 
-        stats = health.stats;
-
         facingDirection = 1;
         transform.localScale = new Vector3(
             Mathf.Abs(transform.localScale.x),
@@ -90,7 +87,6 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         );
 
         InitializeBehavior();
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_Okkadok_State>(animator, Enemy_Okkadok_State.Idle);
         stateManager.OnStateEnter += OnStateEnter;
@@ -115,8 +111,6 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
             Retreat();
     }
 
-    private void OnEnable() => DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
-
     private void OnDisable()
     {
         if (stateManager != null)
@@ -124,25 +118,18 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
             stateManager.OnStateEnter -= OnStateEnter;
             stateManager.OnStateExit -= OnStateExit;
         }
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
-    }
-
-    public void OnDifficultyChanged(DifficultyModifier newModifier)
-    {
-        if (newModifier == null) return;
-        behavior.ApplyDifficulty(newModifier);
     }
 
     public void CheckForPlayer()
     {
         if (player != null)
         {
-            if (Vector2.Distance(transform.position, player.position) > behavior.DetectionRange)
+            if (Vector2.Distance(transform.position, player.position) > health.behavior.DetectionRange)
                 player = null;
         }
         else
         {
-            var closest = TransformHelper.FindClosestInRange(detectionPoint.position, behavior.DetectionRange, playerLayer);
+            var closest = TransformHelper.FindClosestInRange(detectionPoint.position, health.behavior.DetectionRange, playerLayer);
             player = closest;
         }
 
@@ -197,7 +184,7 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
             // Player is facing away
             if (!IsInAnyAttackState())
             {
-                if (dist <= stats.AttackRange)
+                if (dist <= health.stats.AttackRange)
                     DecideAttackType();
                 else
                     stateManager.ChangeState(Enemy_Okkadok_State.Chase);
@@ -210,7 +197,7 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         if (player == null) return;
         Flip();
         Vector2 direction = (player.position - transform.position).normalized;
-        rb.velocity = behavior.Aggression * stats.Speed * direction;
+        rb.velocity = health.behavior.Aggression * health.stats.Speed * direction;
     }
 
     private void Retreat()
@@ -218,7 +205,7 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         if (player == null) return;
         facingDirection = TransformHelper.FlipAway(transform, player, facingDirection);
         Vector2 direction = (transform.position - player.position).normalized;
-        rb.velocity = retreatSpeedNegate * behavior.Aggression * stats.Speed * direction;
+        rb.velocity = retreatSpeedNegate * health.behavior.Aggression * health.stats.Speed * direction;
     }
 
     private void DecideAttackType()
@@ -253,7 +240,7 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
-        attackRecovery.StartRecovery(stats.AttackCooldown, 
+        attackRecovery.StartRecovery(health.stats.AttackCooldown, 
             () =>
             {
                 isRecovering = true;
@@ -285,20 +272,13 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
 
     public void InitializeBehavior()
     {
-        behavior = new BehaviorProfile
-        {
-            DetectionRange = 10f,
-
-            Aggression = 1f
-        };
-
         attackCategories = new List<AttackCategory>
         {
             new() {
                 Frequency = 1f,
                 Attacks = new[]
                 {
-                    new AttackConfig { State = Enemy_Okkadok_State.Attack, Range = stats.AttackRange, MoveCountCooldown = 0 }
+                    new AttackConfig { State = Enemy_Okkadok_State.Attack, Range = health.stats.AttackRange, MoveCountCooldown = 0 }
                 }
             }
         };
@@ -337,7 +317,7 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
     }
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
         if (!isKnockbackable) return;
         stateManager.ChangeState(Enemy_Okkadok_State.Knockback);
@@ -354,6 +334,6 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
 
     #region Getters
     public StateManager<Enemy_Okkadok_State> GetStateManager() => stateManager;
-    public BehaviorProfile GetBehavior() => behavior;
+    public BehaviorProfile GetBehavior() => health.behavior;
     #endregion
 }

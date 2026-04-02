@@ -28,7 +28,7 @@ public static class EnemyMovementHelper
             float dist = Vector2.Distance(context.SelfTransform.position, context.PlayerTransform.position);
             OnPlayerFound?.Invoke(dist);
         }
-        else if (patrolInstead)
+        else if (patrolInstead || OnPatrolInsteadOfIdle != null)
         {
             OnPatrolInsteadOfIdle?.Invoke();
         }
@@ -39,6 +39,7 @@ public static class EnemyMovementHelper
         }
 
     }
+
     public static void Chase(IEnemyMovementContext context, float speedMultiplier = 1f, float attackRangeOverride = -1,
         bool isStopOnAttackRange = true, Action OnEnterAttackRange = null, Func<Vector2> positionOverride = null)
     {
@@ -93,8 +94,9 @@ public static class EnemyMovementHelper
     }
 
     public static void Patrol(IEnemyMovementContext context, Vector2[] patrolPoints, ref int currentPatrolIndex, ref bool isWaiting,
-        ref float waitTimer, ref float unstuckTimer, float idleWaitTime, float unstuckWaitTime,
-        Action onSetIdle, Action onSetPatrol)
+    ref float waitTimer, ref float stuckCheckTimer, ref Vector2 lastCheckedPosition,
+    float idleWaitTime, float unstuckCheckInterval, float stuckThreshold,
+    Action onSetIdle, Action onSetPatrol)
     {
         if (isWaiting)
         {
@@ -104,34 +106,59 @@ public static class EnemyMovementHelper
             {
                 isWaiting = false;
                 waitTimer = 0f;
+                stuckCheckTimer = 0f;
+                lastCheckedPosition = context.SelfTransform.position;
+
                 int newIndex;
                 do { newIndex = UnityEngine.Random.Range(0, patrolPoints.Length); }
-                while (newIndex == currentPatrolIndex);
+                while (newIndex == currentPatrolIndex && patrolPoints.Length > 1);
                 currentPatrolIndex = newIndex;
                 onSetPatrol?.Invoke();
             }
             return;
         }
 
-        if (unstuckTimer > 0)
-        {
-            unstuckTimer -= Time.deltaTime;
-            Vector3 target = patrolPoints[currentPatrolIndex];
-            context.Rb.velocity = (target - context.SelfTransform.position).normalized * context.Stats.Speed;
+        Vector3 target = patrolPoints[currentPatrolIndex];
+        float distToTarget = Vector2.Distance(context.SelfTransform.position, target);
 
-            context.FacingDirection = TransformHelper.FlipTowards(context.SelfTransform, target, context.FacingDirection);
-
-            if (Vector2.Distance(context.SelfTransform.position, target) < 0.1f)
-            {
-                context.Rb.velocity = Vector2.zero;
-                isWaiting = true;
-            }
-        }
-        else
+        // Arrived at destination normally
+        if (distToTarget < 0.1f)
         {
             context.Rb.velocity = Vector2.zero;
-            unstuckTimer = unstuckWaitTime;
             isWaiting = true;
+            waitTimer = 0f;
+            stuckCheckTimer = 0f;
+            lastCheckedPosition = context.SelfTransform.position;
+            return;
+        }
+
+        // Move toward target
+        Vector2 direction = ((Vector2)target - (Vector2)context.SelfTransform.position).normalized;
+        context.Rb.velocity = direction * context.Stats.Speed;
+        context.FacingDirection = TransformHelper.FlipTowards(context.SelfTransform, target, context.FacingDirection);
+
+        // Stuck detection: periodically check if we've actually moved
+        stuckCheckTimer += Time.deltaTime;
+        if (stuckCheckTimer >= unstuckCheckInterval)
+        {
+            float movedDist = Vector2.Distance(context.SelfTransform.position, lastCheckedPosition);
+            lastCheckedPosition = context.SelfTransform.position;
+            stuckCheckTimer = 0f;
+
+            if (movedDist < stuckThreshold)
+            {
+                // Stuck — skip to the next patrol point
+                context.Rb.velocity = Vector2.zero;
+
+                int newIndex;
+                do { newIndex = UnityEngine.Random.Range(0, patrolPoints.Length); }
+                while (newIndex == currentPatrolIndex && patrolPoints.Length > 1);
+                currentPatrolIndex = newIndex;
+
+                // Go straight to moving, no idle pause on stuck
+                onSetPatrol?.Invoke();
+                return;
+            }
         }
     }
 }

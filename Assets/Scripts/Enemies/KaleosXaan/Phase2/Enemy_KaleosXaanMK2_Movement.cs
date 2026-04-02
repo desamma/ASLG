@@ -11,7 +11,7 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_KaleosXaanMK2_Health health;
-    [SerializeField] private BehaviorProfile behavior;
+    [SerializeField] private bool isKnockbackable = false;
     [SerializeField] private float auraFarmingDuration = 5f;
     [SerializeField] private float sawSpeedDecrease = 0.5f;
 
@@ -30,7 +30,6 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
 
     private Vector3 AdjustedPosition => transform.position + Vector3.down * pivotDownward;
 
-    private EnemyStats stats;
     private float castRange;
     private float midRange;
 
@@ -61,8 +60,8 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
 
     // readonly properties for helper
     public Rigidbody2D Rb => rb;
-    public BehaviorProfile Behavior => behavior;
-    public EnemyStats Stats => stats;
+    public BehaviorProfile Behavior => health.behavior;
+    public EnemyStats Stats => health.stats;
     public Transform DetectionPoint => detectionPoint;
     public LayerMask PlayerLayer => playerLayer;
     public Transform SelfTransform => transform;
@@ -84,13 +83,11 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
         if (health == null)
             health = GetComponent<Enemy_KaleosXaanMK2_Health>();
 
-        stats = health.stats;
-
         attackRecovery = new EnemyAttackRecovery(this, rb);
         knockbackHandler = new KnockbackHandler(this, rb);
 
-        castRange = stats.AttackRange * 3.5f;
-        midRange = stats.AttackRange * 2.5f;
+        castRange = health.stats.AttackRange * 3.5f;
+        midRange = health.stats.AttackRange * 2.5f;
 
         IsRecovering = false;
         FacingDirection = 1;
@@ -101,7 +98,6 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
         );
 
         InitializeBehavior();
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_KaleosXaanMK2_State>(animator, Enemy_KaleosXaanMK2_State.Idle);
         stateManager.OnStateEnter += OnStateEnter;
@@ -148,11 +144,6 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
             Chase();
     }
 
-    private void OnEnable()
-    {
-        DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
-    }
-
     private void OnDisable()
     {
         if (stateManager != null)
@@ -160,13 +151,6 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
             stateManager.OnStateEnter -= OnStateEnter;
             stateManager.OnStateExit -= OnStateExit;
         }
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
-    }
-
-    public void OnDifficultyChanged(DifficultyModifier newModifier)
-    {
-        if (newModifier == null) return;
-        behavior.ApplyDifficulty(newModifier);
     }
 
     public void Chase()
@@ -183,7 +167,7 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
                 {
                     stateManager.ChangeState(Enemy_KaleosXaanMK2_State.Attack);
                     RegisterMoveUsed(Enemy_KaleosXaanMK2_State.Attack);
-                    attackCooldownTimer = stats.AttackCooldown;
+                    attackCooldownTimer = Stats.AttackCooldown;
                 }
                 else if (!IsInAnyAttackState())
                 {
@@ -282,7 +266,7 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
         bool isSaw = stateManager.IsInState(Enemy_KaleosXaanMK2_State.Saw);
         if (!IsInAnyAttackState() && !isSaw) return;
 
-        attackRecovery.StartRecovery(stats.AttackCooldown,
+        attackRecovery.StartRecovery(Stats.AttackCooldown,
             () =>
             {
                 IsRecovering = true;
@@ -297,33 +281,24 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
 
     public void InitializeBehavior()
     {
-        behavior = new BehaviorProfile
-        {
-            DetectionRange = 15f,
-            SpecialAttackFrequency = 0.4f,
-            UltimateAttackFrequency = 0.2f,
-            Aggression = 1f,
-            MobilityUsageFrequency = 1f,
-        };
-
         attackCategories = new List<AttackCategory<Enemy_KaleosXaanMK2_State>>
          {
              new() {
-                 Frequency = behavior.UltimateAttackFrequency,
+                 Frequency = Behavior.UltimateAttackFrequency,
                  Attacks = new[]
                  {
                     new AttackConfig<Enemy_KaleosXaanMK2_State> { State = Enemy_KaleosXaanMK2_State.ThreeHitCombo, Range = midRange, MoveCountCooldown = 3 }
                  }
              },
              new() {
-                 Frequency = behavior.UltimateAttackFrequency * behavior.MobilityUsageFrequency,
+                 Frequency = Behavior.UltimateAttackFrequency * Behavior.MobilityUsageFrequency,
                  Attacks = new[]
                  {
                     new AttackConfig<Enemy_KaleosXaanMK2_State> { State = Enemy_KaleosXaanMK2_State.Disappear, Range = castRange, MoveCountCooldown = 10 },
                  }
              },
              new() {
-                 Frequency = behavior.SpecialAttackFrequency * behavior.MobilityUsageFrequency,
+                 Frequency = Behavior.SpecialAttackFrequency * Behavior.MobilityUsageFrequency,
                  Attacks = new[]
                  {
                     new AttackConfig<Enemy_KaleosXaanMK2_State> { State = Enemy_KaleosXaanMK2_State.Saw, Range = midRange, MoveCountCooldown = 3 },
@@ -331,7 +306,7 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
                  }
              },
              new() {
-                 Frequency = behavior.SpecialAttackFrequency,
+                 Frequency = Behavior.SpecialAttackFrequency,
                  Attacks = new[]
                  {
                     new AttackConfig<Enemy_KaleosXaanMK2_State> { State = Enemy_KaleosXaanMK2_State.ArcaneHeart, Range = castRange, MoveCountCooldown = 6 },
@@ -344,7 +319,7 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
                  Attacks = new[]
                  {
                      // Basic Attack: no count cooldown
-                    new AttackConfig<Enemy_KaleosXaanMK2_State> { State = Enemy_KaleosXaanMK2_State.Attack, Range = stats.AttackRange, MoveCountCooldown = 0 }
+                    new AttackConfig<Enemy_KaleosXaanMK2_State> { State = Enemy_KaleosXaanMK2_State.Attack, Range = Stats.AttackRange, MoveCountCooldown = 0 }
                  }
              }
          };
@@ -390,7 +365,7 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
     }
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
         if (!isKnockbackable || knockbackHandler == null) return;
 
@@ -413,6 +388,6 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
 
     #region Getters
     public StateManager<Enemy_KaleosXaanMK2_State> GetStateManager() => stateManager;
-    public BehaviorProfile GetBehavior() => behavior;
+    public BehaviorProfile GetBehavior() => health.behavior;
     #endregion
 }

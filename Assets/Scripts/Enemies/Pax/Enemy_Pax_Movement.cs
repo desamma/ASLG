@@ -6,7 +6,7 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_Pax_Health health;
-    [SerializeField] private BehaviorProfile behavior;
+    [SerializeField] private bool isKnockbackable = true;
     [SerializeField] private float attackRecoveryDuration = 1f;
 
     private StateManager<Enemy_Pax_State> stateManager;
@@ -27,8 +27,8 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
     public float patrolDistance = 3f;
     int currentPatrolIndex = 0;
     private bool isWaiting = false;
-    private readonly float unstuckPatrolWaitTime = 1f;
-    private float unstuckPatrolWaitTimer;
+    private float stuckCheckTimer = 0f;
+    private Vector2 lastCheckedPosition;
     private float waitTimer = 0f;
 
     [Header("Audio")]
@@ -40,12 +40,11 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
     [SerializeField] private float maxAudioDistance = 15f;
     private AudioSource loopingAudioSource;
 
-    private EnemyStats stats;
     private float attackCooldownTimer = 0f;
     private float idleTimer = 0f;
     private readonly float idleToLickPawTime = 5f;
     private bool isAttacked = false;
-
+    private KnockbackHandler knockbackHandler;
     // enemy movement helper
     public Transform PlayerTransform { get; set; }
     public bool IsRecovering { get; set; }
@@ -53,8 +52,8 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
 
     // readonly properties for helper
     public Rigidbody2D Rb => rb;
-    public BehaviorProfile Behavior => behavior;
-    public EnemyStats Stats => stats;
+    public BehaviorProfile Behavior => health.behavior;
+    public EnemyStats Stats => health.stats;
     public Transform DetectionPoint => detectionPoint;
     public LayerMask PlayerLayer => playerLayer;
     public Transform SelfTransform => transform;
@@ -77,7 +76,6 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
 
         if (health == null)
             health = GetComponent<Enemy_Pax_Health>();
-        stats = health.stats;
 
         originalPosition = transform.position;
 
@@ -86,6 +84,7 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
         patrolPoints[1] = originalPosition + Vector2.down * patrolDistance;
         patrolPoints[2] = originalPosition + Vector2.left * patrolDistance;
         patrolPoints[3] = originalPosition + Vector2.right * patrolDistance;
+        lastCheckedPosition = originalPosition;
 
         IsRecovering = false;
         FacingDirection = 1;
@@ -95,12 +94,8 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
             transform.localScale.z
         );
 
-        InitializeBehavior();
-
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
-
         stateManager = new StateManager<Enemy_Pax_State>(animator, Enemy_Pax_State.Idle);
-
+        knockbackHandler = new KnockbackHandler(this, rb);
 
         stateManager.OnStateEnter += OnStateEnter;
         stateManager.OnStateExit += OnStateExit;
@@ -117,6 +112,12 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
 
         if (!isAttacked)
         {
+            if (stateManager.IsInState(Enemy_Pax_State.Chase) ||
+                stateManager.IsInState(Enemy_Pax_State.Attack))
+            {
+                stateManager.ChangeState(Enemy_Pax_State.Idle);
+            }
+
             // Track idle time for lick paw in both Idle and when waiting during Patrol
             if (stateManager.IsInState(Enemy_Pax_State.Idle))
             {
@@ -146,7 +147,7 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
             }
         }
 
-        if (!stateManager.IsInState(Enemy_Pax_State.Knockback) && !IsRecovering)
+        if (isAttacked && !stateManager.IsInState(Enemy_Pax_State.Knockback) && !IsRecovering)
         {
             CheckForPlayer();
         }
@@ -162,11 +163,6 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
         }
     }
 
-    private void OnEnable()
-    {
-        DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
-    }
-
     private void OnDisable()
     {
         if (stateManager != null)
@@ -175,7 +171,6 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
             stateManager.OnStateExit -= OnStateExit;
         }
         health.IsAttacked -= OnIsAttacked;
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
 
     public void OnIsAttacked()
@@ -184,12 +179,6 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
 
         isAttacked = true;
     }
-    public void OnDifficultyChanged(DifficultyModifier newModifier)
-    {
-        if (newModifier == null) return;
-        behavior.ApplyDifficulty(newModifier);
-    }
-
     public void Chase()
     {
         EnemyMovementHelper.Chase(this, isStopOnAttackRange: false);
@@ -197,8 +186,11 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
 
     private void Patrol()
     {
-        EnemyMovementHelper.Patrol(this, patrolPoints, ref currentPatrolIndex, ref isWaiting, ref waitTimer, ref unstuckPatrolWaitTimer,
-            idleToPatrolWaitTime, unstuckPatrolWaitTime,
+        EnemyMovementHelper.Patrol(this, patrolPoints, ref currentPatrolIndex, ref isWaiting, ref waitTimer,
+            ref stuckCheckTimer, ref lastCheckedPosition,
+            idleToPatrolWaitTime,
+            unstuckCheckInterval: 1.0f,   // check every 1 second
+            stuckThreshold: 0.3f,          // must move at least 0.3 units per check
             () => stateManager.ChangeState(Enemy_Pax_State.Idle),
             () => stateManager.ChangeState(Enemy_Pax_State.Patrol));
     }
@@ -210,18 +202,17 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
         EnemyMovementHelper.CheckForPlayer(this,
             OnPlayerFound: distanceToPlayer =>
             {
-                if (distanceToPlayer <= stats.AttackRange)
+                if (distanceToPlayer <= Stats.AttackRange && !IsInAnyAttackState() && !IsRecovering)
                 {
-
                     if (attackCooldownTimer <= 0)
                     {
                         stateManager.ChangeState(Enemy_Pax_State.Attack);
-                        attackCooldownTimer = stats.AttackCooldown;
+                        attackCooldownTimer = Stats.AttackCooldown;
                     }
                 }
                 else
                 {
-                    stateManager.ChangeState(Enemy_Pax_State.Chase);
+                    ChangeToChaseState();
                 }
             }, true,
             OnPatrolInsteadOfIdle: () =>
@@ -257,20 +248,6 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
         IsRecovering = false;
     }
 
-    public void InitializeBehavior()
-    {
-        behavior = new BehaviorProfile
-        {
-            DetectionRange = 8f,
-            ChaseRange = 5f,
-            SpecialAttackFrequency = 0f,
-            UltimateAttackFrequency = 0f,
-            Aggression = 1.5f,
-            EnrageThreshold = 0f,
-            MobilityUsageFrequency = 0f,
-        };
-    }
-
     #region State Callbacks
     private void OnStateEnter(Enemy_Pax_State state)
     {
@@ -303,7 +280,8 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
                 break;
             case Enemy_Pax_State.Patrol:
                 {
-                    unstuckPatrolWaitTimer = unstuckPatrolWaitTime;
+                    stuckCheckTimer = 0f;
+                    lastCheckedPosition = transform.position;
                     if (footstepAudioClip != null)
                     {
                         loopingAudioSource = SoundFXManager.Instance.PlayLoopingSoundFXClip(
@@ -353,25 +331,16 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
         if (rand > 0.5f)
             SoundFXManager.Instance.PlaySoundFXClip(catMeow, transform, volume);
     }
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
-        if (!isKnockbackable) return;
-        stateManager.ChangeState(Enemy_Pax_State.Knockback);
+        if (!isKnockbackable || knockbackHandler == null) return;
 
-        StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
-
-        Vector2 knockbackDirection = (transform.position - player.position).normalized;
-        rb.velocity = knockbackDirection * knockbackForce;
+        knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
+            () => stateManager.ChangeState(Enemy_Pax_State.Knockback),
+            () => stateManager.ChangeState(Enemy_Pax_State.Idle));
     }
 
-    IEnumerator KnockBackCounter(float knockbackTime, float stunTime)
-    {
-        yield return new WaitForSeconds(knockbackTime);
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(stunTime);
-
-        stateManager.ChangeState(Enemy_Pax_State.Idle);
-    }
     #region Getters
     public StateManager<Enemy_Pax_State> GetStateManager()
     {
@@ -379,7 +348,7 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
     }
     public BehaviorProfile GetBehavior()
     {
-        return behavior;
+        return health.behavior;
     }
 
     public bool IsInAnyAttackState()

@@ -6,7 +6,7 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_Slime_Health health;
-    [SerializeField] private BehaviorProfile behavior;
+    [SerializeField] private bool isKnockbackable = true;
     [SerializeField] private float attackRecoveryDuration = 0.5f;
 
     private StateManager<Enemy_Slime_State> stateManager;
@@ -25,10 +25,10 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
     [SerializeField] private float idleToPatrolWaitTime = 2f;
     private Vector2[] patrolPoints;
     public float patrolDistance = 3f;
-    int currentPatrolIndex = 0;
+    int currentPatrolIndex = 0; 
+    private float stuckCheckTimer = 0f;
+    private Vector2 lastCheckedPosition;
     private bool isWaiting = false;
-    private readonly float unstuckPatrolWaitTime = 1f;
-    private float unstuckPatrolWaitTimer;
     private float waitTimer = 0f;
 
     [Header("Audio")]
@@ -37,8 +37,6 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
     [SerializeField] private float minAudioDistance = 1f;
     [SerializeField] private float maxAudioDistance = 10f;
     private AudioSource loopingAudioSource;
-
-    private EnemyStats stats;
 
     private float attackCooldownTimer = 0f;
     private bool hasWokenUp = false;
@@ -50,8 +48,8 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
 
     // readonly properties for helper
     public Rigidbody2D Rb => rb;
-    public BehaviorProfile Behavior => behavior;
-    public EnemyStats Stats => stats;
+    public BehaviorProfile Behavior => health.behavior;
+    public EnemyStats Stats => health.stats;
     public Transform DetectionPoint => detectionPoint;
     public LayerMask PlayerLayer => playerLayer;
     public Transform SelfTransform => transform;
@@ -74,8 +72,6 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
         if (health == null)
             health = GetComponent<Enemy_Slime_Health>();
 
-        stats = health.stats;
-
         originalPosition = transform.position;
 
         patrolPoints = new Vector2[4];
@@ -83,6 +79,7 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
         patrolPoints[1] = originalPosition + Vector2.down * patrolDistance;
         patrolPoints[2] = originalPosition + Vector2.left * patrolDistance;
         patrolPoints[3] = originalPosition + Vector2.right * patrolDistance;
+        lastCheckedPosition = originalPosition;
 
         FacingDirection = 1;
         transform.localScale = new Vector3(
@@ -92,9 +89,7 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
         );
 
         knockbackHandler = new KnockbackHandler(this, rb);
-        InitializeBehavior();
 
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         Enemy_Slime_State initialState = Random.value < 0.5f ? Enemy_Slime_State.Sleep : Enemy_Slime_State.Idle;
         stateManager = new StateManager<Enemy_Slime_State>(animator, initialState);
@@ -125,11 +120,6 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
         }
     }
 
-    private void OnEnable()
-    {
-        DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
-    }
-
     private void OnDisable()
     {
         if (stateManager != null)
@@ -137,13 +127,6 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
             stateManager.OnStateEnter -= OnStateEnter;
             stateManager.OnStateExit -= OnStateExit;
         }
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
-    }
-
-    public void OnDifficultyChanged(DifficultyModifier newModifier)
-    {
-        if (newModifier == null) return;
-        behavior.ApplyDifficulty(newModifier);
     }
 
     public void Chase()
@@ -153,11 +136,15 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
 
     private void Patrol()
     {
-        EnemyMovementHelper.Patrol(this, patrolPoints, ref currentPatrolIndex, ref isWaiting, ref waitTimer, ref unstuckPatrolWaitTimer,
-            idleToPatrolWaitTime, unstuckPatrolWaitTime,
+        EnemyMovementHelper.Patrol(this, patrolPoints, ref currentPatrolIndex, ref isWaiting, ref waitTimer,
+            ref stuckCheckTimer, ref lastCheckedPosition,
+            idleToPatrolWaitTime,
+            unstuckCheckInterval: 1.0f,   // check every 1 second
+            stuckThreshold: 0.3f,          // must move at least 0.3 units per check
             () => stateManager.ChangeState(Enemy_Slime_State.Idle),
             () => stateManager.ChangeState(Enemy_Slime_State.Patrol));
     }
+
     public void CheckForPlayer()
     {
         if (IsInAnyAttackState() || IsRecovering)
@@ -175,17 +162,17 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
                         stateManager.ChangeState(Enemy_Slime_State.Idle);
                     }
                 }
-                if (distanceToPlayer <= stats.AttackRange)
+                if (distanceToPlayer <= Stats.AttackRange)
                 {
                     rb.velocity = Vector2.zero;
 
                     if (attackCooldownTimer <= 0)
                     {
                         DecideAttackType();
-                        attackCooldownTimer = stats.AttackCooldown;
+                        attackCooldownTimer = Stats.AttackCooldown;
                     }
                 }
-                else if (distanceToPlayer > stats.AttackRange &&
+                else if (distanceToPlayer > Stats.AttackRange &&
                          !IsInAnyAttackState())
                 {
                     stateManager.ChangeState(Enemy_Slime_State.Chase);
@@ -212,13 +199,13 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
         float distanceToPlayer = Vector2.Distance(transform.position, PlayerTransform.position);
         float mobilityRandom = Random.value;
 
-        if (mobilityRandom < behavior.MobilityUsageFrequency)
+        if (mobilityRandom < Behavior.MobilityUsageFrequency)
         {
             stateManager.ChangeState(Enemy_Slime_State.Spin);
         }
         else
         {
-            if (distanceToPlayer <= stats.AttackRange)
+            if (distanceToPlayer <= Stats.AttackRange)
             {
                 stateManager.ChangeState(Enemy_Slime_State.Jump);
             }
@@ -262,20 +249,6 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
         transform.localScale = localScale;
     }
 
-    public void InitializeBehavior()
-    {
-        behavior = new BehaviorProfile
-        {
-            DetectionRange = 10f,
-            ChaseRange = 8f,
-            SpecialAttackFrequency = 0.3f,
-            UltimateAttackFrequency = 0f,
-            Aggression = 1.1f,
-            EnrageThreshold = 0f,
-            MobilityUsageFrequency = 0.5f
-        };
-    }
-
     #region State Callbacks
     private void OnStateEnter(Enemy_Slime_State state)
     {
@@ -294,7 +267,8 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
                 break;
             case Enemy_Slime_State.Patrol:
                 {
-                    unstuckPatrolWaitTimer = unstuckPatrolWaitTime;
+                    stuckCheckTimer = 0f;
+                    lastCheckedPosition = transform.position;
                     if (movementAudioClip != null)
                     {
                         loopingAudioSource = SoundFXManager.Instance.PlayLoopingSoundFXClip(
@@ -332,7 +306,7 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
 
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
         if (!isKnockbackable || knockbackHandler == null) return;
 
@@ -343,7 +317,7 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
 
     #region Getters
     public StateManager<Enemy_Slime_State> GetStateManager() => stateManager;
-    public BehaviorProfile GetBehavior() => behavior;
+    public BehaviorProfile GetBehavior() => health.behavior;
     #endregion
 
     public bool IsInAnyAttackState() =>

@@ -5,8 +5,8 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_Andromeda_Health health;
-    [SerializeField] private BehaviorProfile behavior;
     [SerializeField] private float attackRecoveryDuration = 1f;
+    [SerializeField] private bool isKnockbackable = true;
 
     private StateManager<Enemy_Andromeda_State> stateManager;
 
@@ -14,7 +14,6 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private Enemy_Andromeda_Attack attackComponent;
 
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
@@ -26,11 +25,10 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
     public float patrolDistance = 3f;
     int currentPatrolIndex = 0;
     private bool isWaiting = false;
-    private readonly float unstuckPatrolWaitTime = 1f;
-    private float unstuckPatrolWaitTimer;
+    private float stuckCheckTimer = 0f;
+    private Vector2 lastCheckedPosition;
     private float waitTimer = 0f;
 
-    private EnemyStats stats;
     private float castRange;
     private float attackCooldownTimer = 0f;
 
@@ -44,8 +42,8 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
 
     // readonly properties for helper
     public Rigidbody2D Rb => rb;
-    public BehaviorProfile Behavior => behavior;
-    public EnemyStats Stats => stats;
+    public BehaviorProfile Behavior => health.behavior;
+    public EnemyStats Stats => health.stats;
     public Transform DetectionPoint => detectionPoint;
     public LayerMask PlayerLayer => playerLayer;
     public Transform SelfTransform => transform;
@@ -59,15 +57,13 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
         patrolPoints[1] = originalPosition + Vector2.down * patrolDistance;
         patrolPoints[2] = originalPosition + Vector2.left * patrolDistance;
         patrolPoints[3] = originalPosition + Vector2.right * patrolDistance;
+        lastCheckedPosition = originalPosition;
 
         if (rb == null)
             rb = GetComponent<Rigidbody2D>();
 
         if (animator == null)
             animator = GetComponent<Animator>();
-
-        if (attackComponent == null)
-            attackComponent = GetComponent<Enemy_Andromeda_Attack>();
 
         if (playerLayer != LayerMask.GetMask("Player"))
         {
@@ -80,8 +76,6 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
         if (health == null)
             health = GetComponent<Enemy_Andromeda_Health>();
 
-        stats = health.stats;
-
         FacingDirection = 1;
 
         transform.localScale = new Vector3(
@@ -90,13 +84,9 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
             transform.localScale.z
         );
 
-        InitializeBehavior();
-
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
-
         stateManager = new StateManager<Enemy_Andromeda_State>(animator, Enemy_Andromeda_State.Idle);
 
-        castRange = stats.AttackRange * 2.5f;
+        castRange = health.stats.AttackRange * 2.5f;
 
         stateManager.OnStateEnter += OnStateEnter;
     }
@@ -123,25 +113,14 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
         }
     }
 
-    private void OnEnable()
-    {
-        DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
-    }
-
     private void OnDisable()
     {
         if (stateManager != null)
         {
             stateManager.OnStateEnter -= OnStateEnter;
         }
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
 
-    public void OnDifficultyChanged(DifficultyModifier newModifier)
-    {
-        if (newModifier == null) return;
-        behavior.ApplyDifficulty(newModifier);
-    }
 
     public void Chase()
     {
@@ -150,8 +129,11 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
 
     private void Patrol()
     {
-        EnemyMovementHelper.Patrol(this, patrolPoints, ref currentPatrolIndex, ref isWaiting, ref waitTimer, ref unstuckPatrolWaitTimer,
-            idleToPatrolWaitTime, unstuckPatrolWaitTime,
+        EnemyMovementHelper.Patrol(this, patrolPoints, ref currentPatrolIndex, ref isWaiting, ref waitTimer,
+            ref stuckCheckTimer, ref lastCheckedPosition,
+            idleToPatrolWaitTime,
+            unstuckCheckInterval: 1.0f,   // check every 1 second
+            stuckThreshold: 0.3f,          // must move at least 0.3 units per check
             () => stateManager.ChangeState(Enemy_Andromeda_State.Idle),
             () => stateManager.ChangeState(Enemy_Andromeda_State.Patrol));
     }
@@ -168,7 +150,7 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
                     if (attackCooldownTimer <= 0)
                     {
                         DecideAttackType();
-                        attackCooldownTimer = stats.AttackCooldown;
+                        attackCooldownTimer = health.stats.AttackCooldown;
                     }
                 }
                 else if (distanceToPlayer > castRange &&
@@ -195,7 +177,7 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
         float random = UnityEngine.Random.value;
 
         // Cast is the special attack
-        if (random < behavior.SpecialAttackFrequency)
+        if (random < health.behavior.SpecialAttackFrequency)
         {
             if (distanceToPlayer <= castRange)
             {
@@ -208,7 +190,7 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
         }
         else
         {
-            if (distanceToPlayer <= stats.AttackRange)
+            if (distanceToPlayer <= health.stats.AttackRange)
             {
                 stateManager.ChangeState(Enemy_Andromeda_State.Attack);
             }
@@ -243,20 +225,6 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
             });
     }
 
-    public void InitializeBehavior()
-    {
-        behavior = new BehaviorProfile
-        {
-            DetectionRange = 15f,
-            ChaseRange = 8f,
-            SpecialAttackFrequency = 0.3f,
-            UltimateAttackFrequency = 0f,
-            Aggression = 1f,
-            EnrageThreshold = 0f,
-            MobilityUsageFrequency = 0f,
-        };
-    }
-
     #region State Callbacks
     private void OnStateEnter(Enemy_Andromeda_State state)
     {
@@ -267,7 +235,8 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
                 Destroy(gameObject, 1.3f);
                 break;
             case Enemy_Andromeda_State.Patrol:
-                unstuckPatrolWaitTimer = unstuckPatrolWaitTime;
+                stuckCheckTimer = 0f;
+                lastCheckedPosition = transform.position;
                 break;
             default:
                 rb.velocity = Vector2.zero;
@@ -276,7 +245,7 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
     }
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
         if (!isKnockbackable || knockbackHandler == null) return;
 
@@ -305,10 +274,6 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
     public StateManager<Enemy_Andromeda_State> GetStateManager()
     {
         return stateManager;
-    }
-    public BehaviorProfile GetBehavior()
-    {
-        return behavior;
     }
     #endregion
 }

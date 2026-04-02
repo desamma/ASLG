@@ -8,8 +8,8 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_ArgeonHighmayneMK2_Health health;
-    [SerializeField] private BehaviorProfile behavior;
     [SerializeField] private float auraFarmingDuration = 5f;
+    [SerializeField] private bool isKnockbackable = false;
 
     private StateManager<Enemy_ArgeonHighmayneMK2_State> stateManager;
 
@@ -32,7 +32,6 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
 
-    private EnemyStats stats;
     private float castRange;
     private float attackCooldownTimer = 0f;
     private float warSurgeWaitTimer = 0f;
@@ -49,8 +48,8 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
 
     // readonly properties for helper
     public Rigidbody2D Rb => rb;
-    public BehaviorProfile Behavior => behavior;
-    public EnemyStats Stats => stats;
+    public BehaviorProfile Behavior => health.behavior;
+    public EnemyStats Stats => health.stats;
     public Transform DetectionPoint => detectionPoint;
     public LayerMask PlayerLayer => playerLayer;
     public Transform SelfTransform => transform;
@@ -88,8 +87,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
         if (health == null)
             health = GetComponent<Enemy_ArgeonHighmayneMK2_Health>();
 
-        stats = health.stats;
-        castRange = stats.AttackRange * 3f;
+        castRange = health.stats.AttackRange * 3f;
 
         IsRecovering = false;
         FacingDirection = 1;
@@ -99,8 +97,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
             transform.localScale.z
         );
 
-        InitializeBehavior();
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        InitializeAttacks();
 
         stateManager = new StateManager<Enemy_ArgeonHighmayneMK2_State>(animator, Enemy_ArgeonHighmayneMK2_State.Idle);
         stateManager.OnStateEnter += OnStateEnter;
@@ -140,24 +137,12 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
             Chase();
     }
 
-    private void OnEnable()
-    {
-        DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
-    }
-
     private void OnDisable()
     {
         if (stateManager != null)
         {
             stateManager.OnStateEnter -= OnStateEnter;
         }
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
-    }
-
-    public void OnDifficultyChanged(DifficultyModifier newModifier)
-    {
-        if (newModifier == null) return;
-        behavior.ApplyDifficulty(newModifier);
     }
 
     public void Chase()
@@ -169,7 +154,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
                 {
                     stateManager.ChangeState(Enemy_ArgeonHighmayneMK2_State.Attack);
                     RegisterMoveUsed(Enemy_ArgeonHighmayneMK2_State.Attack);
-                    attackCooldownTimer = stats.AttackCooldown;
+                    attackCooldownTimer = Stats.AttackCooldown;
                 }
                 else if (!IsInAnyAttackState())
                 {
@@ -241,7 +226,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
-        attackRecovery.StartRecovery(stats.AttackCooldown,
+        attackRecovery.StartRecovery(Stats.AttackCooldown,
             () =>
             {
                 IsRecovering = true;
@@ -254,21 +239,12 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
             });
     }
 
-    public void InitializeBehavior()
+    public void InitializeAttacks()
     {
-        behavior = new BehaviorProfile
-        {
-            DetectionRange = 15f,
-            SpecialAttackFrequency = 0.5f,
-            UltimateAttackFrequency = 0.3f,
-            Aggression = 1f,
-            MobilityUsageFrequency = 1f,
-        };
-
         attackCategories = new List<AttackCategory<Enemy_ArgeonHighmayneMK2_State>>
          {
              new() {
-                 Frequency = behavior.UltimateAttackFrequency,
+                 Frequency = Behavior.UltimateAttackFrequency,
                  Attacks = new[]
                  {
                      new AttackConfig<Enemy_ArgeonHighmayneMK2_State> { State = Enemy_ArgeonHighmayneMK2_State.Decimated,   Range = castRange, MoveCountCooldown = 5 },
@@ -277,7 +253,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
                  }
              },
              new() {
-                 Frequency = behavior.SpecialAttackFrequency * behavior.MobilityUsageFrequency,
+                 Frequency = Behavior.SpecialAttackFrequency * Behavior.MobilityUsageFrequency,
                  Attacks = new[]
                  {
                      new AttackConfig<Enemy_ArgeonHighmayneMK2_State> { State = Enemy_ArgeonHighmayneMK2_State.WarSurge, Range = castRange, MoveCountCooldown = 4 },
@@ -288,7 +264,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
                  Attacks = new[]
                  {
                      // Basic Attack: no count cooldown
-                     new AttackConfig<Enemy_ArgeonHighmayneMK2_State> { State = Enemy_ArgeonHighmayneMK2_State.Attack, Range = stats.AttackRange, MoveCountCooldown = 0 }
+                     new AttackConfig<Enemy_ArgeonHighmayneMK2_State> { State = Enemy_ArgeonHighmayneMK2_State.Attack, Range = Stats.AttackRange, MoveCountCooldown = 0 }
                  }
              }
          };
@@ -356,7 +332,7 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
     }
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
         if (!isKnockbackable || knockbackHandler == null) return;
 
@@ -379,6 +355,6 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
 
     #region Getters
     public StateManager<Enemy_ArgeonHighmayneMK2_State> GetStateManager() => stateManager;
-    public BehaviorProfile GetBehavior() => behavior;
+    public BehaviorProfile GetBehavior() => health.behavior;
     #endregion
 }

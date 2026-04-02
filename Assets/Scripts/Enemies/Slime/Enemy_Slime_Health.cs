@@ -8,6 +8,8 @@ public class Enemy_Slime_Health : MonoBehaviour, IEnemy_Health
 {
     [Header("Enemy Stats")]
     public EnemyStats stats;
+    public BehaviorProfile behavior;
+    public int currentLevel = 1;
     public bool isDead;
 
     [Header("Components")]
@@ -20,8 +22,6 @@ public class Enemy_Slime_Health : MonoBehaviour, IEnemy_Health
 
     private void Start()
     {
-        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
-
         movementComponent = GetComponent<Enemy_Slime_Movement>();
     }
 
@@ -61,19 +61,13 @@ public class Enemy_Slime_Health : MonoBehaviour, IEnemy_Health
 
     public void InitializeStats()
     {
-        stats = new EnemyStats
-        {
-            MaxHP = 100f,
-            CurrentHP = 100f,
-            Strength = 10f,
-            Magic = 0f,
-            Defense = 15f,
-            MagicResist = 10f,
-            Speed = 2f,
-            ExpReward = 10f,
-            AttackCooldown = 2f,
-            AttackRange = 5f
-        };
+        var data = EnemyDataRepository.LoadEnemy("Slime");
+
+        stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
+        behavior = data.Behavior;
+
+        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
         isDead = false;
     }
 
@@ -81,5 +75,6 @@ public class Enemy_Slime_Health : MonoBehaviour, IEnemy_Health
     {
         if (newModifier == null) return;
         stats.ApplyDifficulty(newModifier);
+        behavior.ApplyDifficulty(newModifier);
     }
 }

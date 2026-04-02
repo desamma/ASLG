@@ -8,6 +8,8 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
 {
     [Header("Enemy Stats")]
     public EnemyStats stats;
+    public BehaviorProfile behavior;
+    public int currentLevel = 1;
     public float damageReductionPercentage = 0f;
     public bool isDead;
     private BossHealthUI bossHealthUI;
@@ -22,8 +24,6 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
 
     private void Start()
     {
-        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
-
         movementComponent = GetComponent<Enemy_ArgeonHighmayneMK2_Movement>();
         effectManager = GetComponent<StatusEffectManager>();
 
@@ -83,19 +83,14 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
 
     public void InitializeStats()
     {
-        stats = new EnemyStats
-        {
-            MaxHP = 2400f,
-            CurrentHP = 2400f,
-            Strength = 150f,
-            Magic = 200f,
-            Defense = 300f,
-            MagicResist = 150f,
-            Speed = 4f,
-            ExpReward = 2000f,
-            AttackCooldown = 2.5f,
-            AttackRange = 2f
-        };
+        var data = EnemyDataRepository.LoadEnemy("ArgeonHighmayneMK2");
+
+        stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
+        behavior = data.Behavior;
+
+        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+
         isDead = false;
     }
 
@@ -103,7 +98,9 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
     {
         if (newModifier == null) return;
         stats.ApplyDifficulty(newModifier);
+        behavior.ApplyDifficulty(newModifier);
     }
+
     public void DestroyEnemy()
     {
         Destroy(gameObject);

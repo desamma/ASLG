@@ -8,6 +8,8 @@ public class Enemy_ArrowWhistler_Health : MonoBehaviour, IEnemy_Health
 {
     [Header("Enemy Stats")]
     public EnemyStats stats;
+    public BehaviorProfile behavior;
+    public int currentLevel = 1;
     public float damageReductionPercentage = 0f;
     public bool isDead = false;
     public Action OnEnraged;
@@ -23,8 +25,6 @@ public class Enemy_ArrowWhistler_Health : MonoBehaviour, IEnemy_Health
 
     private void Start()
     {
-        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
-
         movementComponent = GetComponent<Enemy_ArrowWhistler_Movement>();
     }
 
@@ -77,25 +77,22 @@ public class Enemy_ArrowWhistler_Health : MonoBehaviour, IEnemy_Health
 
     public void InitializeStats()
     {
-        stats = new EnemyStats
-        {
-            MaxHP = 200f,
-            CurrentHP = 200f,
-            Strength = 20,
-            Magic = 0,
-            Defense = 20f,
-            MagicResist = 30f,
-            Speed = 2.5f,
-            ExpReward = 30f,
-            AttackCooldown = 2.5f,
-            AttackRange = 7f
-        };
+        var data = EnemyDataRepository.LoadEnemy("ArrowWhistler");
+
+        stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
+        behavior = data.Behavior;
+
+        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+
+        isDead = false;
     }
 
     public void OnDifficultyChanged(DifficultyModifier newModifier)
     {
         if (newModifier == null) return;
         stats.ApplyDifficulty(newModifier);
+        behavior.ApplyDifficulty(newModifier);
     }
 
     public void OnDestroyAfterDeath(float seconds)
