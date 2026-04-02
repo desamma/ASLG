@@ -332,6 +332,10 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
     {
         switch (state)
         {
+            case Enemy_PeaceKeeper_State.Attack:
+                rb.velocity = Vector2.zero;
+                FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
+                break;
             case Enemy_PeaceKeeper_State.Death:
                 rb.velocity = Vector2.zero;
                 charCollider.enabled = false;

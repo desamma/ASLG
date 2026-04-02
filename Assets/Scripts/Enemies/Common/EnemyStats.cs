@@ -20,6 +20,11 @@ public class EnemyStats
     public float AttackRange;
     public float AttackCooldown;
 
+    [Header("Knockback")]
+    public float KnockbackForce;
+    public float KnockbackTime;
+    public float StunTime;
+
     /// <summary>
     /// Apply difficulty modifiers to the enemy stats
     /// </summary>

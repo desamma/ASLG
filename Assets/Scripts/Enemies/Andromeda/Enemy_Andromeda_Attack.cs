@@ -20,6 +20,7 @@ public class Enemy_Andromeda_Attack : MonoBehaviour
     [SerializeField] private float volume = 1f;
 
     private EnemyStats stats;
+    private GameObject player;
 
     private void Start()
     {
@@ -61,7 +62,15 @@ public class Enemy_Andromeda_Attack : MonoBehaviour
         {
             if (hit.CompareTag("Player"))
             {
+                player = hit.gameObject;
                 StatsManager.instance.TakeDamage(stats.Magic);
+
+                player.TryGetComponent<PlayerMovement>(out var playerMovement);
+
+                if (playerMovement != null)
+                {
+                    playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                }
             }
         }
     }

@@ -105,6 +105,14 @@ public class Enemy_Pax_Attack : MonoBehaviour
                 if (Time.time - lastDamageTime >= damageInterval)
                 {
                     StatsManager.instance.TakeDamage(stats.Strength * attackMultiplier);
+
+                    player.TryGetComponent<PlayerMovement>(out var playerMovement);
+
+                    if (playerMovement != null)
+                    {
+                        playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                    }
+
                     lastDamageTime = Time.time;
                 }
             }

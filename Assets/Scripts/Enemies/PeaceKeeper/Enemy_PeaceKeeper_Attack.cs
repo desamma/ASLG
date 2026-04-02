@@ -1,5 +1,4 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 
 [DisallowMultipleComponent]
 public class Enemy_PeaceKeeper_Attack : MonoBehaviour
@@ -25,7 +24,7 @@ public class Enemy_PeaceKeeper_Attack : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioClip shieldBashAudioClip;
     [SerializeField] private float volume = 1f;
-    
+
     private DifficultyModifier difficultyModifier;
     private StatusEffectManager effectManager;
     private bool hitPlayer = false;
@@ -80,9 +79,9 @@ public class Enemy_PeaceKeeper_Attack : MonoBehaviour
 
         player.TryGetComponent<PlayerMovement>(out var playerMovement);
 
-        if(playerMovement != null)
+        if (playerMovement != null)
         {
-            playerMovement.KnockBack(transform, knockbackForce, knockbackTime, stunTime);
+            playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
         }
 
         hitEffect.SetActive(true);
