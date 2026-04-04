@@ -16,17 +16,11 @@ public class Enemy_PeaceKeeper_Attack : MonoBehaviour
     [SerializeField] private Vector2 normalAttackHitBox = new(2f, 3f);
     [SerializeField] private GameObject hitEffect;
 
-    [Header("Knockback Settings")]
-    [SerializeField] private float knockbackForce = 5f;
-    [SerializeField] private float knockbackTime = 0.3f;
-    [SerializeField] private float stunTime = 0.5f;
-
     [Header("Audio")]
     [SerializeField] private AudioClip shieldBashAudioClip;
     [SerializeField] private float volume = 1f;
 
     private DifficultyModifier difficultyModifier;
-    private StatusEffectManager effectManager;
     private bool hitPlayer = false;
 
     private void Start()
@@ -36,9 +30,6 @@ public class Enemy_PeaceKeeper_Attack : MonoBehaviour
 
         if (health == null)
             health = GetComponent<Enemy_PeaceKeeper_Health>();
-
-        if (effectManager == null)
-            effectManager = GetComponent<StatusEffectManager>();
 
         if (playerLayer != LayerMask.GetMask("Player"))
             playerLayer = LayerMask.GetMask("Player");
@@ -54,7 +45,6 @@ public class Enemy_PeaceKeeper_Attack : MonoBehaviour
             if (hit.CompareTag("Player"))
             {
                 player = hit.transform;
-                Debug.Log("Player hit by PeaceKeeper normal attack!");
                 if (!hitPlayer)
                 {
                     PlayAudio(0, volume * 0.4f);
@@ -98,10 +88,5 @@ public class Enemy_PeaceKeeper_Attack : MonoBehaviour
                 Debug.LogWarning("Invalid audio number: " + num);
                 break;
         }
-    }
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(normalAttackPoint.position, normalAttackHitBox);
     }
 }

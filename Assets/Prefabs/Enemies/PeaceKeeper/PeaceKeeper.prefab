@@ -235,6 +235,9 @@ MonoBehaviour:
     ExpReward: 0
     AttackRange: 0
     AttackCooldown: 0
+    KnockbackForce: 0
+    KnockbackTime: 0
+    StunTime: 0
   behavior:
     DetectionRange: 1
     ChaseRange: 1
@@ -245,7 +248,7 @@ MonoBehaviour:
     EnrageThreshold: 0
   currentLevel: 1
   isDead: 0
-  deathAudio: {fileID: 0}
+  deathAudio: {fileID: 8300000, guid: 3fe6f951537e50d49b817c3973e698a9, type: 3}
   volume: 1
 --- !u!114 &3450703810586332211
 MonoBehaviour:
@@ -260,6 +263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 153635368871575914}
+  isKnockbackable: 1
   rb: {fileID: 2794243670557708341}
   charCollider: {fileID: 6126438245385718871}
   animator: {fileID: 3604585160087458538}
