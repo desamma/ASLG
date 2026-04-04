@@ -43,6 +43,7 @@ public class Enemy_AshMephyt_Attack : MonoBehaviour
     private Coroutine flyingBackCoroutine;
     private Coroutine burnCoroutine;
     private float burnTimeRemaining;
+    private ActiveStatusEffect activeBurnFXInstance;
     private void Start()
     {
         if (animator == null)
@@ -130,16 +131,16 @@ public class Enemy_AshMephyt_Attack : MonoBehaviour
     private void ApplyOrRefreshBurn()
     {
         burnTimeRemaining = burnDuration;
-        
+
         if (player == null) return;
-        
+
         player.TryGetComponent<StatusEffectManager>(out var statusEffectManager);
-        
+
         if (statusEffectManager != null)
         {
             if (burnCoroutine != null)
                 statusEffectManager.StopCoroutine(burnCoroutine);
-            
+
             burnCoroutine = statusEffectManager.StartCoroutine(BurnRoutine(statusEffectManager));
         }
     }
@@ -148,9 +149,16 @@ public class Enemy_AshMephyt_Attack : MonoBehaviour
     {
         if (burnEffect != null)
         {
-            statusEffectManager.ApplyEffect(burnEffect, true, burnDuration)
-                .WithStatLines($"Deal {burnDamageMultiplier * health.stats.Magic} burn damage over {burnDuration} seconds")
-                .WithFlavour("0.5s per tick");
+            if (activeBurnFXInstance == null || activeBurnFXInstance.IsExpired)
+            {
+                activeBurnFXInstance = statusEffectManager.ApplyEffect(burnEffect, true, burnDuration, allowDuplicate: true)
+                    .WithStatLines($"Deal {burnDamageMultiplier * health.stats.Magic} burn damage over {burnDuration} seconds")
+                    .WithFlavour("0.5s per tick");
+            }
+            else
+            {
+                statusEffectManager.ReapplyEffect(activeBurnFXInstance, burnDuration);
+            }
         }
 
         while (burnTimeRemaining > 0f)
