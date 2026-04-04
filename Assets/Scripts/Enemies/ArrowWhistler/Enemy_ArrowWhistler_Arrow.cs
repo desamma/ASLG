@@ -49,7 +49,7 @@ public class Enemy_ArrowWhistler_Arrow : MonoBehaviour
             Destroy(gameObject, destroyTime);
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (rb != null && isInitialized)
         {
@@ -81,11 +81,7 @@ public class Enemy_ArrowWhistler_Arrow : MonoBehaviour
 
             float damage = casterStats.Strength * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
 
-            //var playerHealth = collision.GetComponent<PlayerHealth>();
-            //if (playerHealth != null)
-            //{
-            //    playerHealth.ChangeHealth(-damage);
-            //}
+            StatsManager.instance.TakeDamage(damage);
 
             Destroy(gameObject);
         }

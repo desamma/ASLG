@@ -29,7 +29,6 @@ public class Enemy_Cacophynos_Attack : MonoBehaviour
     [SerializeField] private float volume = 1f;
 
     private DifficultyModifier difficultyModifier;
-    private bool hitPlayer = false;
     private Coroutine flyingCoroutine;
 
     private void Start()
@@ -55,12 +54,6 @@ public class Enemy_Cacophynos_Attack : MonoBehaviour
             if (!hit.CompareTag("Player")) continue;
 
             player = hit.transform;
-
-            if (!hitPlayer)
-            {
-                PlayAudio(0);
-                hitPlayer = true;
-            }
 
             DealDamage();
             Instantiate(hitEffect, player.position, Quaternion.identity);
