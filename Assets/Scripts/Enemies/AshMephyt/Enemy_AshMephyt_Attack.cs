@@ -83,11 +83,10 @@ public class Enemy_AshMephyt_Attack : MonoBehaviour
     private IEnumerator NormalAttackPhaseLoop()
     {
         float elapsed = 0f;
-        float damage = health.stats.Magic * attackMultiplier * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
 
         while (elapsed < attackDuration)
         {
-            NormalAttackTick(damage);
+            NormalAttackTick();
             yield return new WaitForSeconds(damageInterval);
             elapsed += damageInterval;
         }
@@ -96,7 +95,7 @@ public class Enemy_AshMephyt_Attack : MonoBehaviour
         StopNormalAttack();
     }
 
-    private void NormalAttackTick(float damage)
+    private void NormalAttackTick()
     {
         var hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, 0f, playerLayer);
 
@@ -131,14 +130,23 @@ public class Enemy_AshMephyt_Attack : MonoBehaviour
     private void ApplyOrRefreshBurn()
     {
         burnTimeRemaining = burnDuration;
-        burnCoroutine ??= StartCoroutine(BurnRoutine());
+        
+        if (player == null) return;
+        
+        player.TryGetComponent<StatusEffectManager>(out var statusEffectManager);
+        
+        if (statusEffectManager != null)
+        {
+            if (burnCoroutine != null)
+                statusEffectManager.StopCoroutine(burnCoroutine);
+            
+            burnCoroutine = statusEffectManager.StartCoroutine(BurnRoutine(statusEffectManager));
+        }
     }
 
-    private IEnumerator BurnRoutine()
+    private IEnumerator BurnRoutine(StatusEffectManager statusEffectManager)
     {
-        player.TryGetComponent<StatusEffectManager>(out var statusEffectManager);
-
-        if (statusEffectManager != null && burnEffect != null)
+        if (burnEffect != null)
         {
             statusEffectManager.ApplyEffect(burnEffect, true, burnDuration)
                 .WithStatLines($"Deal {burnDamageMultiplier * health.stats.Magic} burn damage over {burnDuration} seconds")

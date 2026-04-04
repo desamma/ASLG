@@ -1,11 +1,12 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// AshMephyt enemy Stats and Health
+/// Cacophynos enemy Stats and Health
 /// </summary>
 [DisallowMultipleComponent]
-public class Enemy_AshMephyt_Health : MonoBehaviour, IEnemy_Health
+public class Enemy_Cacophynos_Health : MonoBehaviour, IEnemy_Health
 {
     [Header("Enemy Stats")]
     public EnemyStats stats;
@@ -14,11 +15,10 @@ public class Enemy_AshMephyt_Health : MonoBehaviour, IEnemy_Health
     public bool isDead;
 
     [Header("Components")]
-    [SerializeField] private AudioClip deathAudio1;
-    [SerializeField] private AudioClip deathAudio2;
+    [SerializeField] private AudioClip deathAudio;
     [SerializeField] private float volume = 1f;
 
-    private Enemy_AshMephyt_Movement movementComponent;
+    private Enemy_Cacophynos_Movement movementComponent;
 
     private void Awake()
     {
@@ -27,7 +27,7 @@ public class Enemy_AshMephyt_Health : MonoBehaviour, IEnemy_Health
 
     private void Start()
     {
-        movementComponent = GetComponent<Enemy_AshMephyt_Movement>();
+        movementComponent = GetComponent<Enemy_Cacophynos_Movement>();
     }
 
     private void OnEnable()
@@ -56,12 +56,12 @@ public class Enemy_AshMephyt_Health : MonoBehaviour, IEnemy_Health
             isDead = true;
 
             if (movementComponent == null)
-                movementComponent = GetComponent<Enemy_AshMephyt_Movement>();
+                movementComponent = GetComponent<Enemy_Cacophynos_Movement>();
 
             if (movementComponent != null)
             {
                 var manager = movementComponent.GetStateManager();
-                manager?.ChangeState(Enemy_AshMephyt_State.Death);
+                manager?.ChangeState(Enemy_Cacophynos_State.Death);
             }
 
             StartCoroutine(HandleDeathCoroutine());
@@ -70,15 +70,14 @@ public class Enemy_AshMephyt_Health : MonoBehaviour, IEnemy_Health
 
     private IEnumerator HandleDeathCoroutine()
     {
-        SoundFXManager.Instance.PlaySoundFXClip(deathAudio1, transform, volume);
-        SoundFXManager.Instance.PlaySoundFXClip(deathAudio2, transform, volume * 0.8f);
+        SoundFXManager.Instance.PlaySoundFXClip(deathAudio, transform, volume);
         yield return new WaitForSeconds(2f);
         Destroy(gameObject);
     }
 
     public void InitializeStats()
     {
-        var data = EnemyDataRepository.LoadEnemy("AshMephyt");
+        var data = EnemyDataRepository.LoadEnemy("Cacophynos");
 
         stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
         behavior = data.Behavior;

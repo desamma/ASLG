@@ -3,25 +3,23 @@ using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovementContext
+public class Enemy_Cacophynos_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovementContext
 {
     [Header("Stats and Behavior")]
-    [SerializeField] private Enemy_AshMephyt_Health health;
+    [SerializeField] private Enemy_Cacophynos_Health health;
     [SerializeField] private bool isKnockbackable = true;
 
-    private StateManager<Enemy_AshMephyt_State> stateManager;
+    private StateManager<Enemy_Cacophynos_State> stateManager;
 
     [Header("Components")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask playerLayer;
-    private List<AttackCategory<Enemy_AshMephyt_State>> attackCategories;
+    private List<AttackCategory<Enemy_Cacophynos_State>> attackCategories;
 
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
     private Vector2 originalPosition;
-    [SerializeField] private float pivotDownward = 1f;
-    private Vector3 AdjustedPosition => transform.position + Vector3.down * pivotDownward;
 
     [Header("Patrol Settings")]
     [SerializeField] private float idleToPatrolWaitTime = 5f;
@@ -36,7 +34,7 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
     //private
     private Collider2D charCollider;
     private float attackCooldownTimer = 0f;
-    private EnemyMoveCooldownTracker<Enemy_AshMephyt_State> moveCooldowns = new();
+    private EnemyMoveCooldownTracker<Enemy_Cacophynos_State> moveCooldowns = new();
     private EnemyAttackRecovery attackRecovery;
     private KnockbackHandler knockbackHandler;
 
@@ -54,7 +52,7 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
     public Transform SelfTransform => transform;
 
     #region Move Cooldowns
-    private void RegisterMoveUsed(Enemy_AshMephyt_State usedState)
+    private void RegisterMoveUsed(Enemy_Cacophynos_State usedState)
     {
         var allAttacks = attackCategories
             .SelectMany(c => c.Attacks)
@@ -65,19 +63,19 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
 
     public void ChangeToChaseState()
     {
-        if (!stateManager.IsInState(Enemy_AshMephyt_State.Chase))
-            stateManager.ChangeState(Enemy_AshMephyt_State.Chase);
+        if (!stateManager.IsInState(Enemy_Cacophynos_State.Chase))
+            stateManager.ChangeState(Enemy_Cacophynos_State.Chase);
     }
 
     public void ChangeToIdleState()
     {
-        if (!stateManager.IsInState(Enemy_AshMephyt_State.Idle))
-            stateManager.ChangeState(Enemy_AshMephyt_State.Idle);
+        if (!stateManager.IsInState(Enemy_Cacophynos_State.Idle))
+            stateManager.ChangeState(Enemy_Cacophynos_State.Idle);
     }
 
     public bool IsInAnyAttackState()
     {
-        return stateManager.IsInState(Enemy_AshMephyt_State.Attack);
+        return stateManager.IsInState(Enemy_Cacophynos_State.Attack);
     }
 
     private void Start()
@@ -101,7 +99,7 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
             playerLayer = LayerMask.GetMask("Player");
 
         if (health == null)
-            health = GetComponent<Enemy_AshMephyt_Health>();
+            health = GetComponent<Enemy_Cacophynos_Health>();
 
         IsRecovering = false;
         FacingDirection = 1;
@@ -117,7 +115,7 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
 
         InitializeAttacks();
 
-        stateManager = new StateManager<Enemy_AshMephyt_State>(animator, Enemy_AshMephyt_State.Idle);
+        stateManager = new StateManager<Enemy_Cacophynos_State>(animator, Enemy_Cacophynos_State.Idle);
 
         stateManager.OnStateEnter += OnStateEnter;
         stateManager.OnStateExit += OnStateExit;
@@ -131,15 +129,15 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
 
         if (IsInAnyAttackState()) return;
 
-        if (!stateManager.IsInState(Enemy_AshMephyt_State.Knockback) && !IsRecovering)
+        if (!stateManager.IsInState(Enemy_Cacophynos_State.Knockback) && !IsRecovering)
         {
             CheckForPlayer();
         }
 
-        if (stateManager.IsInState(Enemy_AshMephyt_State.Chase))
+        if (stateManager.IsInState(Enemy_Cacophynos_State.Chase))
             Chase();
 
-        else if (stateManager.IsInState(Enemy_AshMephyt_State.Patrol))
+        else if (stateManager.IsInState(Enemy_Cacophynos_State.Patrol))
             Patrol();
     }
 
@@ -154,8 +152,7 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
 
     public void Chase()
     {
-        EnemyMovementHelper.Chase(this, isStopOnAttackRange: false,
-             positionOverride: () => AdjustedPosition);
+        EnemyMovementHelper.Chase(this, isStopOnAttackRange: false);
     }
 
     private void Patrol()
@@ -165,8 +162,8 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
             idleToPatrolWaitTime,
             unstuckCheckInterval: 1.0f,   // check every 1 second
             stuckThreshold: 0.3f,          // must move at least 0.3 units per check
-            () => stateManager.ChangeState(Enemy_AshMephyt_State.Idle),
-            () => stateManager.ChangeState(Enemy_AshMephyt_State.Patrol));
+            () => stateManager.ChangeState(Enemy_Cacophynos_State.Idle),
+            () => stateManager.ChangeState(Enemy_Cacophynos_State.Patrol));
     }
 
     public void CheckForPlayer()
@@ -188,10 +185,10 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
         }, true,
         OnPatrolInsteadOfIdle: () =>
         {
-            if (!stateManager.IsInState(Enemy_AshMephyt_State.Patrol) &&
+            if (!stateManager.IsInState(Enemy_Cacophynos_State.Patrol) &&
                 !IsInAnyAttackState())
             {
-                stateManager.ChangeState(Enemy_AshMephyt_State.Patrol);
+                stateManager.ChangeState(Enemy_Cacophynos_State.Patrol);
             }
         });
     }
@@ -213,7 +210,7 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
             () =>
             {
                 IsRecovering = true;
-                stateManager.ChangeState(Enemy_AshMephyt_State.Idle);
+                stateManager.ChangeState(Enemy_Cacophynos_State.Idle);
             },
             () =>
             {
@@ -223,14 +220,14 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
 
     public void InitializeAttacks()
     {
-        attackCategories = new List<AttackCategory<Enemy_AshMephyt_State>>
+        attackCategories = new List<AttackCategory<Enemy_Cacophynos_State>>
         {
             new() {
                 Frequency = 1f,
                 Attacks = new[]
                 {
                     // Basic Attack: no count cooldown
-                    new AttackConfig<Enemy_AshMephyt_State> { State = Enemy_AshMephyt_State.Attack, Range = Stats.AttackRange, MoveCountCooldown = 0 }
+                    new AttackConfig<Enemy_Cacophynos_State> { State = Enemy_Cacophynos_State.Attack, Range = Stats.AttackRange, MoveCountCooldown = 0 }
                 }
             }
         };
@@ -243,16 +240,16 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
     }
 
     #region State Callbacks
-    private void OnStateEnter(Enemy_AshMephyt_State state)
+    private void OnStateEnter(Enemy_Cacophynos_State state)
     {
         switch (state)
         {
-            case Enemy_AshMephyt_State.Attack:
+            case Enemy_Cacophynos_State.Attack:
                 rb.velocity = Vector2.zero;
                 isKnockbackable = false;
                 FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
                 break;
-            case Enemy_AshMephyt_State.Death:
+            case Enemy_Cacophynos_State.Death:
                 rb.velocity = Vector2.zero;
                 charCollider = GetComponents<Collider2D>().FirstOrDefault(c => c.enabled);
                 if (charCollider != null)
@@ -265,11 +262,11 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
         }
     }
 
-    private void OnStateExit(Enemy_AshMephyt_State state)
+    private void OnStateExit(Enemy_Cacophynos_State state)
     {
         switch (state)
         {
-            case Enemy_AshMephyt_State.Attack:
+            case Enemy_Cacophynos_State.Attack:
                 isKnockbackable = true;
                 break;
         }
@@ -281,15 +278,16 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
         if (!isKnockbackable || knockbackHandler == null) return;
 
         knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
-            () => stateManager.ChangeState(Enemy_AshMephyt_State.Knockback),
+            () => stateManager.ChangeState(Enemy_Cacophynos_State.Knockback),
             () =>
             {
-                stateManager.ChangeState(Enemy_AshMephyt_State.Idle);
+                stateManager.ChangeState(Enemy_Cacophynos_State.Idle);
             });
     }
 
     #region Getters
-    public StateManager<Enemy_AshMephyt_State> GetStateManager() => stateManager;
+    public StateManager<Enemy_Cacophynos_State> GetStateManager() => stateManager;
     public BehaviorProfile GetBehavior() => health.behavior;
+
     #endregion
 }
