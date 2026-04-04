@@ -20,8 +20,6 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
     private Vector2 originalPosition;
-    [SerializeField] private float pivotDownward = 1f;
-    private Vector3 AdjustedPosition => transform.position + Vector3.down * pivotDownward;
 
     [Header("Patrol Settings")]
     [SerializeField] private float idleToPatrolWaitTime = 5f;
@@ -154,8 +152,7 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
 
     public void Chase()
     {
-        EnemyMovementHelper.Chase(this, isStopOnAttackRange: false,
-             positionOverride: () => AdjustedPosition);
+        EnemyMovementHelper.Chase(this, isStopOnAttackRange: false);
     }
 
     private void Patrol()

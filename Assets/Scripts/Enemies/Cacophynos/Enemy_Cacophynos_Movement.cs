@@ -20,6 +20,8 @@ public class Enemy_Cacophynos_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
     private Vector2 originalPosition;
+    [SerializeField] private float pivotUpward = 0.5f;
+    private Vector3 AdjustedPosition => transform.position + Vector3.up * pivotUpward;
 
     [Header("Patrol Settings")]
     [SerializeField] private float idleToPatrolWaitTime = 5f;
@@ -152,7 +154,7 @@ public class Enemy_Cacophynos_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
 
     public void Chase()
     {
-        EnemyMovementHelper.Chase(this, isStopOnAttackRange: false);
+        EnemyMovementHelper.Chase(this, isStopOnAttackRange: false, positionOverride: () => AdjustedPosition);
     }
 
     private void Patrol()
