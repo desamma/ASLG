@@ -29,7 +29,7 @@ public class KnockbackHandler
     public void ApplyKnockback(Transform target, Transform applier, float knockbackForce,
     float knockbackTime, float stunTime, Action onKnockbackStart, Action onStunEnd)
     {
-        if (target == null || applier == null || rb == null || owner == null)
+        if (target == null || applier == null || rb == null || owner == null || !IsOwnerAlive())
             return;
 
         onKnockbackStart?.Invoke();
@@ -41,7 +41,7 @@ public class KnockbackHandler
     private IEnumerator KnockBackRoutine(Vector2 knockbackVelocity, float knockbackTime,
         float stunTime, Action onStunEnd)
     {
-        yield return new WaitForFixedUpdate(); // wait for FixedUpdate to finish this frame
+        yield return new WaitForFixedUpdate(); // wait for FixedUpdate to finish th frame
         rb.velocity = knockbackVelocity;
 
         yield return new WaitForSeconds(knockbackTime);
@@ -49,5 +49,27 @@ public class KnockbackHandler
 
         yield return new WaitForSeconds(stunTime);
         onStunEnd?.Invoke();
+    }
+
+    /// <summary>
+    /// Reflection since it was not in interface
+    /// </summary>
+    /// <returns>is owner alive</returns>
+    private bool IsOwnerAlive()
+    {
+        if (owner == null) return false;
+
+        if (owner.CompareTag("Player"))
+            return StatsManager.instance != null && !StatsManager.instance.IsDead;
+
+        if (owner.TryGetComponent<IEnemy_Health>(out var enemyHealth))
+        {
+            var healthType = enemyHealth.GetType();
+
+            var isDeadField = healthType.GetField("isDead");
+            if (isDeadField != null && isDeadField.FieldType == typeof(bool))
+                return !(bool)isDeadField.GetValue(enemyHealth);
+        }
+        return true;
     }
 }

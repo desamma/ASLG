@@ -1,24 +1,22 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovementContext
+public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovementContext
 {
     [Header("Stats and Behavior")]
-    [SerializeField] private Enemy_PeaceKeeper_Health health;
+    [SerializeField] private Enemy_AshMephyt_Health health;
     [SerializeField] private bool isKnockbackable = true;
 
-    private StateManager<Enemy_PeaceKeeper_State> stateManager;
+    private StateManager<Enemy_AshMephyt_State> stateManager;
 
     [Header("Components")]
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private Collider2D charCollider;
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private SpriteRenderer spriteRenderer;
-    private List<AttackCategory<Enemy_PeaceKeeper_State>> attackCategories;
+    private List<AttackCategory<Enemy_AshMephyt_State>> attackCategories;
 
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
@@ -34,24 +32,10 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
     private Vector2 lastCheckedPosition;
     private float waitTimer = 0f;
 
-    [Header("Aggression Burst")]
-    [SerializeField] private float aggressionTriggerRange = 4f;
-    [SerializeField] private float aggressionLow = 0.7f;
-    [SerializeField] private float aggressionHigh = 3f;
-    [SerializeField] private float aggressionRampDuration = 2f;
-    [SerializeField] private float aggressionCooldown = 5f;
-
     //private
+    private Collider2D charCollider;
     private float attackCooldownTimer = 0f;
-    private bool isAttacked = false;
-    private float baseAggression = 1f;
-    private float aggressionCooldownTimer = 0f;
-    private Coroutine aggressionBurstCoroutine;
-    private Color originalColor;
-    private bool hasOriginalColor = false;
-
-
-    private EnemyMoveCooldownTracker<Enemy_PeaceKeeper_State> moveCooldowns = new();
+    private EnemyMoveCooldownTracker<Enemy_AshMephyt_State> moveCooldowns = new();
     private EnemyAttackRecovery attackRecovery;
     private KnockbackHandler knockbackHandler;
 
@@ -69,7 +53,7 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
     public Transform SelfTransform => transform;
 
     #region Move Cooldowns
-    private void RegisterMoveUsed(Enemy_PeaceKeeper_State usedState)
+    private void RegisterMoveUsed(Enemy_AshMephyt_State usedState)
     {
         var allAttacks = attackCategories
             .SelectMany(c => c.Attacks)
@@ -80,19 +64,19 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
 
     public void ChangeToChaseState()
     {
-        if (!stateManager.IsInState(Enemy_PeaceKeeper_State.Chase))
-            stateManager.ChangeState(Enemy_PeaceKeeper_State.Chase);
+        if (!stateManager.IsInState(Enemy_AshMephyt_State.Chase))
+            stateManager.ChangeState(Enemy_AshMephyt_State.Chase);
     }
 
     public void ChangeToIdleState()
     {
-        if (!stateManager.IsInState(Enemy_PeaceKeeper_State.Idle))
-            stateManager.ChangeState(Enemy_PeaceKeeper_State.Idle);
+        if (!stateManager.IsInState(Enemy_AshMephyt_State.Idle))
+            stateManager.ChangeState(Enemy_AshMephyt_State.Idle);
     }
 
     public bool IsInAnyAttackState()
     {
-        return stateManager.IsInState(Enemy_PeaceKeeper_State.Attack);
+        return stateManager.IsInState(Enemy_AshMephyt_State.Attack);
     }
 
     private void Start()
@@ -112,17 +96,11 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        if (charCollider == null)
-            charCollider = GetComponent<Collider2D>();
-
-        if (spriteRenderer == null)
-            spriteRenderer = GetComponent<SpriteRenderer>();
-
         if (playerLayer != LayerMask.GetMask("Player"))
             playerLayer = LayerMask.GetMask("Player");
 
         if (health == null)
-            health = GetComponent<Enemy_PeaceKeeper_Health>();
+            health = GetComponent<Enemy_AshMephyt_Health>();
 
         IsRecovering = false;
         FacingDirection = 1;
@@ -138,43 +116,29 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
 
         InitializeAttacks();
 
-        stateManager = new StateManager<Enemy_PeaceKeeper_State>(animator, Enemy_PeaceKeeper_State.Idle);
+        stateManager = new StateManager<Enemy_AshMephyt_State>(animator, Enemy_AshMephyt_State.Idle);
 
         stateManager.OnStateEnter += OnStateEnter;
-
-        baseAggression = Behavior.Aggression;
-        if (spriteRenderer != null)
-        {
-            originalColor = spriteRenderer.color;
-            hasOriginalColor = true;
-        }
-        health.IsAttacked += OnIsAttacked;
+        stateManager.OnStateExit += OnStateExit;
     }
 
     private void Update()
     {
         if (health.isDead) return;
-
         if (attackCooldownTimer > 0)
             attackCooldownTimer -= Time.deltaTime;
 
-        if (aggressionCooldownTimer > 0)
-            aggressionCooldownTimer -= Time.deltaTime;
-
-        if (!isAttacked) return;
-
         if (IsInAnyAttackState()) return;
 
-        if (!stateManager.IsInState(Enemy_PeaceKeeper_State.Knockback) && !IsRecovering)
+        if (!stateManager.IsInState(Enemy_AshMephyt_State.Knockback) && !IsRecovering)
         {
             CheckForPlayer();
-            TryStartAggressionBurst();
         }
 
-        if (stateManager.IsInState(Enemy_PeaceKeeper_State.Chase))
+        if (stateManager.IsInState(Enemy_AshMephyt_State.Chase))
             Chase();
 
-        else if (stateManager.IsInState(Enemy_PeaceKeeper_State.Patrol))
+        else if (stateManager.IsInState(Enemy_AshMephyt_State.Patrol))
             Patrol();
     }
 
@@ -183,56 +147,8 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
         if (stateManager != null)
         {
             stateManager.OnStateEnter -= OnStateEnter;
+            stateManager.OnStateExit -= OnStateExit;
         }
-
-        if (health != null)
-            health.IsAttacked -= OnIsAttacked;
-    }
-
-    private void OnIsAttacked()
-    {
-        if (health.isDead) return;
-
-        isAttacked = true;
-    }
-
-    private void TryStartAggressionBurst()
-    {
-        if (aggressionCooldownTimer > 0f || aggressionBurstCoroutine != null || PlayerTransform == null)
-            return;
-
-        float distanceToPlayer = Vector2.Distance(transform.position, PlayerTransform.position);
-        if (distanceToPlayer > aggressionTriggerRange)
-            return;
-
-        aggressionCooldownTimer = aggressionCooldown;
-        aggressionBurstCoroutine = StartCoroutine(AggressionBurst());
-    }
-
-    private IEnumerator AggressionBurst()
-    {
-        Behavior.Aggression *= aggressionLow;
-        float elapsed = 0f;
-
-        if (spriteRenderer != null)
-            spriteRenderer.color = ColorUtility.TryParseHtmlString("#FFF99E", out Color color) ? color : Color.yellow;
-
-        while (elapsed < aggressionRampDuration)
-        {
-            float t = Mathf.Clamp01(elapsed / aggressionRampDuration);
-
-            var low = baseAggression * aggressionLow;
-            var high = baseAggression * aggressionHigh;
-
-            Behavior.Aggression = Mathf.Lerp(low, high, t);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        Behavior.Aggression = baseAggression;
-        if (spriteRenderer != null && hasOriginalColor)
-            spriteRenderer.color = originalColor;
-        aggressionBurstCoroutine = null;
     }
 
     public void Chase()
@@ -247,8 +163,8 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
             idleToPatrolWaitTime,
             unstuckCheckInterval: 1.0f,   // check every 1 second
             stuckThreshold: 0.3f,          // must move at least 0.3 units per check
-            () => stateManager.ChangeState(Enemy_PeaceKeeper_State.Idle),
-            () => stateManager.ChangeState(Enemy_PeaceKeeper_State.Patrol));
+            () => stateManager.ChangeState(Enemy_AshMephyt_State.Idle),
+            () => stateManager.ChangeState(Enemy_AshMephyt_State.Patrol));
     }
 
     public void CheckForPlayer()
@@ -270,10 +186,10 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
         }, true,
         OnPatrolInsteadOfIdle: () =>
         {
-            if (!stateManager.IsInState(Enemy_PeaceKeeper_State.Patrol) &&
+            if (!stateManager.IsInState(Enemy_AshMephyt_State.Patrol) &&
                 !IsInAnyAttackState())
             {
-                stateManager.ChangeState(Enemy_PeaceKeeper_State.Patrol);
+                stateManager.ChangeState(Enemy_AshMephyt_State.Patrol);
             }
         });
     }
@@ -295,7 +211,7 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
             () =>
             {
                 IsRecovering = true;
-                stateManager.ChangeState(Enemy_PeaceKeeper_State.Idle);
+                stateManager.ChangeState(Enemy_AshMephyt_State.Idle);
             },
             () =>
             {
@@ -305,14 +221,14 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
 
     public void InitializeAttacks()
     {
-        attackCategories = new List<AttackCategory<Enemy_PeaceKeeper_State>>
+        attackCategories = new List<AttackCategory<Enemy_AshMephyt_State>>
         {
             new() {
                 Frequency = 1f,
                 Attacks = new[]
                 {
                     // Basic Attack: no count cooldown
-                    new AttackConfig<Enemy_PeaceKeeper_State> { State = Enemy_PeaceKeeper_State.Attack, Range = Stats.AttackRange, MoveCountCooldown = 0 }
+                    new AttackConfig<Enemy_AshMephyt_State> { State = Enemy_AshMephyt_State.Attack, Range = Stats.AttackRange, MoveCountCooldown = 0 }
                 }
             }
         };
@@ -325,20 +241,34 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
     }
 
     #region State Callbacks
-    private void OnStateEnter(Enemy_PeaceKeeper_State state)
+    private void OnStateEnter(Enemy_AshMephyt_State state)
     {
         switch (state)
         {
-            case Enemy_PeaceKeeper_State.Attack:
+            case Enemy_AshMephyt_State.Attack:
                 rb.velocity = Vector2.zero;
+                isKnockbackable = false;
                 FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
                 break;
-            case Enemy_PeaceKeeper_State.Death:
+            case Enemy_AshMephyt_State.Death:
                 rb.velocity = Vector2.zero;
-                charCollider.enabled = false;
+                charCollider = GetComponents<Collider2D>().FirstOrDefault(c => c.enabled);
+                if (charCollider != null)
+                    charCollider.enabled = false;
+                StopAllCoroutines();
                 break;
             default:
                 rb.velocity = Vector2.zero;
+                break;
+        }
+    }
+
+    private void OnStateExit(Enemy_AshMephyt_State state)
+    {
+        switch (state)
+        {
+            case Enemy_AshMephyt_State.Attack:
+                isKnockbackable = true;
                 break;
         }
     }
@@ -349,12 +279,15 @@ public class Enemy_PeaceKeeper_Movement : MonoBehaviour, IEnemy_Movement, IEnemy
         if (!isKnockbackable || knockbackHandler == null) return;
 
         knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
-            () => stateManager.ChangeState(Enemy_PeaceKeeper_State.Knockback),
-            () => stateManager.ChangeState(Enemy_PeaceKeeper_State.Idle));
+            () => stateManager.ChangeState(Enemy_AshMephyt_State.Knockback),
+            () =>
+            {
+                stateManager.ChangeState(Enemy_AshMephyt_State.Idle);
+            });
     }
 
     #region Getters
-    public StateManager<Enemy_PeaceKeeper_State> GetStateManager() => stateManager;
+    public StateManager<Enemy_AshMephyt_State> GetStateManager() => stateManager;
     public BehaviorProfile GetBehavior() => health.behavior;
 
     #endregion
