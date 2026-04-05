@@ -207,9 +207,6 @@ MonoBehaviour:
   normalAttackPoint: {fileID: 7823356922815665656}
   normalAttackHitBox: {x: 2, y: 3}
   hitEffect: {fileID: 4441227301792025086}
-  knockbackForce: 5
-  knockbackTime: 0.3
-  stunTime: 0.5
   shieldBashAudioClip: {fileID: 8300000, guid: c3031cd5496701a4cb4240a26a0417a1, type: 3}
   volume: 1
 --- !u!114 &153635368871575914
@@ -270,8 +267,7 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  spriteRenderer: {fileID: 0}
-  volume: 1
+  spriteRenderer: {fileID: 6418270214386562707}
   detectionPoint: {fileID: 1942523348100057480}
   idleToPatrolWaitTime: 5
   patrolDistance: 3

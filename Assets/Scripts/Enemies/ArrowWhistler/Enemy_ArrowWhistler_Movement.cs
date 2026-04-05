@@ -9,7 +9,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
     [SerializeField] private Enemy_ArrowWhistler_Health health;
     [SerializeField] private bool isKnockbackable = true;
     [SerializeField] private float moveAwayDistance = 5f;
-    [SerializeField] private float moveAwayDuration = 1f;
+    [SerializeField] private float moveAwayDuration = 2f;
 
     private StateManager<Enemy_ArrowWhistler_State> stateManager;
 
@@ -20,7 +20,6 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private Enemy_ArrowWhistler_Attack attackComponent;
     private List<AttackCategory<Enemy_ArrowWhistler_State>> attackCategories;
-
 
     [Header("Transforms")]
     [SerializeField] private Transform detectionPoint;
@@ -93,7 +92,9 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
         InitializeAttacks();
 
         stateManager = new StateManager<Enemy_ArrowWhistler_State>(animator, Enemy_ArrowWhistler_State.Idle);
+
         stateManager.OnStateEnter += OnStateEnter;
+        stateManager.OnStateExit += OnStateExit;
 
         health.OnEnraged += OnEnraged;
     }
@@ -114,6 +115,7 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
         if (stateManager != null)
         {
             stateManager.OnStateEnter -= OnStateEnter;
+            stateManager.OnStateExit -= OnStateExit;
         }
 
         if (health != null)
@@ -229,14 +231,13 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
         .Select(a => a.State));
     }
 
-
     #region State Callbacks
-
     private void OnStateEnter(Enemy_ArrowWhistler_State state)
     {
         switch (state)
         {
             case Enemy_ArrowWhistler_State.Attack:
+                isKnockbackable = false;
                 rb.velocity = Vector2.zero;
                 if (PlayerTransform != null)
                     FacingDirection = TransformHelper.FlipTowards(transform, PlayerTransform, FacingDirection);
@@ -244,6 +245,16 @@ public class Enemy_ArrowWhistler_Movement : MonoBehaviour, IEnemy_Movement, IEne
             case Enemy_ArrowWhistler_State.Death:
                 rb.velocity = Vector2.zero;
                 charCollider.enabled = false;
+                break;
+        }
+    }
+
+    private void OnStateExit(Enemy_ArrowWhistler_State state)
+    {
+        switch (state)
+        {
+            case Enemy_ArrowWhistler_State.Attack:
+                isKnockbackable = true;
                 break;
         }
     }

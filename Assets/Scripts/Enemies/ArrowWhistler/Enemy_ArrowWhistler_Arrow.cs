@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[DisallowMultipleComponent]
 public class Enemy_ArrowWhistler_Arrow : MonoBehaviour
 {
     [Header("Spell Settings")]
@@ -85,7 +86,7 @@ public class Enemy_ArrowWhistler_Arrow : MonoBehaviour
 
             Destroy(gameObject);
         }
-        else if (!collision.CompareTag("Enemy"))
+        else if (!collision.CompareTag("Player"))
         {
             // Destroy arrow when it hits anything else (walls, obstacles, etc.)
             Destroy(gameObject);

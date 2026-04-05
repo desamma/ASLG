@@ -80,7 +80,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 11
   m_Sprite: {fileID: 21300000, guid: d4d19a7cf2074de41b2a7cb696bd494a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -210,6 +210,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: {fileID: 528000232991313604}
   attackRecoveryDuration: 2
+  isKnockbackable: 1
   rb: {fileID: 4810506105309421629}
   animator: {fileID: 3842956364338561717}
   playerLayer:
@@ -241,6 +242,9 @@ MonoBehaviour:
     ExpReward: 0
     AttackRange: 0
     AttackCooldown: 0
+    KnockbackForce: 0
+    KnockbackTime: 0
+    StunTime: 0
   behavior:
     DetectionRange: 1
     ChaseRange: 1

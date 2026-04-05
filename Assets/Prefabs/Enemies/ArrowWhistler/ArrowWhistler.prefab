@@ -142,7 +142,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 11
   m_Sprite: {fileID: 21300000, guid: b30ee4653337bc340b932bbd7d239dd9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -270,6 +270,18 @@ MonoBehaviour:
     ExpReward: 0
     AttackRange: 0
     AttackCooldown: 0
+    KnockbackForce: 0
+    KnockbackTime: 0
+    StunTime: 0
+  behavior:
+    DetectionRange: 1
+    ChaseRange: 1
+    SpecialAttackFrequency: 0
+    UltimateAttackFrequency: 0
+    Aggression: 1
+    MobilityUsageFrequency: 0
+    EnrageThreshold: 0
+  currentLevel: 1
   damageReductionPercentage: 0
   isDead: 0
 --- !u!114 &6318315133275473992
@@ -285,14 +297,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 2083520546785987010}
-  behavior:
-    DetectionRange: 1
-    ChaseRange: 1
-    SpecialAttackFrequency: 0
-    UltimateAttackFrequency: 0
-    Aggression: 1
-    MobilityUsageFrequency: 0
-    EnrageThreshold: 0
+  isKnockbackable: 1
   moveAwayDistance: 5
   moveAwayDuration: 2
   rb: {fileID: 2738502044356152651}
@@ -301,7 +306,6 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  player: {fileID: 0}
   attackComponent: {fileID: 309854027843366346}
   detectionPoint: {fileID: 6345079078916269243}
 --- !u!114 &309854027843366346
