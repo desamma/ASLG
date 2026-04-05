@@ -240,7 +240,7 @@ MonoBehaviour:
   normalAttackRadius: 1.5
   throwChakramDelay: 1
   chakramSpawnPoint: {fileID: 2283705507259720048}
-  chakkramPrefab: {fileID: 682999097701484099, guid: 658a4243c95fe94448ad93870756fc36, type: 3}
+  chakkramPrefab: {fileID: 1030333628360923354, guid: 55662aa2f376a3d4291479f032db1c0c, type: 3}
   channellingAudio: {fileID: 8300000, guid: 407a535566d07484090662da25521fe7, type: 3}
   throwChakramAudio: {fileID: 8300000, guid: ea9d6ee46772fae49b6fa44e9d42bf8a, type: 3}
   volume: 1
@@ -281,7 +281,7 @@ MonoBehaviour:
   currentLevel: 1
   isDead: 0
   deathAudio: {fileID: 8300000, guid: 3a9e3cec47aa57140aa2a1cc27db24c5, type: 3}
-  volume: 1
+  volume: 0.5
 --- !u!114 &1032860577826702974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,7 +360,7 @@ Transform:
   m_GameObject: {fileID: 8140565525070908402}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.277, y: -0.464, z: 0}
+  m_LocalPosition: {x: 0.282, y: -0.567, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
