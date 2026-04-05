@@ -79,9 +79,9 @@ public static class EnemyMovementHelper
             if (roll >= cumulative) continue;
 
             var available = category.Attacks
-                .Where(a => dist <= a.Range
-                         && !cooldowns.IsOnCooldown(a.State)
-                         && (extraFilter == null || !extraFilter(a.State)))
+                .Where(atkConfig => dist <= atkConfig.Range
+                         && !cooldowns.IsOnCooldown(atkConfig.State)
+                         && (extraFilter == null || !extraFilter(atkConfig.State)))
                 .ToArray();
 
             if (available.Length > 0)

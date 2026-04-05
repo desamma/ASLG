@@ -60,7 +60,6 @@ public class Enemy_Cacophynos_Attack : MonoBehaviour
         }
     }
 
-
     public void StartAttackFlying()
     {
         if (flyingCoroutine != null)

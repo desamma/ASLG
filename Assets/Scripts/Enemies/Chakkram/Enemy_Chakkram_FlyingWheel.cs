@@ -5,7 +5,6 @@ public class Enemy_Chakkram_FlyingWheel : MonoBehaviour
     [Header("Spell Settings")]
     [SerializeField] private float destroyTime = 10f;
     [SerializeField] private float moveSpeed = 10f;
-    [SerializeField] private float spinSpeed = 360f;
 
     [Header("Components")]
     [SerializeField] private Collider2D spellCollider;
@@ -27,9 +26,7 @@ public class Enemy_Chakkram_FlyingWheel : MonoBehaviour
         direction = targetDirection.normalized;
         isInitialized = true;
 
-        // Rotate arrow to face the direction of movement
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        transform.rotation = Quaternion.Euler(0f, 0f, 0f);
     }
 
     private void Start()
@@ -46,6 +43,11 @@ public class Enemy_Chakkram_FlyingWheel : MonoBehaviour
             spellCollider.enabled = true;
         }
 
+        transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+
+        if (rb != null)
+            rb.freezeRotation = true;
+
         if (destroyTime > 0f)
             Destroy(gameObject, destroyTime);
     }
@@ -56,9 +58,6 @@ public class Enemy_Chakkram_FlyingWheel : MonoBehaviour
         {
             rb.velocity = direction * moveSpeed;
         }
-
-        // Spin the wheel
-        transform.Rotate(0, 0, spinSpeed * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
