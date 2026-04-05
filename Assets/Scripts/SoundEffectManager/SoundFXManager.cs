@@ -22,6 +22,7 @@ public class SoundFXManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
     /// <summary>
     /// Play a given AudioClip at the specified Transform's position with the specified volume.
     /// </summary>
@@ -31,6 +32,24 @@ public class SoundFXManager : MonoBehaviour
     public void PlaySoundFXClip(AudioClip audioClip, Transform spawnTransform, float volume)
     {
         var audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+
+        audioSource.clip = audioClip;
+        audioSource.volume = volume;
+        float clipLength = audioSource.clip.length;
+
+        audioSource.Play();
+        Destroy(audioSource.gameObject, clipLength);
+    }
+
+    /// <summary>
+    /// Play a given AudioClip at the specified position with the specified volume.
+    /// </summary>
+    /// <param name="audioClip">selected audio clip</param>
+    /// <param name="spawnPosition">spawn position</param>
+    /// <param name="volume">volume level</param>
+    public void PlaySoundFXClip(AudioClip audioClip, Vector3 spawnPosition, float volume)
+    {
+        var audioSource = Instantiate(soundFXObject, spawnPosition, Quaternion.identity);
 
         audioSource.clip = audioClip;
         audioSource.volume = volume;

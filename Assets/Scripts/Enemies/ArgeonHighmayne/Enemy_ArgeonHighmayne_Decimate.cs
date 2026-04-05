@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class Enemy_ArgeonHighmayne_Decimate : MonoBehaviour
 {
     [Header("Spell Settings")]
