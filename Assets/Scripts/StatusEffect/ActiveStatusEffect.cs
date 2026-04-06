@@ -7,20 +7,19 @@ public class ActiveStatusEffect
     public float RemainingDuration { get; private set; }
     public float TotalDuration { get; private set; }
     public int StackCount { get; private set; }
-
-    /// <summary>
-    /// Unique key used by the manager dictionary.
-    /// For shared effects: same as effectId (e.g. "burn").
-    /// For independent instances: effectId + "_" + guid (e.g. "burn_a3f2").
-    /// </summary>
     public string InstanceKey { get; private set; }
 
-    public bool IsExpired => !Definition.isPermanent && RemainingDuration <= 0f;
-    public float NormalizedTimeLeft => Definition.isPermanent ? 1f : Mathf.Clamp01(RemainingDuration / TotalDuration);
+    // Runtime values — resolved at construction, never read back from SO
+    public bool IsPermanent { get; private set; }
+    public int MaxStacks { get; private set; }
+    public StackBehavior StackBehavior { get; private set; }
+
+    public bool IsExpired => !IsPermanent && RemainingDuration <= 0f;
+    public float NormalizedTimeLeft => IsPermanent ? 1f : Mathf.Clamp01(RemainingDuration / TotalDuration);
 
     public event Action<ActiveStatusEffect> OnStackChanged;
 
-    #region Tooltip overrides
+    #region Overrides
     public string DescriptionOverride { get; private set; }
     public string FlavourOverride { get; private set; }
     public string[] StatLinesOverride { get; private set; }
@@ -28,18 +27,29 @@ public class ActiveStatusEffect
     public string ResolvedDescription => string.IsNullOrEmpty(DescriptionOverride) ? Definition.description : DescriptionOverride;
     public string ResolvedFlavour => string.IsNullOrEmpty(FlavourOverride) ? Definition.flavourText : FlavourOverride;
     public string[] ResolvedStatLines => StatLinesOverride ?? Definition.statLines;
+
+    private StatModifier _modifierOverride;
+    public StatModifier ResolvedModifier => _modifierOverride ?? Definition.statModifier;
     #endregion
 
-    /// <param name="allowDuplicate">
-    /// true  → gives this instance a unique key so it stacks alongside other instances of the same effect.
-    /// false → uses effectId as the key so reapplying replaces/refreshes the existing one.
-    /// </param>
-    public ActiveStatusEffect(StatusEffect definition, float duration, int stack = 1, bool allowDuplicate = false)
+    public ActiveStatusEffect(StatusEffect definition, float duration,
+                               int stack = 1,
+                               bool isPermanent = false,
+                               int maxStacks = -1,
+                               StackBehavior stackBehavior = StackBehavior.Ignore,
+                               bool allowDuplicate = false)
     {
         Definition = definition;
         TotalDuration = duration;
         RemainingDuration = duration;
-        StackCount = stack;
+        StackCount = Mathf.Max(1, stack);
+
+        // Store resolved runtime values — SO fields are never touched after this
+        IsPermanent = isPermanent || definition.isPermanent;
+        MaxStacks = maxStacks < 1 ? definition.maxStacks : maxStacks;
+        StackBehavior = stackBehavior == StackBehavior.Ignore
+                        ? definition.stackBehavior : stackBehavior;
+
         InstanceKey = allowDuplicate
             ? $"{definition.effectId}_{Guid.NewGuid().ToString("N")[..6]}"
             : definition.effectId;
@@ -48,7 +58,7 @@ public class ActiveStatusEffect
     public void Tick(float deltaTime)
     {
         if (IsExpired) return;
-        if (!Definition.isPermanent)
+        if (!IsPermanent)
         {
             RemainingDuration -= deltaTime;
             if (RemainingDuration <= 0f) RemainingDuration = 0f;
@@ -57,7 +67,7 @@ public class ActiveStatusEffect
 
     public void Reapply(float newDuration, int stackCount = 1)
     {
-        switch (Definition.stackBehavior)
+        switch (StackBehavior)
         {
             case StackBehavior.RefreshDuration:
                 RemainingDuration = newDuration;
@@ -68,7 +78,7 @@ public class ActiveStatusEffect
                 TotalDuration = RemainingDuration;
                 break;
             case StackBehavior.AddStack:
-                if (StackCount < Definition.maxStacks)
+                if (StackCount < MaxStacks)
                 {
                     StackCount += stackCount;
                     OnStackChanged?.Invoke(this);
@@ -85,11 +95,28 @@ public class ActiveStatusEffect
 
     public void SetStacks(int stacks)
     {
-        StackCount = Mathf.Clamp(stacks, 1, Definition.maxStacks);
+        StackCount = Mathf.Clamp(stacks, 1, MaxStacks);
         OnStackChanged?.Invoke(this);
     }
 
-    #region Tooltip fluent setters
+    #region Fluent setters
+    public ActiveStatusEffect WithDescription(string description)
+    {
+        DescriptionOverride = description; return this;
+    }
+
+    public ActiveStatusEffect WithFlavour(string flavour)
+    {
+        FlavourOverride = flavour;
+        return this;
+    }
+
+    public ActiveStatusEffect WithStatLines(params string[] lines)
+    {
+        StatLinesOverride = lines;
+        return this;
+    }
+
     public ActiveStatusEffect WithTooltip(string description = null, string flavour = null, params string[] statLines)
     {
         if (description != null) DescriptionOverride = description;
@@ -98,8 +125,24 @@ public class ActiveStatusEffect
         return this;
     }
 
-    public ActiveStatusEffect WithDescription(string description) { DescriptionOverride = description; return this; }
-    public ActiveStatusEffect WithFlavour(string flavour) { FlavourOverride = flavour; return this; }
-    public ActiveStatusEffect WithStatLines(params string[] lines) { StatLinesOverride = lines; return this; }
+    public ActiveStatusEffect WithModifier(string statName, ModifierType type, float value,
+        InstanceStackMode stackMode = InstanceStackMode.TakeStrongest)
+    {
+        _modifierOverride = new StatModifier
+        {
+            statName = statName,
+            type = type,
+            value = value,
+            instanceStackMode = stackMode
+        };
+        return this;
+    }
+
+    public ActiveStatusEffect WithModifier(StatModifier modifier)
+    {
+        _modifierOverride = modifier;
+        return this;
+    }
+
     #endregion
 }
