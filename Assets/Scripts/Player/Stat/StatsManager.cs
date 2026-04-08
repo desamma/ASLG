@@ -5,8 +5,6 @@ public class StatsManager : MonoBehaviour
     public static StatsManager instance { get; private set; }
 
     [Header("References")]
-    //[SerializeField] private ExpManager expManager;
-    //[SerializeField] private StatsUI statsUI;
 
     [Header("Health")]
     [SerializeField] private float _maxHealth = 2000f;
@@ -48,12 +46,12 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private float _dashDelay = 0.5f;
     [SerializeField] private float _dashDuration = 0.2f;
 
-    public float moveSpeed { get => _moveSpeed; set { OnStatsChanged(); } }
+    public float moveSpeed { get => _moveSpeed; set { _moveSpeed = value; OnStatsChanged(); } }
     public float maxStamina { get => _maxStamina; set { _maxStamina = Mathf.Max(0f, value); OnStatsChanged(); } }
-    public float staminaRegenRate { get => _staminaRegenRate; set { OnStatsChanged(); } }
-    public float staminaCost { get => _staminaCost; set { OnStatsChanged(); } }
-    public float dashDelay { get => _dashDelay; set { OnStatsChanged(); } }
-    public float dashDuration { get => _dashDuration; set { OnStatsChanged(); } }
+    public float staminaRegenRate { get => _staminaRegenRate; set { _staminaRegenRate = value; OnStatsChanged(); } }
+    public float staminaCost { get => _staminaCost; set { _staminaCost = value; OnStatsChanged(); } }
+    public float dashDelay { get => _dashDelay; set { _dashDelay = value; OnStatsChanged(); } }
+    public float dashDuration { get => _dashDuration; set { _dashDuration = value; OnStatsChanged(); } }
 
     private float _currentStamina;
     public float currentStamina
@@ -70,12 +68,12 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private float _stunTime = 0.3f;
     [SerializeField] private float _cooldown = 0.5f;
 
-    public int damage { get => _damage; set { OnStatsChanged(); } }
-    public float weaponRange { get => _weaponRange; set { OnStatsChanged(); } }
-    public float knockbackForce { get => _knockbackForce; set { OnStatsChanged(); } }
-    public float knockbackTime { get => _knockbackTime; set { OnStatsChanged(); } }
-    public float stunTime { get => _stunTime; set { OnStatsChanged(); } }
-    public float cooldown { get => _cooldown; set { OnStatsChanged(); } }
+    public int damage { get => _damage; set { _damage = value; OnStatsChanged(); } }
+    public float weaponRange { get => _weaponRange; set { _weaponRange = value; OnStatsChanged(); } }
+    public float knockbackForce { get => _knockbackForce; set { _knockbackForce = value; OnStatsChanged(); } }
+    public float knockbackTime { get => _knockbackTime; set { _knockbackTime = value; OnStatsChanged(); } }
+    public float stunTime { get => _stunTime; set { _stunTime = value; OnStatsChanged(); } }
+    public float cooldown { get => _cooldown; set { _cooldown = Mathf.Max(0.1f, value); OnStatsChanged(); } }
 
     [Header("Experience & Levelling")]
     [SerializeField] private int _level = 1;
@@ -91,7 +89,7 @@ public class StatsManager : MonoBehaviour
     // --- SỰ KIỆN ---
     public event System.Action OnStatsChangedEvent;
     public event System.Action OnLevelUpEvent;
-    public event System.Action OnPlayerDeathEvent; // Báo tử
+    public event System.Action OnPlayerDeathEvent;
 
     private void Awake()
     {
@@ -113,7 +111,6 @@ public class StatsManager : MonoBehaviour
         _currentStamina = _maxStamina;
     }
 
-    // HÀM MỚI: Dùng để hồi sinh khi người chơi bấm Play lại từ Scene Start
     public void ResetStats()
     {
         _currentHealth = _maxHealth;
@@ -143,18 +140,126 @@ public class StatsManager : MonoBehaviour
         OnStatsChanged();
     }
 
+    // ── ITEM STATS BONUSES ────────────────────────────────────────────────
+    /// <summary>
+    /// Cộng stats từ item vào player stats khi EQUIP.
+    /// </summary>
+    public void ApplyItemBonus(ItemData item)
+    {
+        if (item == null || item.statBonuses.Count == 0)
+            return;
+
+        Debug.Log($"[StatsManager] ✅ Applying bonuses from: {item.itemName}");
+
+        foreach (var bonus in item.statBonuses)
+        {
+            ApplyStatBonus(bonus.statName, bonus.value);
+        }
+
+        OnStatsChanged();
+    }
+
+    /// <summary>
+    /// Xóa stats bonus từ item khi UNEQUIP.
+    /// </summary>
+    public void RemoveItemBonus(ItemData item)
+    {
+        if (item == null || item.statBonuses.Count == 0)
+            return;
+
+        Debug.Log($"[StatsManager] ❌ Removing bonuses from: {item.itemName}");
+
+        foreach (var bonus in item.statBonuses)
+        {
+            ApplyStatBonus(bonus.statName, -bonus.value);
+        }
+
+        OnStatsChanged();
+    }
+
+
+    /// <summary>
+    /// Áp dụng một stat bonus cụ thể (có thể âm để trừ).
+    /// </summary>
+    private void ApplyStatBonus(string statName, float bonus)
+    {
+        if (bonus == 0) return;
+
+        switch (statName.ToLower())
+        {
+            case "health":
+            case "maxhealth":
+                maxHealth += bonus;
+                Debug.Log($"  📊 MaxHealth: +{bonus} → {maxHealth}");
+                break;
+
+            case "mana":
+            case "maxmana":
+                maxMana += bonus;
+                Debug.Log($"  📊 MaxMana: +{bonus} → {maxMana}");
+                break;
+
+            case "stamina":
+            case "maxstamina":
+                maxStamina += bonus;
+                Debug.Log($"  📊 MaxStamina: +{bonus} → {maxStamina}");
+                break;
+
+            case "damage":
+                damage += (int)bonus;
+                Debug.Log($"  📊 Damage: +{bonus} → {damage}");
+                break;
+
+            case "movespeed":
+            case "speed":
+                moveSpeed += bonus;
+                Debug.Log($"  📊 MoveSpeed: +{bonus} → {moveSpeed}");
+                break;
+
+            case "range":
+            case "weaponrange":
+                weaponRange += bonus;
+                Debug.Log($"  📊 WeaponRange: +{bonus} → {weaponRange}");
+                break;
+
+            case "cooldown":
+                cooldown -= bonus;
+                cooldown = Mathf.Max(0.1f, cooldown);
+                Debug.Log($"  📊 Cooldown: -{bonus} → {cooldown}s");
+                break;
+
+            case "knockback":
+            case "knockbackforce":
+                knockbackForce += bonus;
+                Debug.Log($"  📊 KnockbackForce: +{bonus} → {knockbackForce}");
+                break;
+
+            case "regenerate":
+            case "regen":
+            case "staminaregenrate":
+                staminaRegenRate += bonus;
+                Debug.Log($"  📊 StaminaRegenRate: +{bonus} → {staminaRegenRate}");
+                break;
+
+            default:
+                Debug.LogWarning($"[StatsManager] ⚠️ Unknown stat: {statName}");
+                break;
+        }
+    }
+
     private void OnStatsChanged()
     {
-        //statsUI?.Refresh();
         OnStatsChangedEvent?.Invoke();
     }
 
     private void HandleDeath()
     {
-        Debug.Log("Player has died.");
-        OnPlayerDeathEvent?.Invoke(); // Kích hoạt sự kiện để UI bắt lấy
+        Debug.Log("[StatsManager] Player died!");
+        OnPlayerDeathEvent?.Invoke();
     }
 
-    private int CalculateExpToNextLevel(int nextLevel) =>
-        Mathf.RoundToInt(100 * Mathf.Pow(nextLevel, 1.5f));
+    private int CalculateExpToNextLevel(int currentLevel)
+    {
+        return (currentLevel + 1) * 100;
+    }
 }

@@ -4,9 +4,9 @@ using TMPro;
 using System.Collections.Generic;
 
 /// <summary>
-/// InventoryUI - Bấm E để mở/đóng.
-/// KHÔNG cần sprite/asset nào - chạy được ngay với UI thuần màu + emoji.
-/// Khi có asset thật chỉ cần gán Sprite vào ItemData.icon là xong.
+/// InventoryUI - Quản lý giao diện inventory hoàn chỉnh.
+/// Tính năng: Paging, Preview, Equip/Unequip, Drop, Stats sync.
+/// Mở bằng: Bấm E (InventoryToggle.cs)
 /// </summary>
 public class InventoryUI : MonoBehaviour
 {
@@ -18,7 +18,7 @@ public class InventoryUI : MonoBehaviour
     // ── STATS PANEL ──────────────────────────────────────────────────────
     [Header("Stats Panel")]
     [SerializeField] private TextMeshProUGUI txt_level;
-    [SerializeField] private TextMeshProUGUI txt_expBar;       // "34 / 100 EXP"
+    [SerializeField] private TextMeshProUGUI txt_expBar;
     [SerializeField] private Slider slider_exp;
     [SerializeField] private TextMeshProUGUI txt_hp;
     [SerializeField] private Slider slider_hp;
@@ -30,7 +30,6 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txt_moveSpeed;
     [SerializeField] private TextMeshProUGUI txt_range;
     [SerializeField] private TextMeshProUGUI txt_cooldown;
-
     [SerializeField] private TextMeshProUGUI txt_upgradePoints;
 
     // ── INVENTORY PANEL ──────────────────────────────────────────────────
@@ -44,20 +43,21 @@ public class InventoryUI : MonoBehaviour
 
     // ── PREVIEW PANEL ────────────────────────────────────────────────────
     [Header("Preview Panel")]
-    [SerializeField] private GameObject emptyHint;        // "Hover an item..."
-    [SerializeField] private GameObject previewContent;   // group các field bên dưới
-    [SerializeField] private TextMeshProUGUI txt_previewIcon;  // emoji lớn
-    [SerializeField] private Image img_previewIcon;  // sprite thật (nếu có)
+    [SerializeField] private GameObject emptyHint;
+    [SerializeField] private GameObject previewContent;
+    [SerializeField] private Image img_previewIcon;
     [SerializeField] private TextMeshProUGUI txt_previewName;
     [SerializeField] private TextMeshProUGUI txt_previewRarity;
     [SerializeField] private TextMeshProUGUI txt_previewDesc;
     [SerializeField] private TextMeshProUGUI txt_previewStats;
+    [SerializeField] private Button btn_equip;
     [SerializeField] private Button btn_drop;
 
     // ── Runtime ──────────────────────────────────────────────────────────
     private bool isOpen;
     private int currentPage;
     private ItemData selectedItem;
+    private List<ItemData> equippedItems = new List<ItemData>();
     private List<GameObject> spawnedSlots = new List<GameObject>();
 
     public List<ItemData> playerItems = new List<ItemData>();
@@ -71,25 +71,36 @@ public class InventoryUI : MonoBehaviour
 
     private void Start()
     {
+        // ── BUTTON LISTENERS ──────────────────────────────────────────────
         btn_nextPage?.onClick.AddListener(NextPage);
         btn_prevPage?.onClick.AddListener(PrevPage);
+        btn_equip?.onClick.AddListener(EquipSelected);
         btn_drop?.onClick.AddListener(DropSelected);
 
+        // ── SET BUTTON TEXT ──────────────────────────────────────────────
+        SetupButtonTexts();
+
+        // ── STATS MANAGER ────────────────────────────────────────────────
         if (StatsManager.instance != null)
             StatsManager.instance.OnStatsChangedEvent += RefreshStats;
 
-        SpawnSlots(); // spawn trước
-        inventoryPanel.SetActive(false); // tắt sau
+        SpawnSlots();
+        inventoryPanel.SetActive(false);
     }
 
-    //private void Update()
-    //{
-    //    if (Input.anyKeyDown)
-    //        Debug.Log($"Key pressed: {Input.inputString}");
+    // ── Setup Button Text ─────────────────────────────────────────────────
+    private void SetupButtonTexts()
+    {
+        SetButtonText(btn_equip, "EQUIP");
+        SetButtonText(btn_drop, "DROP");
+    }
 
-    //    if (Input.GetKeyDown(KeyCode.E)) Toggle();
-
-    //}
+    private void SetButtonText(Button button, string text)
+    {
+        if (button == null) return;
+        var btnText = button.GetComponentInChildren<TextMeshProUGUI>();
+        if (btnText) btnText.text = text;
+    }
 
     // ── Mở / Đóng ────────────────────────────────────────────────────────
     public void Toggle()
@@ -97,11 +108,16 @@ public class InventoryUI : MonoBehaviour
         isOpen = !isOpen;
         inventoryPanel.SetActive(isOpen);
         if (isOpen) { currentPage = 0; RefreshAll(); }
-        Debug.Log($"Toggle called, isOpen={isOpen}, panel active={inventoryPanel.activeSelf}");
+        Debug.Log($"[Inventory] Toggle: isOpen={isOpen}");
     }
 
     // ── Refresh ───────────────────────────────────────────────────────────
-    private void RefreshAll() { RefreshStats(); RenderPage(); ShowEmptyPreview(); }
+    private void RefreshAll()
+    {
+        RefreshStats();
+        RenderPage();
+        ShowEmptyPreview();
+    }
 
     private void RefreshStats()
     {
@@ -125,7 +141,6 @@ public class InventoryUI : MonoBehaviour
         txt_moveSpeed?.SetText($"{s.moveSpeed:F1}");
         txt_range?.SetText($"{s.weaponRange:F1}");
         txt_cooldown?.SetText($"{s.cooldown:F2}s");
-
         txt_upgradePoints?.SetText($"{s.upgradePoints} pts");
     }
 
@@ -152,24 +167,36 @@ public class InventoryUI : MonoBehaviour
             if (i >= spawnedSlots.Count) break;
             var slot = spawnedSlots[i].GetComponent<ItemSlot>();
             int idx = start + i;
+
             if (idx < playerItems.Count)
             {
-                // Capture the exact ItemData value now to avoid calling into the list later
                 var data = playerItems[idx];
                 slot?.SetItem(data, () => ShowPreview(data));
             }
             else
+            {
                 slot?.SetEmpty();
+            }
         }
     }
 
-    private void NextPage() { currentPage++; RenderPage(); ShowEmptyPreview(); }
-    private void PrevPage() { currentPage--; RenderPage(); ShowEmptyPreview(); }
+    private void NextPage()
+    {
+        currentPage++;
+        RenderPage();
+        ShowEmptyPreview();
+    }
+
+    private void PrevPage()
+    {
+        currentPage--;
+        RenderPage();
+        ShowEmptyPreview();
+    }
 
     // ── Preview ───────────────────────────────────────────────────────────
     private void ShowPreview(ItemData item)
     {
-        // Guard against null item to prevent NullReferenceException
         if (item == null)
         {
             Debug.LogWarning("[Inventory] ShowPreview called with null item.");
@@ -181,14 +208,17 @@ public class InventoryUI : MonoBehaviour
         emptyHint?.SetActive(false);
         previewContent?.SetActive(true);
 
-        // Icon: ưu tiên Sprite thật, fallback emoji
-        bool hasSprite = item.icon != null;
-        if (img_previewIcon) { img_previewIcon.sprite = item.icon; img_previewIcon.enabled = hasSprite; }
-        if (txt_previewIcon) { txt_previewIcon.text = hasSprite ? "" : item.emojiIcon; txt_previewIcon.enabled = !hasSprite; }
+        // Icon
+        if (img_previewIcon)
+        {
+            img_previewIcon.sprite = item.icon;
+            img_previewIcon.enabled = item.icon != null;
+        }
 
+        // Name
         txt_previewName?.SetText(item.itemName);
 
-        // Rarity + màu
+        // Rarity + Color
         if (txt_previewRarity)
         {
             txt_previewRarity.SetText(item.rarity.ToString().ToUpper());
@@ -203,13 +233,27 @@ public class InventoryUI : MonoBehaviour
             };
         }
 
+        // Description
         txt_previewDesc?.SetText(item.description);
 
-        // Stat bonuses
+        // Stat bonuses (NEW: sử dụng List<StatBonus>)
         var sb = new System.Text.StringBuilder();
-        foreach (var kv in item.statBonuses)
-            sb.AppendLine($"<color=#6a5a42>{kv.Key}</color>   <color=#90c060>+{kv.Value}</color>");
+        foreach (var bonus in item.statBonuses)
+        {
+            if (!string.IsNullOrEmpty(bonus.statName))
+                sb.AppendLine($"<color=#6a5a42>{bonus.statName}</color>   <color=#90c060>+{bonus.value}</color>");
+        }
         txt_previewStats?.SetText(sb.ToString());
+
+        // Update equip button
+        bool isEquipped = equippedItems.Contains(item);
+        if (btn_equip)
+        {
+            btn_equip.gameObject.SetActive(item.statBonuses.Count > 0);
+            var btnText = btn_equip.GetComponentInChildren<TextMeshProUGUI>();
+            if (btnText)
+                btnText.text = isEquipped ? "UNEQUIP" : "EQUIP";
+        }
 
         btn_drop?.gameObject.SetActive(true);
     }
@@ -219,30 +263,98 @@ public class InventoryUI : MonoBehaviour
         selectedItem = null;
         emptyHint?.SetActive(true);
         previewContent?.SetActive(false);
+        btn_equip?.gameObject.SetActive(false);
         btn_drop?.gameObject.SetActive(false);
     }
 
-    // ── Drop (public - gọi được từ ItemSlot chuột phải) ───────────────────
+    // ── Equip / Unequip ───────────────────────────────────────────────────
+    private void EquipSelected()
+    {
+        if (selectedItem == null) return;
+
+        if (equippedItems.Contains(selectedItem))
+        {
+            // UNEQUIP
+            equippedItems.Remove(selectedItem);
+            Debug.Log($"[Inventory] 📦 UNEQUIPPED: {selectedItem.itemName}");
+            StatsManager.instance?.RemoveItemBonus(selectedItem);
+        }
+        else
+        {
+            // EQUIP
+            equippedItems.Add(selectedItem);
+            Debug.Log($"[Inventory] ⚔️ EQUIPPED: {selectedItem.itemName}");
+            StatsManager.instance?.ApplyItemBonus(selectedItem);
+        }
+
+        ShowPreview(selectedItem);
+        RefreshStats();
+    }
+
+    // ── Drop ──────────────────────────────────────────────────────────────
     public void DropSelected()
     {
         if (selectedItem == null) return;
-        Debug.Log($"[Inventory] Dropped: {selectedItem.itemName}");
+
+        // Unequip nếu đang equip
+        if (equippedItems.Contains(selectedItem))
+        {
+            equippedItems.Remove(selectedItem);
+            StatsManager.instance?.RemoveItemBonus(selectedItem);
+        }
+
+        Debug.Log($"[Inventory] 🗑️ DROPPED: {selectedItem.itemName}");
         playerItems.Remove(selectedItem);
         ShowEmptyPreview();
         RenderPage();
+        RefreshStats();
     }
 
     // ── Public API ────────────────────────────────────────────────────────
+    /// <summary>
+    /// Thêm item vào inventory (pickup).
+    /// Hỗ trợ stack nếu isStackable = true.
+    /// </summary>
     public void AddItem(ItemData item)
     {
+        if (item == null)
+        {
+            Debug.LogWarning("[Inventory] Tried to add null item.");
+            return;
+        }
+
         // Stack nếu được
         if (item.isStackable)
         {
-            var existing = playerItems.Find(i => i.itemName == item.itemName && i.currentStack < i.maxStack);
-            if (existing != null) { existing.currentStack++; if (isOpen) RenderPage(); return; }
+            var existing = playerItems.Find(i => i.itemName == item.itemName && i.currentStack < item.maxStack);
+            if (existing != null)
+            {
+                existing.currentStack++;
+                if (isOpen) RenderPage();
+                Debug.Log($"[Inventory] ➕ STACKED: {item.itemName} (x{existing.currentStack})");
+                return;
+            }
         }
+
         playerItems.Add(item);
         if (isOpen) RenderPage();
+        Debug.Log($"[Inventory] ✅ ADDED: {item.itemName}");
+    }
+
+    /// <summary>
+    /// Lấy danh sách item đang equip.
+    /// </summary>
+    public List<ItemData> GetEquippedItems()
+    {
+        return new List<ItemData>(equippedItems);
+    }
+
+    /// <summary>
+    /// Kiểm tra item có đang equip không.
+    /// </summary>
+    public bool IsItemEquipped(ItemData item)
+    {
+        return equippedItems.Contains(item);
     }
 
     private void OnDestroy()

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 public class InventoryToggle : MonoBehaviour
 {
     private void Update()

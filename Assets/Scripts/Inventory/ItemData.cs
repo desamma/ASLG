@@ -4,9 +4,8 @@ using System.Collections.Generic;
 public enum ItemRarity { Common, Uncommon, Rare, Epic, Legendary }
 
 /// <summary>
+/// ItemData - ScriptableObject cho item data.
 /// Tạo item: Assets > Create > Inventory > Item Data
-/// Không cần Sprite - dùng emojiIcon làm placeholder.
-/// Khi có asset thật thì gán Sprite vào trường icon và script sẽ ưu tiên dùng Sprite.
 /// </summary>
 [CreateAssetMenu(menuName = "Inventory/Item Data", fileName = "NewItem")]
 public class ItemData : ScriptableObject
@@ -20,7 +19,7 @@ public class ItemData : ScriptableObject
     [Header("Icon")]
     [Tooltip("Để trống nếu chưa có asset - dùng emojiIcon thay thế")]
     public Sprite icon;
-    [Tooltip("Emoji hiển thị tạm khi chưa có Sprite. Ví dụ: ⚔️ 🛡️ 🧪 🗡️ 💍 🪖")]
+    [Tooltip("Emoji hiển thị tạm khi chưa có Sprite")]
     public string emojiIcon = "📦";
 
     [Header("Stack")]
@@ -29,31 +28,39 @@ public class ItemData : ScriptableObject
     [HideInInspector] public int currentStack = 1;
 
     [Header("Stat Bonuses")]
-    [Tooltip("Key = tên stat, Value = lượng cộng. Ví dụ: damage -> 10")]
-    public SerializableDictionary<string, float> statBonuses = new SerializableDictionary<string, float>();
+    [Tooltip("Thêm stat bonus để cộng vào player")]
+    public List<StatBonus> statBonuses = new List<StatBonus>();
 
     [Header("World Drop")]
-    [Tooltip("Prefab spawn khi drop ra đất - để trống nếu chưa có")]
+    [Tooltip("Prefab spawn khi drop ra đất")]
     public GameObject worldPrefab;
+
+    // ── Helper để tương thích với code cũ ──────────────────────────────
+    /// <summary>
+    /// Convert List<StatBonus> sang Dictionary cho compatibility.
+    /// </summary>
+    public Dictionary<string, float> GetStatBonusesDict()
+    {
+        var dict = new Dictionary<string, float>();
+        foreach (var bonus in statBonuses)
+        {
+            if (!string.IsNullOrEmpty(bonus.statName))
+                dict[bonus.statName] = bonus.value;
+        }
+        return dict;
+    }
 }
 
+/// <summary>
+/// StatBonus - Cặp Key-Value cho stat bonuses.
+/// Dễ edit trong Inspector hơn Dictionary.
+/// </summary>
 [System.Serializable]
-public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>,
-    ISerializationCallbackReceiver
+public class StatBonus
 {
-    [SerializeField] private List<TKey> keys = new List<TKey>();
-    [SerializeField] private List<TValue> values = new List<TValue>();
+    [Tooltip("Tên stat: damage, maxHealth, moveSpeed, etc.")]
+    public string statName = "damage";
 
-    public void OnBeforeSerialize()
-    {
-        keys.Clear(); values.Clear();
-        foreach (var kv in this) { keys.Add(kv.Key); values.Add(kv.Value); }
-    }
-
-    public void OnAfterDeserialize()
-    {
-        Clear();
-        for (int i = 0; i < Mathf.Min(keys.Count, values.Count); i++)
-            this[keys[i]] = values[i];
-    }
+    [Tooltip("Giá trị cộng thêm")]
+    public float value = 0f;
 }
