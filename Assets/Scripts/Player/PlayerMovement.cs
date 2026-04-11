@@ -104,6 +104,15 @@ public class PlayerMovement : MonoBehaviour
         transform.localScale = scale;
     }
 
+    public void FaceToward(float worldX)
+    {
+        bool shouldFaceRight = worldX > transform.position.x;
+        bool alreadyFacingRight = facingDirection == 1;
+
+        if (shouldFaceRight != alreadyFacingRight)
+            Flip();
+    }
+
     private void UpdateAnimatorState()
     {
         if (stateManager.IsInState(PlayerState.Attack) ||
