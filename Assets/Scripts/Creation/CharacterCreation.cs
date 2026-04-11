@@ -11,7 +11,8 @@ public class CharacterCreation : MonoBehaviour
         if (string.IsNullOrWhiteSpace(nameInput.text)) return;
 
         GameSession.PlayerName = nameInput.text;
-        GameSession.PlayerClass = 1; // Đấu Sĩ
+        //GameSession.PlayerClass = 1; // Đấu Sĩ
+        ClassManager.Instance.SelectClass(PlayerClass.Knight);
         SceneManager.LoadScene(2); // ID của Scene Game
     }
 

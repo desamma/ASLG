@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [DisallowMultipleComponent]
 public class ArrowProjectile : MonoBehaviour
@@ -14,6 +14,7 @@ public class ArrowProjectile : MonoBehaviour
     private AudioClip hitClip;
     private float volume;
     private LayerMask enemyLayer;
+    private float lifeTimer = 0f;
 
     private bool hasHit = false;
 
@@ -47,13 +48,31 @@ public class ArrowProjectile : MonoBehaviour
         if (playerCol != null)
             Physics2D.IgnoreCollision(GetComponent<Collider2D>(), playerCol);
 
-        Destroy(gameObject, lifetime);
+        //Destroy(gameObject, lifetime);
     }
+
+    private void OnEnable()
+    {
+        // Reset per-use state every time the arrow is pulled from the pool
+        hasHit = false;
+        lifeTimer = 0f;
+    }
+
+    /*private void Update()
+    {
+        if (hasHit) return;
+        transform.Translate(direction * speed * Time.deltaTime, Space.World);
+    }*/
 
     private void Update()
     {
         if (hasHit) return;
+
         transform.Translate(direction * speed * Time.deltaTime, Space.World);
+
+        lifeTimer += Time.deltaTime;
+        if (lifeTimer >= lifetime)
+            ReturnToPool();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -70,13 +89,16 @@ public class ArrowProjectile : MonoBehaviour
         if (hitEffectPrefab != null)
             Instantiate(hitEffectPrefab, transform.position, Quaternion.identity, other.transform);
 
-        var enemyHealth = other.GetComponent<IEnemy_Health>();
-        var enemyMovement = other.GetComponent<IEnemy_Movement>();
+        other.GetComponent<IEnemy_Health>()?.ChangeHealth(-damage);
+        other.GetComponent<IEnemy_Movement>()?.KnockBack(transform, knockbackForce, knockbackTime, stunTime);
 
-        enemyHealth?.ChangeHealth(-damage);
-        enemyMovement?.KnockBack(transform, knockbackForce, knockbackTime, stunTime);
+        ReturnToPool();
+    }
 
-        Destroy(gameObject);
+    private void ReturnToPool()
+    {
+        hasHit = true; // guard against double-return if both timer and trigger fire same frame
+        ArrowPool.Instance.Return(this);
     }
 
     private static bool IsInLayerMask(int layer, LayerMask mask) =>
