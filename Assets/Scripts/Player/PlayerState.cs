@@ -19,5 +19,14 @@ public enum PlayerState
     Dash,
 
     [StateAnimator("isKnockback")]
-    Knockback
+    Knockback,
+
+    [StateAnimator("isKnightSkill")]
+    KnightSkill,
+
+    [StateAnimator("isArcherSkill")]
+    ArcherSkill,
+
+    [StateAnimator("isRogueSkill")]
+    RogueSkill
 }
