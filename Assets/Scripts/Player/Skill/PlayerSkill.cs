@@ -184,7 +184,6 @@ public class PlayerSkill : MonoBehaviour
             fanAngle += SkillData.upgrades[i].fanAngleBonus;
         }
 
-        // FIX: Ensure single arrows fire straight, and multiple arrows space correctly across the fan angle
         float step = count > 1 ? fanAngle / (count - 1) : 0f;
         float startAngle = count > 1 ? baseAngle - (fanAngle / 2f) : baseAngle;
 
@@ -193,30 +192,77 @@ public class PlayerSkill : MonoBehaviour
         // Flip player toward mouse
         movement.FaceToward(mouseWorld.x);
 
+        const int MAX_ARROWS = 200;
+        if (count > MAX_ARROWS)
+        {
+            Debug.LogWarning($"[PlayerSkill] Arrow count excese {MAX_ARROWS}.");
+            // Cache every value that would otherwise be recomputed per-arrow
+            int damage = GetCurrentDamage();
+            float kbForce = StatsManager.instance.knockbackForce;
+            float kbTime = StatsManager.instance.knockbackTime;
+            float stun = StatsManager.instance.stunTime;
+            float spd = SkillData.arrowSpeed;
+            float life = SkillData.arrowLifetime;
+            AudioClip hitSfx = ClassData.hitClip;
+            GameObject hitFx = ClassData.hitEffectPrefab;
+            Vector3 origin = skillOrigin.position;
+
+            StartCoroutine(SpawnArrowBatch(
+                count, step, startAngle,
+                damage, kbForce, kbTime, stun,
+                spd, life, hitSfx, hitFx, enemies, origin));
+        }
+        else
+        {
+
+            for (int i = 0; i < count; i++)
+            {
+                float angle = startAngle + (step * i);
+                float rad = angle * Mathf.Deg2Rad;
+                Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+
+                var arrow = ArrowPool.Instance.Get();
+                arrow.transform.position = skillOrigin.position;
+                arrow.transform.rotation = Quaternion.identity;
+
+                arrow.Initialise(
+                    dir: dir,
+                    spd: SkillData.arrowSpeed,
+                    life: SkillData.arrowLifetime,
+                    dmg: GetCurrentDamage(),
+                    kbForce: StatsManager.instance.knockbackForce,
+                    kbTime: StatsManager.instance.knockbackTime,
+                    stun: StatsManager.instance.stunTime,
+                    hitFx: ClassData.hitEffectPrefab,
+                    hitSfx: ClassData.hitClip,
+                    vol: volume,
+                    enemies: enemies);
+            }
+        }
+    }
+
+    private const int ARROWS_PER_FRAME = 32;
+
+    private IEnumerator SpawnArrowBatch(
+        int count, float step, float startAngle,
+        int damage, float kbForce, float kbTime, float stun,
+        float spd, float life, AudioClip hitSfx, GameObject hitFx,
+        LayerMask enemies, Vector3 origin)
+    {
         for (int i = 0; i < count; i++)
         {
-            float angle = startAngle + (step * i);
+            float angle = startAngle + step * i;
             float rad = angle * Mathf.Deg2Rad;
             Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
 
-            var go = Instantiate(SkillData.arrowPrefab, skillOrigin.position, Quaternion.identity);
+            var arrow = ArrowPool.Instance.Get();
+            arrow.transform.position = origin;
+            arrow.transform.rotation = Quaternion.identity;
+            arrow.Initialise(dir, spd, life, damage, kbForce, kbTime, stun,
+                             hitFx, hitSfx, volume, enemies);
 
-            // Rotate the arrow sprite to face its travel direction
-            go.transform.rotation = Quaternion.Euler(0, 0, angle);
-
-            var arrow = go.GetComponent<ArrowProjectile>();
-            arrow?.Initialise(
-                dir: dir,
-                spd: SkillData.arrowSpeed,
-                life: SkillData.arrowLifetime,
-                dmg: GetCurrentDamage(),
-                kbForce: StatsManager.instance.knockbackForce,
-                kbTime: StatsManager.instance.knockbackTime,
-                stun: StatsManager.instance.stunTime,
-                hitFx: ClassData.hitEffectPrefab,
-                hitSfx: ClassData.hitClip,
-                vol: volume,
-                enemies: enemies);
+            if (i > 0 && i % ARROWS_PER_FRAME == 0)
+                yield return null;
         }
     }
 

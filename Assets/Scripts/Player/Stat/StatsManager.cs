@@ -278,6 +278,8 @@ public class StatsManager : MonoBehaviour
     {
         Debug.Log("[StatsManager] Player died!");
         OnPlayerDeathEvent?.Invoke();
+        Destroy(gameObject);
+        Time.timeScale = 0f;
     }
 
     private int CalculateExpToNextLevel(int nextLevel) =>
