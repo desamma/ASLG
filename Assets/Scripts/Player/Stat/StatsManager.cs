@@ -21,6 +21,15 @@ public class StatsManager : MonoBehaviour
         set { _currentHealth = Mathf.Clamp(value, 0f, maxHealth); OnStatsChanged(); }
     }
 
+    [Header("Defence")]
+    [SerializeField] private float _defence = 10f;
+    [SerializeField] private float _magicResist = 5f;
+
+    public float defence { get => _defence; set { _defence = value; OnStatsChanged(); } }
+    public float magicResist { get => _magicResist; set { _magicResist = value; OnStatsChanged(); } }
+
+
+
     [Header("Mana")]
     [SerializeField] private float _maxMana = 100f;
     public float maxMana
@@ -108,12 +117,14 @@ public class StatsManager : MonoBehaviour
     private void InitialiseStats()
     {
         _currentHealth = _maxHealth;
+        _currentMana = _maxMana;
         _currentStamina = _maxStamina;
     }
 
     public void ResetStats()
     {
         _currentHealth = _maxHealth;
+        _currentMana = _maxMana;
         _currentStamina = _maxStamina;
         OnStatsChanged();
     }
@@ -258,8 +269,6 @@ public class StatsManager : MonoBehaviour
         OnPlayerDeathEvent?.Invoke();
     }
 
-    private int CalculateExpToNextLevel(int currentLevel)
-    {
-        return (currentLevel + 1) * 100;
-    }
+    private int CalculateExpToNextLevel(int nextLevel) =>
+    Mathf.RoundToInt(100 * Mathf.Pow(nextLevel, 1.5f));
 }
