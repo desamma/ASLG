@@ -1,8 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 using TMPro;
 
 public class AuthManager : MonoBehaviour
@@ -11,10 +11,10 @@ public class AuthManager : MonoBehaviour
     public int mainGameSceneIndex = 0;
 
     [Header("Common UI")]
-    public TMP_Text notificationText; // Kéo thả một cái Text (TextMeshPro) vào đây để hiện thông báo
+    public TMP_Text notificationText;
 
     [Header("Login UI")]
-    public TMP_InputField loginUsernameInput;
+    public TMP_InputField loginUsernameInput; // Giả sử dùng Email để đăng nhập
     public TMP_InputField loginPasswordInput;
 
     [Header("Register UI")]
@@ -23,13 +23,13 @@ public class AuthManager : MonoBehaviour
     public TMP_InputField registerPasswordInput;
     public TMP_InputField registerConfirmPasswordInput;
 
-    private string saveFilePath;
     private Coroutine notificationCoroutine;
+
+    // TODO: BẠN CẦN THAY ĐỔI ĐƯỜNG DẪN NÀY CHO KHỚP VỚI API CỦA BẠN
+    private readonly string baseUrl = "https://localhost:7206/api/auth";
 
     private void Awake()
     {
-        saveFilePath = Application.persistentDataPath + "/users.json";
-        // Đảm bảo Text thông báo trống khi bắt đầu
         if (notificationText != null) notificationText.text = "";
     }
 
@@ -38,7 +38,6 @@ public class AuthManager : MonoBehaviour
         SetupPasswordFields();
     }
 
-    // Thiết lập các ô nhập password tự ẩn ký tự
     private void SetupPasswordFields()
     {
         if (loginPasswordInput != null) loginPasswordInput.contentType = TMP_InputField.ContentType.Password;
@@ -46,17 +45,13 @@ public class AuthManager : MonoBehaviour
         if (registerConfirmPasswordInput != null) registerConfirmPasswordInput.contentType = TMP_InputField.ContentType.Password;
     }
 
-    // Hàm hiển thị thông báo lên UI thay vì Debug.Log
     private void ShowNotification(string message, Color color)
     {
         if (notificationText == null) return;
-
         if (notificationCoroutine != null) StopCoroutine(notificationCoroutine);
 
         notificationText.text = message;
         notificationText.color = color;
-
-        // Tự động xóa thông báo sau 3 giây
         notificationCoroutine = StartCoroutine(ClearNotificationAfterDelay(3f));
     }
 
@@ -66,30 +61,12 @@ public class AuthManager : MonoBehaviour
         notificationText.text = "";
     }
 
-    #region File Handling
-    private UserDatabase LoadDatabase()
-    {
-        if (File.Exists(saveFilePath))
-        {
-            string jsonData = File.ReadAllText(saveFilePath);
-            return JsonUtility.FromJson<UserDatabase>(jsonData);
-        }
-        return new UserDatabase();
-    }
-
-    private void SaveDatabase(UserDatabase database)
-    {
-        string jsonData = JsonUtility.ToJson(database, true);
-        File.WriteAllText(saveFilePath, jsonData);
-    }
-    #endregion
-
     #region Scene Transitions
     public void OnClick_GoToRegisterBtn() => SceneManager.LoadScene("Register");
     public void OnClick_GoToLoginBtn() => SceneManager.LoadScene("Login");
     #endregion
 
-    #region Login Logic
+    #region Login API
     public void OnLoginButtonClicked()
     {
         string email = loginUsernameInput.text;
@@ -101,31 +78,27 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
-        UserDatabase database = LoadDatabase();
-        LocalUserData foundUser = database.users.Find(u => u.email == email);
+        // Tạo dữ liệu JSON để gửi đi
+        LoginRequestData requestData = new LoginRequestData { email = email, password = password };
+        string jsonData = JsonUtility.ToJson(requestData);
 
-        if (foundUser != null)
-        {
-            if (foundUser.password == password)
-            {
-                ShowNotification("Đăng nhập thành công!", Color.green);
-                PlayerPrefs.SetString("CurrentUser", email);
-                PlayerPrefs.Save();
-                SceneManager.LoadScene(mainGameSceneIndex);
-            }
-            else
-            {
-                ShowNotification("Sai mật khẩu!", Color.red);
-            }
-        }
-        else
-        {
-            ShowNotification("Tài khoản không tồn tại!", Color.red);
-        }
+        Debug.Log($"[Login] Dữ liệu chuẩn bị gửi: {jsonData}");
+
+        // Bắt đầu gửi API
+        StartCoroutine(SendApiRequest(baseUrl + "/login", jsonData, OnLoginSuccess));
+    }
+
+    private void OnLoginSuccess(string responseText)
+    {
+        // Khi BE trả về thành công, xử lý tại đây
+        ShowNotification("Đăng nhập thành công!", Color.green);
+        PlayerPrefs.SetString("CurrentUser", loginUsernameInput.text);
+        PlayerPrefs.Save();
+        SceneManager.LoadScene(mainGameSceneIndex);
     }
     #endregion
 
-    #region Register Logic
+    #region Register API
     public void OnRegisterButtonClicked()
     {
         string username = registerUsernameInput.text;
@@ -145,25 +118,83 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
-        UserDatabase database = LoadDatabase();
-
-        if (database.users.Exists(u => u.email == email))
+        // Tạo dữ liệu JSON
+        RegisterRequestData requestData = new RegisterRequestData
         {
-            ShowNotification("Email này đã được đăng ký!", Color.red);
-            return;
-        }
+            userName = username,
+            email = email,
+            password = password
+        };
+        string jsonData = JsonUtility.ToJson(requestData);
 
-        database.users.Add(new LocalUserData { userName = username, email = email, password = password });
-        SaveDatabase(database);
+        Debug.Log($"[Register] Dữ liệu chuẩn bị gửi: {jsonData}");
 
+        // Bắt đầu gửi API
+        StartCoroutine(SendApiRequest(baseUrl + "/register", jsonData, OnRegisterSuccess));
+    }
+
+    private void OnRegisterSuccess(string responseText)
+    {
         ShowNotification("Đăng ký thành công!", Color.green);
         Invoke(nameof(OnClick_GoToLoginBtn), 1.0f);
     }
     #endregion
+
+    #region UnityWebRequest Core
+    // Hàm dùng chung để gửi API POST
+    private IEnumerator SendApiRequest(string url, string jsonData, System.Action<string> onSuccess)
+    {
+        ShowNotification("Đang xử lý...", Color.white);
+        Debug.Log($"[API] Bắt đầu gửi POST tới: {url}");
+
+        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+        {
+            // Chuyển string JSON thành mảng byte
+            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            // Chờ phản hồi từ Server
+            yield return request.SendWebRequest();
+
+            Debug.Log($"[API] Mã phản hồi từ Server (Response Code): {request.responseCode}");
+
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError($"[API LỖI KẾT NỐI] {request.error}");
+
+                // Trích xuất chi tiết nội dung lỗi từ Backend trả về
+                string errorDetail = request.downloadHandler != null ? request.downloadHandler.text : "Không có dữ liệu trả về";
+                Debug.LogError($"[API CHI TIẾT LỖI TỪ SERVER] {errorDetail}");
+
+                ShowNotification("Lỗi từ server: " + errorDetail, Color.red);
+            }
+            else
+            {
+                // Thành công gọi hàm callback
+                string responseText = request.downloadHandler.text;
+                Debug.Log($"[API THÀNH CÔNG] Dữ liệu Server trả về: {responseText}");
+
+                onSuccess?.Invoke(responseText);
+            }
+        }
+    }
+    #endregion
+}
+
+// Cấu trúc dữ liệu để chuyển thành JSON gửi lên server
+[System.Serializable]
+public class LoginRequestData
+{
+    public string email;
+    public string password;
 }
 
 [System.Serializable]
-public class LocalUserData { public string userName; public string email; public string password; }
-
-[System.Serializable]
-public class UserDatabase { public List<LocalUserData> users = new List<LocalUserData>(); }
+public class RegisterRequestData
+{
+    public string userName;
+    public string email;
+    public string password;
+}
