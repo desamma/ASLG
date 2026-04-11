@@ -28,6 +28,9 @@ public class PlayerClassData : ScriptableObject
     public float knockbackTime = 0.2f;
     public float stunTime = 0.3f;
 
+    [Header("Skill")]
+    public SkillData skillData;
+
     [Header("Ranged (Archer only)")]
     public float projectileSpeed = 12f;
 

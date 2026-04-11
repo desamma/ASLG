@@ -14,7 +14,7 @@ public class StatsManager : MonoBehaviour
         set { _maxHealth = Mathf.Max(0f, value); OnStatsChanged(); }
     }
 
-    private float _currentHealth;
+    [SerializeField]  private float _currentHealth;
     public float currentHealth
     {
         get => _currentHealth;
@@ -38,7 +38,7 @@ public class StatsManager : MonoBehaviour
         set { _maxMana = Mathf.Max(0f, value); OnStatsChanged(); }
     }
 
-    private float _currentMana;
+    [SerializeField] private float _currentMana;
     public float currentMana
     {
         get => _currentMana;
@@ -149,6 +149,17 @@ public class StatsManager : MonoBehaviour
             OnLevelUpEvent?.Invoke();
         }
         OnStatsChanged();
+    }
+
+    /// <summary>
+    /// Deducts upgrade points. Returns false if insufficient points.
+    /// </summary>
+    public bool SpendUpgradePoints(int amount)
+    {
+        if (_upgradePoints < amount) return false;
+        _upgradePoints = Mathf.Max(0, _upgradePoints - amount);
+        OnStatsChanged();
+        return true;
     }
 
     // ── ITEM STATS BONUSES ────────────────────────────────────────────────
