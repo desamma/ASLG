@@ -17,11 +17,14 @@ MonoBehaviour:
   icon: {fileID: 0}
   manaCost: 40
   cooldown: 10
-  damagePercent: 2.5
-  slashPrefab: {fileID: 0}
-  slashSpeed: 10
-  slashDuration: 1
-  chargeTime: 0.4
+  damagePercent: 2
+  chargeTime: 0
+  slashVfxPrefab: {fileID: 278729502713754790, guid: c4dab681cad942a44ba870df57093bde, type: 3}
+  slashVfxCount: 3
+  slashVfxStepDistance: 3
+  slashVfxStepDelay: 0.15
+  slashHitRadius: 2.6
+  slashVfxDuration: 1
   arrowPrefab: {fileID: 0}
   arrowCount: 8
   fanAngle: 120

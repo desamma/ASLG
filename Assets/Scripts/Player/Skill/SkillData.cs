@@ -15,21 +15,24 @@ public class SkillData : ScriptableObject
     public float damagePercent = 1.5f;
 
     [Header("Knight — charged slash")]
-    public GameObject slashPrefab;
-    public float slashSpeed = 10f;
-    public float slashDuration = 1f;
-    public float chargeTime = 0.4f;      // lock duration before slash fires
+    public float chargeTime = 0.4f;
+    public GameObject slashVfxPrefab;      
+    public int slashVfxCount = 3;           
+    public float slashVfxStepDistance = 1.5f; 
+    public float slashVfxStepDelay = 0.25f;  
+    public float slashHitRadius = 0.8f;     
+    public float slashVfxDuration = 1f;      
 
     [Header("Archer — fan shot")]
-    public GameObject arrowPrefab;       // reuse your ArrowProjectile prefab
+    public GameObject arrowPrefab;       
     public int arrowCount = 8;
-    public float fanAngle = 120f;        // total spread in degrees
+    public float fanAngle = 120f;        
     public float arrowSpeed = 16f;
     public float arrowLifetime = 2f;
 
     [Header("Rogue — shadow step")]
     public float teleportRange = 7f;
-    public GameObject teleportFxPrefab; // optional burst effect at origin + destination
+    public GameObject teleportFxPrefab; 
 
     [Header("Upgrades (up to 3 tiers)")]
     public SkillUpgradeTier[] upgrades = new SkillUpgradeTier[3];
