@@ -64,6 +64,14 @@ public class StatusEffect : ScriptableObject
     public StackBehavior stackBehavior = StackBehavior.RefreshDuration;
     public int maxStacks = 1;
 
+    [Header("Duplicate Instances")]
+    [Tooltip("Only used when allowDuplicate = true.\n" +
+             "Max independent slots this effect can occupy at once. 0 = unlimited.")]
+    public int maxInstances = 0;
+
+    [Tooltip("Optional. Defines what gameplay stat this effect modifies.")]
+    public StatModifier statModifier;
+
     private void OnValidate()
     {
         if (string.IsNullOrEmpty(effectId))

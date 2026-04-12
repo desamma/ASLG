@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 889944eac0eeea94fb0ac48413c31652, type: 3}
+  m_Name: ArcherSkill
+  m_EditorClassIdentifier: 
+  skillName: Fan Shot
+  description: 
+  icon: {fileID: 0}
+  manaCost: 30
+  cooldown: 10
+  damagePercent: 1
+  chargeTime: 0.4
+  slashVfxPrefab: {fileID: 0}
+  slashVfxCount: 3
+  slashVfxStepDistance: 1.5
+  slashVfxStepDelay: 0.15
+  slashHitRadius: 0.8
+  slashVfxDuration: 1
+  arrowPrefab: {fileID: 3460029213893004739, guid: f3afdd87e8a319d4d882aaf51e66e1aa, type: 3}
+  arrowCount: 10
+  fanAngle: 120
+  arrowSpeed: 16
+  arrowLifetime: 2
+  teleportRange: 7
+  teleportFxPrefab: {fileID: 0}
+  upgrades:
+  - pointCost: 1
+    description: 
+    manaCostMultiplier: 0.95
+    cooldownMultiplier: 0.9
+    damagePercentBonus: 0.25
+    slashDurationBonus: 0.3
+    slashSpeedBonus: 1
+    arrowCountBonus: 1
+    fanAngleBonus: 20
+    teleportRangeBonus: 2
+  - pointCost: 1
+    description: 
+    manaCostMultiplier: 0.95
+    cooldownMultiplier: 0.9
+    damagePercentBonus: 0.25
+    slashDurationBonus: 0.3
+    slashSpeedBonus: 1
+    arrowCountBonus: 1
+    fanAngleBonus: 20
+    teleportRangeBonus: 2
+  - pointCost: 1
+    description: 
+    manaCostMultiplier: 0.95
+    cooldownMultiplier: 0.9
+    damagePercentBonus: 0.25
+    slashDurationBonus: 0.3
+    slashSpeedBonus: 1
+    arrowCountBonus: 1
+    fanAngleBonus: 20
+    teleportRangeBonus: 2

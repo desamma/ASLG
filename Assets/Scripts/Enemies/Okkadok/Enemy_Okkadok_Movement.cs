@@ -8,7 +8,7 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
 {
     [Header("Stats and Behavior")]
     [SerializeField] private Enemy_Okkadok_Health health;
-    [SerializeField] private BehaviorProfile behavior;
+    [SerializeField] private bool isKnockbackable = true;
 
     [Header("Be a chicken parameters")]
     [SerializeField] private float retreatSafeDistance = 6f;
@@ -30,13 +30,14 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
     [SerializeField] private Transform detectionPoint;
 
     private int facingDirection;
-    private EnemyStats stats;
     private bool isRecovering = false;
     private bool runAwayAfterAttack = false;
     private bool isScreamable = true;
     private float screamCooldown = 5f;
     private float screamCooldownTimer = 0;
     private EnemyMoveCooldownTracker<Enemy_Okkadok_State> moveCooldowns = new();
+    private KnockbackHandler knockbackHandler;
+    private EnemyAttackRecovery attackRecovery;
 
     #region Move Cooldowns
     private void RegisterMoveUsed(Enemy_Okkadok_State usedState)
@@ -75,8 +76,8 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         if (charCollider == null) charCollider = GetComponent<Collider2D>();
         if (playerLayer != LayerMask.GetMask("Player")) playerLayer = LayerMask.GetMask("Player");
         if (health == null) health = GetComponent<Enemy_Okkadok_Health>();
-
-        stats = health.stats;
+        attackRecovery ??= new EnemyAttackRecovery(this, rb);
+        knockbackHandler ??= new KnockbackHandler(this, rb);
 
         facingDirection = 1;
         transform.localScale = new Vector3(
@@ -86,10 +87,8 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         );
 
         InitializeBehavior();
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
 
         stateManager = new StateManager<Enemy_Okkadok_State>(animator, Enemy_Okkadok_State.Idle);
-        stateManager.OnStateChanged += OnStateChanged;
         stateManager.OnStateEnter += OnStateEnter;
         stateManager.OnStateExit += OnStateExit;
     }
@@ -112,45 +111,26 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
             Retreat();
     }
 
-    private void OnEnable() => DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
     private void OnDisable()
     {
         if (stateManager != null)
         {
-            stateManager.OnStateChanged -= OnStateChanged;
             stateManager.OnStateEnter -= OnStateEnter;
             stateManager.OnStateExit -= OnStateExit;
         }
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
-    }
-
-    public void OnDifficultyChanged(DifficultyModifier newModifier)
-    {
-        if (newModifier == null) return;
-        behavior.ApplyDifficulty(newModifier);
     }
 
     public void CheckForPlayer()
     {
         if (player != null)
         {
-            if (Vector2.Distance(transform.position, player.position) > behavior.DetectionRange)
+            if (Vector2.Distance(transform.position, player.position) > health.behavior.DetectionRange)
                 player = null;
         }
         else
         {
-            Collider2D[] hits = Physics2D.OverlapCircleAll(detectionPoint.position, behavior.DetectionRange, playerLayer);
-            if (hits.Length > 0)
-            {
-                float best = float.MaxValue;
-                Transform closest = null;
-                foreach (var col in hits)
-                {
-                    float sq = (col.transform.position - detectionPoint.position).sqrMagnitude;
-                    if (sq < best) { best = sq; closest = col.transform; }
-                }
-                player = closest;
-            }
+            var closest = TransformHelper.FindClosestInRange(detectionPoint.position, health.behavior.DetectionRange, playerLayer);
+            player = closest;
         }
 
         if (player == null)
@@ -164,7 +144,7 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         }
 
         float dist = Vector2.Distance(transform.position, player.position);
-        bool playerFacingUs = IsPlayerFacingEnemy();
+        bool playerFacingUs = TransformHelper.IsFacingTarget2D(player, transform);
 
         if (playerFacingUs)
         {
@@ -204,7 +184,7 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
             // Player is facing away
             if (!IsInAnyAttackState())
             {
-                if (dist <= stats.AttackRange)
+                if (dist <= health.stats.AttackRange)
                     DecideAttackType();
                 else
                     stateManager.ChangeState(Enemy_Okkadok_State.Chase);
@@ -217,15 +197,15 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         if (player == null) return;
         Flip();
         Vector2 direction = (player.position - transform.position).normalized;
-        rb.velocity = behavior.Aggression * stats.Speed * direction;
+        rb.velocity = health.behavior.Aggression * health.stats.Speed * direction;
     }
 
     private void Retreat()
     {
         if (player == null) return;
-        FlipAwayFromPlayer();
+        facingDirection = TransformHelper.FlipAway(transform, player, facingDirection);
         Vector2 direction = (transform.position - player.position).normalized;
-        rb.velocity = retreatSpeedNegate * behavior.Aggression * stats.Speed * direction;
+        rb.velocity = retreatSpeedNegate * health.behavior.Aggression * health.stats.Speed * direction;
     }
 
     private void DecideAttackType()
@@ -256,10 +236,20 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
             }
         }
     }
+
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null || !IsInAnyAttackState()) return;
-        StartCoroutine(AttackRecovery());
+        attackRecovery.StartRecovery(health.stats.AttackCooldown, 
+            () =>
+            {
+                isRecovering = true;
+                stateManager.ChangeState(Enemy_Okkadok_State.Idle);
+            },
+            () =>
+            {
+                isRecovering = false;
+            });
     }
 
     public void OnScreamAnimationComplete()
@@ -267,15 +257,6 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         if (stateManager == null || !stateManager.IsInState(Enemy_Okkadok_State.Scream)) return;
         screamCooldownTimer = screamCooldown;
         stateManager.ChangeState(Enemy_Okkadok_State.Idle);
-    }
-
-    private IEnumerator AttackRecovery()
-    {
-        isRecovering = true;
-        stateManager.ChangeState(Enemy_Okkadok_State.Idle);
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(stats.AttackCooldown);
-        isRecovering = false;
     }
 
     public void Flip()
@@ -289,43 +270,15 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
         }
     }
 
-    private void FlipAwayFromPlayer()
-    {
-        if (player == null) return;
-        // We want to face AWAY from the player, so invert Flip logic
-        if ((player.position.x > transform.position.x && facingDirection == 1) ||
-            (player.position.x < transform.position.x && facingDirection == -1))
-        {
-            facingDirection *= -1;
-            Vector3 s = transform.localScale; s.x *= -1; transform.localScale = s;
-        }
-    }
-
-    private bool IsPlayerFacingEnemy()
-    {
-        if (player == null) return false;
-        float dx = transform.position.x - player.position.x;
-        // positive localScale.x → player faces right; negative → faces left
-        float playerFacingSign = Mathf.Sign(player.localScale.x);
-        return (playerFacingSign > 0f && dx > 0f) || (playerFacingSign < 0f && dx < 0f);
-    }
-
     public void InitializeBehavior()
     {
-        behavior = new BehaviorProfile
-        {
-            DetectionRange = 10f,
-
-            Aggression = 1f
-        };
-
         attackCategories = new List<AttackCategory>
         {
             new() {
                 Frequency = 1f,
                 Attacks = new[]
                 {
-                    new AttackConfig { State = Enemy_Okkadok_State.Attack, Range = stats.AttackRange, MoveCountCooldown = 0 }
+                    new AttackConfig { State = Enemy_Okkadok_State.Attack, Range = health.stats.AttackRange, MoveCountCooldown = 0 }
                 }
             }
         };
@@ -336,8 +289,6 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
     }
 
     #region State Manager Callbacks
-    private void OnStateChanged(Enemy_Okkadok_State previous, Enemy_Okkadok_State next) { }
-
     private void OnStateEnter(Enemy_Okkadok_State state)
     {
         switch (state)
@@ -366,25 +317,23 @@ public class Enemy_Okkadok_Movement : MonoBehaviour, IEnemy_Movement
     }
     #endregion
 
-    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable)
+    public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)
     {
         if (!isKnockbackable) return;
         stateManager.ChangeState(Enemy_Okkadok_State.Knockback);
-        StartCoroutine(KnockBackCounter(knockbackTime, stunTime));
-        Vector2 dir = (transform.position - player.position).normalized;
-        rb.velocity = dir * knockbackForce;
-    }
-
-    private IEnumerator KnockBackCounter(float knockbackTime, float stunTime)
-    {
-        yield return new WaitForSeconds(knockbackTime);
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(stunTime);
-        stateManager.ChangeState(Enemy_Okkadok_State.Idle);
+        knockbackHandler.ApplyKnockback(transform, player, knockbackForce, knockbackTime, stunTime,
+            () =>
+            {
+                stateManager.ChangeState(Enemy_Okkadok_State.Knockback);
+            },
+            () =>
+            {
+                stateManager.ChangeState(Enemy_Okkadok_State.Idle);
+            }); ;
     }
 
     #region Getters
     public StateManager<Enemy_Okkadok_State> GetStateManager() => stateManager;
-    public BehaviorProfile GetBehavior() => behavior;
+    public BehaviorProfile GetBehavior() => health.behavior;
     #endregion
 }

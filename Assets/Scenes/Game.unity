@@ -529,7 +529,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &200730325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3353,7 +3353,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHealth: 2000
+  _currentHealth: 0
+  _defence: 10
+  _magicResist: 5
   _maxMana: 100
+  _currentMana: 0
   _moveSpeed: 5
   _maxStamina: 100
   _staminaRegenRate: 10
@@ -3384,14 +3388,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 1464415265}
   movement: {fileID: 1464415266}
-  normalAttackPoint: {fileID: 38810855}
-  normalAttackRadius: 1.5
-  normalAttackHitEffect: {fileID: 0}
+  attackPoint: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8
-  normalAttackSwingAudioClip: {fileID: 8300000, guid: 8d19f1d5054be0f4f90f7764ce5336da, type: 3}
-  normalAttackHitAudioClip: {fileID: 8300000, guid: ec8406498b4529640aa1b8bdd5142d16, type: 3}
   volume: 1
 --- !u!1 &1475377902
 GameObject:
@@ -3569,7 +3569,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1651083485
 RectTransform:
   m_ObjectHideFlags: 0

@@ -8,6 +8,8 @@ public class Enemy_Andromeda_Health : MonoBehaviour, IEnemy_Health
 {
     [Header("Enemy Stats")]
     public EnemyStats stats;
+    public BehaviorProfile behavior;
+    public int currentLevel = 1;
     public bool isDead;
 
     [Header("Components")]
@@ -20,8 +22,6 @@ public class Enemy_Andromeda_Health : MonoBehaviour, IEnemy_Health
 
     private void Start()
     {
-        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
-
         movementComponent = GetComponent<Enemy_Andromeda_Movement>();
     }
 
@@ -60,19 +60,14 @@ public class Enemy_Andromeda_Health : MonoBehaviour, IEnemy_Health
 
     public void InitializeStats()
     {
-        stats = new EnemyStats
-        {
-            MaxHP = 200f,
-            CurrentHP = 200f,
-            Strength = 0f,
-            Magic = 40f,
-            Defense = 10f,
-            MagicResist = 15f,
-            Speed = 2.5f,
-            ExpReward = 20f,
-            AttackCooldown = 2f,
-            AttackRange = 4f
-        };
+        var data = EnemyDataRepository.LoadEnemy("Andromeda");
+
+        stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
+        behavior = data.Behavior;
+
+        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+
         isDead = false;
     }
 
@@ -80,5 +75,6 @@ public class Enemy_Andromeda_Health : MonoBehaviour, IEnemy_Health
     {
         if (newModifier == null) return;
         stats.ApplyDifficulty(newModifier);
+        behavior.ApplyDifficulty(newModifier);
     }
 }

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91ac6fc7089a49c47958073a3476b11a, type: 3}
+  m_Name: Burn
+  m_EditorClassIdentifier: 
+  effectId: burn
+  displayName: Burn
+  effectType: 1
+  description: You are Burning
+  flavourText: 
+  statLines: []
+  showDurationInTooltip: 1
+  showStacksInTooltip: 1
+  iconPrefab: {fileID: 5946768645138258554, guid: e12ea75a43c93e94aae3d3728e1f7aab, type: 3}
+  vfxPrefab: {fileID: 5115264865187720942, guid: edb76847fe42e3f4aadd2e3c93bb103c, type: 3}
+  borderColor: {r: 1, g: 0.13333334, b: 0.13333334, a: 1}
+  tooltipIcon: {fileID: 21300000, guid: 74ab98405281da44e88c10789db0e70e, type: 3}
+  iconLocalPosition: {x: 0, y: 0, z: 0}
+  iconLocalScale: {x: 1, y: 1, z: 1}
+  isPermanent: 0
+  baseDuration: 5
+  stackBehavior: 0
+  maxStacks: 1

@@ -24,7 +24,7 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
     [SerializeField] private float volume = 1f;
 
     private EnemyStats stats;
-
+    private GameObject player;
     private void Start()
     {
         stats = GetComponent<Enemy_BringerOfDeath_Health>().stats;
@@ -56,9 +56,17 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
         {
             if (hit.CompareTag("Player") && !audioPlayed)
             {
+                player = hit.gameObject;
                 SoundFXManager.Instance.PlaySoundFXClip(meleeAttackHitAudioClip, transform, volume);
-                // TODO: Hook into player damage system
-                // Apply physical damage based on stats.Strength
+                StatsManager.instance.TakeDamage(stats.Strength);
+
+                player.TryGetComponent<PlayerMovement>(out var playerMovement);
+
+                if (playerMovement != null)
+                {
+                    playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                }
+
                 audioPlayed = true;
             }
         }
@@ -84,10 +92,5 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
             SoundFXManager.Instance.PlaySoundFXClip(CastAudioClip, transform, volume);
             Instantiate(spellPrefab, spawnPosition, Quaternion.identity);
         }
-    }
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(attackPoint.position, new Vector3(4, 3, 0));
     }
 }

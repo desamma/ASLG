@@ -2,9 +2,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Attack logic for Andromeda enemy.
-/// Attack performs 360° AOE damage around the enemy.
-/// Cast is a special ranged spell attack.
+/// Pax attack logic, including melee attack and jump forward attack.
 /// </summary>
 [DisallowMultipleComponent]
 public class Enemy_Pax_Attack : MonoBehaviour
@@ -12,13 +10,13 @@ public class Enemy_Pax_Attack : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private Transform attackPoint;
     [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private float attackMultiplier = 0.3f;
     [SerializeField] private Vector2 attackBoxSize = new(1.7f, 2f);
 
     [SerializeField] private float jumpForce = 2f;
     [SerializeField] private float damageInterval = 0.3f;
 
     [Header("Audio")]
-    [SerializeField] private AudioClip catHiss;
     [SerializeField] private AudioClip scratchSound;
     [SerializeField] private float volume = 1f;
 
@@ -106,28 +104,24 @@ public class Enemy_Pax_Attack : MonoBehaviour
                 }
                 if (Time.time - lastDamageTime >= damageInterval)
                 {
-                    // TODO: Apply damage to player
-                    // Example: player.GetComponent<PlayerHealth>()?.TakeDamage(stats.Strength);
+                    StatsManager.instance.TakeDamage(stats.Strength * attackMultiplier);
+
+                    player.TryGetComponent<PlayerMovement>(out var playerMovement);
+
+                    if (playerMovement != null)
+                    {
+                        playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                    }
+
                     lastDamageTime = Time.time;
                 }
             }
         }
     }
 
-    public void PlayCatSound()
-    {
-        SoundFXManager.Instance.PlaySoundFXClip(catHiss, transform, volume);
-    }
-
     public void ChangeCollider()
     {
         normalCollider.enabled = !normalCollider.enabled;
         attackCollider.enabled = !attackCollider.enabled;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(attackPoint.position, attackBoxSize);
     }
 }

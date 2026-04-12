@@ -4,7 +4,10 @@ public class StatsManager : MonoBehaviour
 {
     public static StatsManager instance { get; private set; }
 
-    [Header("References")]
+    [Header("Player")]
+    [SerializeField] private string _playerName;
+
+    public string playerName { get => _playerName; set { _playerName = value; OnStatsChanged(); } }
 
     [Header("Health")]
     [SerializeField] private float _maxHealth = 2000f;
@@ -14,12 +17,21 @@ public class StatsManager : MonoBehaviour
         set { _maxHealth = Mathf.Max(0f, value); OnStatsChanged(); }
     }
 
-    private float _currentHealth;
+    [SerializeField]  private float _currentHealth;
     public float currentHealth
     {
         get => _currentHealth;
         set { _currentHealth = Mathf.Clamp(value, 0f, maxHealth); OnStatsChanged(); }
     }
+
+    [Header("Defence")]
+    [SerializeField] private float _defence = 10f;
+    [SerializeField] private float _magicResist = 5f;
+
+    public float defence { get => _defence; set { _defence = value; OnStatsChanged(); } }
+    public float magicResist { get => _magicResist; set { _magicResist = value; OnStatsChanged(); } }
+
+
 
     [Header("Mana")]
     [SerializeField] private float _maxMana = 100f;
@@ -29,7 +41,7 @@ public class StatsManager : MonoBehaviour
         set { _maxMana = Mathf.Max(0f, value); OnStatsChanged(); }
     }
 
-    private float _currentMana;
+    [SerializeField] private float _currentMana;
     public float currentMana
     {
         get => _currentMana;
@@ -112,12 +124,14 @@ public class StatsManager : MonoBehaviour
     private void InitialiseStats()
     {
         _currentHealth = _maxHealth;
+        _currentMana = _maxMana;
         _currentStamina = _maxStamina;
     }
 
     public void ResetStats()
     {
         _currentHealth = _maxHealth;
+        _currentMana = _maxMana;
         _currentStamina = _maxStamina;
         OnStatsChanged();
     }
@@ -142,6 +156,17 @@ public class StatsManager : MonoBehaviour
             OnLevelUpEvent?.Invoke();
         }
         OnStatsChanged();
+    }
+
+    /// <summary>
+    /// Deducts upgrade points. Returns false if insufficient points.
+    /// </summary>
+    public bool SpendUpgradePoints(int amount)
+    {
+        if (_upgradePoints < amount) return false;
+        _upgradePoints = Mathf.Max(0, _upgradePoints - amount);
+        OnStatsChanged();
+        return true;
     }
 
     // ── ITEM STATS BONUSES ────────────────────────────────────────────────
@@ -273,10 +298,10 @@ public class StatsManager : MonoBehaviour
     {
         Debug.Log("[StatsManager] Player died!");
         OnPlayerDeathEvent?.Invoke();
+        Destroy(gameObject);
+        Time.timeScale = 0f;
     }
 
-    private int CalculateExpToNextLevel(int currentLevel)
-    {
-        return (currentLevel + 1) * 100;
-    }
+    private int CalculateExpToNextLevel(int nextLevel) =>
+    Mathf.RoundToInt(100 * Mathf.Pow(nextLevel, 1.5f));
 }

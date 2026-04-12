@@ -21,6 +21,7 @@ public class Enemy_Okkadok_Attack : MonoBehaviour
     [SerializeField] private AudioClip hitAudio;
     [SerializeField] private float volume = 0.8f;
 
+    private GameObject player;
     private void Start()
     {
         if (animator == null)
@@ -40,16 +41,23 @@ public class Enemy_Okkadok_Attack : MonoBehaviour
             {
                 if (hit.CompareTag("Player"))
                 {
+                    player = hit.gameObject;
+                    player.TryGetComponent<PlayerMovement>(out var playerMovement);
                     switch (attackNumber)
                     {
                         case 1:
-                            //hit.GetComponent<PlayerHealth>().TakeDamage(health.stats.AttackDamage * firstAttackMultiplier);
+                            StatsManager.instance.TakeDamage(health.stats.Strength * firstAttackMultiplier);
                             break;
                         case 2:
-                            //hit.GetComponent<PlayerHealth>().TakeDamage(health.stats.AttackDamage * secondAttackMultiplier);
+                            StatsManager.instance.TakeDamage(health.stats.Strength * secondAttackMultiplier);
+
+                            if (playerMovement != null)
+                            {
+                                playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
+                            }
                             break;
                         default:
-                            //hit.GetComponent<PlayerHealth>().TakeDamage(health.stats.AttackDamage);
+                            StatsManager.instance.TakeDamage(health.stats.Strength);
                             break;
                     }
 

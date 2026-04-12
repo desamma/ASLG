@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad0b6c0a1aa7d454ba91076694638e1f, type: 3}
+  m_Name: KnightData
+  m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 64468534510225419, guid: 08dd2b34980a15a48b753400a5f80384, type: 3}
+  playerClass: 0
+  displayName: Knight
+  description: 
+  maxHealth: 600
+  defence: 10
+  moveSpeed: 3.5
+  maxStamina: 100
+  staminaCost: 25
+  dashDuration: 0.2
+  dashDelay: 0.5
+  attackType: 0
+  damage: 100
+  attackCooldown: 0.9
+  weaponRange: 1.5
+  knockbackForce: 5
+  knockbackTime: 0.2
+  stunTime: 0.3
+  skillData: {fileID: 11400000, guid: 7bdcd5aa0bb899049b4fc711568eb485, type: 2}
+  projectileSpeed: 12
+  hitEffectPrefab: {fileID: 0}
+  projectilePrefab: {fileID: 0}
+  swingClip: {fileID: 8300000, guid: 8d19f1d5054be0f4f90f7764ce5336da, type: 3}
+  hitClip: {fileID: 8300000, guid: ec8406498b4529640aa1b8bdd5142d16, type: 3}

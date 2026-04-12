@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 /// <summary>
 /// KaleosXaan enemy Stats and Health
@@ -10,6 +9,8 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
 {
     [Header("Enemy Stats")]
     public EnemyStats stats;
+    public BehaviorProfile behavior;
+    public int currentLevel = 1;
     public bool isDead;
 
     [Header("Components")]
@@ -19,6 +20,7 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
     private Enemy_KaleosXaan_Movement movementComponent;
     private BossHealthUI bossHealthUI;
     private StatusEffectManager effectManager;
+
     private void Awake()
     {
         InitializeStats();
@@ -26,8 +28,6 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
 
     private void Start()
     {
-        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
-
         movementComponent = GetComponent<Enemy_KaleosXaan_Movement>();
 
         effectManager = GetComponent<StatusEffectManager>();
@@ -96,19 +96,13 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
     }
     public void InitializeStats()
     {
-        stats = new EnemyStats
-        {
-            MaxHP = 2000f,
-            CurrentHP = 2000f,
-            Strength = 200f,
-            Magic = 100f,
-            Defense = 120f,
-            MagicResist = 120f,
-            Speed = 3f,
-            ExpReward = 0f,
-            AttackCooldown = 2.5f,
-            AttackRange = 2f
-        };
+        var data = EnemyDataRepository.LoadEnemy("KaleosXaan");
+
+        stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
+        behavior = data.Behavior;
+
+        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
         isDead = false;
     }
 
@@ -116,5 +110,6 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
     {
         if (newModifier == null) return;
         stats.ApplyDifficulty(newModifier);
+        behavior.ApplyDifficulty(newModifier);
     }
 }

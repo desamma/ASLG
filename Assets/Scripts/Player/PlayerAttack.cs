@@ -7,30 +7,31 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private PlayerMovement movement;
 
-    [Header("Normal Attack")]
-    [SerializeField] private Transform normalAttackPoint;
-    [SerializeField] private float normalAttackRadius = 1f;
-    [SerializeField] private GameObject normalAttackHitEffect;
+    [Header("Attack Origin")]
+    [SerializeField] private Transform attackPoint;
+
+    [Header("Layers")]
     [SerializeField] private LayerMask enemyLayer;
 
     [Header("Audio")]
-    [SerializeField] private AudioClip normalAttackSwingAudioClip;
-    [SerializeField] private AudioClip normalAttackHitAudioClip;
     [SerializeField] private float volume = 1f;
 
     private bool hitEnemy = false;
     private float attackCooldownTimer = 0f;
 
+    // Cached class data — refreshed whenever ApplyClass() is called
+    private PlayerClassData ClassData => ClassManager.Instance?.CurrentClassData;
+
+    // ── Unity ─────────────────────────────────────────────────────────────────
+
     private void Start()
     {
-        if (animator == null)
-            animator = GetComponent<Animator>();
+        if (animator == null) animator = GetComponent<Animator>();
+        if (movement == null) movement = GetComponent<PlayerMovement>();
+        if (enemyLayer == 0) enemyLayer = LayerMask.GetMask("Enemy");
 
-        if (movement == null)
-            movement = GetComponent<PlayerMovement>();
-
-        if (enemyLayer == 0)
-            enemyLayer = LayerMask.GetMask("Enemy");
+        // Apply whichever class was selected before this scene loaded
+        ClassManager.Instance?.ApplyToStatsManager();
     }
 
     private void Update()
@@ -41,95 +42,172 @@ public class PlayerAttack : MonoBehaviour
         HandleAttackInput();
     }
 
+    // ── Input / Trigger ───────────────────────────────────────────────────────
+
     private void HandleAttackInput()
     {
         if (Input.GetButtonDown("Slash") && CanAttack())
-            TriggerNormalAttack();
+            TriggerAttack();
     }
 
     private bool CanAttack()
     {
-        var stateManager = movement.GetStateManager();
-        return stateManager != null &&
+        var sm = movement.GetStateManager();
+        return sm != null &&
                attackCooldownTimer <= 0f &&
-               !stateManager.IsInState(PlayerState.Attack) &&
-               !stateManager.IsInState(PlayerState.Knockback) &&
-               !stateManager.IsInState(PlayerState.Death) &&
-               !stateManager.IsInState(PlayerState.Dash);
+               !sm.IsInState(PlayerState.Attack) &&
+               !sm.IsInState(PlayerState.Knockback) &&
+               !sm.IsInState(PlayerState.Death) &&
+               !sm.IsInState(PlayerState.Dash);
     }
 
-    /// <summary>
-    /// Triggers the attack animation. Actual hit detection is called via animation event.
-    /// </summary>
-    private void TriggerNormalAttack()
+    private void TriggerAttack()
     {
         attackCooldownTimer = StatsManager.instance.cooldown;
+
+        // Flip toward mouse before locking into Attack state
+
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        movement.FaceToward(mouseWorld.x);
+        
+        //TODO: change attack state for each class
         movement.GetStateManager().ChangeState(PlayerState.Attack);
-        SoundFXManager.Instance.PlaySoundFXClip(normalAttackSwingAudioClip, transform, volume);
+
+        if (ClassData?.swingClip != null)
+            SoundFXManager.Instance.PlaySoundFXClip(ClassData.swingClip, transform, volume);
     }
 
-    /// <summary>
-    /// Called by animation event at the hit frame of the normal attack animation.
-    /// </summary>
-    public void NormalAttack()
-    {
-        // Gộp enemyLayer với Layer "Player" (và "Default") để đảm bảo quét trúng Alicia
-        int combinedLayer = enemyLayer | LayerMask.GetMask("Player", "Default", "NPC");
-        var hits = Physics2D.OverlapCircleAll(normalAttackPoint.position, normalAttackRadius, combinedLayer);
+    // ── Animation Event: called at the hit frame ──────────────────────────────
 
+    /// <summary>
+    /// Called by animation event. Routes to melee or ranged based on current class.
+    /// </summary>
+    public void OnAttackHitFrame()
+    {
+        if (ClassData == null) return;
+
+        switch (ClassData.attackType)
+        {
+            case AttackType.Melee: ExecuteMeleeAttack(); break;
+            case AttackType.Ranged: ExecuteRangedAttack(); break;
+        }
+    }
+
+    // ── Melee (Knight / Rogue) ────────────────────────────────────────────────
+
+    private void ExecuteMeleeAttack()
+    {
+        int combinedLayer = enemyLayer | LayerMask.GetMask("Player", "Default", "NPC");
+        var hits = Physics2D.OverlapCircleAll(attackPoint.position,
+                                              StatsManager.instance.weaponRange,
+                                              combinedLayer);
         foreach (var hit in hits)
         {
-            // CHỐT CHẶN: Bỏ qua chính bản thân Player
-            if (hit.gameObject == this.gameObject) continue;
+            if (hit.gameObject == gameObject) continue;
 
-            // 1. Nếu chém trúng Quái (Cái này vẫn cần CompareTag vì quái có nhiều loại)
             if (hit.CompareTag("Enemy"))
             {
-                if (!hitEnemy)
-                {
-                    SoundFXManager.Instance.PlaySoundFXClip(normalAttackHitAudioClip, transform, volume);
-                    hitEnemy = true;
-                }
-
-                if (normalAttackHitEffect != null)
-                    Instantiate(normalAttackHitEffect, hit.transform.position, Quaternion.identity, hit.transform);
-
-                var enemyHealth = hit.GetComponent<IEnemy_Health>();
-                enemyHealth?.ChangeHealth(-StatsManager.instance.damage);
+                HandleEnemyHit(hit);
             }
-            // 2. NẾU CHÉM TRÚNG BẤT CỨ AI CÓ SCRIPT "NPCCompanion" (Bao gồm Alicia)
             else
             {
                 var npc = hit.GetComponent<NPCCompanion>();
-                if (npc != null)
-                {
-                    // Trúng NPC rồi! Truyền sát thương của Player vào, báo True để trừ điểm
-                    npc.TakeDamage(StatsManager.instance.damage, true);
-
-                    if (normalAttackHitEffect != null)
-                        Instantiate(normalAttackHitEffect, hit.transform.position, Quaternion.identity, hit.transform);
-                }
+                npc?.TakeDamage(StatsManager.instance.damage, true);
+                SpawnHitEffect(hit.transform.position, hit.transform);
             }
         }
 
         hitEnemy = false;
     }
 
-    /*public void OnAttackAnimationComplete()
+    private void HandleEnemyHit(Collider2D hit)
     {
-        movement.OnAttackAnimationComplete();
-    }*/
+        if (!hitEnemy)
+        {
+            if (ClassData?.hitClip != null)
+                SoundFXManager.Instance.PlaySoundFXClip(ClassData.hitClip, transform, volume);
+            hitEnemy = true;
+        }
+
+        SpawnHitEffect(hit.transform.position, hit.transform);
+
+        hit.GetComponent<IEnemy_Health>()?.ChangeHealth(-StatsManager.instance.damage);
+        hit.GetComponent<IEnemy_Movement>()?.KnockBack(
+            transform,
+            StatsManager.instance.knockbackForce,
+            StatsManager.instance.knockbackTime,
+            StatsManager.instance.stunTime);
+    }
+
+    // ── Ranged (Archer) ───────────────────────────────────────────────────────
+
+    private void ExecuteRangedAttack()
+    {
+        if (ClassData?.projectilePrefab == null)
+        {
+            Debug.LogWarning("[PlayerAttack] Archer class has no projectile prefab assigned.");
+            return;
+        }
+
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorld.z = 0f;
+
+        Vector2 fireDir = ((Vector2)(mouseWorld - attackPoint.position)).normalized;
+
+        var go = Instantiate(ClassData.projectilePrefab,
+                             attackPoint.position,
+                             Quaternion.identity);
+
+        var arrow = go.GetComponent<ArrowProjectile>();
+        if (arrow == null)
+        {
+            Debug.LogWarning("[PlayerAttack] Projectile prefab has no ArrowProjectile component.");
+            Destroy(go);
+            return;
+        }
+
+        arrow.Initialise(
+            dir: fireDir,
+            spd: ClassData.projectileSpeed,
+            life: StatsManager.instance.weaponRange,
+            dmg: StatsManager.instance.damage,
+            kbForce: StatsManager.instance.knockbackForce,
+            kbTime: StatsManager.instance.knockbackTime,
+            stun: StatsManager.instance.stunTime,
+            hitFx: ClassData.hitEffectPrefab,
+            hitSfx: ClassData.hitClip,
+            vol: volume,
+            enemies: enemyLayer
+        );
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private void SpawnHitEffect(Vector3 position, Transform parent)
+    {
+        if (ClassData?.hitEffectPrefab != null)
+            Instantiate(ClassData.hitEffectPrefab, position, Quaternion.identity, parent);
+    }
+
+    public void OnAttackAnimationComplete()
+    {
+        var sm = movement.GetStateManager();
+        if (sm != null && sm.IsInState(PlayerState.Attack))
+            sm.ChangeState(PlayerState.Idle);
+    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        if (normalAttackPoint == null) return;
+        if (attackPoint == null) return;
+        float range = Application.isPlaying && StatsManager.instance != null
+            ? StatsManager.instance.weaponRange
+            : 1f;
 
-        Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.4f);
-        Gizmos.DrawSphere(normalAttackPoint.position, normalAttackRadius);
-
+        Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.35f);
+        Gizmos.DrawSphere(attackPoint.position, range);
         Gizmos.color = new Color(1f, 0.2f, 0.2f, 1f);
-        Gizmos.DrawWireSphere(normalAttackPoint.position, normalAttackRadius);
+        Gizmos.DrawWireSphere(attackPoint.position, range);
     }
 #endif
 }

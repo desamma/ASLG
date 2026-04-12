@@ -15,14 +15,14 @@ public class StatusEffectHUD : MonoBehaviour
     [Tooltip("Buffs shown before debuffs when true.")]
     [SerializeField] private bool separateBuffsAndDebuffs = true;
 
+    // Keyed by InstanceKey — handles both shared and duplicate effects correctly
     private readonly Dictionary<string, StatusEffectSlot> _slots = new();
 
     public void AddEffect(ActiveStatusEffect active)
     {
-        if (_slots.ContainsKey(active.Definition.effectId)) return;
+        if (_slots.ContainsKey(active.InstanceKey)) return;
 
         var effectSlot = Instantiate(slotPrefab, slotContainer);
-        
         if (!effectSlot.TryGetComponent<StatusEffectSlot>(out var slot))
         {
             Debug.LogError("[StatusEffectHUD] slotPrefab is missing StatusEffectSlot component.");
@@ -31,7 +31,7 @@ public class StatusEffectHUD : MonoBehaviour
         }
 
         slot.Initialize(active);
-        _slots[active.Definition.effectId] = slot;
+        _slots[active.InstanceKey] = slot;
 
         if (separateBuffsAndDebuffs)
             ReorderSlots();
@@ -39,20 +39,19 @@ public class StatusEffectHUD : MonoBehaviour
 
     public void RemoveEffect(ActiveStatusEffect active)
     {
-        if (!_slots.TryGetValue(active.Definition.effectId, out var slot)) return;
-        _slots.Remove(active.Definition.effectId);
+        if (!_slots.TryGetValue(active.InstanceKey, out var slot)) return;
+        _slots.Remove(active.InstanceKey);
         slot.PlayRemoveAnimation(() => Destroy(slot.gameObject));
     }
 
     public void RefreshEffect(ActiveStatusEffect active)
     {
-        if (_slots.TryGetValue(active.Definition.effectId, out var slot))
+        if (_slots.TryGetValue(active.InstanceKey, out var slot))
             slot.OnRefresh();
     }
 
     private void ReorderSlots()
     {
-        //buff -> debuff -> neutral
         int index = 0;
         foreach (var slot in _slots.Values)
         {

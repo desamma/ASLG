@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[DisallowMultipleComponent]
 public class Enemy_ArrowWhistler_Arrow : MonoBehaviour
 {
     [Header("Spell Settings")]
@@ -49,7 +50,7 @@ public class Enemy_ArrowWhistler_Arrow : MonoBehaviour
             Destroy(gameObject, destroyTime);
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (rb != null && isInitialized)
         {
@@ -81,15 +82,11 @@ public class Enemy_ArrowWhistler_Arrow : MonoBehaviour
 
             float damage = casterStats.Strength * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
 
-            //var playerHealth = collision.GetComponent<PlayerHealth>();
-            //if (playerHealth != null)
-            //{
-            //    playerHealth.ChangeHealth(-damage);
-            //}
+            StatsManager.instance.TakeDamage(damage);
 
             Destroy(gameObject);
         }
-        else if (!collision.CompareTag("Enemy"))
+        else if (!collision.CompareTag("Player"))
         {
             // Destroy arrow when it hits anything else (walls, obstacles, etc.)
             Destroy(gameObject);

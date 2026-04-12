@@ -87,8 +87,14 @@ public class Enemy_Slime_Attack : MonoBehaviour
                 SoundFXManager.Instance.PlayRandomSoundFXClips(hitAudioClip, transform, volume);
             }
 
-            // TODO: Apply damage to player
-            // Example: player.GetComponent<PlayerHealth>()?.TakeDamage(stats.Strength);
+            StatsManager.instance.TakeDamage(stats.Strength);
+
+            player.TryGetComponent<PlayerMovement>(out var playerMovement);
+
+            if (playerMovement != null)
+            {
+                playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+            }
 
             lastDamageTime = Time.time;
         }

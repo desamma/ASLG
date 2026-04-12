@@ -194,12 +194,10 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
                     hitPlayer = true;
                 }
                 Instantiate(attackHitEffect, player.position, Quaternion.identity, player.transform);
-                DealDamage(false);
+                DealDamage(false, withKnockback: true);
             }
         }
-        if (player.position.x > transform.position.x && movementComponent.facingDirection == -1 ||
-        player.position.x < transform.position.x && movementComponent.facingDirection == 1)
-            movementComponent.Flip();
+        movementComponent.FacingDirection = TransformHelper.FlipTowards(transform, player, movementComponent.FacingDirection);
         hitPlayer = false;
     }
 
@@ -299,7 +297,7 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
                     hitPlayer = true;
                 }
                 Instantiate(attackSwingAudioClip, player.position, Quaternion.identity, player.transform);
-                DealDamage(false, sawDamageMultiplier);
+                DealDamage(false, sawDamageMultiplier, false);
             }
         }
         hitPlayer = false;
@@ -431,7 +429,7 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
         }
     }
 
-    private void DealDamage(bool isMagic, float damageMultiplier = 1f)
+    private void DealDamage(bool isMagic, float damageMultiplier = 1f, bool withKnockback = true)
     {
         if (isMagic)
         {
@@ -441,6 +439,7 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
         {
             StatsManager.instance.TakeDamage((health.stats.Strength + damageStack) * damageMultiplier * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier));
         }
+
         damageStack += stackIncreaseEachHit;
 
         if (damageStack > maxStack)
@@ -450,6 +449,13 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
         else
         {
             AddStatusFX(0);
+        }
+
+        player.TryGetComponent<PlayerMovement>(out var playerMovement);
+
+        if (playerMovement != null && withKnockback)
+        {
+            playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
         }
     }
 
@@ -503,16 +509,5 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
                 Debug.LogWarning("Invalid audio number: " + num);
                 break;
         }
-    }
-    private void OnDrawGizmos()
-    {
-        //if (sawAttackPoint != null)
-        //{
-        //    Gizmos.color = sawCoroutine != null ? Color.green : Color.red;
-        //    Gizmos.DrawWireSphere(sawAttackPoint.position, sawAttackRadius);
-        //}
-
-        Gizmos.color = parryCoroutine != null ? Color.green : Color.red;
-        Gizmos.DrawWireSphere(sawAttackPoint.position, sawAttackRadius);
     }
 }

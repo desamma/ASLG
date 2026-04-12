@@ -16,9 +16,9 @@ GameObject:
   - component: {fileID: 648916660578394710}
   - component: {fileID: 3587152422956623083}
   - component: {fileID: 528000232991313604}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Andromeda
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -31,7 +31,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5753314420078804458}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.0018593326, w: 0.9999983}
+  m_LocalRotation: {x: 0, y: 0, z: 0.0018587708, w: 0.99999833}
   m_LocalPosition: {x: -19.98, y: 1.01, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
@@ -80,7 +80,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 11
   m_Sprite: {fileID: 21300000, guid: d4d19a7cf2074de41b2a7cb696bd494a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -209,22 +209,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 528000232991313604}
-  behavior:
-    DetectionRange: 1
-    ChaseRange: 1
-    SpecialAttackFrequency: 0.3
-    UltimateAttackFrequency: 0.1
-    Aggression: 1
-    MobilityUsageFrequency: 0.2
-    EnrageThreshold: 0.5
   attackRecoveryDuration: 2
+  isKnockbackable: 1
   rb: {fileID: 4810506105309421629}
   animator: {fileID: 3842956364338561717}
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  player: {fileID: 0}
-  attackComponent: {fileID: 648916660578394710}
   detectionPoint: {fileID: 7181882296829143610}
   idleToPatrolWaitTime: 3
   patrolDistance: 3
@@ -251,6 +242,18 @@ MonoBehaviour:
     ExpReward: 0
     AttackRange: 0
     AttackCooldown: 0
+    KnockbackForce: 0
+    KnockbackTime: 0
+    StunTime: 0
+  behavior:
+    DetectionRange: 1
+    ChaseRange: 1
+    SpecialAttackFrequency: 0
+    UltimateAttackFrequency: 0
+    Aggression: 1
+    MobilityUsageFrequency: 0
+    EnrageThreshold: 0
+  currentLevel: 1
   isDead: 0
 --- !u!1 &5998056390106921844
 GameObject:

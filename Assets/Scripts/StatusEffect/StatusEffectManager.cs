@@ -40,117 +40,148 @@ public class StatusEffectManager : MonoBehaviour
     private void Update()
     {
         toRemove.Clear();
-
         foreach (var kvp in activeEffects)
         {
             kvp.Value.Tick(Time.deltaTime);
-            if (kvp.Value.IsExpired)
-                toRemove.Add(kvp.Key);
+            if (kvp.Value.IsExpired) toRemove.Add(kvp.Key);
         }
-
-        foreach (var id in toRemove)
-            RemoveEffectInternal(id);
+        foreach (var id in toRemove) RemoveEffectInternal(id);
     }
+
     /// <summary>
-    /// Apply a status effect to this character.
+    /// Apply a status effect. Chain .WithModifier() / .WithStatLines() etc on the
+    /// returned instance for per-instance customisation — the SO is never touched.
     /// </summary>
-    /// <returns>New active status object</returns>
-    public ActiveStatusEffect ApplyEffect(StatusEffect definition, bool spawnVFX = true, float duration = -1f, bool isPermanent = false, int stackCount = -1
-        , StackBehavior stackBehavior = StackBehavior.Ignore, int maxStacks = 1)
+    /// <param name="allowDuplicate">
+    /// false — one slot per effectId; reapplying refreshes/stacks it.
+    /// true  — independent slot per call, capped by SO's maxInstances.
+    ///         Store the returned reference and call ReapplyEffect() to refresh it.
+    /// </param>
+    public ActiveStatusEffect ApplyEffect(StatusEffect definition, bool spawnVFX = true, float duration = -1f, bool isPermanent = false, int stackCount = -1,
+        StackBehavior stackBehavior = StackBehavior.Ignore, int maxStacks = -1, bool allowDuplicate = false)
     {
         if (definition == null)
         {
             Debug.LogWarning("[StatusEffectManager] ApplyEffect called with null definition.");
             return null;
         }
-        // Handle overrides
-        var dur = duration < 0f ? definition.baseDuration : duration;
 
-        if (definition.isPermanent != isPermanent)
+        // Resolve all runtime values locally — never write back to the SO
+        float dur = duration < 0f ? definition.baseDuration : duration;
+        bool perm = isPermanent || definition.isPermanent;
+        int stacks = stackCount < 1 ? 1 : stackCount;
+        int resolvedMaxStacks = maxStacks < 1 ? definition.maxStacks : maxStacks;
+        StackBehavior behavior = stackBehavior == StackBehavior.Ignore
+                                  ? definition.stackBehavior : stackBehavior;
+
+        // No duplicate: one shared slot
+        if (!allowDuplicate)
         {
-            if (isPermanent)
+            if (activeEffects.TryGetValue(definition.effectId, out var existing))
             {
-                definition.isPermanent = true;
+                existing.Reapply(dur, stacks);
+                hud.RefreshEffect(existing);
+                return existing;
             }
-            else if (!isPermanent && dur > 0f)
-            {
-                definition.isPermanent = false;
-            }
+
+            var single = new ActiveStatusEffect(definition, dur, stacks, perm, resolvedMaxStacks, behavior, false);
+            activeEffects[single.InstanceKey] = single;
+
+            if (spawnVFX)
+                SpawnVFX(definition);
+
+            hud.AddEffect(single);
+            OnEffectApplied?.Invoke(single);
+
+            return single;
         }
 
-        var stacks = stackCount < 0 ? 1 : stackCount;
-        definition.maxStacks = maxStacks <= 1 ? definition.maxStacks : maxStacks;
-
-        if (stackBehavior != StackBehavior.Ignore)
-            definition.stackBehavior = stackBehavior;
-
-        if (activeEffects.TryGetValue(definition.effectId, out var existing))
+        // Duplicate: check the SO's maxInstances cap
+        var instances = GetInstances(definition.effectId).ToList();
+        if (definition.maxInstances > 0 && instances.Count >= definition.maxInstances)
         {
-            existing.Reapply(dur, stacks);
-            hud.RefreshEffect(existing);
-            return existing;
+            var oldest = instances.OrderBy(e => e.RemainingDuration).First();
+            oldest.Reapply(dur, stacks);
+            hud.RefreshEffect(oldest);
+            return oldest;
         }
 
-        var active = new ActiveStatusEffect(definition, dur, stacks);
-
-        activeEffects[definition.effectId] = active;
+        var active = new ActiveStatusEffect(definition, dur, stacks, perm, resolvedMaxStacks, behavior, true);
+        activeEffects[active.InstanceKey] = active;
 
         if (spawnVFX)
             SpawnVFX(definition);
 
         hud.AddEffect(active);
-
         OnEffectApplied?.Invoke(active);
+
         return active;
     }
 
     /// <summary>
-    /// Remove a specific effect by its effectId immediately.
+    /// Refresh a specific instance you already hold a reference to.
+    /// Use instead of ApplyEffect when allowDuplicate = true and you want to
+    /// refresh YOUR slot rather than spawn a new one.
     /// </summary>
+    public void ReapplyEffect(ActiveStatusEffect instance, float duration = -1f, int stackCount = 1)
+    {
+        if (instance == null || !activeEffects.ContainsKey(instance.InstanceKey))
+        {
+            Debug.LogWarning("[StatusEffectManager] ReapplyEffect: instance not found.");
+            return;
+        }
+        float dur = duration < 0f ? instance.Definition.baseDuration : duration;
+        instance.Reapply(dur, stackCount);
+        hud.RefreshEffect(instance);
+    }
+
+
     public void RemoveEffect(string effectId)
     {
-        if (activeEffects.ContainsKey(effectId))
-            RemoveEffectInternal(effectId);
+        foreach (var key in activeEffects.Keys
+            .Where(k => k == effectId || k.StartsWith(effectId + "_")).ToList())
+            RemoveEffectInternal(key);
     }
 
-    /// <summary>
-    /// Remove all effects of a given type.
-    /// </summary>
+    public void RemoveInstance(ActiveStatusEffect instance)
+    {
+        if (instance != null && activeEffects.ContainsKey(instance.InstanceKey))
+            RemoveEffectInternal(instance.InstanceKey);
+    }
+
     public void RemoveAllOfType(StatusEffectType type)
     {
-        var ids = activeEffects
+        foreach (var id in activeEffects
             .Where(kvp => kvp.Value.Definition.effectType == type)
-            .Select(kvp => kvp.Key)
-            .ToList();
-
-        foreach (var id in ids)
+            .Select(kvp => kvp.Key).ToList())
             RemoveEffectInternal(id);
     }
 
-    /// <summary>
-    /// Remove every active effect.
-    /// </summary>
     public void RemoveAll()
     {
-        foreach (var id in activeEffects.Keys.ToList())
-            RemoveEffectInternal(id);
+        foreach (var id in activeEffects.Keys.ToList()) RemoveEffectInternal(id);
     }
 
     public bool HasEffect(string effectId)
-        => activeEffects.ContainsKey(effectId);
+        => activeEffects.Keys.Any(k => k == effectId || k.StartsWith(effectId + "_"));
 
     public ActiveStatusEffect GetEffect(string effectId)
         => activeEffects.TryGetValue(effectId, out var e) ? e : null;
 
-    public IReadOnlyCollection<ActiveStatusEffect> GetAllEffects()
-        => activeEffects.Values;
+    public IEnumerable<ActiveStatusEffect> GetInstances(string effectId)
+        => activeEffects
+            .Where(kvp => kvp.Key == effectId || kvp.Key.StartsWith(effectId + "_"))
+            .Select(kvp => kvp.Value);
 
-    private void RemoveEffectInternal(string id)
+    public IReadOnlyCollection<ActiveStatusEffect> GetAllEffects() => activeEffects.Values;
+
+    private void RemoveEffectInternal(string key)
     {
-        if (!activeEffects.TryGetValue(id, out var active)) return;
-        activeEffects.Remove(id);
+        if (!activeEffects.TryGetValue(key, out var active)) return;
 
+        activeEffects.Remove(key);
         hud.RemoveEffect(active);
+
         OnEffectRemoved?.Invoke(active);
     }
 
@@ -158,17 +189,12 @@ public class StatusEffectManager : MonoBehaviour
     {
         if (definition.vfxPrefab == null) return;
         var effect = Instantiate(definition.vfxPrefab, vfxAnchor.position, Quaternion.identity, vfxAnchor);
-        Vector3 originalScale = definition.vfxPrefab.transform.localScale;
-
         var parentScale = transform.localScale;
-
-        // Compensate for parent scale
+        var originalScale = definition.vfxPrefab.transform.localScale;
         effect.transform.localScale = new Vector3(
             originalScale.x / parentScale.x,
             originalScale.y / parentScale.y,
-            originalScale.z / parentScale.z
-        );
-
+            originalScale.z / parentScale.z);
         Destroy(effect, destroyDelay);
     }
 }

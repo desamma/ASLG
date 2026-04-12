@@ -6,22 +6,6 @@
 public interface IEnemy_Movement
 {
     /// <summary>
-    /// Define a behavior profile for this enemy's movement
-    /// </summary>
-    void InitializeBehavior();
-
-    /// <summary>
-    /// method to subscribe when the game's difficulty changes
-    /// </summary>
-    /// <param name="newModifier">The new difficulty modifier applied to the game</param>
-    void OnDifficultyChanged(DifficultyModifier newModifier);
-
-    /// <summary>
-    /// Reverses the orientation or state of the object.
-    /// </summary>
-    void Flip();
-
-    /// <summary>
     /// Checks for the presence of a player in the relevant context.
     /// </summary>
     void CheckForPlayer();
@@ -39,5 +23,5 @@ public interface IEnemy_Movement
     /// <param name="knockbackTime">The duration of the knockback effect.</param>
     /// <param name="stunTime">The duration of the stun effect.</param>
     /// <param name="isKnockbackable">Indicates whether the enemy can be knocked back.</param>
-    void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime, bool isKnockbackable);
+    void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime);
 }
