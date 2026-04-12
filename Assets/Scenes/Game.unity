@@ -2199,6 +2199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPoint: {fileID: 1203262871}
+  aliciaPrefab: {fileID: 5123960915641433439, guid: c1c4031dc32ca644b98dedc80c0e8c68, type: 3}
 --- !u!4 &1123538557
 Transform:
   m_ObjectHideFlags: 0
@@ -108020,7 +108021,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 1464415262}
   playerNameText: {fileID: 405264023}
-  aliciaPrefab: {fileID: 5123960915641433439, guid: c1c4031dc32ca644b98dedc80c0e8c68, type: 3}
 --- !u!4 &1859064847
 Transform:
   m_ObjectHideFlags: 0
