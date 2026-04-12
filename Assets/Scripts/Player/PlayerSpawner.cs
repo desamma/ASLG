@@ -1,5 +1,6 @@
 using UnityEngine;
 using Cinemachine; // 1. Thêm thư viện Cinemachine
+using TMPro;
 
 public class PlayerSpawner : MonoBehaviour
 {
@@ -33,6 +34,17 @@ public class PlayerSpawner : MonoBehaviour
         var player = Instantiate(data.playerPrefab, pos, Quaternion.identity);
 
         Debug.Log($"[PlayerSpawner] Spawned {data.playerClass} at {pos}.");
+
+        // Cập nhật tên Player lên TMP_Text trên đầu nhân vật
+        TMP_Text nameText = player.GetComponentInChildren<TMP_Text>();
+        if (nameText != null && StatsManager.instance != null)
+        {
+            nameText.text = StatsManager.instance.playerName;
+        }
+        else
+        {
+            Debug.LogWarning($"[PlayerSpawner] Không tìm thấy TMP_Text trên prefab {data.playerClass}. Bạn cần mở Prefab này và thêm UI -> TextMeshPro nhé!");
+        }
 
         // 2. Tự động tìm Camera và gán Player vào ô Follow
         CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
