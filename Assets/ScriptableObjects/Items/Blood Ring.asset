@@ -10,19 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d63220367668be24c9838aafb46562ab, type: 3}
-  m_Name: IronSword
+  m_Name: Blood Ring
   m_EditorClassIdentifier: 
-  itemName: Iron Sword
+  itemName: Blood Ring
   rarity: 2
-  description: A basic iron blade.
-  itemType: 0
+  description: "A gold band set with a deep crimson gem. It pulses faintly \u2014
+    like a heartbeat that isn't yours.\t"
+  itemType: 2
   armorSlot: 1
-  icon: {fileID: 21300000, guid: 61948565f1c25e04db591c35ee2bcef9, type: 3}
+  icon: {fileID: 21300000, guid: cfcf9333928b7f045858a805b2973353, type: 3}
   emojiIcon: "\U0001F4E6"
   isStackable: 0
   maxStack: 1
   currentStack: 1
   statBonuses:
-  - statName: damage
+  - statName: maxHealth
     value: 15
+  - statName: damage
+    value: 5
   worldPrefab: {fileID: 0}

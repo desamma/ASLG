@@ -79,6 +79,8 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private float _knockbackTime = 0.2f;
     [SerializeField] private float _stunTime = 0.3f;
     [SerializeField] private float _cooldown = 0.5f;
+    [SerializeField] private float _defence = 10f;          
+    [SerializeField] private float _magicResist = 5f;        
 
     public int damage { get => _damage; set { _damage = value; OnStatsChanged(); } }
     public float weaponRange { get => _weaponRange; set { _weaponRange = value; OnStatsChanged(); } }
@@ -86,6 +88,8 @@ public class StatsManager : MonoBehaviour
     public float knockbackTime { get => _knockbackTime; set { _knockbackTime = value; OnStatsChanged(); } }
     public float stunTime { get => _stunTime; set { _stunTime = value; OnStatsChanged(); } }
     public float cooldown { get => _cooldown; set { _cooldown = Mathf.Max(0.1f, value); OnStatsChanged(); } }
+    public float defence { get => _defence; set { _defence = Mathf.Max(0f, value); OnStatsChanged(); } }      
+    public float magicResist { get => _magicResist; set { _magicResist = Mathf.Max(0f, value); OnStatsChanged(); } }  
 
     [Header("Experience & Levelling")]
     [SerializeField] private int _level = 1;
@@ -266,12 +270,25 @@ public class StatsManager : MonoBehaviour
                 Debug.Log($"  📊 StaminaRegenRate: +{bonus} → {staminaRegenRate}");
                 break;
 
+            case "defence":
+            case "defense":
+            case "armor":
+                defence += bonus;
+                Debug.Log($"  📊 Defence: +{bonus} → {defence}");
+                break;
+
+            case "magicresist":
+            case "magic_resist":
+            case "magicresistance":
+                magicResist += bonus;
+                Debug.Log($"  📊 MagicResist: +{bonus} → {magicResist}");
+                break;
+
             default:
                 Debug.LogWarning($"[StatsManager] ⚠️ Unknown stat: {statName}");
                 break;
         }
     }
-
     private void OnStatsChanged()
     {
         OnStatsChangedEvent?.Invoke();
