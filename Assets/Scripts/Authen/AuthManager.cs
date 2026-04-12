@@ -88,13 +88,30 @@ public class AuthManager : MonoBehaviour
         StartCoroutine(SendApiRequest(baseUrl + "/login", jsonData, OnLoginSuccess));
     }
 
+    // ĐÃ SỬA: Xử lý Json trả về để lấy Token
     private void OnLoginSuccess(string responseText)
     {
-        // Khi BE trả về thành công, xử lý tại đây
-        ShowNotification("Đăng nhập thành công!", Color.green);
-        PlayerPrefs.SetString("CurrentUser", loginUsernameInput.text);
-        PlayerPrefs.Save();
-        SceneManager.LoadScene(mainGameSceneIndex);
+        // 1. Dịch JSON từ Server trả về thành Object C#
+        LoginResponseData responseData = JsonUtility.FromJson<LoginResponseData>(responseText);
+
+        // 2. Kiểm tra xem có token hay không
+        if (responseData != null && !string.IsNullOrEmpty(responseData.token))
+        {
+            // 3. LƯU TOKEN VÀO CLASS TokenManager
+            TokenManager.SaveToken(responseData.token);
+
+            ShowNotification("Đăng nhập thành công!", Color.green);
+            PlayerPrefs.SetString("CurrentUser", loginUsernameInput.text);
+            PlayerPrefs.Save();
+
+            // Chuyển Scene vào Game
+            SceneManager.LoadScene(mainGameSceneIndex);
+        }
+        else
+        {
+            Debug.LogError($"[Lỗi Token] Server trả về thành công nhưng không thấy Token. Response: {responseText}");
+            ShowNotification("Lỗi: Không nhận được mã xác thực từ Server!", Color.red);
+        }
     }
     #endregion
 
@@ -183,7 +200,10 @@ public class AuthManager : MonoBehaviour
     #endregion
 }
 
-// Cấu trúc dữ liệu để chuyển thành JSON gửi lên server
+// ===================================================================
+// CÁC CLASS DATA DÙNG ĐỂ GIAO TIẾP VỚI API BẰNG JSON
+// ===================================================================
+
 [System.Serializable]
 public class LoginRequestData
 {
@@ -197,4 +217,14 @@ public class RegisterRequestData
     public string userName;
     public string email;
     public string password;
+}
+
+// THÊM MỚI: Cấu trúc để hứng Token từ API Login trả về
+[System.Serializable]
+public class LoginResponseData
+{
+    // LƯU Ý QUAN TRỌNG: Tên biến này ("token") PHẢI GIỐNG Y HỆT key trong JSON Backend trả về.
+    // Nếu Backend của bạn trả về JSON là {"accessToken": "chuoi_ky_tu..."}, 
+    // thì bạn phải đổi chữ "token" ở dưới thành "accessToken".
+    public string token;
 }
