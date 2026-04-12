@@ -476,6 +476,53 @@ public class InventoryUI : MonoBehaviour
         Debug.Log($"[Inventory] ✅ ADDED: {item.itemName}");
     }
 
+    // =========================================================================
+    // THÊM: HÀM NHẬN NHIỀU ITEM CÙNG LÚC ĐỂ TỐI ƯU PHẦN THƯỞNG QUEST (VÀNG, EXP)
+    // =========================================================================
+    public void AddItems(ItemData item, int amount)
+    {
+        if (item == null || amount <= 0) return;
+
+        if (item.isStackable)
+        {
+            var existing = playerItems.Find(i => i.itemName == item.itemName && i.currentStack < item.maxStack);
+            if (existing != null)
+            {
+                existing.currentStack += amount;
+
+                // Giới hạn max stack theo thông số của item
+                if (existing.currentStack > item.maxStack)
+                {
+                    existing.currentStack = item.maxStack;
+                }
+
+                if (isOpen) RenderPage();
+                Debug.Log($"[Inventory] ➕ STACKED: {item.itemName} (+{amount})");
+                return;
+            }
+            else
+            {
+                // Thêm item stackable mới và thiết lập số lượng
+                item.currentStack = amount > item.maxStack ? item.maxStack : amount;
+                playerItems.Add(item);
+
+                if (isOpen) RenderPage();
+                Debug.Log($"[Inventory] ✅ ADDED: {item.itemName} (x{amount})");
+                return;
+            }
+        }
+
+        // Nếu là vũ khí/giáp (không stack) thì add nhiều lần vào danh sách
+        for (int i = 0; i < amount; i++)
+        {
+            playerItems.Add(item);
+        }
+
+        if (isOpen) RenderPage();
+        Debug.Log($"[Inventory] ✅ ADDED: {amount}x {item.itemName}");
+    }
+    // =========================================================================
+
     public List<ItemData> GetEquippedItems()
     {
         var all = new List<ItemData>(equippedWeapons);
