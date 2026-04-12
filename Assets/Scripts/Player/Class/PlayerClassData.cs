@@ -3,6 +3,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewClassData", menuName = "RPG/Player Class Data")]
 public class PlayerClassData : ScriptableObject
 {
+    [Header("Prefab")]
+    public GameObject playerPrefab;
+
     [Header("Identity")]
     public PlayerClass playerClass;
     public string displayName;

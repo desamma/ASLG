@@ -15,15 +15,18 @@ MonoBehaviour:
   skillName: Fan Shot
   description: 
   icon: {fileID: 0}
-  manaCost: 50
-  cooldown: 12
-  damagePercent: 0.8
-  slashPrefab: {fileID: 0}
-  slashSpeed: 10
-  slashDuration: 1
+  manaCost: 30
+  cooldown: 10
+  damagePercent: 1
   chargeTime: 0.4
+  slashVfxPrefab: {fileID: 0}
+  slashVfxCount: 3
+  slashVfxStepDistance: 1.5
+  slashVfxStepDelay: 0.15
+  slashHitRadius: 0.8
+  slashVfxDuration: 1
   arrowPrefab: {fileID: 3460029213893004739, guid: f3afdd87e8a319d4d882aaf51e66e1aa, type: 3}
-  arrowCount: 500
+  arrowCount: 10
   fanAngle: 120
   arrowSpeed: 16
   arrowLifetime: 2

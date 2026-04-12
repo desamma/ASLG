@@ -15,14 +15,14 @@ MonoBehaviour:
   skillName: Charged Slash
   description: 
   icon: {fileID: 0}
-  manaCost: 40
-  cooldown: 10
+  manaCost: 60
+  cooldown: 12
   damagePercent: 2
   chargeTime: 0
   slashVfxPrefab: {fileID: 278729502713754790, guid: c4dab681cad942a44ba870df57093bde, type: 3}
   slashVfxCount: 3
   slashVfxStepDistance: 3
-  slashVfxStepDelay: 0.15
+  slashVfxStepDelay: 0.25
   slashHitRadius: 2.6
   slashVfxDuration: 1
   arrowPrefab: {fileID: 0}

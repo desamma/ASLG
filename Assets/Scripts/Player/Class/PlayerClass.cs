@@ -2,7 +2,8 @@ public enum PlayerClass
 {
     Knight,
     Archer,
-    Rogue
+    Rogue,
+    Summoner
 }
 
 public enum AttackType
