@@ -51,7 +51,9 @@ public class CharacterCreation : MonoBehaviour
         foreach (PlayerClass pc in System.Enum.GetValues(typeof(PlayerClass)))
         {
             var data = ClassManager.Instance.GetDataFor(pc);
-            string label = !string.IsNullOrEmpty(data?.displayName) ? data.displayName : pc.ToString();
+            string label = (data != null && !string.IsNullOrEmpty(data.displayName) && data.playerClass == pc) 
+                            ? data.displayName 
+                            : pc.ToString();
             options.Add(label);
         }
 

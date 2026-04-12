@@ -97,23 +97,28 @@ public class PlayerAttack : MonoBehaviour
 
     private void ExecuteMeleeAttack()
     {
-        int combinedLayer = enemyLayer | LayerMask.GetMask("Player", "Default", "NPC");
+        // Thêm các Layer dự phòng (Ally, Companion) phòng trường hợp Alicia nằm ở layer khác
+        int combinedLayer = enemyLayer | LayerMask.GetMask("Player", "Default", "NPC", "Ally", "Companion");
         var hits = Physics2D.OverlapCircleAll(attackPoint.position,
                                               StatsManager.instance.weaponRange,
                                               combinedLayer);
         foreach (var hit in hits)
         {
-            if (hit.gameObject == gameObject) continue;
+            // SỬA Ở ĐÂY: Bỏ qua mọi collider nằm trong cùng Hierarchy với Player
+            if (hit.transform.root == transform.root) continue;
+
+            // Tìm NPCCompanion ở cả Object hiện tại và Object cha (hỗ trợ Collider nằm ở object con)
+            var npc = hit.GetComponentInParent<NPCCompanion>();
+            if (npc != null)
+            {
+                npc.TakeDamage(StatsManager.instance.damage, true);
+                SpawnHitEffect(hit.transform.position, hit.transform);
+                continue; // Đánh trúng NPC thì bỏ qua check Enemy bên dưới
+            }
 
             if (hit.CompareTag("Enemy"))
             {
                 HandleEnemyHit(hit);
-            }
-            else
-            {
-                var npc = hit.GetComponent<NPCCompanion>();
-                npc?.TakeDamage(StatsManager.instance.damage, true);
-                SpawnHitEffect(hit.transform.position, hit.transform);
             }
         }
 
@@ -177,7 +182,8 @@ public class PlayerAttack : MonoBehaviour
             hitFx: ClassData.hitEffectPrefab,
             hitSfx: ClassData.hitClip,
             vol: volume,
-            enemies: enemyLayer
+            // Đưa thêm các Layer của NPC vào cho đạn để phát hiện va chạm với Alicia
+            enemies: enemyLayer | LayerMask.GetMask("Player", "Default", "NPC", "Ally", "Companion")
         );
     }
 
