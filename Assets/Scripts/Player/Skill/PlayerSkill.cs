@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -125,39 +126,75 @@ public class PlayerSkill : MonoBehaviour
         var sm = movement.GetStateManager();
         sm.ChangeState(PlayerState.KnightSkill);
 
-        // Charge window — player is locked in place
-        float charge = SkillData.chargeTime;
-        yield return new WaitForSeconds(charge);
+        yield return new WaitForSeconds(SkillData.chargeTime);
 
-        // Compute slash stats with upgrades
-        float slashDuration = SkillData.slashDuration;
-        float slashSpeed = SkillData.slashSpeed;
+        float stepDelay = SkillData.slashVfxStepDelay;
         for (int i = 0; i < currentUpgradeTier; i++)
-        {
-            slashDuration += SkillData.upgrades[i].slashDurationBonus;
-            slashSpeed += SkillData.upgrades[i].slashSpeedBonus;
-        }
+            stepDelay *= SkillData.upgrades[i].cooldownMultiplier;
+        stepDelay = Mathf.Max(0.05f, stepDelay);
 
-        if (SkillData.slashPrefab != null)
-        {
-            int facingDir = transform.localScale.x > 0 ? 1 : -1;
-            Vector2 dir = new Vector2(facingDir, 0f);
+        int facingDir = transform.localScale.x > 0 ? 1 : -1;
+        Vector2 dir = new Vector2(facingDir, 0f);
+        int damage = GetCurrentDamage();
+        float kbForce = StatsManager.instance.knockbackForce;
+        float kbTime = StatsManager.instance.knockbackTime;
+        float stun = StatsManager.instance.stunTime;
+        LayerMask enemies = LayerMask.GetMask("Enemy");
 
-            var go = Instantiate(SkillData.slashPrefab, skillOrigin.position, Quaternion.identity);
-            var slash = go.GetComponent<SwordSlashProjectile>();
-            slash?.Initialise(
-                dir: dir,
-                spd: slashSpeed,
-                lifetime: slashDuration,
-                dmg: GetCurrentDamage(),
-                kbForce: StatsManager.instance.knockbackForce,
-                kbTime: StatsManager.instance.knockbackTime,
-                stun: StatsManager.instance.stunTime,
-                enemies: LayerMask.GetMask("Enemy"));
+        var alreadyHit = new HashSet<GameObject>();
+
+        for (int i = 0; i < SkillData.slashVfxCount; i++)
+        {
+            float stepDist = SkillData.slashVfxStepDistance * (i + 1);
+            Vector3 spawnPos = skillOrigin.position + (Vector3)(dir * stepDist);
+
+            if (SkillData.slashVfxPrefab != null)
+            {
+                var vfx = Instantiate(SkillData.slashVfxPrefab, spawnPos, Quaternion.identity);
+                vfx.transform.localScale = new Vector3(facingDir * 2.5f, 2.5f, 1f);
+                Destroy(vfx, SkillData.slashVfxDuration);
+            }
+
+            SlashHitAtPoint(spawnPos, damage, kbForce, kbTime, stun, enemies, alreadyHit);
+
+            if (i < SkillData.slashVfxCount - 1)
+                yield return new WaitForSeconds(stepDelay);
         }
 
         sm.ChangeState(PlayerState.Idle);
         isUsingSkill = false;
+    }
+
+    private void SlashHitAtPoint(
+        Vector3 point, int damage,
+        float kbForce, float kbTime, float stun,
+        LayerMask enemies, HashSet<GameObject> alreadyHit)
+    {
+        var hits = Physics2D.OverlapCircleAll(point, SkillData.slashHitRadius, enemies);
+
+        bool playedSfx = false;
+
+        foreach (var hit in hits)
+        {
+            if (!hit.CompareTag("Enemy")) continue;
+            if (alreadyHit.Contains(hit.gameObject)) continue;
+
+            alreadyHit.Add(hit.gameObject);
+
+            hit.GetComponent<IEnemy_Health>()?.ChangeHealth(-damage);
+            hit.GetComponent<IEnemy_Movement>()?.KnockBack(
+                transform, kbForce, kbTime, stun);
+
+            if (ClassData.hitEffectPrefab != null)
+                Instantiate(ClassData.hitEffectPrefab,
+                            hit.transform.position, Quaternion.identity, hit.transform);
+
+            if (!playedSfx && ClassData.hitClip != null)
+            {
+                SoundFXManager.Instance.PlaySoundFXClip(ClassData.hitClip, transform, volume);
+                playedSfx = true;
+            }
+        }
     }
 
     // ── Archer: fan shot ──────────────────────────────────────────────────────
@@ -338,15 +375,35 @@ public class PlayerSkill : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        if (SkillData == null || ClassManager.Instance?.SelectedClass != PlayerClass.Rogue) return;
-        float range = SkillData.teleportRange;
-        for (int i = 0; i < currentUpgradeTier && i < SkillData.upgrades.Length; i++)
-            range += SkillData.upgrades[i].teleportRangeBonus;
+        if (SkillData != null && ClassManager.Instance?.SelectedClass == PlayerClass.Knight)
+        {
+            int facingDir = transform.localScale.x > 0 ? 1 : -1;
+            Vector2 dir = new Vector2(facingDir, 0f);
 
-        Gizmos.color = new Color(0.6f, 0.2f, 1f, 0.2f);
-        Gizmos.DrawSphere(transform.position, range);
-        Gizmos.color = new Color(0.6f, 0.2f, 1f, 0.8f);
-        Gizmos.DrawWireSphere(transform.position, range);
+            for (int i = 0; i < SkillData.slashVfxCount; i++)
+            {
+                float t = (i + 1) * SkillData.slashVfxStepDistance;
+                Vector3 pos = skillOrigin != null
+                    ? skillOrigin.position + (Vector3)(dir * t)
+                    : transform.position + (Vector3)(dir * t);
+
+                float alpha = 1f - (i / (float)SkillData.slashVfxCount) * 0.4f;
+                Gizmos.color = new Color(1f, 0.85f, 0.1f, 0.25f * alpha);
+                Gizmos.DrawSphere(pos, SkillData.slashHitRadius);
+                Gizmos.color = new Color(1f, 0.85f, 0.1f, 0.9f * alpha);
+                Gizmos.DrawWireSphere(pos, SkillData.slashHitRadius);
+            }
+        } else if (SkillData != null && ClassManager.Instance?.SelectedClass == PlayerClass.Rogue)
+        {
+            float range = SkillData.teleportRange;
+            for (int i = 0; i < currentUpgradeTier && i < SkillData.upgrades.Length; i++)
+                range += SkillData.upgrades[i].teleportRangeBonus;
+
+            Gizmos.color = new Color(0.6f, 0.2f, 1f, 0.2f);
+            Gizmos.DrawSphere(transform.position, range);
+            Gizmos.color = new Color(0.6f, 0.2f, 1f, 0.8f);
+            Gizmos.DrawWireSphere(transform.position, range);
+        }
     }
 #endif
 }
