@@ -49,6 +49,18 @@ public class ClassManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Returns the data asset for a class without changing SelectedClass.
+    /// Used by UI screens that need to preview all classes.
+    /// </summary>
+    public PlayerClassData GetDataFor(PlayerClass playerClass) => playerClass switch
+    {
+        PlayerClass.Knight => knightData,
+        PlayerClass.Archer => archerData,
+        PlayerClass.Rogue => rogueData,
+        _ => knightData
+    };
+
+    /// <summary>
     /// Push class stats into StatsManager. Call this once gameplay begins
     /// (e.g. from a game-start controller, or let PlayerMovement call it in Start).
     /// </summary>

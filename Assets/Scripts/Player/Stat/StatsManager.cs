@@ -4,7 +4,10 @@ public class StatsManager : MonoBehaviour
 {
     public static StatsManager instance { get; private set; }
 
-    [Header("References")]
+    [Header("Player")]
+    [SerializeField] private string _playerName;
+
+    public string playerName { get => _playerName; set { _playerName = value; OnStatsChanged(); } }
 
     [Header("Health")]
     [SerializeField] private float _maxHealth = 2000f;
