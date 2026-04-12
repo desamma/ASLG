@@ -90,10 +90,10 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private int _currentExp = 0;
     [SerializeField] private int _upgradePoints = 0;
 
-    public int level { get => _level; private set { _level = Mathf.Max(1, value); OnStatsChanged(); } }
-    public int expToNextLevel { get => _expToNextLevel; private set { _expToNextLevel = Mathf.Max(1, value); OnStatsChanged(); } }
-    public int currentExp { get => _currentExp; private set { _currentExp = Mathf.Max(0, value); OnStatsChanged(); } }
-    public int upgradePoints { get => _upgradePoints; private set { _upgradePoints = Mathf.Max(0, value); OnStatsChanged(); } }
+    public int level { get => _level; set { _level = Mathf.Max(1, value); OnStatsChanged(); } }
+    public int expToNextLevel { get => _expToNextLevel; set { _expToNextLevel = Mathf.Max(1, value); OnStatsChanged(); } }
+    public int currentExp { get => _currentExp; set { _currentExp = Mathf.Max(0, value); OnStatsChanged(); } }
+    public int upgradePoints { get => _upgradePoints; set { _upgradePoints = Mathf.Max(0, value); OnStatsChanged(); } }
 
     // --- SỰ KIỆN ---
     public event System.Action OnStatsChangedEvent;

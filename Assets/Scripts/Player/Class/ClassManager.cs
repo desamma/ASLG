@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 
 /// <summary>
 /// Persists across scenes. Select the class before entering gameplay,
@@ -12,6 +12,7 @@ public class ClassManager : MonoBehaviour
     [SerializeField] private PlayerClassData knightData;
     [SerializeField] private PlayerClassData archerData;
     [SerializeField] private PlayerClassData rogueData;
+    [SerializeField] private PlayerClassData summonerData;
 
     public PlayerClassData CurrentClassData { get; private set; }
     public PlayerClass SelectedClass { get; private set; } = PlayerClass.Archer;
@@ -41,6 +42,7 @@ public class ClassManager : MonoBehaviour
             PlayerClass.Knight => knightData,
             PlayerClass.Archer => archerData,
             PlayerClass.Rogue => rogueData,
+            PlayerClass.Summoner => summonerData,
             _ => knightData
         };
 

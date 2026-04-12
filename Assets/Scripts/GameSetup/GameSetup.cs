@@ -20,16 +20,13 @@ public class GameSetup : MonoBehaviour
 
         if (StatsManager.instance == null) return;
 
-        // 2. XỬ LÝ: ĐẤU SĨ (Nhân đôi Máu và Sát thương)
-        if (GameSession.PlayerClass == 1)
-        {
-            StatsManager.instance.maxHealth *= 2;
-            StatsManager.instance.currentHealth = StatsManager.instance.maxHealth;
-            StatsManager.instance.damage *= 2;
-            Debug.Log("<color=red>CLASS ĐẤU SĨ: Đã nhân đôi chỉ số!</color>");
-        }
-        // 3. XỬ LÝ: SUMMONER (Triệu hồi Alicia)
-        else if (GameSession.PlayerClass == 2)
+        // 2. Lấy thông tin Class hiện tại từ ClassManager (thay vì GameSession)
+        if (ClassManager.Instance == null) return;
+        
+        PlayerClass currentClass = ClassManager.Instance.SelectedClass;
+
+        // 3. XỬ LÝ: SUMMONER (Triệu hồi đồng đội Alicia)
+        if (currentClass == PlayerClass.Summoner)
         {
             if (aliciaPrefab != null && playerTransform != null)
             {

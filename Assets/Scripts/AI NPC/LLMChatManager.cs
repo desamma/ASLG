@@ -188,6 +188,12 @@ public class LLMChatManager : MonoBehaviour
                     aliciaScript.relationshipScore += relChange;
                     Debug.Log($"<color=green>[System]</color> Relationship updated: {relChange}. Current score: {aliciaScript.relationshipScore}");
 
+                    // Nếu đang dỗi mà còn bị nói đểu -> Đánh luôn
+                    if (relChange < 0 && aliciaScript.relationshipScore <= -500)
+                    {
+                        aliciaScript.TriggerHostility(15f);
+                    }
+
                     displayString = aiRawText.Replace(match.Value, "").Trim();
                 }
                 else

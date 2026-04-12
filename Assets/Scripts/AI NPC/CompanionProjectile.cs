@@ -8,6 +8,7 @@ public class CompanionProjectile : MonoBehaviour
     private Vector2 moveDirection;
     private float damage;
     private Rigidbody2D rb;
+    private bool isHostileToPlayer = false;
 
     private void Awake()
     {
@@ -15,10 +16,11 @@ public class CompanionProjectile : MonoBehaviour
         Destroy(gameObject, destroyTime); // Tự hủy sau 2s để tránh rác RAM
     }
 
-    public void Setup(Vector2 direction, float dmg)
+    public void Setup(Vector2 direction, float dmg, bool hostileToPlayer = false)
     {
         moveDirection = direction;
         damage = dmg;
+        isHostileToPlayer = hostileToPlayer;
     }
 
     private void FixedUpdate()
@@ -39,7 +41,7 @@ public class CompanionProjectile : MonoBehaviour
             Destroy(gameObject);
         }
         // Bắn trúng Player (Khi đang bị dỗi / Relationship âm)
-        else if (collision.CompareTag("Player"))
+        else if (collision.CompareTag("Player") && isHostileToPlayer)
         {
             StatsManager.instance.TakeDamage(damage);
             Destroy(gameObject);

@@ -28,6 +28,14 @@ public class NPCCompanion : MonoBehaviour
     public float bulletDamage = 15f;
     private float attackTimer;
 
+    [Header("Special Skills & Behaviors")]
+    public float specialSkillCooldown = 10f;
+    private float specialSkillTimer;
+    private float hostilityTimer;
+    private Vector2 wanderTarget;
+    private float wanderTimer;
+    private float contactDamageCooldown;
+
     [Header("Healing Player")]
     public float healCooldown = 10f;
     private float healTimer;
@@ -53,15 +61,20 @@ public class NPCCompanion : MonoBehaviour
 
         // Gọi lần đầu để setup UI cảm xúc
         UpdateRelationshipUI();
+
+        specialSkillTimer = specialSkillCooldown;
     }
 
     private void Update()
     {
         if (isDead || playerTransform == null) return;
 
+        contactDamageCooldown -= Time.deltaTime;
+
         HandleMovement();
         HandleRelationshipBehaviors();
         HandleCombat();
+        HandleSpecialSkill();
     }
 
     // --- HỆ THỐNG CẢM XÚC (UI) ---
@@ -91,6 +104,11 @@ public class NPCCompanion : MonoBehaviour
             relationshipScore -= 1;
             UpdateRelationshipUI(); // Phải gọi dòng này để icon đổi ngay
             Debug.Log($"<color=orange>[Hệ thống]</color> Bạn vừa chém trúng Alicia! Relationship: {relationshipScore}");
+
+            if (relationshipScore <= -500)
+            {
+                TriggerHostility(15f); // Bị chém lúc đang dỗi -> Tấn công lại 15 giây
+            }
         }
 
         if (currentHealth <= 0)
@@ -139,10 +157,53 @@ public class NPCCompanion : MonoBehaviour
         Debug.Log("<color=green>[Hệ thống]</color> Alicia đã hồi sinh!");
     }
 
+    // --- NHẬN SÁT THƯƠNG TỪ QUÁI ---
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy") && contactDamageCooldown <= 0f)
+        {
+            TakeDamage(10f, false);
+            contactDamageCooldown = 1f;
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collider)
+    {
+        if ((collider.gameObject.CompareTag("Enemy") || collider.gameObject.CompareTag("EnemyAttack")) && contactDamageCooldown <= 0f)
+        {
+            TakeDamage(15f, false);
+            contactDamageCooldown = 1f;
+        }
+    }
+
+    public void TriggerHostility(float duration)
+    {
+        hostilityTimer = duration;
+        Debug.Log($"<color=red>[Alicia]</color> Quá đáng lắm rồi! Alicia quay sang tấn công bạn!");
+    }
+
     // --- CÁC HÀM XỬ LÝ HÀNH VI ---
     private void HandleMovement()
     {
-        if (relationshipScore <= -500) return; // Dỗi, không đi theo
+        if (relationshipScore <= -500)
+        {
+            // Lảng vảng, tự đi dạo xung quanh, không bám theo Player nữa
+            wanderTimer -= Time.deltaTime;
+            if (wanderTimer <= 0f || Vector2.Distance(transform.position, wanderTarget) < 0.5f)
+            {
+                wanderTarget = (Vector2)transform.position + Random.insideUnitCircle * 5f;
+                wanderTimer = Random.Range(2f, 5f);
+            }
+            
+            transform.position = Vector2.MoveTowards(transform.position, wanderTarget, (moveSpeed * 0.5f) * Time.deltaTime);
+            
+            Vector3 wScale = transform.localScale;
+            wScale.x = (wanderTarget.x > transform.position.x) ? Mathf.Abs(wScale.x) : -Mathf.Abs(wScale.x);
+            transform.localScale = wScale;
+
+            if (talkIcon != null) talkIcon.SetActive(false);
+            return;
+        }
 
         float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
         if (talkIcon != null) talkIcon.SetActive(distanceToPlayer <= 2.5f);
@@ -177,30 +238,72 @@ public class NPCCompanion : MonoBehaviour
 
     private void HandleCombat()
     {
+        hostilityTimer -= Time.deltaTime;
         attackTimer -= Time.deltaTime;
-        if (attackTimer > 0f) return;
 
-        // Nếu hảo cảm chạm đáy, bắn thẳng vào Player
-        if (relationshipScore <= -500)
+        // Phản đòn Player nếu bị chọc tức
+        if (hostilityTimer > 0f)
         {
-            ShootAtTarget(playerTransform);
-            attackTimer = 9999f; // Bắn 1 phát rồi nghỉ chơi luôn
-            return;
+            if (attackTimer <= 0f)
+            {
+                ShootAtTarget(playerTransform, true);
+                attackTimer = baseAttackCooldown;
+            }
+            return; // Đang đánh Player thì không đánh quái
         }
 
-        // Tốc độ bắn x4 khi đạt 500 hảo cảm
+        if (attackTimer > 0f) return;
+
+        // Tìm quái gần nhất để bắn (Tự vệ hoặc Hỗ trợ)
         float currentCooldown = (relationshipScore >= 500) ? baseAttackCooldown / 4f : baseAttackCooldown;
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Enemy"));
 
         if (hits.Length > 0)
         {
             Transform closestEnemy = hits[0].transform;
-            ShootAtTarget(closestEnemy);
+            ShootAtTarget(closestEnemy, false);
             attackTimer = currentCooldown;
         }
     }
 
-    private void ShootAtTarget(Transform target)
+    private void HandleSpecialSkill()
+    {
+        if (relationshipScore <= -500) return; // Dỗi thì không xài skill đặc biệt
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Enemy"));
+        bool isPlayerLow = (StatsManager.instance != null && StatsManager.instance.currentHealth < StatsManager.instance.maxHealth * 0.5f);
+
+        // Chỉ đếm thời gian khi đang trong combat hoặc Player đang thoi thóp
+        if (hits.Length > 0 || isPlayerLow)
+        {
+            specialSkillTimer -= Time.deltaTime;
+            if (specialSkillTimer <= 0f)
+            {
+                specialSkillTimer = specialSkillCooldown; // Reset 10s
+
+                if (isPlayerLow)
+                {
+                    // Hồi 20% máu khẩn cấp
+                    float healAmount = StatsManager.instance.maxHealth * 0.2f;
+                    StatsManager.instance.Heal(healAmount);
+                    Debug.Log($"<color=green>[Alicia]</color> Hồi phục khẩn cấp 20% HP!");
+                }
+                else if (hits.Length > 0)
+                {
+                    // Bắn 3 loạt đạn hình nón
+                    StartCoroutine(ConeAttackRoutine(hits[0].transform));
+                    Debug.Log($"<color=cyan>[Alicia]</color> Dùng kỹ năng: Mưa Sao Băng!");
+                }
+            }
+        }
+        else
+        {
+            // Nạp lại skill nhanh hơn khi ngoài giao tranh
+            if (specialSkillTimer > 0) specialSkillTimer -= Time.deltaTime * 2f;
+        }
+    }
+
+    private void ShootAtTarget(Transform target, bool isHostile)
     {
         if (magicBulletPrefab == null || firePoint == null) return;
         GameObject bullet = Instantiate(magicBulletPrefab, firePoint.position, Quaternion.identity);
@@ -208,7 +311,29 @@ public class NPCCompanion : MonoBehaviour
         if (projScript != null)
         {
             Vector2 direction = (target.position - firePoint.position).normalized;
-            projScript.Setup(direction, bulletDamage);
+            projScript.Setup(direction, bulletDamage, isHostile);
+        }
+    }
+
+    private IEnumerator ConeAttackRoutine(Transform target)
+    {
+        for (int wave = 0; wave < 3; wave++)
+        {
+            if (target == null || isDead) break;
+
+            Vector2 baseDir = (target.position - firePoint.position).normalized;
+            float startAngle = -30f; // Góc mở rộng 60 độ
+            float angleStep = 60f / 9f; // Chia làm 10 viên đạn
+
+            for (int i = 0; i < 10; i++)
+            {
+                float angle = startAngle + (angleStep * i);
+                Vector2 dir = Quaternion.Euler(0, 0, angle) * baseDir;
+                
+                GameObject bullet = Instantiate(magicBulletPrefab, firePoint.position, Quaternion.identity);
+                bullet.GetComponent<CompanionProjectile>()?.Setup(dir, bulletDamage * 0.75f, false);
+            }
+            yield return new WaitForSeconds(0.3f); // Thời gian chờ giữa 3 loạt đạn
         }
     }
 }

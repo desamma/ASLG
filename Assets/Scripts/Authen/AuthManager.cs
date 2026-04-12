@@ -31,6 +31,9 @@ public class AuthManager : MonoBehaviour
         saveFilePath = Application.persistentDataPath + "/users.json";
         // Đảm bảo Text thông báo trống khi bắt đầu
         if (notificationText != null) notificationText.text = "";
+
+        // Xóa phiên đăng nhập cũ mỗi khi màn hình Auth (Login/Register) được bật lên
+        PlayerPrefs.DeleteKey("CurrentUser");
     }
 
     private void Start()
