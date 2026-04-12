@@ -66,6 +66,14 @@ public class PlayerMovement : MonoBehaviour
         HandleFlip();
         UpdateAnimatorState();
         ApplyMovement();
+
+        if (moveInput.sqrMagnitude > 0)
+        {
+            if (QuestManager.instance != null)
+            {
+                QuestManager.instance.AddMovementProgress(Time.fixedDeltaTime);
+            }
+        }
     }
 
     private void HandleDashInput()
