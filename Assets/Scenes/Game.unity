@@ -153,6 +153,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1464415262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &42893387
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 42893389}
+  - component: {fileID: 42893388}
+  m_Layer: 0
+  m_Name: PlayerSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &42893388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 42893387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e8a2b5e84c9a0540b436cb8caa7a0c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPoint: {fileID: 183094086}
+  aliciaPrefab: {fileID: 5123960915641433439, guid: c1c4031dc32ca644b98dedc80c0e8c68, type: 3}
+--- !u!4 &42893389
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 42893387}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.83, y: 0.98, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &54394267
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,6 +557,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 180091838}
   m_CullTransparentMesh: 1
+--- !u!1 &183094085
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 183094086}
+  m_Layer: 0
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &183094086
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183094085}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.91, y: -2.21, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &200730324
 GameObject:
   m_ObjectHideFlags: 0
@@ -1924,7 +2001,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -693, y: 490}
+  m_AnchoredPosition: {x: -296, y: 205}
   m_SizeDelta: {x: 500, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &962759484
@@ -3352,6 +3429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16de9a89f99cb924dac4b1f6a563a922, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerName: 
   _maxHealth: 2000
   _currentHealth: 0
   _defence: 10
@@ -3877,6 +3955,71 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 13
   m_TargetDisplay: 0
+--- !u!1001 &1714730974
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2233496836046586723, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_Name
+      value: NPC_Alicia
+      objectReference: {fileID: 0}
+    - target: {fileID: 8662377526711343939, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -10.924
+      objectReference: {fileID: 0}
+    - target: {fileID: 8662377526711343939, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.142
+      objectReference: {fileID: 0}
+    - target: {fileID: 8662377526711343939, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8662377526711343939, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8662377526711343939, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8662377526711343939, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8662377526711343939, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8662377526711343939, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8662377526711343939, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8662377526711343939, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875922997104558245, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875922997104558245, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 85fd07e6009bffc4087f473d67f68df6, type: 3}
 --- !u!1 &1762964220
 GameObject:
   m_ObjectHideFlags: 0
@@ -3950,7 +4093,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -107943,7 +108086,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 1464415262}
   playerNameText: {fileID: 405264023}
-  aliciaPrefab: {fileID: 5123960915641433439, guid: c1c4031dc32ca644b98dedc80c0e8c68, type: 3}
 --- !u!4 &1859064847
 Transform:
   m_ObjectHideFlags: 0
@@ -108322,3 +108464,6 @@ SceneRoots:
   - {fileID: 87382171}
   - {fileID: 1954447761}
   - {fileID: 1421146842}
+  - {fileID: 42893389}
+  - {fileID: 183094086}
+  - {fileID: 1714730974}

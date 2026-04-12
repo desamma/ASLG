@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4610275132881168102}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,7 +46,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6717024621332851853}
   - component: {fileID: 7012669390193549877}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Health Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 419599350351319470}
   - component: {fileID: 8159371312680240521}
   - component: {fileID: 1884855497505298780}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Talk Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,7 +272,7 @@ GameObject:
   - component: {fileID: 8364637419487681128}
   - component: {fileID: 4755749727105728168}
   - component: {fileID: 6471418823656725481}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: NPC_Alicia
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -423,6 +423,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcName: Alicia
   relationshipScore: 0
+  maxHealth: 500
+  currentHealth: 0
+  respawnTime: 60
   playerTransform: {fileID: 0}
   followDistance: 2
   moveSpeed: 4
@@ -432,8 +435,11 @@ MonoBehaviour:
   baseAttackCooldown: 2
   bulletDamage: 15
   healCooldown: 10
+  skill1Cooldown: 10
+  skill2Cooldown: 30
   healthSlider: {fileID: 7012669390193549877}
   nameText: {fileID: 2453270616398044346}
+  relationshipText: {fileID: 0}
   talkIcon: {fileID: 420167880127037990}
 --- !u!1 &2373419096177198338
 GameObject:
@@ -446,7 +452,7 @@ GameObject:
   - component: {fileID: 8776883583093337821}
   - component: {fileID: 5569984899136958015}
   - component: {fileID: 2453270616398044346}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Name Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -581,7 +587,7 @@ GameObject:
   - component: {fileID: 1941971820061782039}
   - component: {fileID: 251856834054801929}
   - component: {fileID: 5209659790900868524}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -684,7 +690,7 @@ GameObject:
   - component: {fileID: 660833109569251180}
   - component: {fileID: 4919860410525152179}
   - component: {fileID: 5090945334077189681}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -759,7 +765,7 @@ GameObject:
   - component: {fileID: 8875922997104558245}
   - component: {fileID: 6964035110611045378}
   - component: {fileID: 3209973088368219864}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -189,7 +189,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -289}
+  m_AnchoredPosition: {x: 0, y: -61}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &373713873
@@ -660,6 +660,7 @@ MonoBehaviour:
   knightData: {fileID: 11400000, guid: c1f123737358e534a86b653e19f3d04b, type: 2}
   archerData: {fileID: 11400000, guid: d205db58c715c504daf61ab1305c4c6b, type: 2}
   rogueData: {fileID: 11400000, guid: 24a96bdd02c5eef4aa90959b7d9514ca, type: 2}
+  summonerData: {fileID: 11400000, guid: 7faec493660894841b1ad2bb3f518b53, type: 2}
 --- !u!114 &1371251849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1027,7 +1028,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -384}
+  m_AnchoredPosition: {x: 0, y: -156}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1613396414

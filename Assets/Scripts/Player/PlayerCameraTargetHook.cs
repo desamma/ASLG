@@ -23,7 +23,19 @@ public class PlayerCameraTargetHook : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("CameraTargetHook: Player not found in scene!");
+            // Dự phòng: Nếu Prefab quên gắn Tag "Player", tìm qua Component
+            PlayerMovement pm = FindObjectOfType<PlayerMovement>();
+            if (pm != null)
+            {
+                _vCam.Follow = pm.transform;
+            }
         }
+    }
+
+    // Hàm public cho phép gán mục tiêu trực tiếp từ PlayerSpawner
+    public void SetTarget(Transform target)
+    {
+        if (_vCam == null) _vCam = GetComponent<CinemachineVirtualCamera>();
+        if (_vCam != null) _vCam.Follow = target;
     }
 }

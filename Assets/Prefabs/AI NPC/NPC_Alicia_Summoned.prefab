@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4408876299968827850}
   - component: {fileID: 7657684004926653776}
   - component: {fileID: 395356756340755972}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 7000092536779590363}
   - component: {fileID: 2022108069909242110}
   - component: {fileID: 4580812432607481624}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Talk Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,7 +221,7 @@ GameObject:
   - component: {fileID: 7107407439293803742}
   - component: {fileID: 6342227822797052284}
   - component: {fileID: 6346979301626667596}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -322,7 +322,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4128782786528494721}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -362,7 +362,7 @@ GameObject:
   - component: {fileID: 5640745977481813573}
   - component: {fileID: 2241265943029498462}
   - component: {fileID: 7847230090761108383}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: NPC_Alicia_Summoned
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -526,6 +526,8 @@ MonoBehaviour:
   baseAttackCooldown: 2
   bulletDamage: 15
   healCooldown: 5
+  skill1Cooldown: 10
+  skill2Cooldown: 30
   healthSlider: {fileID: 1806618056314092805}
   nameText: {fileID: 2041469525643754713}
   relationshipText: {fileID: 0}
@@ -540,7 +542,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4604726109888623915}
   - component: {fileID: 1806618056314092805}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Health Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -628,7 +630,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2962647063834380551}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -661,7 +663,7 @@ GameObject:
   - component: {fileID: 7692552407127009184}
   - component: {fileID: 8929254128947109536}
   - component: {fileID: 5785026577495747083}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -736,7 +738,7 @@ GameObject:
   - component: {fileID: 9115918879789385458}
   - component: {fileID: 5174622652950052220}
   - component: {fileID: 2041469525643754713}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Name Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
