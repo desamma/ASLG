@@ -56,12 +56,13 @@ public class LLMChatManager : MonoBehaviour
     public Color inProgressBtnColor = Color.red;
     public Color completedBtnColor = Color.green;
 
-    private enum AIQuestState { Idle, Available, InProgress, Completed }
-    [SerializeField] private AIQuestState currentQuestState = AIQuestState.Available;
-    private float actionCooldownTimer = 0f;
-    private int questMessagesSent = 0;
-    private float questWalkTimer = 0f;
-    private int questAttackCount = 0;
+    public enum AIQuestState { Idle, Available, InProgress, Completed }
+    [SerializeField] public AIQuestState currentQuestState = AIQuestState.Available;
+    public float actionCooldownTimer = 0f;
+    public int questMessagesSent = 0;
+    public float questWalkTimer = 0f;
+    public int questAttackCount = 0;
+    public int lastLoggedWalkSeconds = 0;
 
     [Header("Game References")]
     public NPCCompanion aliciaScript;
@@ -118,17 +119,28 @@ public class LLMChatManager : MonoBehaviour
             if (playerMovement != null && playerMovement.GetStateManager() != null && playerMovement.GetStateManager().IsInState(PlayerState.Move))
             {
                 questWalkTimer += Time.deltaTime;
+                int currentWalkSec = Mathf.FloorToInt(questWalkTimer);
+                if (currentWalkSec > lastLoggedWalkSeconds && currentWalkSec <= 3)
+                {
+                    lastLoggedWalkSeconds = currentWalkSec;
+                    Debug.Log($"<color=yellow>[AI Quest Progress]</color> Đi bộ: {currentWalkSec}/3s");
+                }
             }
 
             if (Input.GetMouseButtonDown(0) || Input.GetButtonDown("Slash"))
             {
                 questAttackCount++;
+                if (questAttackCount == 1) // Chỉ log lần đầu để tránh spam khi spam click
+                {
+                    Debug.Log($"<color=yellow>[AI Quest Progress]</color> Tấn công: {questAttackCount}/1");
+                }
             }
 
             if (questMessagesSent >= 3 && questWalkTimer >= 3f && questAttackCount >= 1)
             {
                 currentQuestState = AIQuestState.Completed;
                 UpdateButtonVisuals();
+                Debug.Log("<color=green>[AI Quest] Bạn đã hoàn thành tất cả yêu cầu! Hãy mở bảng Chat và nhấn lại nút AI Quest để nhận thưởng.</color>");
             }
         }
 
@@ -204,6 +216,7 @@ public class LLMChatManager : MonoBehaviour
         if (currentQuestState == AIQuestState.InProgress)
         {
             questMessagesSent++;
+            Debug.Log($"<color=yellow>[AI Quest Progress]</color> Nhắn tin với AI: {questMessagesSent}/3");
         }
 
         playerInputField.text = "";
@@ -306,6 +319,7 @@ public class LLMChatManager : MonoBehaviour
             questMessagesSent = 0;
             questWalkTimer = 0f;
             questAttackCount = 0;
+            lastLoggedWalkSeconds = 0;
             UpdateButtonVisuals();
             Debug.Log("<color=yellow>[AI Quest] Đã nhận nhiệm vụ AI: Nhắn 3 tin, Đi bộ 3s, Tấn công 1 lần.</color>");
         }
@@ -316,7 +330,8 @@ public class LLMChatManager : MonoBehaviour
 
             if (InventoryUI.instance != null && healthPotionItem != null)
             {
-                InventoryUI.instance.AddItems(healthPotionItem, potions);
+                // TODO: Đổi "AddItems" thành hàm thêm đồ thực tế của bạn (VD: AddItem)
+                // InventoryUI.instance.AddItem(healthPotionItem, potions);
             }
             if (aliciaScript != null)
             {
@@ -337,7 +352,8 @@ public class LLMChatManager : MonoBehaviour
         int potions = Random.Range(1, 4);
         if (InventoryUI.instance != null && healthPotionItem != null)
         {
-            InventoryUI.instance.AddItems(healthPotionItem, potions);
+            // TODO: Đổi "AddItems" thành hàm thêm đồ thực tế của bạn (VD: AddItem)
+            // InventoryUI.instance.AddItem(healthPotionItem, potions);
         }
 
         Debug.Log($"<color=green>[Gift] Đã nhận {potions} bình máu.</color>");
