@@ -47,6 +47,22 @@ public class LLMChatManager : MonoBehaviour
     public Button sendButton;
     public Button exitButton;
 
+    [Header("AI Special Features")]
+    public Button aiQuestButton;
+    public Button giftButton;
+    public ItemData healthPotionItem;
+    
+    public Color defaultBtnColor = Color.white;
+    public Color inProgressBtnColor = Color.red;
+    public Color completedBtnColor = Color.green;
+
+    private enum AIQuestState { Idle, Available, InProgress, Completed }
+    [SerializeField] private AIQuestState currentQuestState = AIQuestState.Available;
+    private float actionCooldownTimer = 0f;
+    private int questMessagesSent = 0;
+    private float questWalkTimer = 0f;
+    private int questAttackCount = 0;
+
     [Header("Game References")]
     public NPCCompanion aliciaScript;
     public PlayerMovement playerMovement;
@@ -65,6 +81,10 @@ public class LLMChatManager : MonoBehaviour
 
         // Bind Enter key event
         if (playerInputField != null) playerInputField.onSubmit.AddListener(delegate { OnSendClicked(); });
+
+        if (aiQuestButton != null) aiQuestButton.onClick.AddListener(OnAIQuestButtonClicked);
+        if (giftButton != null) giftButton.onClick.AddListener(OnGiftButtonClicked);
+        UpdateButtonVisuals();
     }
 
     void Update()
@@ -74,6 +94,42 @@ public class LLMChatManager : MonoBehaviour
         {
             CloseChat();
             return;
+        }
+
+        // Update Cooldowns and Quest Trackers
+        if (actionCooldownTimer > 0)
+        {
+            actionCooldownTimer -= Time.deltaTime;
+            if (actionCooldownTimer <= 0)
+            {
+                actionCooldownTimer = 0;
+                // Hồi xong, nếu nhiệm vụ đang nằm chờ thì mở lại
+                if (currentQuestState == AIQuestState.Idle)
+                {
+                    currentQuestState = AIQuestState.Available;
+                }
+                UpdateButtonVisuals();
+            }
+        }
+
+        // Tracking tiến độ AI Quest ngầm (kể cả khi đã đóng UI Chat)
+        if (currentQuestState == AIQuestState.InProgress)
+        {
+            if (playerMovement != null && playerMovement.GetStateManager() != null && playerMovement.GetStateManager().IsInState(PlayerState.Move))
+            {
+                questWalkTimer += Time.deltaTime;
+            }
+
+            if (Input.GetMouseButtonDown(0) || Input.GetButtonDown("Slash"))
+            {
+                questAttackCount++;
+            }
+
+            if (questMessagesSent >= 3 && questWalkTimer >= 3f && questAttackCount >= 1)
+            {
+                currentQuestState = AIQuestState.Completed;
+                UpdateButtonVisuals();
+            }
         }
 
         // Ignore inputs if input field is focused
@@ -143,6 +199,12 @@ public class LLMChatManager : MonoBehaviour
     {
         string userText = playerInputField.text.Trim();
         if (string.IsNullOrEmpty(userText)) return;
+
+        // Track số tin nhắn cho AI Quest
+        if (currentQuestState == AIQuestState.InProgress)
+        {
+            questMessagesSent++;
+        }
 
         playerInputField.text = "";
         playerInputField.ActivateInputField();
@@ -228,6 +290,85 @@ public class LLMChatManager : MonoBehaviour
                 npcTextDisplay.text = "<color=red>API Connection Error.</color>";
                 Debug.LogError(request.error);
             }
+        }
+    }
+
+    // ==========================================
+    // AI QUEST & GIFT LOGIC
+    // ==========================================
+    public void OnAIQuestButtonClicked()
+    {
+        if (actionCooldownTimer > 0) return;
+
+        if (currentQuestState == AIQuestState.Available)
+        {
+            currentQuestState = AIQuestState.InProgress;
+            questMessagesSent = 0;
+            questWalkTimer = 0f;
+            questAttackCount = 0;
+            UpdateButtonVisuals();
+            Debug.Log("<color=yellow>[AI Quest] Đã nhận nhiệm vụ AI: Nhắn 3 tin, Đi bộ 3s, Tấn công 1 lần.</color>");
+        }
+        else if (currentQuestState == AIQuestState.Completed)
+        {
+            int potions = Random.Range(1, 4);
+            int relReward = Random.Range(100, 301);
+
+            if (InventoryUI.instance != null && healthPotionItem != null)
+            {
+                InventoryUI.instance.AddItems(healthPotionItem, potions);
+            }
+            if (aliciaScript != null)
+            {
+                aliciaScript.relationshipScore += relReward;
+            }
+
+            Debug.Log($"<color=green>[AI Quest] Hoàn thành! Nhận {potions} bình máu và {relReward} hảo cảm.</color>");
+            
+            currentQuestState = AIQuestState.Idle;
+            StartSharedCooldown(15f);
+        }
+    }
+
+    public void OnGiftButtonClicked()
+    {
+        if (actionCooldownTimer > 0) return;
+
+        int potions = Random.Range(1, 4);
+        if (InventoryUI.instance != null && healthPotionItem != null)
+        {
+            InventoryUI.instance.AddItems(healthPotionItem, potions);
+        }
+
+        Debug.Log($"<color=green>[Gift] Đã nhận {potions} bình máu.</color>");
+        StartSharedCooldown(15f);
+    }
+
+    private void StartSharedCooldown(float time)
+    {
+        actionCooldownTimer = time;
+        UpdateButtonVisuals();
+    }
+
+    private void UpdateButtonVisuals()
+    {
+        bool isReady = (actionCooldownTimer <= 0);
+
+        if (aiQuestButton != null)
+        {
+            aiQuestButton.interactable = isReady;
+            Image img = aiQuestButton.GetComponent<Image>();
+            if (img != null)
+            {
+                if (currentQuestState == AIQuestState.InProgress) img.color = inProgressBtnColor;
+                else if (currentQuestState == AIQuestState.Completed) img.color = completedBtnColor;
+                else img.color = defaultBtnColor;
+            }
+        }
+
+        if (giftButton != null)
+        {
+            giftButton.interactable = isReady;
         }
     }
 }
