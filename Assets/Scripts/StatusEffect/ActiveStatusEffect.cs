@@ -28,8 +28,6 @@ public class ActiveStatusEffect
     public string ResolvedFlavour => string.IsNullOrEmpty(FlavourOverride) ? Definition.flavourText : FlavourOverride;
     public string[] ResolvedStatLines => StatLinesOverride ?? Definition.statLines;
 
-    private StatModifier _modifierOverride;
-    public StatModifier ResolvedModifier => _modifierOverride ?? Definition.statModifier;
     #endregion
 
     public ActiveStatusEffect(StatusEffect definition, float duration,
@@ -122,25 +120,6 @@ public class ActiveStatusEffect
         if (description != null) DescriptionOverride = description;
         if (flavour != null) FlavourOverride = flavour;
         if (statLines != null && statLines.Length > 0) StatLinesOverride = statLines;
-        return this;
-    }
-
-    public ActiveStatusEffect WithModifier(string statName, ModifierType type, float value,
-        InstanceStackMode stackMode = InstanceStackMode.TakeStrongest)
-    {
-        _modifierOverride = new StatModifier
-        {
-            statName = statName,
-            type = type,
-            value = value,
-            instanceStackMode = stackMode
-        };
-        return this;
-    }
-
-    public ActiveStatusEffect WithModifier(StatModifier modifier)
-    {
-        _modifierOverride = modifier;
         return this;
     }
 

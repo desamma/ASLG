@@ -9,10 +9,6 @@ public class BossHealthUI : MonoBehaviour
     [SerializeField] private TMP_Text bossName;
     [SerializeField] private Slider healthSlider;
     [SerializeField] private Image sliderFill;
-    [Tooltip("Optional ghost slider for delayed health loss effect")]
-    [SerializeField] private Slider ghostSlider;
-    [Tooltip("Optional ghost fill image for color fading effect")]
-    [SerializeField] private Image ghostFill;    
 
     [Header("Health Colors")]
     [SerializeField] private Color highHealthColor = new(0.2f, 0.85f, 0.3f);   // green
@@ -22,8 +18,6 @@ public class BossHealthUI : MonoBehaviour
 
     [Header("Slider Settings")]
     [SerializeField] private float smoothSpeed = 6f;    // lerp speed for smooth bar movement
-    [SerializeField] private float ghostDelay = 0.6f;  // seconds before ghost bar starts catching up
-    [SerializeField] private float ghostSpeed = 2.5f;  // lerp speed of ghost bar
 
     [Header("Text Effects")]
     [SerializeField] private bool enableNamePulse = true;
@@ -40,13 +34,9 @@ public class BossHealthUI : MonoBehaviour
 
     private float _maxHealth;
     private float _targetValue;
-    private float _ghostTargetValue;
-    private bool _smoothing;
-    private bool _ghostPending;
     private Color _originalNameColor;
     private Vector2 _nameOriginalPos;
     private Coroutine _flashCoroutine;
-    private Coroutine _ghostCoroutine;
     private Coroutine _shakeCoroutine;
 
     #region Overloads initialize
@@ -94,13 +84,6 @@ public class BossHealthUI : MonoBehaviour
         healthSlider.value = maxHealth;
         _targetValue = maxHealth;
 
-        if (ghostSlider != null)
-        {
-            ghostSlider.maxValue = maxHealth;
-            ghostSlider.value = maxHealth;
-            _ghostTargetValue = maxHealth;
-        }
-
         ApplyVertexGradient();
         SetFillColor(1f);
     }
@@ -122,13 +105,6 @@ public class BossHealthUI : MonoBehaviour
         {
             if (_shakeCoroutine != null) StopCoroutine(_shakeCoroutine);
             _shakeCoroutine = StartCoroutine(ShakeName());
-        }
-
-        // Delayed ghost bar
-        if (ghostSlider != null)
-        {
-            if (_ghostCoroutine != null) StopCoroutine(_ghostCoroutine);
-            _ghostCoroutine = StartCoroutine(DelayedGhost(current));
         }
     }
 
@@ -171,23 +147,6 @@ public class BossHealthUI : MonoBehaviour
             yield return null;
         }
         sliderFill.color = targetColor;
-    }
-
-    /// <summary>
-    /// Ghost bar stays put briefly, then slowly catches up to real health.
-    /// </summary>
-    private IEnumerator DelayedGhost(float newTarget)
-    {
-        yield return new WaitForSeconds(ghostDelay);
-        while (!Mathf.Approximately(ghostSlider.value, newTarget))
-        {
-            ghostSlider.value = Mathf.Lerp(ghostSlider.value, newTarget, Time.deltaTime * ghostSpeed);
-            if (ghostFill != null)
-                ghostFill.color = Color.Lerp(ghostFill.color,
-                    new Color(1f, 0.55f, 0.1f, 0.7f), Time.deltaTime * ghostSpeed);
-            yield return null;
-        }
-        ghostSlider.value = newTarget;
     }
 
     /// <summary>
