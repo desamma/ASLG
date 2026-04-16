@@ -32,6 +32,8 @@ public class PlayerSkill : MonoBehaviour
     {
         if (cooldownTimer > 0f)
             cooldownTimer -= Time.deltaTime;
+        else
+            cooldownTimer = 0f;
 
         if (Input.GetButtonDown("Skill") && CanUseSkill())
             TriggerSkill();
@@ -85,9 +87,11 @@ public class PlayerSkill : MonoBehaviour
     }
 
     // Exposed for UI
+    public Sprite SkillIcon => SkillData.icon;
     public int CurrentTier => currentUpgradeTier;
-    public int MaxTier => SkillData?.upgrades?.Length ?? 0;
+    public int MaxTier => SkillData.upgrades?.Length ?? 0;
     public float CooldownFraction => SkillData != null ? cooldownTimer / GetCurrentCooldown() : 0f;
+    public float CooldownTimer => cooldownTimer;
     public float ManaCost => GetCurrentManaCost();
     public int NextUpgradeCost => (SkillData != null && currentUpgradeTier < MaxTier)
                                      ? SkillData.upgrades[currentUpgradeTier].pointCost : 0;
