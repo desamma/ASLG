@@ -41,12 +41,13 @@ public static class EnemyMovementHelper
     }
 
     public static void Chase(IEnemyMovementContext context, float speedMultiplier = 1f, float attackRangeOverride = -1,
-        bool isStopOnAttackRange = true, Action OnEnterAttackRange = null, Func<Vector2> positionOverride = null)
+        bool isStopOnAttackRange = true, Action OnEnterAttackRange = null, Func<Vector2> positionOverride = null, Transform destinationOverride = null)
     {
         if (context.PlayerTransform == null) return;
-
+        var destination = destinationOverride != null ? (Vector2)destinationOverride.position : (Vector2)context.PlayerTransform.position;
         Vector2 selfPosition = positionOverride?.Invoke() ?? (Vector2)context.SelfTransform.position;
-        float dist = Vector2.Distance(selfPosition, context.PlayerTransform.position);
+
+        float dist = Vector2.Distance(selfPosition, destination);
         float attackRange = attackRangeOverride > 0f ? attackRangeOverride : context.Stats.AttackRange;
 
         if (isStopOnAttackRange && dist <= attackRange)
@@ -56,9 +57,9 @@ public static class EnemyMovementHelper
             return;
         }
 
-        context.FacingDirection = TransformHelper.FlipTowards(context.SelfTransform, context.PlayerTransform, context.FacingDirection);
+        context.FacingDirection = TransformHelper.FlipTowards(context.SelfTransform, destination, context.FacingDirection);
 
-        Vector2 direction = ((Vector2)context.PlayerTransform.position - selfPosition).normalized;
+        Vector2 direction = (destination - selfPosition).normalized;
         context.Rb.velocity = context.Behavior.Aggression * context.Stats.Speed * speedMultiplier * direction;
     }
 
@@ -76,12 +77,12 @@ public static class EnemyMovementHelper
         foreach (var category in categories)
         {
             cumulative += category.Frequency;
-            if (roll >= cumulative) continue;
+            if (roll > cumulative) continue;
 
             var available = category.Attacks
                 .Where(atkConfig => dist <= atkConfig.Range
                          && !cooldowns.IsOnCooldown(atkConfig.State)
-                         && (extraFilter == null || !extraFilter(atkConfig.State)))
+                         && (extraFilter == null || extraFilter(atkConfig.State)))
                 .ToArray();
 
             if (available.Length > 0)

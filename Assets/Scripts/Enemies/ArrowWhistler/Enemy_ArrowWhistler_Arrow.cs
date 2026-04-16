@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [DisallowMultipleComponent]
 public class Enemy_ArrowWhistler_Arrow : MonoBehaviour
@@ -20,12 +21,16 @@ public class Enemy_ArrowWhistler_Arrow : MonoBehaviour
     private EnemyStats casterStats;
     private bool isInitialized = false;
     private Vector2 direction;
+    bool isMagic = false;
+    private Action<Transform> effectLogic;
 
-    public void Initialize(EnemyStats stats, Vector2 targetDirection)
+    public void Initialize(EnemyStats stats, Vector2 targetDirection, bool magic, Action<Transform> extraEffect = null)
     {
         casterStats = stats;
         direction = targetDirection.normalized;
+        isMagic = magic;
         isInitialized = true;
+        effectLogic = extraEffect;
 
         // Rotate arrow to face the direction of movement
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
@@ -80,13 +85,24 @@ public class Enemy_ArrowWhistler_Arrow : MonoBehaviour
                 SoundFXManager.Instance.PlaySoundFXClip(hitAudio, transform, volume);
             }
 
-            float damage = casterStats.Strength * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
+            float damage;
+
+            if (isMagic)
+            {
+                damage = casterStats.Magic * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
+            }
+            else
+            {
+                damage = casterStats.Strength * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
+            }
 
             StatsManager.instance.TakeDamage(damage);
+            
+            effectLogic?.Invoke(collision.transform);
 
             Destroy(gameObject);
         }
-        else if (!collision.CompareTag("Player"))
+        else if (!collision.CompareTag("Player") && !collision.CompareTag("Enemy"))
         {
             // Destroy arrow when it hits anything else (walls, obstacles, etc.)
             Destroy(gameObject);

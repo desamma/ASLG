@@ -221,7 +221,7 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
                     buffAbilitySharedCooldown = 20f;
             },
             extraFilter: state =>
-                IsBuffAbilityOnSharedCooldown(state) || IsCompanionActive(state)
+                !IsBuffAbilityOnSharedCooldown(state) && !IsCompanionActive(state)
         );
     }
 

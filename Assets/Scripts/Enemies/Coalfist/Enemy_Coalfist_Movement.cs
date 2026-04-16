@@ -215,14 +215,14 @@ public class Enemy_Coalfist_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMov
 
             // If player is NOT close and we're evaluating Attack, filter it out (prefer BackStepAttack when close)
             if (distanceToPlayer <= closeThreshold && state == Enemy_Coalfist_State.Attack)
-                return true;
+                return false;
 
             // If player is far and we're evaluating BackStepAttack, filter it out (prefer Attack when far)
             if (distanceToPlayer > closeThreshold && state == Enemy_Coalfist_State.BackStepAttack)
-                return true;
+                return false;
         }
 
-        return false;
+        return true;
     }
 
     public void OnAttackAnimationComplete()

@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -95,7 +95,217 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: fx_frozen_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 191
+        width: 73
+        height: 62
+      alignment: 9
+      pivot: {x: 0.49930254, y: 0.07855003}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3ea8b8f9b4ab224c8633c985a6892e4
+      internalID: -725296702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_frozen_1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 181
+        width: 75
+        height: 69
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5f0d8dc3b943724a8dd12dfd68c4f40
+      internalID: 1206834728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_frozen_2
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 182
+        width: 74
+        height: 67
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b773c34a1ecdd9345b9fc14e6e04899b
+      internalID: 978309553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_frozen_3
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 181
+        width: 76
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bad8aac8cf0e0c44b90568ba9b2dd25c
+      internalID: -1016404731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_frozen_4
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 110
+        width: 52
+        height: 23
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f32423f5d84d9e84aa929e9bdc88ed08
+      internalID: -903941167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_frozen_5
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 29
+        width: 30
+        height: 13
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d307964cdb9056c40af64f228fd5092b
+      internalID: 398184732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_frozen_6
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 19
+        width: 74
+        height: 69
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18295688355703d42a5069b0b3340d3e
+      internalID: 1223357231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_frozen_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 21
+        width: 74
+        height: 67
+      alignment: 9
+      pivot: {x: 0.5160257, y: 0.18903904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5352e3264346e9c43b64996d5ec551bb
+      internalID: 1273825327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_frozen_8
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 110
+        width: 13
+        height: 3
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13c2432bc4f44de45aa379525bf7c93d
+      internalID: -1336331955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fx_frozen_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 103
+        width: 75
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5080084, y: 0.18163508}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23b7e87af82f79e4e996c28c821a6922
+      internalID: 212264571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -106,7 +316,17 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      fx_frozen_0: -725296702
+      fx_frozen_1: 1206834728
+      fx_frozen_2: 978309553
+      fx_frozen_3: -1016404731
+      fx_frozen_4: -903941167
+      fx_frozen_5: 398184732
+      fx_frozen_6: 1223357231
+      fx_frozen_7: 1273825327
+      fx_frozen_8: -1336331955
+      fx_frozen_9: 212264571
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

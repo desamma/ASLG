@@ -1,0 +1,37 @@
+{
+    "Stats": {
+        "MaxHP": 5000.0,
+        "CurrentHP": 5000.0,
+        "Strength": 150.0,
+        "Magic": 200.0,
+        "Defense": 150.0,
+        "MagicResist": 230.0,
+        "Speed": 3,
+        "ExpReward": 0.0,
+        "AttackCooldown": 3,
+        "AttackRange": 7.0,
+        "KnockbackForce": 0.0,
+        "KnockbackTime" : 0.0,
+        "StunTime": 0.0
+    },
+    "Growth": {
+        "Exp" : 80.0,
+        "MaxHP": 50.0,
+        "Strength": 15.0,
+        "Magic": 12.0,
+        "Defense": 10.0,
+        "MagicResist": 13.0,
+        "Speed": 0.01,
+        "AttackRange": 0.0,
+        "AttackCooldown": 0.01
+    },
+    "Behavior": {
+        "DetectionRange": 20.0,
+        "ChaseRange": 7.0,
+        "SpecialAttackFrequency": 0.3,
+        "UltimateAttackFrequency": 0.2,
+        "Aggression": 1.0,
+        "EnrageThreshold": 0,
+        "MobilityUsageFrequency": 0.0
+    }
+}

@@ -1,0 +1,86 @@
+﻿using System.Collections;
+using UnityEngine;
+
+[DisallowMultipleComponent]
+public class Enemy_KaraWinterbladeMK2_Health : MonoBehaviour, IEnemy_Health
+{
+    [Header("Shared Pool")]
+    [SerializeField] private Enemy_Faie_Kara_ShareHealth sharedHealth;
+
+    [Header("Individual Stats")]
+    public EnemyStats stats;
+    public BehaviorProfile behavior;
+    public int currentLevel = 1;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip deathAudio;
+    [SerializeField] private float volume = 1f;
+
+    public bool isDead => sharedHealth.IsDead;
+
+    private StatusEffectManager statusEffectManager;
+    private Enemy_KaraWinterbladeMK2_Movement movementComponent;
+
+    private void Awake()
+    {
+        if (sharedHealth == null)
+            sharedHealth = Enemy_Faie_Kara_ShareHealth.GetOrCreate();
+
+        InitializeStats();
+    }
+
+    private void Start()
+    {
+        movementComponent = GetComponent<Enemy_KaraWinterbladeMK2_Movement>();
+        statusEffectManager = GetComponent<StatusEffectManager>();
+
+        if (sharedHealth.maxHP == 0)
+            sharedHealth.InitPhase2HP(stats.MaxHP);
+
+        sharedHealth.OnDeath += HandleDeath;
+    }
+
+    private void OnDestroy()
+    {
+        if (sharedHealth != null)
+            sharedHealth.OnDeath -= HandleDeath;
+    }
+
+    public void InitializeStats()
+    {
+        var data = EnemyDataRepository.LoadEnemy("KaraWinterbladeMK2");
+
+        stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
+        behavior = data.Behavior;
+
+        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+    }
+
+    public void ChangeHealth(float amount) => sharedHealth.ChangeHealth(amount);
+
+    private void HandleDeath()
+    {
+        statusEffectManager.RemoveAll();
+        movementComponent.GetStateManager()?.ChangeState(Enemy_KaraWinterbladeMK2_State.Death);
+        StartCoroutine(DeathCoroutine());
+    }
+
+    private IEnumerator DeathCoroutine()
+    {
+        SoundFXManager.Instance.PlaySoundFXClip(deathAudio, transform, volume);
+        yield return new WaitForSeconds(2f);
+
+        statusEffectManager.RemoveAll();
+        sharedHealth.DestroySharedHealth();
+
+        Destroy(gameObject);
+    }
+
+    public void OnDifficultyChanged(DifficultyModifier newModifier)
+    {
+        if (newModifier == null) return;
+        stats.ApplyDifficulty(newModifier);
+        behavior.ApplyDifficulty(newModifier);
+    }
+}

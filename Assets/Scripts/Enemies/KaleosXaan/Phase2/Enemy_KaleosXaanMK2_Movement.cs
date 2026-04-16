@@ -231,7 +231,7 @@ public class Enemy_KaleosXaanMK2_Movement : MonoBehaviour, IEnemy_Movement, IEne
                 }
             },
             extraFilter: state =>
-                IsBuffAbilityOnSharedCooldown(state) || IsCompanionActive()
+                !IsBuffAbilityOnSharedCooldown(state) && !IsCompanionActive()
         );
     }
 

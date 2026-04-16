@@ -69,9 +69,6 @@ public class StatusEffect : ScriptableObject
              "Max independent slots this effect can occupy at once. 0 = unlimited.")]
     public int maxInstances = 0;
 
-    [Tooltip("Optional. Defines what gameplay stat this effect modifies.")]
-    public StatModifier statModifier;
-
     private void OnValidate()
     {
         if (string.IsNullOrEmpty(effectId))

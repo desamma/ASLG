@@ -66,7 +66,7 @@ public class Enemy_ArrowWhistler_Attack : MonoBehaviour
         var arrowComponent = arrow.GetComponent<Enemy_ArrowWhistler_Arrow>();
         if (arrowComponent != null && health != null)
         {
-            arrowComponent.Initialize(health.stats, direction);
+            arrowComponent.Initialize(health.stats, direction, false);
         }
 
         arrow.SetActive(true);

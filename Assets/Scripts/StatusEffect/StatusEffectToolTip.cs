@@ -99,7 +99,7 @@ public class StatusEffectTooltip : MonoBehaviour
                 var sb = new StringBuilder();
                 foreach (var line in lines)
                     if (!string.IsNullOrWhiteSpace(line))
-                        sb.AppendLine($"• {line}");
+                        sb.AppendLine(line);
                 statLinesText.text = sb.ToString().TrimEnd();
                 statLinesText.enabled = true;
             }

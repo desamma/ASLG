@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91ac6fc7089a49c47958073a3476b11a, type: 3}
+  m_Name: FrostFire
+  m_EditorClassIdentifier: 
+  effectId: frostfire
+  displayName: Frost Fire
+  effectType: 1
+  description: 'Unleash a forbidden fusion of ice and flame, conjuring a volatile
+    blast that scorches and freezes at once. '
+  flavourText: "Where flame should consume and frost should preserve\u2026 Frostfire
+    does neither\u2014it devours."
+  statLines: []
+  showDurationInTooltip: 1
+  showStacksInTooltip: 1
+  iconPrefab: {fileID: 93327159180152655, guid: 3be5306a340e0d043ad14ddd7d041da4, type: 3}
+  vfxPrefab: {fileID: 1811491165981891694, guid: 69d84b4257f97aa4d98e60283e4869b7, type: 3}
+  borderColor: {r: 1, g: 0.13333334, b: 0.13333334, a: 1}
+  tooltipIcon: {fileID: 21300000, guid: d8ad9e4dc9fb31d49b21e441407fdd08, type: 3}
+  iconLocalPosition: {x: 0, y: 0, z: 0}
+  iconLocalScale: {x: 1, y: 1, z: 1}
+  isPermanent: 0
+  baseDuration: 10
+  stackBehavior: 1
+  maxStacks: 1
+  maxInstances: 0
