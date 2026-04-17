@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
+  m_Name: BottomLeft
+  m_EditorClassIdentifier: 
+  m_AnimatedSprites:
+  - {fileID: -453206621, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
+  - {fileID: 904966476, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
+  - {fileID: -1158806111, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
+  - {fileID: -374355078, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
+  - {fileID: 1977864890, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
+  - {fileID: -323420612, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
+  - {fileID: 848961527, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
+  - {fileID: 985577352, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
+  m_MinSpeed: 5
+  m_MaxSpeed: 5
+  m_AnimationStartTime: 0
+  m_AnimationStartFrame: 0
+  m_TileColliderType: 0
+  m_TileAnimationFlags: 0
