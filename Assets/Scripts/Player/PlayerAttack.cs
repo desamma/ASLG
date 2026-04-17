@@ -20,7 +20,7 @@ public class PlayerAttack : MonoBehaviour
     private float attackCooldownTimer = 0f;
 
     // Cached class data — refreshed whenever ApplyClass() is called
-    private PlayerClassData ClassData => ClassManager.Instance?.CurrentClassData;
+    private PlayerClassData ClassData => ClassManager.Instance.CurrentClassData;
 
     // ── Unity ─────────────────────────────────────────────────────────────────
 
@@ -31,7 +31,7 @@ public class PlayerAttack : MonoBehaviour
         if (enemyLayer == 0) enemyLayer = LayerMask.GetMask("Enemy");
 
         // Apply whichever class was selected before this scene loaded
-        ClassManager.Instance?.ApplyToStatsManager();
+        ClassManager.Instance.ApplyToStatsManager();
     }
 
     private void Update()

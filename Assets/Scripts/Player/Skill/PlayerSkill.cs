@@ -18,8 +18,8 @@ public class PlayerSkill : MonoBehaviour
 
     private bool isUsingSkill = false;
 
-    private PlayerClassData ClassData => ClassManager.Instance?.CurrentClassData;
-    private SkillData SkillData => ClassData?.skillData;
+    private PlayerClassData ClassData => ClassManager.Instance.CurrentClassData;
+    private SkillData SkillData => ClassData.skillData;
 
     // ── Unity ─────────────────────────────────────────────────────────────────
 

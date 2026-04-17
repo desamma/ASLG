@@ -62,7 +62,7 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private float _staminaRegenRate = 1f;
     [SerializeField] private float _staminaCost = 25f;
     [SerializeField] private float _dashDelay = 0.5f;
-    [SerializeField] private float _dashDuration = 0.2f;
+    [SerializeField] private float _dashDuration = 0.35f;
 
     public float moveSpeed { get => _moveSpeed; set { _moveSpeed = value; OnStatsChanged(); } }
     public float maxStamina { get => _maxStamina; set { _maxStamina = Mathf.Max(0f, value); OnStatsChanged(); } }
@@ -79,14 +79,14 @@ public class StatsManager : MonoBehaviour
     }
 
     [Header("Combat")]
-    [SerializeField] private int _damage = 10;
+    [SerializeField] private float _damage = 10;
     [SerializeField] private float _weaponRange = 1.5f;
     [SerializeField] private float _knockbackForce = 5f;
     [SerializeField] private float _knockbackTime = 0.2f;
     [SerializeField] private float _stunTime = 0.3f;
     [SerializeField] private float _cooldown = 0.5f;
 
-    public int damage { get => _damage; set { _damage = value; OnStatsChanged(); } }
+    public float damage { get => _damage; set { _damage = value; OnStatsChanged(); } }
     public float weaponRange { get => _weaponRange; set { _weaponRange = value; OnStatsChanged(); } }
     public float knockbackForce { get => _knockbackForce; set { _knockbackForce = value; OnStatsChanged(); } }
     public float knockbackTime { get => _knockbackTime; set { _knockbackTime = value; OnStatsChanged(); } }
@@ -98,8 +98,6 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private int _expToNextLevel = 100;
     [SerializeField] private int _currentExp = 0;
     [SerializeField] private int _upgradePoints = 0;
-    [SerializeField] private string _authToken;
-    [SerializeField] private string _userId;
 
     public int level { get => _level; private set { _level = Mathf.Max(1, value); OnStatsChanged(); } }
     public int expToNextLevel { get => _expToNextLevel; private set { _expToNextLevel = Mathf.Max(1, value); OnStatsChanged(); } }
@@ -222,10 +220,29 @@ public class StatsManager : MonoBehaviour
 
     public bool SpendUpgradePoints(int amount)
     {
+        Debug.Log("Try spend upgrade point!");
         if (_upgradePoints < amount) return false;
         _upgradePoints = Mathf.Max(0, _upgradePoints - amount);
         OnStatsChanged();
         return true;
+    }
+
+    public void TryUpgradeStat(StatType statType, int amount)
+    {
+        if (SpendUpgradePoints(amount))
+        {
+            switch (statType)
+            {
+                case StatType.MaxHealth: maxHealth += Mathf.Ceil(maxHealth * 0.15f); break;
+                case StatType.MaxMana: maxMana += Mathf.Ceil(maxMana * 0.15f); break;
+                case StatType.MaxStamina: maxStamina += maxStamina * 0.15f; break;
+                case StatType.Damage: damage += Mathf.Ceil(damage * 0.15f); break;
+                case StatType.Defence: defence += Mathf.Ceil(defence * 0.15f); break;
+                case StatType.MoveSpeed: moveSpeed += moveSpeed * 0.01f; break;
+            }
+
+            OnStatsChanged();
+        }
     }
 
     // ── ITEM STATS BONUSES ────────────────────────────────────────────────
@@ -284,7 +301,7 @@ public class StatsManager : MonoBehaviour
                 break;
 
             case "damage":
-                damage += (int)bonus;
+                damage += bonus;
                 Debug.Log($"  📊 Damage: +{bonus} → {damage}");
                 break;
 

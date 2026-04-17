@@ -47,6 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerName: 
+  authToken: 
+  userId: 
   _maxHealth: 20000
   _currentHealth: 0
   _defence: 10
@@ -70,6 +72,8 @@ MonoBehaviour:
   _expToNextLevel: 100
   _currentExp: 0
   _upgradePoints: 0
+  _authToken: 
+  _userId: 
 --- !u!114 &2088240897685045331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,4 +103,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   arrowPrefab: {fileID: 3460029213893004739, guid: f3afdd87e8a319d4d882aaf51e66e1aa, type: 3}
-  initialSize: 64
+  initialSize: 32

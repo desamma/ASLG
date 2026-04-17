@@ -13,9 +13,10 @@ public class ClassManager : MonoBehaviour
     [SerializeField] private PlayerClassData archerData;
     [SerializeField] private PlayerClassData rogueData;
     [SerializeField] private PlayerClassData summonerData;
+    [SerializeField] private PlayerClassData testData;
 
     public PlayerClassData CurrentClassData { get; private set; }
-    public PlayerClass SelectedClass { get; private set; } = PlayerClass.Archer;
+    public PlayerClass SelectedClass { get; private set; } = PlayerClass.Test;
 
     private void Awake()
     {
@@ -42,6 +43,7 @@ public class ClassManager : MonoBehaviour
             PlayerClass.Knight => knightData,
             PlayerClass.Archer => archerData,
             PlayerClass.Rogue => rogueData,
+            PlayerClass.Test => testData,
             PlayerClass.Summoner => summonerData != null ? summonerData : knightData, // Dùng tạm data Knight nếu quên kéo thả
             _ => knightData
         };
@@ -59,6 +61,7 @@ public class ClassManager : MonoBehaviour
         PlayerClass.Knight => knightData,
         PlayerClass.Archer => archerData,
         PlayerClass.Rogue => rogueData,
+        PlayerClass.Test => testData,
         PlayerClass.Summoner => summonerData != null ? summonerData : knightData,
         _ => knightData
     };

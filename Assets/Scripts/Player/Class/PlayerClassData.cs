@@ -24,7 +24,7 @@ public class PlayerClassData : ScriptableObject
 
     [Header("Combat")]
     public AttackType attackType = AttackType.Melee;
-    public int damage = 10;
+    public float damage = 10;
     public float attackCooldown = 0.5f;
     public float weaponRange = 1f;       // melee radius OR projectile lifetime (seconds)
     public float knockbackForce = 5f;
