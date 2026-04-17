@@ -14,14 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: Shadow Step
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 865b42193a036ef4da9029b02dd6ab7f, type: 3}
   manaCost: 30
   cooldown: 8
   damagePercent: 1.8
-  slashPrefab: {fileID: 0}
-  slashSpeed: 10
-  slashDuration: 1
   chargeTime: 0.4
+  slashVfxPrefab: {fileID: 0}
+  slashVfxCount: 3
+  slashVfxStepDistance: 1.5
+  slashVfxStepDelay: 0.25
+  slashHitRadius: 0.8
+  slashVfxDuration: 1
   arrowPrefab: {fileID: 0}
   arrowCount: 8
   fanAngle: 120

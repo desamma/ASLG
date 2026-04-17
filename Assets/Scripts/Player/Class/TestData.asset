@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ad0b6c0a1aa7d454ba91076694638e1f, type: 3}
-  m_Name: KnightData
+  m_Name: TestData
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 64468534510225419, guid: 08dd2b34980a15a48b753400a5f80384, type: 3}
-  playerClass: 0
-  displayName: Knight
+  playerClass: 4
+  displayName: Test
   description: 
-  maxHealth: 600
+  maxHealth: 1000
   defence: 10
   moveSpeed: 3.5
   maxStamina: 100
@@ -24,7 +24,7 @@ MonoBehaviour:
   dashDuration: 0.2
   dashDelay: 0.5
   attackType: 0
-  damage: 100
+  damage: 500
   attackCooldown: 0.9
   weaponRange: 1.5
   knockbackForce: 5

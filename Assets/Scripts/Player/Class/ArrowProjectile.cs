@@ -6,7 +6,7 @@ public class ArrowProjectile : MonoBehaviour
     private Vector2 direction;
     private float speed;
     private float lifetime;
-    private int damage;
+    private float damage;
     private float knockbackForce;
     private float knockbackTime;
     private float stunTime;
@@ -23,7 +23,7 @@ public class ArrowProjectile : MonoBehaviour
     /// </summary>
     public void Initialise(
         Vector2 dir, float spd, float life,
-        int dmg, float kbForce, float kbTime, float stun,
+        float dmg, float kbForce, float kbTime, float stun,
         GameObject hitFx, AudioClip hitSfx, float vol,
         LayerMask enemies)
     {
@@ -87,7 +87,7 @@ public class ArrowProjectile : MonoBehaviour
             SoundFXManager.Instance.PlaySoundFXClip(hitClip, transform, volume);
 
         if (hitEffectPrefab != null)
-            Instantiate(hitEffectPrefab, transform.position, Quaternion.identity, other.transform);
+            Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
 
         other.GetComponent<IEnemy_Health>()?.ChangeHealth(-damage);
         other.GetComponent<IEnemy_Movement>()?.KnockBack(transform, knockbackForce, knockbackTime, stunTime);

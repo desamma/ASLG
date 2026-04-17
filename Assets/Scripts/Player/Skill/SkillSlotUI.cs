@@ -19,11 +19,33 @@ public class SkillSlotUI : MonoBehaviour
 
     private void Start()
     {
+        RefreshSkillUI();
+    }
+
+    private void Update()
+    {
+        if (playerSkill == null) return;
+
+        cooldownOverlay.fillAmount = playerSkill.CooldownFraction;
+        cooldownOverlay.enabled = playerSkill.CooldownFraction > 0f;
+
+        if (cooldownText != null)
+        {
+            cooldownText.text = Mathf.Ceil(playerSkill.CooldownTimer).ToString();
+            cooldownText.enabled = playerSkill.CooldownFraction > 0f;
+        }
+    }
+
+    public void RefreshSkillUI()
+    {
+        if (playerSkill == null) return;
+
         if (playerSkill.SkillIcon != null)
         {
             skillIcon.sprite = playerSkill.SkillIcon;
             cooldownOverlay.sprite = playerSkill.SkillIcon;
         }
+
         switch (playerSkill.CurrentTier)
         {
             case 0:
@@ -38,20 +60,6 @@ public class SkillSlotUI : MonoBehaviour
             case 3:
                 skillBorder.sprite = skillBorderTier3;
                 break;
-        }
-    }
-
-    private void Update()
-    {
-        if (playerSkill == null) return;
-
-        cooldownOverlay.fillAmount = playerSkill.CooldownFraction;
-        cooldownOverlay.enabled = playerSkill.CooldownFraction > 0f;
-
-        if (cooldownText != null)
-        {
-            cooldownText.text = Mathf.Ceil(playerSkill.CooldownTimer).ToString();
-            cooldownText.enabled = playerSkill.CooldownFraction > 0f;
         }
     }
 }

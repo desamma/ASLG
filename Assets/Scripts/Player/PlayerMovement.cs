@@ -76,6 +76,11 @@ public class PlayerMovement : MonoBehaviour
                 QuestManager.instance.AddMovementProgress(Time.fixedDeltaTime);
             }
         }
+
+        if (StatsManager.instance.currentStamina < StatsManager.instance.maxStamina)
+        {
+            StatsManager.instance.currentStamina += StatsManager.instance.staminaRegenRate * Time.deltaTime;
+        }
     }
 
     private void HandleDashInput()
@@ -146,6 +151,8 @@ public class PlayerMovement : MonoBehaviour
         dashDirection = moveInput.sqrMagnitude > 0
             ? moveInput.normalized
             : new Vector2(facingDirection, 0f);
+
+        StatsManager.instance.currentStamina -= StatsManager.instance.staminaCost;
 
         StartCoroutine(DashRoutine());
     }

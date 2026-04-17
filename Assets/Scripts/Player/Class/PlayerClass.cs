@@ -3,7 +3,8 @@ public enum PlayerClass
     Knight,
     Archer,
     Rogue,
-    Summoner
+    Summoner,
+    Test
 }
 
 public enum AttackType
