@@ -55,10 +55,11 @@ MonoBehaviour:
   _currentMana: 0
   _moveSpeed: 5
   _maxStamina: 100
-  _staminaRegenRate: 10
+  _staminaRegenRate: 5
   _staminaCost: 25
   _dashDelay: 0.5
   _dashDuration: 0.2
+  _currentStamina: 0
   _damage: 10
   _weaponRange: 1.5
   _knockbackForce: 5

@@ -53,7 +53,7 @@ public class StatsManager : MonoBehaviour
     [Header("Movement & Stamina")]
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private float _maxStamina = 100f;
-    [SerializeField] private float _staminaRegenRate = 10f;
+    [SerializeField] private float _staminaRegenRate = 1f;
     [SerializeField] private float _staminaCost = 25f;
     [SerializeField] private float _dashDelay = 0.5f;
     [SerializeField] private float _dashDuration = 0.2f;
@@ -65,7 +65,7 @@ public class StatsManager : MonoBehaviour
     public float dashDelay { get => _dashDelay; set { _dashDelay = value; OnStatsChanged(); } }
     public float dashDuration { get => _dashDuration; set { _dashDuration = value; OnStatsChanged(); } }
 
-    private float _currentStamina;
+    [SerializeField] private float _currentStamina;
     public float currentStamina
     {
         get => _currentStamina;
@@ -134,7 +134,8 @@ public class StatsManager : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        currentHealth -= Mathf.Abs(amount);
+        float damageAfterDefend = amount - defence;
+        currentHealth -= Mathf.Abs(damageAfterDefend);
         if (IsDead) HandleDeath();
     }
 

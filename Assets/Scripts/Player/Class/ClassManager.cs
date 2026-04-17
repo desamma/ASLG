@@ -15,7 +15,7 @@ public class ClassManager : MonoBehaviour
     [SerializeField] private PlayerClassData summonerData;
 
     public PlayerClassData CurrentClassData { get; private set; }
-    public PlayerClass SelectedClass { get; private set; } = PlayerClass.Knight;
+    public PlayerClass SelectedClass { get; private set; } = PlayerClass.Archer;
 
     private void Awake()
     {

@@ -87,7 +87,7 @@ public class ArrowProjectile : MonoBehaviour
             SoundFXManager.Instance.PlaySoundFXClip(hitClip, transform, volume);
 
         if (hitEffectPrefab != null)
-            Instantiate(hitEffectPrefab, transform.position, Quaternion.identity, other.transform);
+            Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
 
         other.GetComponent<IEnemy_Health>()?.ChangeHealth(-damage);
         other.GetComponent<IEnemy_Movement>()?.KnockBack(transform, knockbackForce, knockbackTime, stunTime);
