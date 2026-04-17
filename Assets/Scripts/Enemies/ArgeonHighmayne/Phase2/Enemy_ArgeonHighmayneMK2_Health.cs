@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+[DisallowMultipleComponent]
 
 /// <summary>
 /// Andromeda enemy Stats and Health
 /// </summary>
-[DisallowMultipleComponent]
+[RequireComponent(typeof(EnemyQuestTarget))]
 public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
 {
     [Header("Enemy Stats")]

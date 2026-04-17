@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "NewSkillData", menuName = "RPG/Skill Data")]
 public class SkillData : ScriptableObject

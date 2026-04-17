@@ -46,7 +46,7 @@ public class StatusEffectSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
         if (durationText != null)
         {
-            if (_active.Definition.isPermanent)
+            if (_active.IsPermanent)
                 durationText.text = "∞";
             else
                 durationText.text = _active.RemainingDuration > 9.5f
@@ -74,7 +74,7 @@ public class StatusEffectSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
         if (timerRing != null)
         {
             timerRing.fillAmount = 1f;
-            timerRing.gameObject.SetActive(!def.isPermanent);
+            timerRing.gameObject.SetActive(!active.IsPermanent);
         }
 
         UpdateStackBadge();

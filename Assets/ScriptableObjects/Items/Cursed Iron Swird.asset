@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d63220367668be24c9838aafb46562ab, type: 3}
+  m_Name: Cursed Iron Swird
+  m_EditorClassIdentifier: 
+  itemName: Cursed Iron Sword
+  rarity: 2
+  description: "A blade forged in cursed iron, etched with blood runes that hunger
+    for life. Its edge never dulls \u2014 but neither does its thirst."
+  itemType: 0
+  armorSlot: 1
+  icon: {fileID: 21300000, guid: a3bf915abecbebc4b9d6ce5e0f0157f5, type: 3}
+  emojiIcon: "\U0001F4E6"
+  isStackable: 0
+  maxStack: 1
+  currentStack: 1
+  statBonuses:
+  - statName: ' damage'
+    value: 15
+  - statName: maxHealth
+    value: -15
+  worldPrefab: {fileID: 0}

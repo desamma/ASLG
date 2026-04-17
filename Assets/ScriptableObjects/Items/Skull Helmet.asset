@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d63220367668be24c9838aafb46562ab, type: 3}
+  m_Name: Skull Helmet
+  m_EditorClassIdentifier: 
+  itemName: Skull Helmet
+  rarity: 0
+  description: "Hewn from the skull of a fallen warlord. The hollow eye sockets seem
+    to watch everything \u2014 and forget nothing"
+  itemType: 1
+  armorSlot: 0
+  icon: {fileID: 21300000, guid: 6c1f56ae00298dd459c44f19106e8efb, type: 3}
+  emojiIcon: "\U0001F4E6"
+  isStackable: 0
+  maxStack: 1
+  currentStack: 1
+  statBonuses:
+  - statName: defence
+    value: 7
+  - statName: magicResist
+    value: 4
+  - statName: maxHealth
+    value: 12
+  worldPrefab: {fileID: 0}

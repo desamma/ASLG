@@ -12,6 +12,7 @@ public class ClassManager : MonoBehaviour
     [SerializeField] private PlayerClassData knightData;
     [SerializeField] private PlayerClassData archerData;
     [SerializeField] private PlayerClassData rogueData;
+    [SerializeField] private PlayerClassData summonerData;
 
     public PlayerClassData CurrentClassData { get; private set; }
     public PlayerClass SelectedClass { get; private set; } = PlayerClass.Knight;
@@ -41,12 +42,26 @@ public class ClassManager : MonoBehaviour
             PlayerClass.Knight => knightData,
             PlayerClass.Archer => archerData,
             PlayerClass.Rogue => rogueData,
+            PlayerClass.Summoner => summonerData != null ? summonerData : knightData, // Dùng tạm data Knight nếu quên kéo thả
             _ => knightData
         };
 
         if (CurrentClassData == null)
             Debug.LogWarning($"[ClassManager] No data asset assigned for {playerClass}.");
     }
+
+    /// <summary>
+    /// Returns the data asset for a class without changing SelectedClass.
+    /// Used by UI screens that need to preview all classes.
+    /// </summary>
+    public PlayerClassData GetDataFor(PlayerClass playerClass) => playerClass switch
+    {
+        PlayerClass.Knight => knightData,
+        PlayerClass.Archer => archerData,
+        PlayerClass.Rogue => rogueData,
+        PlayerClass.Summoner => summonerData != null ? summonerData : knightData,
+        _ => knightData
+    };
 
     /// <summary>
     /// Push class stats into StatsManager. Call this once gameplay begins

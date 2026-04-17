@@ -82,13 +82,27 @@ public class LLMChatManager : MonoBehaviour
             return;
         }
 
+        // Tự động tìm Player nếu được spawn động (chưa được gán vào Inspector)
+        if (playerMovement == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                playerMovement = playerObj.GetComponent<PlayerMovement>();
+                playerAttack = playerObj.GetComponent<PlayerAttack>();
+            }
+        }
+
         // Check for interaction key to open chat
         if (!isChatting && Input.GetKeyDown(KeyCode.E) && aliciaScript != null)
         {
-            float dist = Vector2.Distance(playerMovement.transform.position, aliciaScript.transform.position);
-            if (dist <= 2.5f)
+            if (playerMovement != null)
             {
-                OpenChat();
+                float dist = Vector2.Distance(playerMovement.transform.position, aliciaScript.transform.position);
+                if (dist <= 2.5f)
+                {
+                    OpenChat();
+                }
             }
         }
     }
@@ -187,6 +201,13 @@ public class LLMChatManager : MonoBehaviour
                     int relChange = int.Parse(match.Groups[1].Value);
                     aliciaScript.relationshipScore += relChange;
                     Debug.Log($"<color=green>[System]</color> Relationship updated: {relChange}. Current score: {aliciaScript.relationshipScore}");
+
+                    // Nếu bị trừ hảo cảm VÀ tổng điểm rớt xuống <= -500 (Hoặc vốn dĩ đã dỗi)
+                    if (relChange < 0 && aliciaScript.relationshipScore <= -500)
+                    {
+                        aliciaScript.TriggerAngryState(); // Gọi AI phản công Player 5 giây
+                        Debug.LogWarning("<color=red>[System]</color> Alicia nổi giận vì lời nói của bạn và đang tấn công!");
+                    }
 
                     displayString = aiRawText.Replace(match.Value, "").Trim();
                 }

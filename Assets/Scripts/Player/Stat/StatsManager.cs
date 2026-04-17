@@ -5,7 +5,17 @@ public class StatsManager : MonoBehaviour
 {
     public static StatsManager instance { get; private set; }
 
-    [Header("References")]
+    [Header("Player")]
+    [SerializeField] private string _playerName;
+
+    [Header("Session Data")]
+    [SerializeField] private string authToken;
+    [SerializeField] private string userId;
+
+    public string AuthToken { get => authToken; private set => authToken = value; }
+    public string UserId { get => userId; private set => userId = value; }
+
+    public string playerName { get => _playerName; set { _playerName = value; OnStatsChanged(); } }
 
     [Header("Health")]
     [SerializeField] private float _maxHealth = 2000f;
@@ -26,8 +36,8 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private float _defence = 10f;
     [SerializeField] private float _magicResist = 5f;
 
-    public float defence { get => _defence; set { _defence = value; OnStatsChanged(); } }
-    public float magicResist { get => _magicResist; set { _magicResist = value; OnStatsChanged(); } }
+    public float defence { get => _defence; set { _defence = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float magicResist { get => _magicResist; set { _magicResist = Mathf.Max(0f, value); OnStatsChanged(); } }
 
     [Header("Mana")]
     [SerializeField] private float _maxMana = 100f;
@@ -88,6 +98,8 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private int _expToNextLevel = 100;
     [SerializeField] private int _currentExp = 0;
     [SerializeField] private int _upgradePoints = 0;
+    [SerializeField] private string _authToken;
+    [SerializeField] private string _userId;
 
     public int level { get => _level; private set { _level = Mathf.Max(1, value); OnStatsChanged(); } }
     public int expToNextLevel { get => _expToNextLevel; private set { _expToNextLevel = Mathf.Max(1, value); OnStatsChanged(); } }
@@ -306,12 +318,25 @@ public class StatsManager : MonoBehaviour
                 Debug.Log($"  📊 StaminaRegenRate: +{bonus} → {staminaRegenRate}");
                 break;
 
+            case "defence":
+            case "defense":
+            case "armor":
+                defence += bonus;
+                Debug.Log($"  📊 Defence: +{bonus} → {defence}");
+                break;
+
+            case "magicresist":
+            case "magic_resist":
+            case "magicresistance":
+                magicResist += bonus;
+                Debug.Log($"  📊 MagicResist: +{bonus} → {magicResist}");
+                break;
+
             default:
                 Debug.LogWarning($"[StatsManager] ⚠️ Unknown stat: {statName}");
                 break;
         }
     }
-
     private void OnStatsChanged()
     {
         OnStatsChangedEvent?.Invoke();

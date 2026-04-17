@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 dashDirection;
     private KnockbackHandler knockbackHandler;
+    private bool isMovementStopped = false;
     private void Awake()
     {
         rb = rb != null ? rb : GetComponent<Rigidbody2D>();
@@ -60,12 +61,21 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         if (stateManager.IsInState(PlayerState.Knockback) ||
-            stateManager.IsInState(PlayerState.Dash)) return;
+            stateManager.IsInState(PlayerState.Dash) ||
+            isMovementStopped) return;
 
         ReadMoveInput();
         HandleFlip();
         UpdateAnimatorState();
         ApplyMovement();
+
+        if (moveInput.sqrMagnitude > 0)
+        {
+            if (QuestManager.instance != null)
+            {
+                QuestManager.instance.AddMovementProgress(Time.fixedDeltaTime);
+            }
+        }
     }
 
     private void HandleDashInput()
@@ -190,12 +200,13 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator StopMovementRoutine(float duration)
     {
+        isMovementStopped = true;
         moveInput = Vector2.zero;
         rb.velocity = Vector2.zero;
 
         yield return new WaitForSeconds(duration);
 
-        moveInput = Vector2.zero;
+        isMovementStopped = false;
     }
 
     #region State Callbacks
