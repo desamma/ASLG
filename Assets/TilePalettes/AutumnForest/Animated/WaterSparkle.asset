@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
+  m_Name: WaterSparkle
+  m_EditorClassIdentifier: 
+  m_AnimatedSprites:
+  - {fileID: 1807588777, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: 706820592, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: 119064410, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: -411641164, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: 1143615110, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: -1682915178, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: -1823361582, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: 11595135, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: -871852013, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: -1203742772, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: 34596137, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  - {fileID: 1374075665, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
+  m_MinSpeed: 3
+  m_MaxSpeed: 3
+  m_AnimationStartTime: 0
+  m_AnimationStartFrame: 0
+  m_TileColliderType: 0
+  m_TileAnimationFlags: 0
