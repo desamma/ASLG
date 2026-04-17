@@ -68,6 +68,11 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
             stats.CurrentHP = 0;
             isDead = true;
 
+            // =========================================================
+            // THÊM MỚI: BÁO CÁO CHO HỆ THỐNG NHIỆM VỤ LÀ BOSS ĐÃ CHẾT
+            // =========================================================
+            GetComponent<EnemyQuestTarget>()?.NotifyDeath();
+
             if (movementComponent != null)
             {
                 var manager = movementComponent.GetStateManager();
