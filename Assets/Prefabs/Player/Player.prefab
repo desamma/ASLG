@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4437531879905113826}
   - component: {fileID: 7566730819983103371}
   - component: {fileID: 4262911231385687692}
+  - component: {fileID: 7431403429440356396}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -229,6 +230,22 @@ MonoBehaviour:
   volume: 1
   currentUpgradeTier: 0
   cooldownTimer: 0
+--- !u!114 &7431403429440356396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64468534510225419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12e05ff851d32e447bd4cdbf8d4850e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerSkill: {fileID: 4262911231385687692}
+  skillIcon: {fileID: 0}
+  cooldownOverlay: {fileID: 0}
+  cooldownText: {fileID: 0}
 --- !u!1 &3265381544356332698
 GameObject:
   m_ObjectHideFlags: 0
