@@ -88,7 +88,7 @@ public class AuthManager : MonoBehaviour
         StartCoroutine(SendApiRequest(baseUrl + "/login", jsonData, OnLoginSuccess));
     }
 
-    // ĐÃ SỬA: Xử lý Json trả về để lấy Token
+    // ĐÃ SỬA: Chuyển dữ liệu cho StatsManager
     private void OnLoginSuccess(string responseText)
     {
         // 1. Dịch JSON từ Server trả về thành Object C#
@@ -97,8 +97,8 @@ public class AuthManager : MonoBehaviour
         // 2. Kiểm tra xem có token hay không
         if (responseData != null && !string.IsNullOrEmpty(responseData.token))
         {
-            // 3. LƯU TOKEN VÀO CLASS TokenManager
-            TokenManager.SaveToken(responseData.token);
+            // 3. LƯU TOKEN VÀ USER ID VÀO TOKEN MANAGER (Gọn gàng và an toàn tuyệt đối)
+            TokenManager.SaveSession(responseData.token, responseData.userId);
 
             ShowNotification("Đăng nhập thành công!", Color.green);
             PlayerPrefs.SetString("CurrentUser", loginUsernameInput.text);
@@ -200,9 +200,6 @@ public class AuthManager : MonoBehaviour
     #endregion
 }
 
-// ===================================================================
-// CÁC CLASS DATA DÙNG ĐỂ GIAO TIẾP VỚI API BẰNG JSON
-// ===================================================================
 
 [System.Serializable]
 public class LoginRequestData
@@ -219,12 +216,9 @@ public class RegisterRequestData
     public string password;
 }
 
-// THÊM MỚI: Cấu trúc để hứng Token từ API Login trả về
 [System.Serializable]
 public class LoginResponseData
 {
-    // LƯU Ý QUAN TRỌNG: Tên biến này ("token") PHẢI GIỐNG Y HỆT key trong JSON Backend trả về.
-    // Nếu Backend của bạn trả về JSON là {"accessToken": "chuoi_ky_tu..."}, 
-    // thì bạn phải đổi chữ "token" ở dưới thành "accessToken".
     public string token;
+    public string userId;
 }
