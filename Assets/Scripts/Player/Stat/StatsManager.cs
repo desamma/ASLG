@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.IO; // THÊM thư viện đọc/ghi file
 
 public class StatsManager : MonoBehaviour
 {
@@ -6,6 +7,13 @@ public class StatsManager : MonoBehaviour
 
     [Header("Player")]
     [SerializeField] private string _playerName;
+
+    [Header("Session Data")]
+    [SerializeField] private string authToken;
+    [SerializeField] private string userId;
+
+    public string AuthToken { get => authToken; private set => authToken = value; }
+    public string UserId { get => userId; private set => userId = value; }
 
     public string playerName { get => _playerName; set { _playerName = value; OnStatsChanged(); } }
 
@@ -17,7 +25,7 @@ public class StatsManager : MonoBehaviour
         set { _maxHealth = Mathf.Max(0f, value); OnStatsChanged(); }
     }
 
-    [SerializeField]  private float _currentHealth;
+    [SerializeField] private float _currentHealth;
     public float currentHealth
     {
         get => _currentHealth;
@@ -30,8 +38,6 @@ public class StatsManager : MonoBehaviour
 
     public float defence { get => _defence; set { _defence = Mathf.Max(0f, value); OnStatsChanged(); } }
     public float magicResist { get => _magicResist; set { _magicResist = Mathf.Max(0f, value); OnStatsChanged(); } }
-
-
 
     [Header("Mana")]
     [SerializeField] private float _maxMana = 100f;
@@ -92,6 +98,8 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private int _expToNextLevel = 100;
     [SerializeField] private int _currentExp = 0;
     [SerializeField] private int _upgradePoints = 0;
+    [SerializeField] private string _authToken;
+    [SerializeField] private string _userId;
 
     public int level { get => _level; private set { _level = Mathf.Max(1, value); OnStatsChanged(); } }
     public int expToNextLevel { get => _expToNextLevel; private set { _expToNextLevel = Mathf.Max(1, value); OnStatsChanged(); } }
@@ -109,6 +117,11 @@ public class StatsManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // THÊM: Khôi phục Session khi load lại game
+            AuthToken = PlayerPrefs.GetString("AuthToken", string.Empty);
+            UserId = PlayerPrefs.GetString("UserId", string.Empty);
+
             InitialiseStats();
         }
         else
@@ -116,6 +129,58 @@ public class StatsManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    // =========================================================
+    // HÀM LƯU / XÓA SESSION (GỌI TỪ AUTH MANAGER)
+    // =========================================================
+    public void SaveSession(string token, string userId)
+    {
+        AuthToken = token;
+        UserId = userId;
+
+        PlayerPrefs.SetString("AuthToken", token);
+        PlayerPrefs.SetString("UserId", userId);
+        PlayerPrefs.Save();
+
+        // Ghi ra file Text
+        string logPath = Application.dataPath + "/Scripts/Authen/session_log.txt";
+        try
+        {
+            string content = $"[TIME: {System.DateTime.Now}]\nUSER ID: {userId}\nTOKEN: {token}\n-------------------";
+            File.WriteAllText(logPath, content);
+            Debug.Log($"[StatsManager] Đã ghi Session ra file tại: {logPath}");
+
+#if UNITY_EDITOR
+            UnityEditor.AssetDatabase.Refresh();
+#endif
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[StatsManager] Lỗi ghi file text: {e.Message}");
+        }
+    }
+
+    public void ClearSession()
+    {
+        AuthToken = string.Empty;
+        UserId = string.Empty;
+
+        PlayerPrefs.DeleteKey("AuthToken");
+        PlayerPrefs.DeleteKey("UserId");
+        PlayerPrefs.Save();
+
+        string logPath = Application.dataPath + "/Scripts/Authen/session_log.txt";
+        if (File.Exists(logPath))
+        {
+            File.WriteAllText(logPath, "Đã đăng xuất - Phiên làm việc kết thúc.");
+        }
+    }
+
+    public bool HasToken()
+    {
+        return !string.IsNullOrEmpty(AuthToken);
+    }
+    // =========================================================
 
     private void InitialiseStats()
     {
@@ -155,9 +220,6 @@ public class StatsManager : MonoBehaviour
         OnStatsChanged();
     }
 
-    /// <summary>
-    /// Deducts upgrade points. Returns false if insufficient points.
-    /// </summary>
     public bool SpendUpgradePoints(int amount)
     {
         if (_upgradePoints < amount) return false;
@@ -167,9 +229,6 @@ public class StatsManager : MonoBehaviour
     }
 
     // ── ITEM STATS BONUSES ────────────────────────────────────────────────
-    /// <summary>
-    /// Cộng stats từ item vào player stats khi EQUIP.
-    /// </summary>
     public void ApplyItemBonus(ItemData item)
     {
         if (item == null || item.statBonuses.Count == 0)
@@ -185,9 +244,6 @@ public class StatsManager : MonoBehaviour
         OnStatsChanged();
     }
 
-    /// <summary>
-    /// Xóa stats bonus từ item khi UNEQUIP.
-    /// </summary>
     public void RemoveItemBonus(ItemData item)
     {
         if (item == null || item.statBonuses.Count == 0)
@@ -203,10 +259,6 @@ public class StatsManager : MonoBehaviour
         OnStatsChanged();
     }
 
-
-    /// <summary>
-    /// Áp dụng một stat bonus cụ thể (có thể âm để trừ).
-    /// </summary>
     private void ApplyStatBonus(string statName, float bonus)
     {
         if (bonus == 0) return;
