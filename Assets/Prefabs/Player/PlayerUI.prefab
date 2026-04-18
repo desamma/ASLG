@@ -482,6 +482,7 @@ MonoBehaviour:
   playerSkill: {fileID: 0}
   playerGameObject: {fileID: 0}
   upgradeSkillButton: {fileID: 2311409657231505257}
+  upgradeSkillText: {fileID: 7409405276517311883}
   skillBorderTier0: {fileID: 21300000, guid: 091d833ecbb92ac48ac6a29f420ecbde, type: 2}
   skillBorderTier1: {fileID: 21300000, guid: a41ea7f799b83ad47be954b60a250306, type: 2}
   skillBorderTier2: {fileID: 21300000, guid: 0b46e733bf96d194bb2563bb0d31c837, type: 2}
@@ -846,8 +847,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -1.3720093, y: 4}
-  m_SizeDelta: {x: -59.8177, y: -55.4274}
+  m_AnchoredPosition: {x: -1.0348969, y: 4}
+  m_SizeDelta: {x: -48.3568, y: -55.4274}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3717797392081931178
 CanvasRenderer:
@@ -877,7 +878,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Upgrade Skill
+  m_text: Your skill level is maxed
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
@@ -904,8 +905,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 32
-  m_fontSizeBase: 32
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2102,10 +2103,10 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
     m_PressedColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0.5019608}
+    m_SelectedColor: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
+    m_DisabledColor: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -2120,7 +2121,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 8135512673981587110}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []

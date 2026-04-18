@@ -10,6 +10,7 @@ public class SkillSlotUI : MonoBehaviour
 
     [Header("Upgrade Skill Button")]
     [SerializeField] private Button upgradeSkillButton;
+    [SerializeField] private TextMeshProUGUI upgradeSkillText;
 
     [Header("UI Elements")]
     [SerializeField] private Sprite skillBorderTier0;
@@ -39,8 +40,16 @@ public class SkillSlotUI : MonoBehaviour
             return;
         }
 
-        if (upgradeSkillButton != null)
+        if (upgradeSkillButton != null && upgradeSkillText != null)
+        {
             upgradeSkillButton.onClick.AddListener(OnSkillClickUpgrade);
+
+            upgradeSkillButton.enabled = true;
+            upgradeSkillButton.interactable = true;
+
+            upgradeSkillText.text = "Upgrade skill";
+        }
+
 
         RefreshSkillUI();
     }
@@ -63,6 +72,12 @@ public class SkillSlotUI : MonoBehaviour
     {
         if (playerSkill.TryUpgrade())
         {
+            if (playerSkill.CurrentTier == 3)
+            {
+                upgradeSkillButton.enabled = false;
+                upgradeSkillButton.interactable = false;
+                upgradeSkillText.text = "Your skill level is maxed";
+            }
             RefreshSkillUI();
             Debug.Log("Player skill upgrade successfully");
         }
