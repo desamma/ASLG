@@ -6,6 +6,10 @@ public class SkillSlotUI : MonoBehaviour
 {
     [Header("Backend Reference")]
     [SerializeField] private PlayerSkill playerSkill;
+    [SerializeField] private GameObject playerGameObject;
+
+    [Header("Upgrade Skill Button")]
+    [SerializeField] private Button upgradeSkillButton;
 
     [Header("UI Elements")]
     [SerializeField] private Sprite skillBorderTier0;
@@ -19,6 +23,25 @@ public class SkillSlotUI : MonoBehaviour
 
     private void Start()
     {
+        playerGameObject = GameObject.FindGameObjectWithTag("Player");
+
+        if (playerGameObject == null)
+        {
+            Debug.LogError("Error: Could not find any GameObject with the tag 'Player'. Stopping UI setup.");
+            return;
+        }
+
+        playerSkill = playerGameObject.GetComponent<PlayerSkill>();
+
+        if (playerSkill == null)
+        {
+            Debug.LogError("Error: Found the 'Player' object, but it does NOT have the PlayerSkill script attached!");
+            return;
+        }
+
+        if (upgradeSkillButton != null)
+            upgradeSkillButton.onClick.AddListener(OnSkillClickUpgrade);
+
         RefreshSkillUI();
     }
 
@@ -34,6 +57,20 @@ public class SkillSlotUI : MonoBehaviour
             cooldownText.text = Mathf.Ceil(playerSkill.CooldownTimer).ToString();
             cooldownText.enabled = playerSkill.CooldownFraction > 0f;
         }
+    }
+
+    private void OnSkillClickUpgrade()
+    {
+        if (playerSkill.TryUpgrade())
+        {
+            RefreshSkillUI();
+            Debug.Log("Player skill upgrade successfully");
+        }
+        else
+        {
+            Debug.Log("Player skill upgrade failed");
+        }
+
     }
 
     public void RefreshSkillUI()
