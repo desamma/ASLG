@@ -25,6 +25,8 @@ public class Enemy_FaieBloodwingMK2_Health : MonoBehaviour, IEnemy_Health
             sharedHealth = Enemy_Faie_Kara_ShareHealth.GetOrCreate();
 
         InitializeStats();
+        sharedHealth.SetExpReward(stats.ExpReward);
+        sharedHealth.SetGoldReward(stats.GoldReward);
 
         if (sharedHealth.maxHP == 0)
             sharedHealth.InitPhase2HP(stats.MaxHP);

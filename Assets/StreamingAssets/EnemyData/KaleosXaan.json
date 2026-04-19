@@ -8,6 +8,7 @@
         "MagicResist": 120.0,
         "Speed": 3.0,
         "ExpReward": 0.0,
+        "GoldReward": 0,
         "AttackCooldown": 2.5,
         "AttackRange": 2.0,
         "KnockbackForce": 5.0,
@@ -16,6 +17,7 @@
     },
      "Growth": {
         "Exp" : 50.0,
+        "GoldReward": 0,
         "MaxHP": 50.0,
         "Strength": 10.0,
         "Magic": 10.0,
@@ -26,7 +28,7 @@
         "AttackCooldown": 0.01
     },
     "Behavior": {
-        "DetectionRange": 10.0,
+        "DetectionRange": 35.0,
         "ChaseRange": 7.0,
         "SpecialAttackFrequency": 0.4,
         "UltimateAttackFrequency": 0.3,

@@ -15,6 +15,7 @@ public class EnemyStats
     public float MagicResist;
     public float Speed;
     public float ExpReward;
+    public float GoldReward;
 
     [Header("Attacking")]
     public float AttackRange;
@@ -37,7 +38,8 @@ public class EnemyStats
         Defense *= difficulty.Resolve(difficulty.DefenseMultiplier);
         MagicResist *= difficulty.Resolve(difficulty.MagicResistMultiplier);
         Speed *= difficulty.Resolve(difficulty.SpeedMultiplier);
-
+        GoldReward *= difficulty.Resolve(difficulty.GoldRewardMultiplier);
+        
         CurrentHP = MaxHP;
     }
 }
