@@ -1,22 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public enum EnemyType
 {
     None,
-    AlterRexx,
-    Andromeda,
+
+    //Bosses
     ArgeonHighmayne,
+    KaleosXaan,
+    FaieBloodwing_KaraWinterblade,
+
+    //Normal enemies
+    Andromeda,
     ArrowWhistler,
     AshMephyt,
     BringerOfDeath,
     Cacophynos,
     Chakkram,
     Coalfist,
-    Common,
     DrakeDowager,
-    KaleosXaan,
     Okkadok,
     Pax,
     PeaceKeeper,
