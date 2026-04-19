@@ -22,10 +22,17 @@ public class StatsManager : MonoBehaviour
 
     [Header("Health")]
     [SerializeField] private float _maxHealth = 2000f;
+    [SerializeField] private float _baseMaxHealth = 2000f;
+    [SerializeField] private float _bonusMaxHealth = 0f;
     public float maxHealth
     {
-        get => _maxHealth;
-        set { _maxHealth = Mathf.Max(0f, value); OnStatsChanged(); }
+        get => _baseMaxHealth + _bonusMaxHealth;
+        set { _baseMaxHealth = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
+    public float baseMaxHealth
+    {
+        get => _baseMaxHealth;
+        set { _baseMaxHealth = Mathf.Max(0f, value); OnStatsChanged(); }
     }
 
     [SerializeField] private float _currentHealth;
@@ -37,17 +44,33 @@ public class StatsManager : MonoBehaviour
 
     [Header("Defence")]
     [SerializeField] private float _defence = 10f;
-    [SerializeField] private float _magicResist = 5f;
+    [SerializeField] private float _baseDefence = 10f;
+    [SerializeField] private float _bonusDefence = 0f;
 
-    public float defence { get => _defence; set { _defence = Mathf.Max(0f, value); OnStatsChanged(); } }
-    public float magicResist { get => _magicResist; set { _magicResist = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float defence
+    {
+        get => _baseDefence + _bonusDefence;
+        set { _baseDefence = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
+    public float baseDefence
+    {
+        get => _baseDefence;
+        set { _baseDefence = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
 
     [Header("Mana")]
     [SerializeField] private float _maxMana = 100f;
+    [SerializeField] private float _baseMaxMana = 100f;
+    [SerializeField] private float _bonusMaxMana = 0f;
     public float maxMana
     {
-        get => _maxMana;
-        set { _maxMana = Mathf.Max(0f, value); OnStatsChanged(); }
+        get => _baseMaxMana + _bonusMaxMana;
+        set { _baseMaxMana = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
+    public float baseMaxMana
+    {
+        get => _baseMaxMana;
+        set { _baseMaxMana = Mathf.Max(0f, value); OnStatsChanged(); }
     }
 
     [SerializeField] private float _currentMana;
@@ -61,14 +84,37 @@ public class StatsManager : MonoBehaviour
 
     [Header("Movement & Stamina")]
     [SerializeField] private float _moveSpeed = 5f;
+    [SerializeField] private float _baseMoveSpeed = 5f;
+    [SerializeField] private float _bonusMoveSpeed = 0f;
     [SerializeField] private float _maxStamina = 100f;
+    [SerializeField] private float _baseMaxStamina = 100f;
+    [SerializeField] private float _bonusMaxStamina = 0f;
     [SerializeField] private float _staminaRegenRate = 1f;
+    [SerializeField] private float _bonusStaminaRegenRate = 0f;
     [SerializeField] private float _staminaCost = 25f;
     [SerializeField] private float _dashDelay = 0.5f;
     [SerializeField] private float _dashDuration = 0.35f;
 
-    public float moveSpeed { get => _moveSpeed; set { _moveSpeed = value; OnStatsChanged(); } }
-    public float maxStamina { get => _maxStamina; set { _maxStamina = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float moveSpeed
+    {
+        get => _baseMoveSpeed + _bonusMoveSpeed;
+        set { _baseMoveSpeed = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
+    public float baseMoveSpeed
+    {
+        get => _baseMoveSpeed;
+        set { _baseMoveSpeed = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
+    public float maxStamina
+    {
+        get => _baseMaxStamina + _bonusMaxStamina;
+        set { _baseMaxStamina = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
+    public float baseMaxStamina
+    {
+        get => _baseMaxStamina;
+        set { _baseMaxStamina = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
     public float staminaRegenRate { get => _staminaRegenRate; set { _staminaRegenRate = value; OnStatsChanged(); } }
     public float staminaCost { get => _staminaCost; set { _staminaCost = value; OnStatsChanged(); } }
     public float dashDelay { get => _dashDelay; set { _dashDelay = value; OnStatsChanged(); } }
@@ -82,19 +128,50 @@ public class StatsManager : MonoBehaviour
     }
 
     [Header("Combat")]
-    [SerializeField] private float _damage = 10;
+    [SerializeField] private float _damage = 10f;
+    [SerializeField] private float _baseDamage = 10f;
+    [SerializeField] private float _bonusDamage = 0f;
     [SerializeField] private float _weaponRange = 1.5f;
+    [SerializeField] private float _bonusWeaponRange = 0f;
     [SerializeField] private float _knockbackForce = 5f;
+    [SerializeField] private float _bonusKnockbackForce = 0f;
     [SerializeField] private float _knockbackTime = 0.2f;
     [SerializeField] private float _stunTime = 0.3f;
     [SerializeField] private float _cooldown = 0.5f;
+    [SerializeField] private float _bonusCooldown = 0f;
 
-    public float damage { get => _damage; set { _damage = value; OnStatsChanged(); } }
-    public float weaponRange { get => _weaponRange; set { _weaponRange = value; OnStatsChanged(); } }
-    public float knockbackForce { get => _knockbackForce; set { _knockbackForce = value; OnStatsChanged(); } }
+    public float damage
+    {
+        get => _baseDamage + _bonusDamage;
+        set { _baseDamage = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
+    public float baseDamage
+    {
+        get => _baseDamage;
+        set { _baseDamage = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
+    public float weaponRange
+    {
+        get => _weaponRange + _bonusWeaponRange;
+        set { _weaponRange = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
+    public float knockbackForce
+    {
+        get => _knockbackForce + _bonusKnockbackForce;
+        set { _knockbackForce = Mathf.Max(0f, value); OnStatsChanged(); }
+    }
     public float knockbackTime { get => _knockbackTime; set { _knockbackTime = value; OnStatsChanged(); } }
     public float stunTime { get => _stunTime; set { _stunTime = value; OnStatsChanged(); } }
-    public float cooldown { get => _cooldown; set { _cooldown = Mathf.Max(0.1f, value); OnStatsChanged(); } }
+    public float cooldown
+    {
+        get => Mathf.Max(0.1f, _cooldown + _bonusCooldown);
+        set { _cooldown = Mathf.Max(0.1f, value); OnStatsChanged(); }
+    }
+    public float baseCooldown
+    {
+        get => Mathf.Max(0.1f, _cooldown);
+        set { _cooldown = Mathf.Max(0.1f, value); OnStatsChanged(); }
+    }
 
     [Header("Experience & Levelling")]
     [SerializeField] private int _level = 1;
@@ -124,7 +201,7 @@ public class StatsManager : MonoBehaviour
             AuthToken = PlayerPrefs.GetString("AuthToken", string.Empty);
             UserId = PlayerPrefs.GetString("UserId", string.Empty);
 
-            InitialiseStats();
+            ResetStats();
         }
         else
         {
@@ -191,18 +268,29 @@ public class StatsManager : MonoBehaviour
         OnStatsChanged();
     }
 
-    private void InitialiseStats()
-    {
-        _currentHealth = _maxHealth;
-        _currentMana = _maxMana;
-        _currentStamina = _maxStamina;
-    }
-
     public void ResetStats()
     {
-        _currentHealth = _maxHealth;
-        _currentMana = _maxMana;
-        _currentStamina = _maxStamina;
+        _baseMaxHealth = _maxHealth;
+        _baseMaxMana = _maxMana;
+        _baseMaxStamina = _maxStamina;
+        _baseDamage = _damage;
+        _baseDefence = _defence;
+        _baseMoveSpeed = _moveSpeed;
+
+        _bonusMaxHealth = 0f;
+        _bonusMaxMana = 0f;
+        _bonusMaxStamina = 0f;
+        _bonusDamage = 0f;
+        _bonusDefence = 0f;
+        _bonusMoveSpeed = 0f;
+        _bonusWeaponRange = 0f;
+        _bonusCooldown = 0f;
+        _bonusKnockbackForce = 0f;
+        _bonusStaminaRegenRate = 0f;
+
+        _currentHealth = maxHealth;
+        _currentStamina = maxStamina;
+        _currentMana = maxMana;
         OnStatsChanged();
     }
 
@@ -245,20 +333,19 @@ public class StatsManager : MonoBehaviour
 
     public void TryUpgradeStat(StatType statType, int amount)
     {
-        if (SpendUpgradePoints(amount))
-        {
-            switch (statType)
-            {
-                case StatType.MaxHealth: maxHealth += Mathf.Ceil(maxHealth * 0.15f); break;
-                case StatType.MaxMana: maxMana += Mathf.Ceil(maxMana * 0.15f); break;
-                case StatType.MaxStamina: maxStamina += maxStamina * 0.15f; break;
-                case StatType.Damage: damage += Mathf.Ceil(damage * 0.15f); break;
-                case StatType.Defence: defence += Mathf.Ceil(defence * 0.15f); break;
-                case StatType.MoveSpeed: moveSpeed += moveSpeed * 0.01f; break;
-            }
+        if (!SpendUpgradePoints(amount)) return;
 
-            OnStatsChanged();
+        switch (statType)
+        {
+            case StatType.MaxHealth: _baseMaxHealth += Mathf.Ceil(_baseMaxHealth * 0.15f); break;
+            case StatType.MaxMana: _baseMaxMana += Mathf.Ceil(_baseMaxMana * 0.15f); break;
+            case StatType.MaxStamina: _baseMaxStamina += _baseMaxStamina * 0.15f; break;
+            case StatType.Damage: _baseDamage += Mathf.Ceil(_baseDamage * 0.15f); break;
+            case StatType.Defence: _baseDefence += Mathf.Ceil(_baseDefence * 0.15f); break;
+            case StatType.MoveSpeed: _baseMoveSpeed += _baseMoveSpeed * 0.01f; break;
         }
+
+        OnStatsChanged();
     }
 
     // ── ITEM STATS BONUSES (HỆ THỐNG JSON MỚI) ───────────────────────────────────
@@ -295,26 +382,23 @@ public class StatsManager : MonoBehaviour
         switch (statName.ToLower())
         {
             // CÁC CHỈ SỐ GỐC (Dành cho Trang bị)
-            case "maxhealth": maxHealth += bonus; break;
-            case "maxmana": maxMana += bonus; break;
-            case "maxstamina": maxStamina += bonus; break;
-            case "damage": damage += bonus; break;
-            case "movespeed": case "speed": moveSpeed += bonus; break;
-            case "range": case "weaponrange": weaponRange += bonus; break;
-            case "knockback": case "knockbackforce": knockbackForce += bonus; break;
-            case "regenerate": case "regen": staminaRegenRate += bonus; break;
-            case "defence": case "defense": case "armor": defence += bonus; break;
-            case "magicresist": magicResist += bonus; break;
-            
+            case "maxhealth": _bonusMaxHealth += bonus; break;
+            case "maxmana": _bonusMaxMana += bonus; break;
+            case "maxstamina": _bonusMaxStamina += bonus; break;
+            case "damage": _bonusDamage += bonus; break;
+            case "movespeed": case "speed": _bonusMoveSpeed += bonus; break;
+            case "range": case "weaponrange": _bonusWeaponRange += bonus; break;
+            case "knockback": case "knockbackforce": _bonusKnockbackForce += bonus; break;
+            case "regenerate": case "regen": _bonusStaminaRegenRate += bonus; break;
+            case "defence": case "defense": case "armor": _bonusDefence += bonus; break;
             case "cooldown": 
-                cooldown -= bonus; // Bonus số dương sẽ GIẢM cooldown
-                cooldown = Mathf.Max(0.1f, cooldown); 
+                _bonusCooldown += bonus;
                 break;
 
             // CÁC CHỈ SỐ HIỆN TẠI (Dành cho Bình Máu/Bình Mana)
-            case "currenthealth": case "hp": currentHealth += bonus; break;
-            case "currentmana": case "mp": currentMana += bonus; break;
-            case "currentstamina": case "sp": currentStamina += bonus; break;
+            case "currenthealth": case "hp": case "health": currentHealth += bonus; break;
+            case "currentmana": case "mp": case "mana": currentMana += bonus; break;
+            case "currentstamina": case "sp": case"stamina": currentStamina += bonus; break;
             
             // ĐIỂM KINH NGHIỆM
             case "currentexp": case "exp": AddExp(Mathf.RoundToInt(bonus)); break;

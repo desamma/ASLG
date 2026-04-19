@@ -50,6 +50,9 @@ public class ItemData : ScriptableObject
     [Min(1)] public int maxStack = 1;
     [HideInInspector] public int currentStack = 1;
 
+    [Header("Gold")]
+    [Min(0)] public int goldValue = 0;
+
     [Header("Stat Bonuses")]
     [Tooltip("Equipment: cộng vào stats khi equip.\nConsumable: áp dụng 1 lần khi USE (hồi HP, Mana…)")]
     public List<StatBonus> statBonuses = new List<StatBonus>();
