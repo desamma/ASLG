@@ -230,4 +230,14 @@ public class LLMChatManager : MonoBehaviour
             }
         }
     }
+
+    // ==========================================
+    // DÀNH CHO SAVE MANAGER LẤY VÀ NẠP DỮ LIỆU
+    // ==========================================
+    public List<ChatMessage> GetChatHistory() => chatHistory;
+    
+    public void SetChatHistory(List<ChatMessage> history) 
+    {
+        chatHistory = history ?? new List<ChatMessage>();
+    }
 }
