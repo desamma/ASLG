@@ -59,7 +59,7 @@ public class StatsUI : MonoBehaviour
         var s = StatsManager.instance;
         if (s == null) return;
 
-        SetText(maxHealthText, $"Max Health: {s.maxHealth:0}");
+        SetText(maxHealthText, $"Max Health: \n {s.maxHealth:0}");
         SetText(maxManaText, $"Max Mana: {s.maxMana:0}");
         SetText(maxStaminaText, $"Max Stamina: {s.maxStamina:0}");
         SetText(damageText, $"Damage: {s.damage}");

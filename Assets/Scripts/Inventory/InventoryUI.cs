@@ -39,7 +39,6 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txt_moveSpeed;
     [SerializeField] private TextMeshProUGUI txt_range;
     [SerializeField] private TextMeshProUGUI txt_defence;
-    [SerializeField] private TextMeshProUGUI txt_magicResist;
     [SerializeField] private TextMeshProUGUI txt_cooldown;
     [SerializeField] private TextMeshProUGUI txt_upgradePoints;
 
@@ -154,7 +153,6 @@ public class InventoryUI : MonoBehaviour
         txt_range?.SetText($"{s.weaponRange:F1}");
         txt_cooldown?.SetText($"{s.cooldown:F2}s");
         txt_defence?.SetText($"{s.defence:F1}");
-        txt_magicResist?.SetText($"{s.magicResist:F1}");
         txt_upgradePoints?.SetText($"{s.upgradePoints} pts");
     }
 

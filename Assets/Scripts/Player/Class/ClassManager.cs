@@ -81,15 +81,15 @@ public class ClassManager : MonoBehaviour
         var s = StatsManager.instance;
         var d = CurrentClassData;
 
-        s.maxHealth = d.maxHealth;
-        s.moveSpeed = d.moveSpeed;
-        s.maxStamina = d.maxStamina;
+        s.baseMaxHealth = d.maxHealth;
+        s.baseMoveSpeed = d.moveSpeed;
+        s.baseMaxStamina = d.maxStamina;
         s.staminaCost = d.staminaCost;
         s.dashDuration = d.dashDuration;
         s.dashDelay = d.dashDelay;
-        s.damage = d.damage;
+        s.baseDamage = d.damage;
         s.weaponRange = d.weaponRange;
-        s.cooldown = d.attackCooldown;
+        s.baseCooldown = d.attackCooldown;
         s.knockbackForce = d.knockbackForce;
         s.knockbackTime = d.knockbackTime;
         s.stunTime = d.stunTime;
