@@ -17,6 +17,7 @@ public class DifficultyModifier
     public float? MagicResistMultiplier;
     public float? SpeedMultiplier;
     public float? AttackSpeedMultiplier;
+    public float? GoldRewardMultiplier;
 
     // Per-behavior overrides (nullable = optional)
     public float? DetectionRangeMultiplier;
