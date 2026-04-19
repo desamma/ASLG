@@ -7,6 +7,7 @@ public class EnemyGrowthProfile
 {
     // How many of those points go to each stat
     public float Exp = 10f;
+    public float Gold = 5f;
     public float MaxHP = 8f;
     public float Strength = 3f;
     public float Magic = 3f;

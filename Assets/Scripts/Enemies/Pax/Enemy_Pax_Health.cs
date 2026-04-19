@@ -55,6 +55,8 @@ public class Enemy_Pax_Health : MonoBehaviour, IEnemy_Health
         {
             stats.CurrentHP = 0;
             isDead = true;
+            StatsManager.instance?.AddExp(Mathf.RoundToInt(stats.ExpReward));
+            StatsManager.instance?.AddGold(Mathf.RoundToInt(stats.GoldReward));
 
             if (movementComponent != null)
             {

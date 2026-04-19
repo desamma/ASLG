@@ -27,6 +27,8 @@ public class Enemy_KaraWinterbladeMK2_Health : MonoBehaviour, IEnemy_Health
             sharedHealth = Enemy_Faie_Kara_ShareHealth.GetOrCreate();
 
         InitializeStats();
+        sharedHealth.SetExpReward(stats.ExpReward);
+        sharedHealth.SetGoldReward(stats.GoldReward);
     }
 
     private void Start()

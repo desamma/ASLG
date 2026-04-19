@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7653395890673142711}
+  - component: {fileID: 8174691592367140722}
   - component: {fileID: 4318455414582415825}
   - component: {fileID: 2088240897685045331}
   - component: {fileID: 410796547774999222}
@@ -34,6 +35,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8174691592367140722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7052897822993540938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3c9721171c2c3544bcecbfd2787b672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bagItems: []
+  equippedWeapon: 
+  equippedAccessories: []
 --- !u!114 &4318455414582415825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,8 +88,6 @@ MonoBehaviour:
   _expToNextLevel: 100
   _currentExp: 0
   _upgradePoints: 0
-  _authToken: 
-  _userId: 
 --- !u!114 &2088240897685045331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,6 +104,7 @@ MonoBehaviour:
   archerData: {fileID: 11400000, guid: d205db58c715c504daf61ab1305c4c6b, type: 2}
   rogueData: {fileID: 11400000, guid: 24a96bdd02c5eef4aa90959b7d9514ca, type: 2}
   summonerData: {fileID: 11400000, guid: c1f123737358e534a86b653e19f3d04b, type: 2}
+  testData: {fileID: 0}
 --- !u!114 &410796547774999222
 MonoBehaviour:
   m_ObjectHideFlags: 0

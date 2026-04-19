@@ -52,6 +52,8 @@ public class Enemy_BringerOfDeath_Health : MonoBehaviour, IEnemy_Health
         else if (stats.CurrentHP <= 0)
         {
             isDead = true;
+            StatsManager.instance?.AddExp(Mathf.RoundToInt(stats.ExpReward));
+            StatsManager.instance?.AddGold(Mathf.RoundToInt(stats.GoldReward));
         }
 
         if (amount < 0 && movementComponent != null)

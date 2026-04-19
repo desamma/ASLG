@@ -36,6 +36,9 @@ public class DifficultyManager : MonoBehaviour
     [Tooltip("Leave at 0 to use Overall multiplier")]
     [SerializeField] private float attackSpeedMultiplier;
 
+    [Tooltip("Leave at 0 to use Overall multiplier")]
+    [SerializeField] private float goldRewardMultiplier;
+
     [Header("Behavior Profile Multipliers")]
     [Tooltip("Leave at 0 to use Overall multiplier")]
     [SerializeField] private float detectionRangeMultiplier;
@@ -131,6 +134,7 @@ public class DifficultyManager : MonoBehaviour
             MagicResistMultiplier = magicResistMultiplier > 0 ? magicResistMultiplier : null,
             SpeedMultiplier = speedMultiplier > 0 ? speedMultiplier : null,
             AttackSpeedMultiplier = attackSpeedMultiplier > 0 ? attackSpeedMultiplier : null,
+            GoldRewardMultiplier = goldRewardMultiplier > 0 ? goldRewardMultiplier : null,
             DetectionRangeMultiplier = detectionRangeMultiplier > 0 ? detectionRangeMultiplier : null,
             ChaseRangeMultiplier = chaseRangeMultiplier > 0 ? chaseRangeMultiplier : null,
             SpecialAttackFrequencyMultiplier = specialAttackFrequencyMultiplier > 0 ? specialAttackFrequencyMultiplier : null,
@@ -157,6 +161,7 @@ public class DifficultyManager : MonoBehaviour
         magicResistMultiplier = newDifficulty.MagicResistMultiplier ?? 0;
         speedMultiplier = newDifficulty.SpeedMultiplier ?? 0;
         attackSpeedMultiplier = newDifficulty.AttackSpeedMultiplier ?? 0;
+        goldRewardMultiplier = newDifficulty.GoldRewardMultiplier ?? 0;
         detectionRangeMultiplier = newDifficulty.DetectionRangeMultiplier ?? 0;
         chaseRangeMultiplier = newDifficulty.ChaseRangeMultiplier ?? 0;
         specialAttackFrequencyMultiplier = newDifficulty.SpecialAttackFrequencyMultiplier ?? 0;

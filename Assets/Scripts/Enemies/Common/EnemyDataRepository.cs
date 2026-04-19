@@ -28,6 +28,7 @@ public static class EnemyDataRepository
         return new EnemyStats
         {
             ExpReward =         baseStats.ExpReward        +   (growth.Exp <= 0 ? 10 : growth.Exp) *   levelsGained,    // 10 exp per level
+            GoldReward =        baseStats.GoldReward       +   (growth.Gold <= 0 ? 5 : growth.Gold) *   levelsGained,     // 5 gold per level
 
             MaxHP =             baseStats.MaxHP            +   growth.MaxHP            *   levelsGained,
             CurrentHP =         baseStats.MaxHP            +   growth.MaxHP            *   levelsGained,

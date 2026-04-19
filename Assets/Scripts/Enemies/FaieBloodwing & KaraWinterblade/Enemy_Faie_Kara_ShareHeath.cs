@@ -17,6 +17,9 @@ public class Enemy_Faie_Kara_ShareHealth : MonoBehaviour
     private Vector3 _karaSpawnPos;
     private bool _faiePosRegistered;
     private bool _karaPosRegistered;
+    private int _expReward;
+    private int _goldReward;
+    private bool _goldRewardGiven;
 
     public bool IsDead { get; private set; }
     public bool IsPhase2 { get; private set; }
@@ -29,6 +32,7 @@ public class Enemy_Faie_Kara_ShareHealth : MonoBehaviour
         maxHP = sharedMaxHP;
         currentHP = sharedMaxHP;
         IsDead = false;
+        _goldRewardGiven = false;
         bossHealthUI = FindFirstObjectByType<BossHealthUI>(FindObjectsInactive.Include);
 
         if (bossHealthUI != null)
@@ -46,6 +50,7 @@ public class Enemy_Faie_Kara_ShareHealth : MonoBehaviour
         currentHP = sharedMaxHP;
         IsDead = false;
         IsPhase2 = true;
+        _goldRewardGiven = false;
         if (bossHealthUI == null)
             bossHealthUI = FindFirstObjectByType<BossHealthUI>(FindObjectsInactive.Include);
         if (bossHealthUI != null)
@@ -90,9 +95,25 @@ public class Enemy_Faie_Kara_ShareHealth : MonoBehaviour
         if (currentHP <= 0)
         {
             IsDead = true;
+            if (!_goldRewardGiven)
+            {
+                _goldRewardGiven = true;
+                StatsManager.instance?.AddExp(_expReward);
+                StatsManager.instance?.AddGold(_goldReward);
+            }
             OnDeath?.Invoke();
             bossHealthUI.Hide();
         }
+    }
+
+    public void SetExpReward(float expReward)
+    {
+        _expReward = Mathf.Max(_expReward, Mathf.RoundToInt(expReward));
+    }
+
+    public void SetGoldReward(float goldReward)
+    {
+        _goldReward = Mathf.Max(_goldReward, Mathf.RoundToInt(goldReward));
     }
 
     private void CheckPhaseTransition()

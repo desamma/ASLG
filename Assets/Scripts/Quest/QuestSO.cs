@@ -1,10 +1,14 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "QuestSO", menuName = "QuestSO")]
 public class QuestSO : ScriptableObject
 {
+    [Header("Backend Data")]
+    [Tooltip("Mã ID duy nhất của Quest. (VD: quest_kill_slime_01)")]
+    public string questID; 
+
+    [Header("Info")]
     public string questName;
     [TextArea] public string questDescription;
     public int questLevel;
@@ -17,17 +21,16 @@ public class QuestSO : ScriptableObject
 public class QuestObjective
 {
     public string description;
-
-    [SerializeField] private Object target;
+    [SerializeField] private Object target; 
     public EnemyType targetEnemyType;
     public bool requiresMovement;
-
     public int requiredAmount;
 }
 
 [System.Serializable]
 public class QuestReward
 {
-    public ItemData itemData;
+    [Tooltip("Nhập ID của item từ file items.json (VD: con_blood_potion)")]
+    public string itemID; 
     public int quantity;
 }

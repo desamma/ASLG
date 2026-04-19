@@ -1,5 +1,8 @@
 using UnityEngine;
-using System.IO; // THÊM thư viện đọc/ghi file
+using System.IO;
+using System.Collections.Generic;
+
+// ĐÃ XÓA DÒNG KHAI BÁO enum StatType Ở ĐÂY ĐỂ TRÁNH TRÙNG LẶP VỚI FILE StatType.cs CỦA BẠN
 
 public class StatsManager : MonoBehaviour
 {
@@ -174,11 +177,13 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private int _level = 1;
     [SerializeField] private int _expToNextLevel = 100;
     [SerializeField] private int _currentExp = 0;
+    [SerializeField] private int _gold = 0;
     [SerializeField] private int _upgradePoints = 0;
 
     public int level { get => _level; private set { _level = Mathf.Max(1, value); OnStatsChanged(); } }
     public int expToNextLevel { get => _expToNextLevel; private set { _expToNextLevel = Mathf.Max(1, value); OnStatsChanged(); } }
     public int currentExp { get => _currentExp; private set { _currentExp = Mathf.Max(0, value); OnStatsChanged(); } }
+    public int gold { get => _gold; private set { _gold = Mathf.Max(0, value); OnStatsChanged(); } }
     public int upgradePoints { get => _upgradePoints; private set { _upgradePoints = Mathf.Max(0, value); OnStatsChanged(); } }
 
     // --- SỰ KIỆN ---
@@ -193,7 +198,6 @@ public class StatsManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // THÊM: Khôi phục Session khi load lại game
             AuthToken = PlayerPrefs.GetString("AuthToken", string.Empty);
             UserId = PlayerPrefs.GetString("UserId", string.Empty);
 
@@ -206,7 +210,7 @@ public class StatsManager : MonoBehaviour
     }
 
     // =========================================================
-    // HÀM LƯU / XÓA SESSION (GỌI TỪ AUTH MANAGER)
+    // HÀM LƯU / XÓA SESSION
     // =========================================================
     public void SaveSession(string token, string userId)
     {
@@ -217,7 +221,6 @@ public class StatsManager : MonoBehaviour
         PlayerPrefs.SetString("UserId", userId);
         PlayerPrefs.Save();
 
-        // Ghi ra file Text
         string logPath = Application.dataPath + "/Scripts/Authen/session_log.txt";
         try
         {
@@ -229,10 +232,7 @@ public class StatsManager : MonoBehaviour
             UnityEditor.AssetDatabase.Refresh();
 #endif
         }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"[StatsManager] Lỗi ghi file text: {e.Message}");
-        }
+        catch (System.Exception e) { Debug.LogError($"[StatsManager] Lỗi ghi file text: {e.Message}"); }
     }
 
     public void ClearSession()
@@ -245,17 +245,28 @@ public class StatsManager : MonoBehaviour
         PlayerPrefs.Save();
 
         string logPath = Application.dataPath + "/Scripts/Authen/session_log.txt";
-        if (File.Exists(logPath))
-        {
-            File.WriteAllText(logPath, "Đã đăng xuất - Phiên làm việc kết thúc.");
-        }
+        if (File.Exists(logPath)) File.WriteAllText(logPath, "Đã đăng xuất - Phiên làm việc kết thúc.");
     }
 
-    public bool HasToken()
+    public bool HasToken() => !string.IsNullOrEmpty(AuthToken);
+
+    // ==========================================
+    // DÀNH CHO SAVE MANAGER NẠP DỮ LIỆU
+    // ==========================================
+    public void LoadSavedStats(int savedLevel, int savedExp, int savedPts, float hp, float mana, float stam, string pName)
     {
-        return !string.IsNullOrEmpty(AuthToken);
+        _level = savedLevel;
+        _currentExp = savedExp;
+        _upgradePoints = savedPts;
+        _expToNextLevel = CalculateExpToNextLevel(savedLevel);
+        
+        _currentHealth = hp;
+        _currentMana = mana;
+        _currentStamina = stam;
+        _playerName = pName;
+        
+        OnStatsChanged();
     }
-    // =========================================================
 
     public void ResetStats()
     {
@@ -306,9 +317,14 @@ public class StatsManager : MonoBehaviour
         OnStatsChanged();
     }
 
+    public void AddGold(int amount)
+    {
+        gold += amount;
+        OnStatsChanged();
+    }
+
     public bool SpendUpgradePoints(int amount)
     {
-        Debug.Log("Try spend upgrade point!");
         if (_upgradePoints < amount) return false;
         _upgradePoints = Mathf.Max(0, _upgradePoints - amount);
         OnStatsChanged();
@@ -332,74 +348,70 @@ public class StatsManager : MonoBehaviour
         OnStatsChanged();
     }
 
-    // ── ITEM STATS BONUSES ────────────────────────────────────────────────
-    public void ApplyItemBonus(ItemData item)
+    // ── ITEM STATS BONUSES (HỆ THỐNG JSON MỚI) ───────────────────────────────────
+    public void ApplyItemBonus(string itemID)
     {
-        if (item == null || item.statBonuses.Count == 0)
-            return;
+        ItemDefinition def = ItemDatabase.GetItem(itemID);
+        if (def == null || def.statBonuses.Count == 0) return;
 
-        Debug.Log($"[StatsManager] ✅ Applying bonuses from: {item.itemName}");
-
-        foreach (var bonus in item.statBonuses)
+        Debug.Log($"[StatsManager] ✅ Đang cộng chỉ số trang bị: {def.name}");
+        foreach (var bonus in def.statBonuses)
         {
-            ApplyStatBonus(bonus.statName, bonus.value);
+            ApplyStatBonus(bonus.Key, bonus.Value);
         }
-
         OnStatsChanged();
     }
 
-    public void RemoveItemBonus(ItemData item)
+    public void RemoveItemBonus(string itemID)
     {
-        if (item == null || item.statBonuses.Count == 0)
-            return;
+        ItemDefinition def = ItemDatabase.GetItem(itemID);
+        if (def == null || def.statBonuses.Count == 0) return;
 
-        Debug.Log($"[StatsManager] ❌ Removing bonuses from: {item.itemName}");
-
-        foreach (var bonus in item.statBonuses)
+        Debug.Log($"[StatsManager] ❌ Đang gỡ bỏ chỉ số trang bị: {def.name}");
+        foreach (var bonus in def.statBonuses)
         {
-            ApplyStatBonus(bonus.statName, -bonus.value);
+            ApplyStatBonus(bonus.Key, -bonus.Value);
         }
-
         OnStatsChanged();
     }
 
-    private void ApplyStatBonus(string statName, float bonus)
+    public void ApplyStatBonus(string statName, float bonus)
     {
         if (bonus == 0) return;
 
         switch (statName.ToLower())
         {
-            case "health": currentHealth += bonus; break;
+            // CÁC CHỈ SỐ GỐC (Dành cho Trang bị)
             case "maxhealth": _bonusMaxHealth += bonus; break;
-            case "mana": currentMana += bonus; break;
             case "maxmana": _bonusMaxMana += bonus; break;
-            case "stamina":
             case "maxstamina": _bonusMaxStamina += bonus; break;
             case "damage": _bonusDamage += bonus; break;
-            case "movespeed":
-            case "speed": _bonusMoveSpeed += bonus; break;
-            case "range":
-            case "weaponrange": _bonusWeaponRange += bonus; break;
-            case "cooldown":
-            case "attackcooldown": _bonusCooldown += bonus; break;
-            case "knockback":
-            case "knockbackforce": _bonusKnockbackForce += bonus; break;
-            case "regenerate":
-            case "regen":
-            case "staminaregenrate": _bonusStaminaRegenRate += bonus; break;
-            case "defence":
-            case "defense":
-            case "armor": _bonusDefence += bonus; break;
+            case "movespeed": case "speed": _bonusMoveSpeed += bonus; break;
+            case "range": case "weaponrange": _bonusWeaponRange += bonus; break;
+            case "knockback": case "knockbackforce": _bonusKnockbackForce += bonus; break;
+            case "regenerate": case "regen": _bonusStaminaRegenRate += bonus; break;
+            case "defence": case "defense": case "armor": _bonusDefence += bonus; break;
+            case "cooldown": 
+                _bonusCooldown += bonus;
+                break;
+
+            // CÁC CHỈ SỐ HIỆN TẠI (Dành cho Bình Máu/Bình Mana)
+            case "currenthealth": case "hp": case "health": currentHealth += bonus; break;
+            case "currentmana": case "mp": case "mana": currentMana += bonus; break;
+            case "currentstamina": case "sp": case"stamina": currentStamina += bonus; break;
+            
+            // ĐIỂM KINH NGHIỆM
+            case "currentexp": case "exp": AddExp(Mathf.RoundToInt(bonus)); break;
+            case "upgradepoints": _upgradePoints += Mathf.RoundToInt(bonus); break;
+
             default:
-                Debug.LogWarning($"[StatsManager] Unknown stat: {statName}");
+                Debug.LogWarning($"[StatsManager] ⚠️ Không nhận diện được chỉ số: {statName}");
                 break;
         }
+        OnStatsChanged();
     }
 
-    private void OnStatsChanged()
-    {
-        OnStatsChangedEvent?.Invoke();
-    }
+    private void OnStatsChanged() => OnStatsChangedEvent?.Invoke();
 
     private void HandleDeath()
     {
@@ -409,6 +421,5 @@ public class StatsManager : MonoBehaviour
         Time.timeScale = 0f;
     }
 
-    private int CalculateExpToNextLevel(int nextLevel) =>
-    Mathf.RoundToInt(100 * Mathf.Pow(nextLevel, 1.5f));
+    private int CalculateExpToNextLevel(int nextLevel) => Mathf.RoundToInt(100 * Mathf.Pow(nextLevel, 1.5f));
 }

@@ -3,27 +3,84 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Collections;
-using System.Linq;
+using Newtonsoft.Json;
+
+// Biến Vector3 thành dạng an toàn cho JSON
+[System.Serializable]
+public class SVector3
+{
+    public float x, y, z;
+    public SVector3() {}
+    public SVector3(Vector3 v) { x = v.x; y = v.y; z = v.z; }
+    public Vector3 Get() => new Vector3(x, y, z);
+}
+
+// ==================================================
+// CÁC LỚP DỮ LIỆU TRUNG GIAN ĐỂ LƯU THÀNH JSON
+// ==================================================
+[System.Serializable]
+public class CompanionSaveData
+{
+    public string npcID;
+    public bool isActive;
+    public SVector3 position;
+    public int relationshipScore;
+    public List<ChatMessage> chatHistory; // Ký ức LLM
+}
+
+[System.Serializable]
+public class QuestSaveData
+{
+    public List<string> activeQuestIDs = new List<string>();
+    public List<string> completedQuestIDs = new List<string>();
+    public Dictionary<string, List<int>> questProgress = new Dictionary<string, List<int>>();
+}
+
+[System.Serializable]
+public class InventorySaveData
+{
+    public List<ItemStack> bagItems = new List<ItemStack>();
+    public string equippedWeapon = "";
+    public Dictionary<string, string> equippedArmor = new Dictionary<string, string>();
+    public List<string> equippedAccessories = new List<string>();
+}
+
+[System.Serializable]
+public class StatsSaveData
+{
+    public int level;
+    public int currentExp;
+    public int upgradePoints;
+    public float currentHealth;
+    public float currentMana;
+    public float currentStamina;
+}
 
 [System.Serializable]
 public class GameSaveData
 {
+    public string userId;
     public string playerName;
-    public string playerClass;
-    public Vector3 playerPosition;
+    
+    // ĐÃ FIX: Thêm lại biến lưu giữ Player Class
+    public int playerClassIndex; 
+    
     public string sceneName;
+    public SVector3 playerPosition;
 
-    // Alicia
-    public bool isAliciaActive;
-    public Vector3 aliciaPosition;
-    public int relationshipScore;
+    public StatsSaveData stats = new StatsSaveData();
+    public InventorySaveData inventory = new InventorySaveData();
+    public QuestSaveData quests = new QuestSaveData();
+    public List<CompanionSaveData> companions = new List<CompanionSaveData>();
 }
 
+// ==================================================
+// SAVE MANAGER CORE
+// ==================================================
 public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance;
     public GameSaveData currentSaveData = new GameSaveData();
-    private string saveFilePath;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void AutoCreateSaveManager()
@@ -38,7 +95,6 @@ public class SaveManager : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        saveFilePath = Application.persistentDataPath + "/savegame.json";
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -47,77 +103,171 @@ public class SaveManager : MonoBehaviour
         if (Instance == this) SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+    private static string GetSaveFilePath()
+    {
+        string uid = TokenManager.GetUserId();
+        if (string.IsNullOrEmpty(uid)) uid = "guest";
+        return Application.persistentDataPath + "/" + uid + ".json";
+    }
+
     public static bool HasSaveFile()
     {
-        return File.Exists(Application.persistentDataPath + "/savegame.json");
+        return File.Exists(GetSaveFilePath());
     }
 
+    // --- LƯU GAME ---
     public void SaveGame()
     {
-        currentSaveData.sceneName = SceneManager.GetActiveScene().name;
-
-        // Lưu Player
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null) currentSaveData.playerPosition = player.transform.position;
-        
-        if (StatsManager.instance != null) currentSaveData.playerName = StatsManager.instance.playerName;
+        if (player == null) return; // Chặn lưu nếu chưa sinh ra Player
 
-        // Lưu Alicia & AI Quest
-        LLMChatManager chatManager = FindObjectOfType<LLMChatManager>();
-        if (chatManager != null)
+        // 1. Dữ liệu Cơ bản
+        currentSaveData.userId = string.IsNullOrEmpty(TokenManager.GetUserId()) ? "guest" : TokenManager.GetUserId();
+        currentSaveData.sceneName = SceneManager.GetActiveScene().name;
+        currentSaveData.playerPosition = new SVector3(player.transform.position);
+
+        // ĐÃ FIX: Báo cho Save File biết bạn đang chơi Class nào
+        if (ClassManager.Instance != null)
         {
-            if (chatManager.aliciaScript != null && chatManager.aliciaScript.gameObject.activeInHierarchy)
-            {
-                currentSaveData.isAliciaActive = true;
-                currentSaveData.aliciaPosition = chatManager.aliciaScript.transform.position;
-                currentSaveData.relationshipScore = chatManager.aliciaScript.relationshipScore;
-            }
-            else currentSaveData.isAliciaActive = false;
+            currentSaveData.playerClassIndex = (int)ClassManager.Instance.SelectedClass;
         }
 
-        string json = JsonUtility.ToJson(currentSaveData, true);
-        File.WriteAllText(saveFilePath, json);
-        Debug.Log($"<color=cyan>[SaveManager] Auto-Saved to: {saveFilePath}</color>");
+        // 2. Dữ liệu Stats
+        if (StatsManager.instance != null)
+        {
+            currentSaveData.playerName = StatsManager.instance.playerName;
+            currentSaveData.stats.level = StatsManager.instance.level;
+            currentSaveData.stats.currentExp = StatsManager.instance.currentExp;
+            currentSaveData.stats.upgradePoints = StatsManager.instance.upgradePoints;
+            currentSaveData.stats.currentHealth = StatsManager.instance.currentHealth;
+            currentSaveData.stats.currentMana = StatsManager.instance.currentMana;
+            currentSaveData.stats.currentStamina = StatsManager.instance.currentStamina;
+        }
+
+        // 3. Dữ liệu Inventory
+        if (InventoryManager.instance != null)
+        {
+            currentSaveData.inventory.bagItems = new List<ItemStack>(InventoryManager.instance.bagItems);
+            currentSaveData.inventory.equippedWeapon = InventoryManager.instance.equippedWeapon;
+            currentSaveData.inventory.equippedArmor = new Dictionary<string, string>(InventoryManager.instance.equippedArmor);
+            currentSaveData.inventory.equippedAccessories = new List<string>(InventoryManager.instance.equippedAccessories);
+        }
+
+        // 4. Dữ liệu Quests
+        if (QuestManager.instance != null)
+        {
+            currentSaveData.quests = QuestManager.instance.ExportSaveData();
+        }
+
+        // 5. Dữ liệu NPC & AI
+        currentSaveData.companions.Clear();
+        NPCCompanion[] allNPCs = FindObjectsOfType<NPCCompanion>();
+        LLMChatManager chatManager = FindObjectOfType<LLMChatManager>();
+
+        foreach (var npc in allNPCs)
+        {
+            CompanionSaveData compData = new CompanionSaveData
+            {
+                npcID = npc.npcID,
+                isActive = npc.gameObject.activeInHierarchy,
+                position = new SVector3(npc.transform.position),
+                relationshipScore = npc.relationshipScore
+            };
+
+            if (chatManager != null && chatManager.aliciaScript == npc)
+            {
+                compData.chatHistory = new List<ChatMessage>(chatManager.GetChatHistory());
+            }
+            currentSaveData.companions.Add(compData);
+        }
+
+        string json = JsonConvert.SerializeObject(currentSaveData, Formatting.Indented);
+        File.WriteAllText(GetSaveFilePath(), json);
+        Debug.Log($"<color=cyan>[SaveManager] Auto-Saved to: {GetSaveFilePath()}</color>");
     }
 
+    // --- NẠP GAME ---
     public void LoadGame()
     {
         if (HasSaveFile())
         {
-            string json = File.ReadAllText(saveFilePath);
-            currentSaveData = JsonUtility.FromJson<GameSaveData>(json);
-            Debug.Log("<color=cyan>[SaveManager] Loaded file, transitioning scene...</color>");
+            string json = File.ReadAllText(GetSaveFilePath());
+            currentSaveData = JsonConvert.DeserializeObject<GameSaveData>(json);
+
+            // ĐÃ FIX: Nhét thông tin Class vào ClassManager TRƯỚC KHI chuyển Scene
+            if (ClassManager.Instance != null)
+            {
+                ClassManager.Instance.SelectClass((PlayerClass)currentSaveData.playerClassIndex);
+            }
             
-            if (StatsManager.instance != null) StatsManager.instance.playerName = currentSaveData.playerName;
+            // Backup phòng hờ cho GameSession cũ của bạn
+            GameSession.PlayerName = currentSaveData.playerName;
+            GameSession.PlayerClass = currentSaveData.playerClassIndex;
+
+            if (StatsManager.instance != null)
+            {
+                StatsManager.instance.LoadSavedStats(
+                    currentSaveData.stats.level, currentSaveData.stats.currentExp, currentSaveData.stats.upgradePoints,
+                    currentSaveData.stats.currentHealth, currentSaveData.stats.currentMana, currentSaveData.stats.currentStamina,
+                    currentSaveData.playerName
+                );
+            }
+
+            if (InventoryManager.instance != null)
+            {
+                InventoryManager.instance.bagItems = currentSaveData.inventory.bagItems;
+                InventoryManager.instance.equippedWeapon = currentSaveData.inventory.equippedWeapon;
+                InventoryManager.instance.equippedArmor = currentSaveData.inventory.equippedArmor;
+                InventoryManager.instance.equippedAccessories = currentSaveData.inventory.equippedAccessories;
+                InventoryManager.instance.ForceUIUpdate();
+            }
+
+            if (QuestManager.instance != null)
+            {
+                QuestManager.instance.ImportSaveData(currentSaveData.quests);
+            }
+
+            Debug.Log("<color=cyan>[SaveManager] Loaded file, transitioning scene...</color>");
             SceneManager.LoadScene(currentSaveData.sceneName);
         }
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Bật AutoSave nếu ở Game
-        if (scene.name == "Game" || scene.buildIndex > 0)
-        {
-            StopCoroutine(nameof(AutoSaveRoutine));
-            StartCoroutine(nameof(AutoSaveRoutine));
-        }
-        StartCoroutine(ApplySaveDataRoutine());
+        StopCoroutine(nameof(AutoSaveRoutine));
+        StartCoroutine(nameof(AutoSaveRoutine));
+        
+        StartCoroutine(ApplySceneDataRoutine());
     }
 
-    private IEnumerator ApplySaveDataRoutine()
+    private IEnumerator ApplySceneDataRoutine()
     {
-        yield return new WaitForEndOfFrame(); // Đợi 1 frame cho PlayerSpawner kịp sinh ra nhân vật
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame(); 
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null && currentSaveData.playerPosition != Vector3.zero) player.transform.position = currentSaveData.playerPosition;
-
-        LLMChatManager chatManager = FindObjectOfType<LLMChatManager>();
-        if (chatManager != null)
+        if (player != null && currentSaveData.playerPosition != null)
         {
-            if (chatManager.aliciaScript != null && currentSaveData.isAliciaActive)
+            player.transform.position = currentSaveData.playerPosition.Get();
+        }
+
+        NPCCompanion[] allNPCs = FindObjectsOfType<NPCCompanion>();
+        LLMChatManager chatManager = FindObjectOfType<LLMChatManager>();
+
+        foreach (var npc in allNPCs)
+        {
+            var savedNpc = currentSaveData.companions.Find(c => c.npcID == npc.npcID);
+            if (savedNpc != null)
             {
-                chatManager.aliciaScript.transform.position = currentSaveData.aliciaPosition;
-                chatManager.aliciaScript.relationshipScore = currentSaveData.relationshipScore;
+                npc.gameObject.SetActive(savedNpc.isActive);
+                npc.transform.position = savedNpc.position.Get();
+                npc.relationshipScore = savedNpc.relationshipScore;
+                npc.UpdateRelationshipUI();
+
+                if (chatManager != null && chatManager.aliciaScript == npc)
+                {
+                    chatManager.SetChatHistory(savedNpc.chatHistory);
+                }
             }
         }
     }
@@ -126,7 +276,7 @@ public class SaveManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(10f); // Lưu mỗi 10 giây
+            yield return new WaitForSeconds(4f); // Lưu mỗi 10 giây
             SaveGame();
         }
     }

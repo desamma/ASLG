@@ -68,6 +68,8 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
         {
             stats.CurrentHP = 0;
             isDead = true;
+            StatsManager.instance?.AddExp(Mathf.RoundToInt(stats.ExpReward));
+            StatsManager.instance?.AddGold(Mathf.RoundToInt(stats.GoldReward));
 
             // =========================================================
             // THÊM MỚI: BÁO CÁO CHO HỆ THỐNG NHIỆM VỤ LÀ BOSS ĐÃ CHẾT
