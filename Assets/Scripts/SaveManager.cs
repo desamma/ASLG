@@ -61,6 +61,10 @@ public class GameSaveData
 {
     public string userId;
     public string playerName;
+    
+    // ĐÃ FIX: Thêm lại biến lưu giữ Player Class
+    public int playerClassIndex; 
+    
     public string sceneName;
     public SVector3 playerPosition;
 
@@ -114,19 +118,19 @@ public class SaveManager : MonoBehaviour
     // --- LƯU GAME ---
     public void SaveGame()
     {
-        // BỨC TƯỜNG BẢO VỆ: CHỈ LƯU KHI ĐANG Ở TRONG GAME (CÓ PLAYER)
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null)
-        {
-            // Tắt dòng log này nếu thấy phiền, nhưng nó giúp chặn lỗi lưu nhầm ở Scene Creation
-            // Debug.LogWarning("[SaveManager] Không thấy Player. Hủy lệnh lưu để tránh hỏng file Save.");
-            return; 
-        }
+        if (player == null) return; // Chặn lưu nếu chưa sinh ra Player
 
         // 1. Dữ liệu Cơ bản
         currentSaveData.userId = string.IsNullOrEmpty(TokenManager.GetUserId()) ? "guest" : TokenManager.GetUserId();
         currentSaveData.sceneName = SceneManager.GetActiveScene().name;
         currentSaveData.playerPosition = new SVector3(player.transform.position);
+
+        // ĐÃ FIX: Báo cho Save File biết bạn đang chơi Class nào
+        if (ClassManager.Instance != null)
+        {
+            currentSaveData.playerClassIndex = (int)ClassManager.Instance.SelectedClass;
+        }
 
         // 2. Dữ liệu Stats
         if (StatsManager.instance != null)
@@ -177,7 +181,6 @@ public class SaveManager : MonoBehaviour
             currentSaveData.companions.Add(compData);
         }
 
-        // Ghi file JSON
         string json = JsonConvert.SerializeObject(currentSaveData, Formatting.Indented);
         File.WriteAllText(GetSaveFilePath(), json);
         Debug.Log($"<color=cyan>[SaveManager] Auto-Saved to: {GetSaveFilePath()}</color>");
@@ -190,6 +193,16 @@ public class SaveManager : MonoBehaviour
         {
             string json = File.ReadAllText(GetSaveFilePath());
             currentSaveData = JsonConvert.DeserializeObject<GameSaveData>(json);
+
+            // ĐÃ FIX: Nhét thông tin Class vào ClassManager TRƯỚC KHI chuyển Scene
+            if (ClassManager.Instance != null)
+            {
+                ClassManager.Instance.SelectClass((PlayerClass)currentSaveData.playerClassIndex);
+            }
+            
+            // Backup phòng hờ cho GameSession cũ của bạn
+            GameSession.PlayerName = currentSaveData.playerName;
+            GameSession.PlayerClass = currentSaveData.playerClassIndex;
 
             if (StatsManager.instance != null)
             {
@@ -221,7 +234,6 @@ public class SaveManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Luôn bật Coroutine AutoSave, nhưng bên trong hàm SaveGame() đã có check Player == null để tự chặn
         StopCoroutine(nameof(AutoSaveRoutine));
         StartCoroutine(nameof(AutoSaveRoutine));
         
@@ -230,7 +242,6 @@ public class SaveManager : MonoBehaviour
 
     private IEnumerator ApplySceneDataRoutine()
     {
-        // Đợi 2 frames để chắc chắn hệ thống PlayerSpawner của bạn đã đẻ ra Player
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame(); 
 
@@ -265,7 +276,7 @@ public class SaveManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(2f); // Lưu mỗi 10 giây
+            yield return new WaitForSeconds(4f); // Lưu mỗi 10 giây
             SaveGame();
         }
     }
