@@ -1462,7 +1462,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 3, y: 3.8028}
+  m_AnchoredPosition: {x: 3, y: 3.8027954}
   m_SizeDelta: {x: 0, y: 21.6056}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &339488627
@@ -1532,22 +1532,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryPanel: {fileID: 339488624}
-  txt_level: {fileID: 1180776086}
-  txt_expBar: {fileID: 1510781579}
-  slider_exp: {fileID: 67182097}
-  txt_hp: {fileID: 338920887}
-  slider_hp: {fileID: 0}
-  txt_mana: {fileID: 236354061}
-  slider_mana: {fileID: 0}
-  txt_stamina: {fileID: 990178980}
-  slider_stamina: {fileID: 0}
-  txt_damage: {fileID: 1973904360}
-  txt_moveSpeed: {fileID: 1935476167}
-  txt_range: {fileID: 1870498414}
-  txt_defence: {fileID: 0}
-  txt_magicResist: {fileID: 0}
-  txt_cooldown: {fileID: 1914647303}
-  txt_upgradePoints: {fileID: 1204518650}
   itemSlotPrefab: {fileID: 3992982406673191109, guid: 2d744cd00b6277242853bb25312cdd46, type: 3}
   slotGrid: {fileID: 873212063}
   btn_nextPage: {fileID: 0}
@@ -1564,13 +1548,6 @@ MonoBehaviour:
   txt_previewStats: {fileID: 276184408}
   btn_equip: {fileID: 1071907875}
   btn_drop: {fileID: 416634261}
-  playerItems:
-  - {fileID: 11400000, guid: 5e70c3cba977391469511e6e132bb84a, type: 2}
-  - {fileID: 11400000, guid: 77ffd25ce9db1d647a3c502c0b6bdef4, type: 2}
-  - {fileID: 11400000, guid: db0687c3cc901ff408cc0ff3623e210c, type: 2}
-  - {fileID: 11400000, guid: 5c2ba949fbdb7b142801f101798bd656, type: 2}
-  - {fileID: 11400000, guid: 129cbd46cdf2ec044a2c32e7b2ea2f8a, type: 2}
-  - {fileID: 11400000, guid: 45170cca0423f2b42a1758ecb451e5d7, type: 2}
 --- !u!1 &358254897
 GameObject:
   m_ObjectHideFlags: 0
@@ -3952,14 +3929,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 1504913000}
   movement: {fileID: 1504912997}
-  normalAttackPoint: {fileID: 1823917425}
-  normalAttackRadius: 1.5
-  normalAttackHitEffect: {fileID: 0}
+  attackPoint: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8
-  normalAttackSwingAudioClip: {fileID: 8300000, guid: 8d19f1d5054be0f4f90f7764ce5336da, type: 3}
-  normalAttackHitAudioClip: {fileID: 8300000, guid: ec8406498b4529640aa1b8bdd5142d16, type: 3}
   volume: 1
 --- !u!114 &1504912996
 MonoBehaviour:
@@ -3973,22 +3946,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16de9a89f99cb924dac4b1f6a563a922, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerName: 
+  authToken: 
+  userId: 
   _maxHealth: 100
+  _currentHealth: 0
+  _defence: 10
+  _magicResist: 5
   _maxMana: 100
+  _currentMana: 0
   _moveSpeed: 5
   _maxStamina: 100
   _staminaRegenRate: 10
   _staminaCost: 25
   _dashDelay: 0.5
   _dashDuration: 0.2
+  _currentStamina: 0
   _damage: 10
   _weaponRange: 1.5
   _knockbackForce: 5
   _knockbackTime: 0.2
   _stunTime: 0.3
   _cooldown: 0.5
-  _defence: 10
-  _magicResist: 5
   _level: 1
   _expToNextLevel: 100
   _currentExp: 0
@@ -5876,7 +5855,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -2, y: 10}
+  m_AnchoredPosition: {x: -2, y: 10.0000305}
   m_SizeDelta: {x: 549.3556, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2133398715

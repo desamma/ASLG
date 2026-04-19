@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class NPCCompanion : MonoBehaviour
 {
     [Header("Core Settings")]
+    public string npcID = "npc_alicia"; // THÊM DÒNG NÀY (Để Save file phân biệt các NPC)
     public string npcName = "Alicia";
     public int relationshipScore = 0;
 
@@ -79,7 +80,7 @@ public class NPCCompanion : MonoBehaviour
     }
 
     // --- HỆ THỐNG CẢM XÚC (UI) ---
-    private void UpdateRelationshipUI()
+    public void UpdateRelationshipUI()
     {
         if (relationshipText == null) return;
 

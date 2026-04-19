@@ -1,5 +1,8 @@
 using UnityEngine;
-using System.IO; // THÊM thư viện đọc/ghi file
+using System.IO;
+using System.Collections.Generic;
+
+// ĐÃ XÓA DÒNG KHAI BÁO enum StatType Ở ĐÂY ĐỂ TRÁNH TRÙNG LẶP VỚI FILE StatType.cs CỦA BẠN
 
 public class StatsManager : MonoBehaviour
 {
@@ -116,7 +119,6 @@ public class StatsManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // THÊM: Khôi phục Session khi load lại game
             AuthToken = PlayerPrefs.GetString("AuthToken", string.Empty);
             UserId = PlayerPrefs.GetString("UserId", string.Empty);
 
@@ -129,7 +131,7 @@ public class StatsManager : MonoBehaviour
     }
 
     // =========================================================
-    // HÀM LƯU / XÓA SESSION (GỌI TỪ AUTH MANAGER)
+    // HÀM LƯU / XÓA SESSION
     // =========================================================
     public void SaveSession(string token, string userId)
     {
@@ -140,7 +142,6 @@ public class StatsManager : MonoBehaviour
         PlayerPrefs.SetString("UserId", userId);
         PlayerPrefs.Save();
 
-        // Ghi ra file Text
         string logPath = Application.dataPath + "/Scripts/Authen/session_log.txt";
         try
         {
@@ -152,10 +153,7 @@ public class StatsManager : MonoBehaviour
             UnityEditor.AssetDatabase.Refresh();
 #endif
         }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"[StatsManager] Lỗi ghi file text: {e.Message}");
-        }
+        catch (System.Exception e) { Debug.LogError($"[StatsManager] Lỗi ghi file text: {e.Message}"); }
     }
 
     public void ClearSession()
@@ -168,17 +166,28 @@ public class StatsManager : MonoBehaviour
         PlayerPrefs.Save();
 
         string logPath = Application.dataPath + "/Scripts/Authen/session_log.txt";
-        if (File.Exists(logPath))
-        {
-            File.WriteAllText(logPath, "Đã đăng xuất - Phiên làm việc kết thúc.");
-        }
+        if (File.Exists(logPath)) File.WriteAllText(logPath, "Đã đăng xuất - Phiên làm việc kết thúc.");
     }
 
-    public bool HasToken()
+    public bool HasToken() => !string.IsNullOrEmpty(AuthToken);
+
+    // ==========================================
+    // DÀNH CHO SAVE MANAGER NẠP DỮ LIỆU
+    // ==========================================
+    public void LoadSavedStats(int savedLevel, int savedExp, int savedPts, float hp, float mana, float stam, string pName)
     {
-        return !string.IsNullOrEmpty(AuthToken);
+        _level = savedLevel;
+        _currentExp = savedExp;
+        _upgradePoints = savedPts;
+        _expToNextLevel = CalculateExpToNextLevel(savedLevel);
+        
+        _currentHealth = hp;
+        _currentMana = mana;
+        _currentStamina = stam;
+        _playerName = pName;
+        
+        OnStatsChanged();
     }
-    // =========================================================
 
     private void InitialiseStats()
     {
@@ -220,7 +229,6 @@ public class StatsManager : MonoBehaviour
 
     public bool SpendUpgradePoints(int amount)
     {
-        Debug.Log("Try spend upgrade point!");
         if (_upgradePoints < amount) return false;
         _upgradePoints = Mathf.Max(0, _upgradePoints - amount);
         OnStatsChanged();
@@ -245,120 +253,73 @@ public class StatsManager : MonoBehaviour
         }
     }
 
-    // ── ITEM STATS BONUSES ────────────────────────────────────────────────
-    public void ApplyItemBonus(ItemData item)
+    // ── ITEM STATS BONUSES (HỆ THỐNG JSON MỚI) ───────────────────────────────────
+    public void ApplyItemBonus(string itemID)
     {
-        if (item == null || item.statBonuses.Count == 0)
-            return;
+        ItemDefinition def = ItemDatabase.GetItem(itemID);
+        if (def == null || def.statBonuses.Count == 0) return;
 
-        Debug.Log($"[StatsManager] ✅ Applying bonuses from: {item.itemName}");
-
-        foreach (var bonus in item.statBonuses)
+        Debug.Log($"[StatsManager] ✅ Đang cộng chỉ số trang bị: {def.name}");
+        foreach (var bonus in def.statBonuses)
         {
-            ApplyStatBonus(bonus.statName, bonus.value);
+            ApplyStatBonus(bonus.Key, bonus.Value);
         }
-
         OnStatsChanged();
     }
 
-    public void RemoveItemBonus(ItemData item)
+    public void RemoveItemBonus(string itemID)
     {
-        if (item == null || item.statBonuses.Count == 0)
-            return;
+        ItemDefinition def = ItemDatabase.GetItem(itemID);
+        if (def == null || def.statBonuses.Count == 0) return;
 
-        Debug.Log($"[StatsManager] ❌ Removing bonuses from: {item.itemName}");
-
-        foreach (var bonus in item.statBonuses)
+        Debug.Log($"[StatsManager] ❌ Đang gỡ bỏ chỉ số trang bị: {def.name}");
+        foreach (var bonus in def.statBonuses)
         {
-            ApplyStatBonus(bonus.statName, -bonus.value);
+            ApplyStatBonus(bonus.Key, -bonus.Value);
         }
-
         OnStatsChanged();
     }
 
-    private void ApplyStatBonus(string statName, float bonus)
+    public void ApplyStatBonus(string statName, float bonus)
     {
         if (bonus == 0) return;
 
         switch (statName.ToLower())
         {
-            case "health":
-            case "maxhealth":
-                maxHealth += bonus;
-                Debug.Log($"  📊 MaxHealth: +{bonus} → {maxHealth}");
+            // CÁC CHỈ SỐ GỐC (Dành cho Trang bị)
+            case "maxhealth": maxHealth += bonus; break;
+            case "maxmana": maxMana += bonus; break;
+            case "maxstamina": maxStamina += bonus; break;
+            case "damage": damage += bonus; break;
+            case "movespeed": case "speed": moveSpeed += bonus; break;
+            case "range": case "weaponrange": weaponRange += bonus; break;
+            case "knockback": case "knockbackforce": knockbackForce += bonus; break;
+            case "regenerate": case "regen": staminaRegenRate += bonus; break;
+            case "defence": case "defense": case "armor": defence += bonus; break;
+            case "magicresist": magicResist += bonus; break;
+            
+            case "cooldown": 
+                cooldown -= bonus; // Bonus số dương sẽ GIẢM cooldown
+                cooldown = Mathf.Max(0.1f, cooldown); 
                 break;
 
-            case "mana":
-            case "maxmana":
-                maxMana += bonus;
-                Debug.Log($"  📊 MaxMana: +{bonus} → {maxMana}");
-                break;
-
-            case "stamina":
-            case "maxstamina":
-                maxStamina += bonus;
-                Debug.Log($"  📊 MaxStamina: +{bonus} → {maxStamina}");
-                break;
-
-            case "damage":
-                damage += bonus;
-                Debug.Log($"  📊 Damage: +{bonus} → {damage}");
-                break;
-
-            case "movespeed":
-            case "speed":
-                moveSpeed += bonus;
-                Debug.Log($"  📊 MoveSpeed: +{bonus} → {moveSpeed}");
-                break;
-
-            case "range":
-            case "weaponrange":
-                weaponRange += bonus;
-                Debug.Log($"  📊 WeaponRange: +{bonus} → {weaponRange}");
-                break;
-
-            case "cooldown":
-                cooldown -= bonus;
-                cooldown = Mathf.Max(0.1f, cooldown);
-                Debug.Log($"  📊 Cooldown: -{bonus} → {cooldown}s");
-                break;
-
-            case "knockback":
-            case "knockbackforce":
-                knockbackForce += bonus;
-                Debug.Log($"  📊 KnockbackForce: +{bonus} → {knockbackForce}");
-                break;
-
-            case "regenerate":
-            case "regen":
-            case "staminaregenrate":
-                staminaRegenRate += bonus;
-                Debug.Log($"  📊 StaminaRegenRate: +{bonus} → {staminaRegenRate}");
-                break;
-
-            case "defence":
-            case "defense":
-            case "armor":
-                defence += bonus;
-                Debug.Log($"  📊 Defence: +{bonus} → {defence}");
-                break;
-
-            case "magicresist":
-            case "magic_resist":
-            case "magicresistance":
-                magicResist += bonus;
-                Debug.Log($"  📊 MagicResist: +{bonus} → {magicResist}");
-                break;
+            // CÁC CHỈ SỐ HIỆN TẠI (Dành cho Bình Máu/Bình Mana)
+            case "currenthealth": case "hp": currentHealth += bonus; break;
+            case "currentmana": case "mp": currentMana += bonus; break;
+            case "currentstamina": case "sp": currentStamina += bonus; break;
+            
+            // ĐIỂM KINH NGHIỆM
+            case "currentexp": case "exp": AddExp(Mathf.RoundToInt(bonus)); break;
+            case "upgradepoints": _upgradePoints += Mathf.RoundToInt(bonus); break;
 
             default:
-                Debug.LogWarning($"[StatsManager] ⚠️ Unknown stat: {statName}");
+                Debug.LogWarning($"[StatsManager] ⚠️ Không nhận diện được chỉ số: {statName}");
                 break;
         }
+        OnStatsChanged();
     }
-    private void OnStatsChanged()
-    {
-        OnStatsChangedEvent?.Invoke();
-    }
+
+    private void OnStatsChanged() => OnStatsChangedEvent?.Invoke();
 
     private void HandleDeath()
     {
@@ -368,6 +329,5 @@ public class StatsManager : MonoBehaviour
         Time.timeScale = 0f;
     }
 
-    private int CalculateExpToNextLevel(int nextLevel) =>
-    Mathf.RoundToInt(100 * Mathf.Pow(nextLevel, 1.5f));
+    private int CalculateExpToNextLevel(int nextLevel) => Mathf.RoundToInt(100 * Mathf.Pow(nextLevel, 1.5f));
 }
