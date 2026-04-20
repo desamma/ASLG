@@ -46,7 +46,7 @@ public class PlayerAttack : MonoBehaviour
 
     private void HandleAttackInput()
     {
-        if (Input.GetButtonDown("Slash") && CanAttack())
+        if (Input.GetButtonDown("Slash") && CanAttack() && Time.timeScale != 0f)
             TriggerAttack();
     }
 

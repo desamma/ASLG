@@ -146,7 +146,7 @@ public class InventoryUI : MonoBehaviour
         txt_previewDesc?.SetText(def.description);
 
         var sb = new System.Text.StringBuilder();
-        foreach (var bonus in def.statBonuses) sb.AppendLine($"<color=#6a5a42>{bonus.Key}</color>   <color=#90c060>+{bonus.Value}</color>");
+        foreach (var bonus in def.statBonuses) sb.AppendLine($"<color=#6a5a42>{bonus.Key}</color>   <color=#90c060>{bonus.Value}</color>");
         txt_previewStats?.SetText(sb.ToString());
 
         if (btn_equip)
