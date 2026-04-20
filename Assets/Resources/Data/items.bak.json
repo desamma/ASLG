@@ -1,0 +1,123 @@
+{
+  "con_blood_potion": {
+    "name": "Blood Potion",
+    "rarity": "Common",
+    "itemType": "Consumable",
+    "armorSlot": "None",
+    "description": "A cracked vial filled with dark crimson fluid of unknown origin. It tastes of iron and regret — but the wounds close fast.",
+    "isStackable": true,
+    "maxStack": 10,
+    "iconPath": "Icons/iron_face_guard",
+    "statBonuses": { "currentHealth": 50 }
+  },
+  "acc_blood_ring": {
+    "name": "Blood Ring",
+    "rarity": "Rare",
+    "itemType": "Accessory",
+    "armorSlot": "None",
+    "description": "A gold band set with a deep crimson gem. It pulses faintly — like a heartbeat that isn't yours.",
+    "isStackable": false,
+    "maxStack": 1,
+    "iconPath": "Icons/skull_chain_necklace",
+    "statBonuses": { "maxHealth": 20, "damage": 5 }
+  },
+  "arm_chained_iron_greaves": {
+    "name": "Chained Iron Greaves",
+    "rarity": "Rare",
+    "itemType": "Armor",
+    "armorSlot": "Shoes",
+    "description": "Heavy iron boots bound in rusted chains. Each step echoes like a death knell. The weight slows you — but nothing will knock you down.",
+    "isStackable": false,
+    "maxStack": 1,
+    "iconPath": "Icons/chained_iron_greaves",
+    "statBonuses": { "defence": 15, "moveSpeed": -1.5, "maxHealth": 30 }
+  },
+  "acc_crimson_band": {
+    "name": "Crimson Band",
+    "rarity": "Epic",
+    "itemType": "Accessory",
+    "armorSlot": "None",
+    "description": "An oversized ring carved from bone and gold. Wearing it feels like something is being slowly drained from within — yet your strikes grow faster and fiercer.",
+    "isStackable": false,
+    "maxStack": 1,
+    "iconPath": "Icons/crimson_band",
+    "statBonuses": { "damage": 10, "cooldown": -0.5, "maxHealth": -20 }
+  },
+  "wp_cursed_iron_sword": {
+    "name": "Cursed Iron Sword",
+    "rarity": "Rare",
+    "itemType": "Weapon",
+    "armorSlot": "None",
+    "description": "A blade forged in cursed iron, etched with blood runes that hunger for life. Its edge never dulls — but neither does its thirst.",
+    "isStackable": false,
+    "maxStack": 1,
+    "iconPath": "Icons/raw_meat",
+    "statBonuses": { "damage": 25, "maxHealth": -10 }
+  },
+  "con_dark_mana_potion": {
+    "name": "Dark Mana Potion",
+    "rarity": "Uncommon",
+    "itemType": "Consumable",
+    "armorSlot": "None",
+    "description": "A swirling vial of deep violet liquid, brewed from shadow herbs and crushed night crystal. Restores mana with an unsettling warmth.",
+    "isStackable": true,
+    "maxStack": 5,
+    "iconPath": "Icons/iron_face_guard",
+    "statBonuses": { "currentMana": 40 }
+  },
+  "wp_iron_sword": {
+    "name": "Iron Sword",
+    "rarity": "Rare",
+    "itemType": "Weapon",
+    "armorSlot": "None",
+    "description": "A basic iron blade.",
+    "isStackable": false,
+    "maxStack": 1,
+    "iconPath": "Icons/Icon_05",
+    "statBonuses": { "damage": 10 }
+  },
+  "con_raw_meat": {
+    "name": "Raw Meat",
+    "rarity": "Common",
+    "itemType": "Consumable",
+    "armorSlot": "None",
+    "description": "Can be cooked or eaten raw if you are desperate.",
+    "isStackable": true,
+    "maxStack": 20,
+    "iconPath": "Icons/raw_meat",
+    "statBonuses": { "currentHealth": 10 }
+  },
+  "arm_shadow_legguards": {
+    "name": "Shadow Legguards",
+    "rarity": "Rare",
+    "itemType": "Armor",
+    "armorSlot": "Leg",
+    "description": "Lightweight guards that seem to absorb the light around them.",
+    "isStackable": false,
+    "maxStack": 1,
+    "iconPath": "Icons/shadow_legguards",
+    "statBonuses": { "defence": 10, "moveSpeed": 0.5 }
+  },
+  "arm_skull_helmet": {
+    "name": "Skull Helmet",
+    "rarity": "Rare",
+    "itemType": "Armor",
+    "armorSlot": "Head",
+    "description": "A helmet fashioned from the skull of a large beast.",
+    "isStackable": false,
+    "maxStack": 1,
+    "iconPath": "Icons/skull_helmet",
+    "statBonuses": { "defence": 12, "maxHealth": 15 }
+  },
+  "arm_warmog_armor": {
+    "name": "Warmog Armor",
+    "rarity": "Epic",
+    "itemType": "Armor",
+    "armorSlot": "Body",
+    "description": "A legendary chestplate pulsing with vital energy.",
+    "isStackable": false,
+    "maxStack": 1,
+    "iconPath": "Icons/warmog_armor",
+    "statBonuses": { "defence": 30, "maxHealth": 200 }
+  }
+}
