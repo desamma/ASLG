@@ -1,6 +1,6 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -8,13 +8,26 @@ public class CharacterCreation : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private TMP_InputField nameInput;
-    [SerializeField] private TMP_Dropdown classDropdown;
     [SerializeField] private Button startButton;
 
+    [Header("Class Buttons")]
+    [SerializeField] private Button knightButton;
+    [SerializeField] private Button archerButton;
+    [SerializeField] private Button rogueButton;
+
+    [Header("Selected Highlight")]
+    [SerializeField] private Color selectedColor = new Color(0.3f, 0.7f, 1f);
+    [SerializeField] private Color deselectedColor = Color.white;
+
     [Header("Class Preview")]
-    [SerializeField] private TMP_Text classNameText;
     [SerializeField] private TMP_Text classDescriptionText;
-    [SerializeField] private Image classIconImage;
+    [SerializeField] private TMP_Text healthText;
+    [SerializeField] private TMP_Text defenseText;
+    [SerializeField] private TMP_Text staminaText;
+    [SerializeField] private TMP_Text damageText;
+    [SerializeField] private TMP_Text movespeedText;
+    [SerializeField] private TMP_Text attackCooldownText;
+    [SerializeField] private TMP_Text attatckTypeText;
 
     [Header("Scene")]
     [SerializeField] private int gameSceneIndex = 2;
@@ -25,49 +38,49 @@ public class CharacterCreation : MonoBehaviour
 
     private void Start()
     {
-        BuildDropdown();
-        RefreshPreview();
+        nameInput.text = null;
+        knightButton.onClick.AddListener(() => SelectClass(PlayerClass.Knight));
+        archerButton.onClick.AddListener(() => SelectClass(PlayerClass.Archer));
+        rogueButton.onClick.AddListener(() => SelectClass(PlayerClass.Rogue));
 
-        classDropdown.onValueChanged.AddListener(OnClassDropdownChanged);
         nameInput.onValueChanged.AddListener(_ => RefreshStartButton());
         startButton.onClick.AddListener(OnStartClicked);
 
+        SelectClass(selectedClass);
         RefreshStartButton();
     }
 
     private void OnDestroy()
     {
-        classDropdown.onValueChanged.RemoveListener(OnClassDropdownChanged);
-        startButton.onClick.RemoveListener(OnStartClicked);
+        knightButton.onClick.RemoveAllListeners();
+        archerButton.onClick.RemoveAllListeners();
+        rogueButton.onClick.RemoveAllListeners();
+        startButton.onClick.RemoveAllListeners();
     }
 
-    // ── Dropdown ──────────────────────────────────────────────────────────────
+    // ── Class selection ───────────────────────────────────────────────────────
 
-    private void BuildDropdown()
+    private void SelectClass(PlayerClass playerClass)
     {
-        classDropdown.ClearOptions();
-
-        var options = new System.Collections.Generic.List<string>();
-        foreach (PlayerClass pc in System.Enum.GetValues(typeof(PlayerClass)))
-        {
-            var data = ClassManager.Instance.GetDataFor(pc);
-            string label = (data != null && !string.IsNullOrEmpty(data.displayName) && data.playerClass == pc) 
-                            ? data.displayName 
-                            : pc.ToString();
-            options.Add(label);
-        }
-
-        classDropdown.AddOptions(options);
-        classDropdown.SetValueWithoutNotify((int)selectedClass);
+        selectedClass = playerClass;
         ClassManager.Instance.SelectClass(selectedClass);
+        RefreshButtonHighlights();
         RefreshPreview();
     }
 
-    private void OnClassDropdownChanged(int index)
+    private void RefreshButtonHighlights()
     {
-        selectedClass = (PlayerClass)index;
-        ClassManager.Instance.SelectClass(selectedClass);
-        RefreshPreview();
+        SetButtonHighlight(knightButton, selectedClass == PlayerClass.Knight);
+        SetButtonHighlight(archerButton, selectedClass == PlayerClass.Archer);
+        SetButtonHighlight(rogueButton, selectedClass == PlayerClass.Rogue);
+    }
+
+    private void SetButtonHighlight(Button button, bool isSelected)
+    {
+        if (button == null) return;
+        var image = button.GetComponent<Image>();
+        if (image != null)
+            image.color = isSelected ? selectedColor : deselectedColor;
     }
 
     // ── Preview panel ─────────────────────────────────────────────────────────
@@ -77,15 +90,15 @@ public class CharacterCreation : MonoBehaviour
         var data = ClassManager.Instance.CurrentClassData;
         if (data == null) return;
 
-        if (classNameText != null) classNameText.text = data.displayName;
-        if (classDescriptionText != null) classDescriptionText.text = data.description;
-        //if (classIconImage != null)
-        //{
-        //    // icon is optional — hide image if none assigned
-        //    bool hasIcon = data.icon != null;
-        //    classIconImage.gameObject.SetActive(hasIcon);
-        //    if (hasIcon) classIconImage.sprite = data.icon;
-        //}
+        classDescriptionText.text = data.description;
+
+        healthText.text = "Health: " + data.maxHealth.ToString();
+        defenseText.text = "Defense: " + data.defence.ToString();
+        staminaText.text = "Stamina: " + data.maxStamina.ToString();
+        damageText.text = "Damage: " + data.damage.ToString();
+        movespeedText.text = "Movespeed: " + data.moveSpeed.ToString();
+        attackCooldownText.text = "Attack Cooldown: " + data.attackCooldown.ToString();
+        attatckTypeText.text = "Attack Type: " + data.attackType.ToString();
     }
 
     // ── Start button ──────────────────────────────────────────────────────────
@@ -102,7 +115,6 @@ public class CharacterCreation : MonoBehaviour
         if (string.IsNullOrWhiteSpace(playerName)) return;
 
         StatsManager.instance.playerName = playerName;
-
         SceneManager.LoadScene(gameSceneIndex);
     }
 }
