@@ -15,15 +15,40 @@ public class StatRowUI : MonoBehaviour
     public Color negativeColor = new Color(0.87f, 0.38f, 0.38f);
     public Color neutralColor  = new Color(0.75f, 0.63f, 0.44f);
 
+    /// <summary>
+    /// Thiết lập hiển thị stat (tên + giá trị với color feedback).
+    /// </summary>
     public void Setup(string statName, float value)
     {
-        if (statNameText) statNameText.text = statName.ToUpper();
+        // ✓ Validation: Kiểm tra statName có hợp lệ
+        if (string.IsNullOrWhiteSpace(statName))
+        {
+            Debug.LogWarning("[StatRowUI] statName is null or empty!");
+            statName = "UNKNOWN";
+        }
+
+        if (statNameText)
+            statNameText.text = statName.ToUpper();
+        else
+            Debug.LogWarning("[StatRowUI] statNameText is not assigned!");
 
         if (statValueText)
         {
-            string sign = value >= 0 ? "+" : "";
-            statValueText.text  = $"{sign}{value}";
-            statValueText.color = value > 0 ? positiveColor : (value < 0 ? negativeColor : neutralColor);
+            // ✓ Format giá trị với dấu + cho số dương
+            string sign = value > 0 ? "+" : "";
+            statValueText.text = $"{sign}{value:F1}"; // F1 để format số thập phân
+
+            // ✓ Color feedback: Dương = Xanh, Âm = Đỏ, Zero = Trung tính
+            if (value > 0)
+                statValueText.color = positiveColor;
+            else if (value < 0)
+                statValueText.color = negativeColor;
+            else
+                statValueText.color = neutralColor;
+        }
+        else
+        {
+            Debug.LogWarning("[StatRowUI] statValueText is not assigned!");
         }
     }
 }

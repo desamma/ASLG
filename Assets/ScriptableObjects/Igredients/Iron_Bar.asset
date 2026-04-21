@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Iron_Bar
   rarity: 0
-  description: "M\xF4 t\u1EA3 item \u1EDF \u0111\xE2y."
+  description: iron stupid
   itemType: 4
   armorSlot: 1
   icon: {fileID: 21300000, guid: e1290b2981c6bd342bb18eaea9b41ac1, type: 3}
@@ -23,5 +23,7 @@ MonoBehaviour:
   maxStack: 99
   currentStack: 1
   goldValue: 0
-  statBonuses: []
+  statBonuses:
+  - statName: Damage
+    value: 10
   worldPrefab: {fileID: 0}

@@ -83,6 +83,12 @@ public class CraftingUI : MonoBehaviour
         qtyPlusButton.onClick.AddListener(() => ChangeCraftQty(1));
         searchInput.onValueChanged.AddListener(OnSearchChanged);
 
+        // Ẩn tất cả slot icon lúc khởi động
+        foreach (var img in gridSlotImages)
+            if (img) img.enabled = false;
+        if (resultIconImage) resultIconImage.enabled = false;
+        if (infoIconImage) infoIconImage.enabled = false;
+
         // ĐÃ SỬA: Cập nhật 6 tab (Thêm Accessory vào index 3)
         for (int i = 0; i < categoryTabButtons.Length; i++)
         {
@@ -224,8 +230,11 @@ public class CraftingUI : MonoBehaviour
             }
         }
 
-        if (resultIconImage && recipe.resultItem != null)
-            resultIconImage.sprite = recipe.resultItem.icon;
+        if (resultIconImage)
+        {
+            resultIconImage.sprite = recipe.resultItem != null ? recipe.resultItem.icon : null;
+            resultIconImage.enabled = recipe.resultItem != null && recipe.resultItem.icon != null;
+        }
     }
 
     private void UpdateInfoPanel(CraftingRecipe recipe)
@@ -233,7 +242,11 @@ public class CraftingUI : MonoBehaviour
         if (recipe.resultItem == null) { ClearInfo(); return; }
         var item = recipe.resultItem;
 
-        if (infoIconImage) infoIconImage.sprite = item.icon;
+        if (infoIconImage)
+        {
+            infoIconImage.sprite = item.icon;
+            infoIconImage.enabled = item.icon != null;
+        }
         if (infoNameText) infoNameText.text = item.itemName;
         if (infoRarityText)
         {
@@ -269,7 +282,11 @@ public class CraftingUI : MonoBehaviour
 
     private void ClearInfo()
     {
-        if (infoIconImage) infoIconImage.sprite = null;
+        if (infoIconImage)
+        {
+            infoIconImage.sprite = null;
+            infoIconImage.enabled = false;
+        }
         if (infoNameText) infoNameText.text = "Select a recipe";
         if (infoRarityText) infoRarityText.text = "—";
 
@@ -278,7 +295,11 @@ public class CraftingUI : MonoBehaviour
 
         if (statsContainer) foreach (Transform c in statsContainer) Destroy(c.gameObject);
         if (materialsContainer) foreach (Transform c in materialsContainer) Destroy(c.gameObject);
-        if (resultIconImage) resultIconImage.sprite = null;
+        if (resultIconImage)
+        {
+            resultIconImage.sprite = null;
+            resultIconImage.enabled = false;
+        }
     }
 
     // ── Crafting ─────────────────────────────────────────────────────────────
