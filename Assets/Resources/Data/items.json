@@ -4,7 +4,7 @@
       "rarity": "Common",
       "itemType": "Consumable",
       "armorSlot": "None",
-      "description": "A swirling, translucent red liquid that smells faintly of hibiscus and iron.",
+      "description": "Restores 50 HP instantly.",
       "isStackable": true,
       "maxStack": 10,
       "iconPath": "Icons/health_potion",
@@ -14,15 +14,80 @@
    },
    "con_mana_potion": {
       "name": "Mana Potion",
-      "rarity": "Uncommon",
+      "rarity": "Rare",
       "itemType": "Consumable",
       "armorSlot": "None",
-      "description": "A thick, viscous syrup extracted from resilient flora. It is bitter to the tongue but burns with a restorative heat once swallowed.",
+      "description": "Restores 40 MP instantly.",
       "isStackable": true,
       "maxStack": 3,
       "iconPath": "Icons/mana_potion",
       "statBonuses": {
          "currentMana": 40
+      }
+   },
+   "wpn_iron_sword": {
+      "name": "Iron Sword",
+      "rarity": "Common",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A basic sword made of iron.",
+      "isStackable": true,
+      "maxStack": 10,
+      "iconPath": "Icons/iron_sword",
+      "statBonuses": {
+         "damage": 10
+      }
+   },
+   "wpn_flame_sword": {
+      "name": "Flame Sword",
+      "rarity": "Rare",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A sword imbued with fire.",
+      "isStackable": true,
+      "maxStack": 3,
+      "iconPath": "Icons/flame_sword",
+      "statBonuses": {
+         "damage": 25
+      }
+   },
+   "wpn_thunder_blade": {
+      "name": "Thunder Blade",
+      "rarity": "Epic",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "Calls lightning on hit.",
+      "isStackable": true,
+      "maxStack": 2,
+      "iconPath": "Icons/thunder_blade",
+      "statBonuses": {
+         "damage": 40
+      }
+   },
+   "wpn_ashen_greatsword": {
+      "name": "Ashen Greatsword",
+      "rarity": "Legendary",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "Legendary ash blade.",
+      "isStackable": true,
+      "maxStack": 1,
+      "iconPath": "Icons/ashen_greatsword",
+      "statBonuses": {
+         "damage": 80
+      }
+   },
+   "arm_knight_armor": {
+      "name": "Knight Armor",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Heavy defensive armor.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/knight_armor",
+      "statBonuses": {
+         "defence": 50
       }
    },
    "acc_ring_of_speed": {
