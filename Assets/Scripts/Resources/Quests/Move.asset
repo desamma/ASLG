@@ -10,16 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a748864d8035514dbae295ae61f0829, type: 3}
-  m_Name: Quest_Main
+  m_Name: Move
   m_EditorClassIdentifier: 
-  questName: Fight slime
-  questDescription: "T\xECm slime v\xE0 \u0111\xE1nh "
-  questLevel: 2
+  questID: move_daily_01
+  questType: 1
+  questName: Moving
+  questDescription: Moving in 3 seconds
+  questLevel: 1
   questObjectives:
-  - description: defeat 1 slime
-    target: {fileID: 8217960046450129111, guid: b02e301c95cfd8a46953fd032f13abbf, type: 3}
-    targetEnemyType: 1
-    requiredAmount: 1
+  - description: Now moving in 3 seconds
+    target: {fileID: 0}
+    targetEnemyType: 0
+    requiresMovement: 1
+    requiredAmount: 3
   rewards:
-  - itemData: {fileID: 11400000, guid: 77ffd25ce9db1d647a3c502c0b6bdef4, type: 2}
-    quantity: 11
+  - itemData: {fileID: 11400000, guid: db0687c3cc901ff408cc0ff3623e210c, type: 2}
+    quantity: 1

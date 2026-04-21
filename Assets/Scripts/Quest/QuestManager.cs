@@ -16,60 +16,85 @@ public class QuestManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject); // GIỮ NGUYÊN QUA CÁC SCENE
-        }
+        if (instance == null) instance = this;
         else Destroy(gameObject);
     }
 
-    public List<QuestSO> GetActiveQuests() => activeQuests;
+    private void Start()
+    {
+        // Khởi tạo sổ tay tiến độ cho các Quest đã kéo sẵn trong Inspector
+        foreach (var quest in activeQuests)
+        {
+            if (!questProgress.ContainsKey(quest))
+            {
+                questProgress[quest] = new Dictionary<QuestObjective, int>();
+                foreach (var objective in quest.questObjectives)
+                {
+                    questProgress[quest][objective] = 0;
+                }
+            }
+        }
+    }
 
-    private void OnEnable() => EnemyQuestTarget.OnEnemyDied += HandleEnemyKill;
-    private void OnDisable() => EnemyQuestTarget.OnEnemyDied -= HandleEnemyKill;
+    public List<QuestSO> GetActiveQuests()
+    {
+        return activeQuests;
+    }
+
+    private void OnEnable()
+    {
+        EnemyQuestTarget.OnEnemyDied += HandleEnemyKill;
+    }
+
+    private void OnDisable()
+    {
+        EnemyQuestTarget.OnEnemyDied -= HandleEnemyKill;
+    }
 
     public void AcceptQuest(QuestSO questSO)
     {
-        if (!activeQuests.Contains(questSO)) activeQuests.Add(questSO);
-        if (!questProgress.ContainsKey(questSO)) questProgress[questSO] = new Dictionary<QuestObjective, int>();
+        if (!activeQuests.Contains(questSO))
+        {
+            activeQuests.Add(questSO);
+        }
 
-        foreach (var objective in questSO.questObjectives) UpdateObjectiveProgress(questSO, objective);
-        Debug.Log($"[Quest] Đã nhận Quest: {questSO.questName}");
-    }
-
-    public bool HasCompletedQuest(QuestSO questSO) => completedQuests.Contains(questSO);
-
-    public bool IsQuestComplete(QuestSO questSO)
-    {
-        if (!questProgress.ContainsKey(questSO)) return false;
-        var progressDictionary = questProgress[questSO];
+        if (!questProgress.ContainsKey(questSO))
+        {
+            questProgress[questSO] = new Dictionary<QuestObjective, int>();
+        }
 
         foreach (var objective in questSO.questObjectives)
         {
-            int currentAmount = progressDictionary.ContainsKey(objective) ? progressDictionary[objective] : 0;
-            if (currentAmount < objective.requiredAmount) return false;
+            if (!questProgress[questSO].ContainsKey(objective))
+                questProgress[questSO][objective] = 0;
         }
-        return true;
+
+        Debug.Log($"[Hệ Thống] Đã nhận Quest: {questSO.questName}");
+    }
+
+    public bool HasCompletedQuest(QuestSO questSO)
+    {
+        return completedQuests.Contains(questSO);
     }
 
     public void CompleteQuest(QuestSO questSO)
     {
-        if (activeQuests.Contains(questSO)) activeQuests.Remove(questSO);
-        if (!completedQuests.Contains(questSO)) completedQuests.Add(questSO);
-        if (questProgress.ContainsKey(questSO)) questProgress.Remove(questSO);
+        if (activeQuests.Contains(questSO))
+            activeQuests.Remove(questSO);
 
-        if (InventoryManager.instance != null)
+        if (!completedQuests.Contains(questSO))
+            completedQuests.Add(questSO);
+
+        if (questProgress.ContainsKey(questSO))
+            questProgress.Remove(questSO);
+
+        if (InventoryUI.instance != null)
         {
-            foreach (var reward in questSO.rewards) InventoryManager.instance.AddItem(reward.itemID, reward.quantity);
-            Debug.Log($"[Quest] Đã trả Quest '{questSO.questName}' và phát thưởng!");
+            foreach (var reward in questSO.rewards)
+            {
+                InventoryUI.instance.AddItems(reward.itemData, reward.quantity);
+            }
         }
-    }
-
-    public void UpdateObjectiveProgress(QuestSO questSO, QuestObjective objective)
-    {
-        if (!questProgress.ContainsKey(questSO)) questProgress[questSO] = new Dictionary<QuestObjective, int>();
-        if (!questProgress[questSO].ContainsKey(objective)) questProgress[questSO][objective] = 0;
     }
 
     public void AddMovementProgress(float deltaTime)
@@ -81,18 +106,22 @@ public class QuestManager : MonoBehaviour
 
             foreach (var objective in quest.questObjectives)
             {
-                if (objective.requiresMovement && progressDict[objective] < objective.requiredAmount)
+                if (objective.requiresMovement && progressDictionary[objective] < objective.requiredAmount)
                 {
-                    if (!movementTimers.ContainsKey(objective)) movementTimers[objective] = 0f;
+                    if (!movementTimers.ContainsKey(objective))
+                        movementTimers[objective] = 0f;
+
                     movementTimers[objective] += deltaTime;
 
                     if (movementTimers[objective] >= 1f)
                     {
                         int secondsToAdd = Mathf.FloorToInt(movementTimers[objective]);
                         movementTimers[objective] -= secondsToAdd;
-                        progressDict[objective] += secondsToAdd;
+                        progressDictionary[objective] += secondsToAdd;
 
-                        if (progressDict[objective] > objective.requiredAmount) progressDict[objective] = objective.requiredAmount;
+                        if (progressDictionary[objective] > objective.requiredAmount)
+                            progressDictionary[objective] = objective.requiredAmount;
+
                         OnQuestProgressUpdated?.Invoke();
                     }
                 }
@@ -105,16 +134,17 @@ public class QuestManager : MonoBehaviour
         foreach (var quest in activeQuests)
         {
             if (!questProgress.ContainsKey(quest)) continue;
-            var progressDict = questProgress[quest];
+            var progressDictionary = questProgress[quest];
 
             foreach (var objective in quest.questObjectives)
             {
                 if (objective.targetEnemyType == deadEnemyType && deadEnemyType != EnemyType.None)
                 {
-                    if (!progressDict.ContainsKey(objective)) progressDict[objective] = 0;
-                    if (progressDict[objective] < objective.requiredAmount)
+                    if (!progressDictionary.ContainsKey(objective)) progressDictionary[objective] = 0;
+
+                    if (progressDictionary[objective] < objective.requiredAmount)
                     {
-                        progressDict[objective]++;
+                        progressDictionary[objective]++;
                         OnQuestProgressUpdated?.Invoke();
                     }
                 }
@@ -126,7 +156,7 @@ public class QuestManager : MonoBehaviour
     {
         if (questProgress.TryGetValue(questSO, out var objDict))
         {
-            if (objDict.TryGetValue(objective, out var amount)) return amount;
+            if (objectiveDictionary.TryGetValue(objective, out var amount)) return amount;
         }
         return 0;
     }
@@ -135,57 +165,31 @@ public class QuestManager : MonoBehaviour
     {
         int currentAmount = GetCurrentAmount(questSO, objective);
         if (currentAmount >= objective.requiredAmount) return "Complete";
-        else if (objective.requiresMovement || objective.targetEnemyType != EnemyType.None) return $"{currentAmount}/{objective.requiredAmount}";
-        else return "In Progress";
+        return $"{currentAmount}/{objective.requiredAmount}";
     }
 
-    // =======================================================
-    // API CHO SAVE MANAGER
-    // =======================================================
-    public QuestSaveData ExportSaveData()
+    public void NotifyUIUpdate()
     {
-        QuestSaveData data = new QuestSaveData();
-        foreach (var q in activeQuests) data.activeQuestIDs.Add(q.questID);
-        foreach (var q in completedQuests) data.completedQuestIDs.Add(q.questID);
-
-        foreach (var kvp in questProgress)
-        {
-            List<int> objProgress = new List<int>();
-            foreach (var obj in kvp.Key.questObjectives)
-            {
-                objProgress.Add(kvp.Value.ContainsKey(obj) ? kvp.Value[obj] : 0);
-            }
-            data.questProgress[kvp.Key.questID] = objProgress;
-        }
-        return data;
+        OnQuestProgressUpdated?.Invoke();
     }
 
-    public void ImportSaveData(QuestSaveData data)
+    public void AbandonQuest(QuestSO questSO)
     {
-        activeQuests.Clear();
-        completedQuests.Clear();
-        questProgress.Clear();
-
-        // Nạp tất cả QuestSO từ thư mục Resources/Data/Quests
-        QuestSO[] allAvailableQuests = Resources.LoadAll<QuestSO>("Data/Quests");
-        Dictionary<string, QuestSO> questDB = new Dictionary<string, QuestSO>();
-        foreach (var q in allAvailableQuests) questDB[q.questID] = q;
-
-        foreach (var id in data.activeQuestIDs) if (questDB.ContainsKey(id)) activeQuests.Add(questDB[id]);
-        foreach (var id in data.completedQuestIDs) if (questDB.ContainsKey(id)) completedQuests.Add(questDB[id]);
-
-        foreach (var kvp in data.questProgress)
+        // 1. Xóa khỏi danh sách đang làm
+        if (activeQuests.Contains(questSO))
         {
-            if (questDB.ContainsKey(kvp.Key))
-            {
-                QuestSO q = questDB[kvp.Key];
-                questProgress[q] = new Dictionary<QuestObjective, int>();
-                for (int i = 0; i < q.questObjectives.Count; i++)
-                {
-                    if (i < kvp.Value.Count) questProgress[q][q.questObjectives[i]] = kvp.Value[i];
-                }
-            }
+            activeQuests.Remove(questSO);
         }
-        Debug.Log("[QuestManager] Đã nạp dữ liệu Quest thành công.");
+
+        // 2. Xóa sổ tay tiến độ ngầm của nó đi
+        if (questProgress.ContainsKey(questSO))
+        {
+            questProgress.Remove(questSO);
+        }
+
+        Debug.Log($"[Hệ Thống] Đã hủy bỏ nhiệm vụ: {questSO.questName}");
+
+        // 3. Báo cho UI biết để cập nhật lại
+        OnQuestProgressUpdated?.Invoke();
     }
 }

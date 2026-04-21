@@ -1,14 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 1. Phân thành 2 nhánh cốt truyện và Daily task
+public enum QuestType
+{
+    Story, // Nhiệm vụ chính tuyến (Cốt truyện)
+    Daily  // Nhiệm vụ hằng ngày
+}
+
 [CreateAssetMenu(fileName = "QuestSO", menuName = "QuestSO")]
 public class QuestSO : ScriptableObject
 {
-    [Header("Backend Data")]
-    [Tooltip("Mã ID duy nhất của Quest. (VD: quest_kill_slime_01)")]
-    public string questID; 
+    [Header("Quest Identity (BẮT BUỘC ĐỂ SAVE/LOAD)")]
+    [Tooltip("Mỗi quest phải có 1 ID duy nhất. VD: main_01, daily_slime")]
+    public string questID;
+    public QuestType questType;
 
-    [Header("Info")]
+    [Header("Quest Info")]
     public string questName;
     [TextArea] public string questDescription;
     public int questLevel;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Player.Class;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
