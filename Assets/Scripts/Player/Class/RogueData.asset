@@ -14,8 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 64468534510225419, guid: 08dd2b34980a15a48b753400a5f80384, type: 3}
   playerClass: 2
-  displayName: Rogue
-  description: 
+  displayName: The Ash-born Rogue
+  description: '"Honor is a luxury reserved for the victorious. The dead only care
+    that you joined them."
+
+
+    Bred in lightless gutters, the Rogue thrives on
+    the unfair fight, relying on ruthless agility and serrated daggers to bleed monsters
+    out from the shadows.'
   maxHealth: 400
   defence: 5
   moveSpeed: 7
@@ -35,4 +41,4 @@ MonoBehaviour:
   hitEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
   swingClip: {fileID: 8300000, guid: ca1da7b2c101c534999be0c7c11ee33c, type: 3}
-  hitClip: {fileID: 0}
+  hitClip: {fileID: 8300000, guid: ec8406498b4529640aa1b8bdd5142d16, type: 3}
