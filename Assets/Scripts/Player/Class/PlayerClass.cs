@@ -1,14 +1,22 @@
-public enum PlayerClass
-{
-    Knight,
-    Archer,
-    Rogue,
-    Summoner,
-    Test
-}
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public enum AttackType
+namespace Assets.Scripts.Player.Class
 {
-    Melee,
-    Ranged
+    public enum PlayerClass
+    {
+        Knight,
+        Archer,
+        Rogue,
+        Summoner,
+        Test
+    }
+    public enum AttackType
+    {
+        Melee,
+        Ranged
+    }
 }

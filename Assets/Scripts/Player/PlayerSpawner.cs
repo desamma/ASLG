@@ -1,5 +1,6 @@
 using UnityEngine;
-using Cinemachine; // 1. Thêm thư viện Cinemachine
+using Cinemachine;
+using Assets.Scripts.Player.Class; // 1. Thêm thư viện Cinemachine
 
 public class PlayerSpawner : MonoBehaviour
 {
