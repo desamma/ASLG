@@ -1,16 +1,19 @@
-using UnityEngine;
-using System.IO;
-using UnityEngine.SceneManagement;
-using System.Collections.Generic;
-using System.Collections;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 // Biến Vector3 thành dạng an toàn cho JSON
-[System.Serializable]
+[Serializable]
 public class SVector3
 {
     public float x, y, z;
-    public SVector3() {}
+    public SVector3() { }
     public SVector3(Vector3 v) { x = v.x; y = v.y; z = v.z; }
     public Vector3 Get() => new Vector3(x, y, z);
 }
@@ -18,7 +21,7 @@ public class SVector3
 // ==================================================
 // CÁC LỚP DỮ LIỆU TRUNG GIAN ĐỂ LƯU THÀNH JSON
 // ==================================================
-[System.Serializable]
+[Serializable]
 public class CompanionSaveData
 {
     public string npcID;
@@ -28,7 +31,7 @@ public class CompanionSaveData
     public List<ChatMessage> chatHistory; // Ký ức LLM
 }
 
-[System.Serializable]
+[Serializable]
 public class QuestSaveData
 {
     public List<string> activeQuestIDs = new List<string>();
@@ -36,7 +39,7 @@ public class QuestSaveData
     public Dictionary<string, List<int>> questProgress = new Dictionary<string, List<int>>();
 }
 
-[System.Serializable]
+[Serializable]
 public class InventorySaveData
 {
     public List<ItemStack> bagItems = new List<ItemStack>();
@@ -45,7 +48,7 @@ public class InventorySaveData
     public List<string> equippedAccessories = new List<string>();
 }
 
-[System.Serializable]
+[Serializable]
 public class StatsSaveData
 {
     public int level;
@@ -56,15 +59,15 @@ public class StatsSaveData
     public float currentStamina;
 }
 
-[System.Serializable]
+[Serializable]
 public class GameSaveData
 {
     public string userId;
     public string playerName;
-    
+
     // ĐÃ FIX: Thêm lại biến lưu giữ Player Class
-    public int playerClassIndex; 
-    
+    public int playerClassIndex;
+
     public string sceneName;
     public SVector3 playerPosition;
 
@@ -82,11 +85,77 @@ public class SaveManager : MonoBehaviour
     public static SaveManager Instance;
     public GameSaveData currentSaveData = new GameSaveData();
 
+    [Header("Cloud Save")]
+    [SerializeField] private bool enableOnlineActivity = true;
+    [SerializeField] private string backendUrl = "https://localhost:7206";
+    [SerializeField] private string firebaseStorageUploadApi = "/api/FirebaseStorage/upload";
+    [SerializeField] private string firebaseStorageDownloadApi = "/api/FirebaseStorage/download";
+    [SerializeField] private string firebaseStorageListApi = "/api/FirebaseStorage/list";
+    [SerializeField] private string cloudSaveFolderPath = "userSaveFile";
+    [SerializeField] private string userItemPendingDeliveryApi = "/api/UserItem/pending-delivery";
+    [SerializeField] private string userItemAcknowledgeDeliveryApi = "/api/UserItem/acknowledge-delivery";
+
+    private bool _isCloudSaving;
+    private bool _isSaving;
+    private bool _isSyncingWebItems;
+
+    [Serializable]
+    private class CloudListResponse
+    {
+        public List<string> files;
+        public int count;
+    }
+
+    [Serializable]
+    private class ApiResponse<T>
+    {
+        public string message;
+        public T data;
+    }
+
+    [Serializable]
+    private class PendingDeliveryItemInfo
+    {
+        public string dictionaryKey;
+        public string name;
+    }
+
+    [Serializable]
+    private class PendingDeliveryItem
+    {
+        public Guid itemId;
+        public int quantity;
+        public int quantityDelivered;
+        public int quantityPending;
+        public PendingDeliveryItemInfo item;
+    }
+
+    [Serializable]
+    private class AcknowledgeDeliveryPayload
+    {
+        public List<AcknowledgeDeliveryItem> items = new List<AcknowledgeDeliveryItem>();
+    }
+
+    [Serializable]
+    private class AcknowledgeDeliveryItem
+    {
+        public string itemDictionaryKey;
+        public int quantity;
+    }
+
+    private string BuildApiUrl(string apiPath)
+    {
+        var baseUrl = (backendUrl ?? string.Empty).TrimEnd('/');
+        var path = (apiPath ?? string.Empty).TrimStart('/');
+        return baseUrl + "/" + path;
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void AutoCreateSaveManager()
     {
         GameObject go = new GameObject("SaveManager_System");
         Instance = go.AddComponent<SaveManager>();
+        Instance.enableOnlineActivity = true;
         DontDestroyOnLoad(go);
     }
 
@@ -117,6 +186,33 @@ public class SaveManager : MonoBehaviour
 
     // --- LƯU GAME ---
     public void SaveGame()
+    {
+        if (_isSaving) return;
+        StartCoroutine(SaveGameRoutine());
+    }
+
+    private IEnumerator SaveGameRoutine()
+    {
+        _isSaving = true;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+        {
+            _isSaving = false;
+            yield break;
+        }
+
+        if (!HasSaveFile() && enableOnlineActivity)
+        {
+            yield return TryRestoreSaveFromCloudRoutine();
+        }
+
+        yield return SyncPendingWebItemsRoutine();
+        SaveGameToLocalFile();
+        _isSaving = false;
+    }
+
+    private void SaveGameToLocalFile()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null) return; // Chặn lưu nếu chưa sinh ra Player
@@ -186,49 +282,407 @@ public class SaveManager : MonoBehaviour
         Debug.Log($"<color=cyan>[SaveManager] Auto-Saved to: {GetSaveFilePath()}</color>");
     }
 
-    // --- NẠP GAME ---
+    private void SaveToCloud()
+    {
+        if (!enableOnlineActivity) return;
+        if (_isCloudSaving) return;
+        StartCoroutine(SaveToCloudRoutine());
+    }
+
+    private IEnumerator SaveToCloudRoutine()
+    {
+        string savePath = GetSaveFilePath();
+        if (!File.Exists(savePath))
+        {
+            yield break;
+        }
+
+        string token = TokenManager.GetToken();
+        if (string.IsNullOrEmpty(token))
+        {
+            Debug.LogWarning("[SaveManager] Skip cloud save: missing auth token.");
+            yield break;
+        }
+
+        byte[] fileBytes = File.ReadAllBytes(savePath);
+        if (fileBytes == null || fileBytes.Length == 0)
+        {
+            yield break;
+        }
+
+        _isCloudSaving = true;
+
+        var form = new WWWForm();
+        form.AddField("FolderPath", cloudSaveFolderPath);
+        form.AddBinaryData("File", fileBytes, Path.GetFileName(savePath), "application/json");
+
+        using (UnityWebRequest request = UnityWebRequest.Post(BuildApiUrl(firebaseStorageUploadApi), form))
+        {
+            request.SetRequestHeader("Authorization", "Bearer " + token);
+
+            yield return request.SendWebRequest();
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError($"[SaveManager] Cloud save failed ({request.responseCode}): {request.error}\n{request.downloadHandler.text}");
+            }
+        }
+
+        _isCloudSaving = false;
+    }
+
     public void LoadGame()
     {
+        StartCoroutine(LoadGameRoutine());
+    }
+
+    private IEnumerator LoadGameRoutine()
+    {
+        if (!HasSaveFile() && enableOnlineActivity)
+        {
+            yield return TryRestoreSaveFromCloudRoutine();
+        }
+
         if (HasSaveFile())
         {
-            string json = File.ReadAllText(GetSaveFilePath());
-            currentSaveData = JsonConvert.DeserializeObject<GameSaveData>(json);
+            LoadFromLocalFile();
+            yield return SyncPendingWebItemsRoutine();
+            ApplyCurrentSaveDataAndLoadScene();
+        }
+        else
+        {
+            Debug.Log("[SaveManager] No local or cloud save found. Treat as new player.");
+        }
+    }
 
-            // ĐÃ FIX: Nhét thông tin Class vào ClassManager TRƯỚC KHI chuyển Scene
-            if (ClassManager.Instance != null)
+    private void LoadFromLocalFile()
+    {
+        string json = File.ReadAllText(GetSaveFilePath());
+        currentSaveData = JsonConvert.DeserializeObject<GameSaveData>(json);
+    }
+
+    private void ApplyCurrentSaveDataAndLoadScene()
+    {
+        if (currentSaveData == null)
+        {
+            Debug.LogWarning("[SaveManager] Save data is null.");
+            return;
+        }
+
+        // ĐÃ FIX: Nhét thông tin Class vào ClassManager TRƯỚC KHI chuyển Scene
+        if (ClassManager.Instance != null)
+        {
+            ClassManager.Instance.SelectClass((PlayerClass)currentSaveData.playerClassIndex);
+        }
+
+        // Backup phòng hờ cho GameSession cũ của bạn
+        GameSession.PlayerName = currentSaveData.playerName;
+        GameSession.PlayerClass = currentSaveData.playerClassIndex;
+
+        if (StatsManager.instance != null)
+        {
+            StatsManager.instance.LoadSavedStats(
+                currentSaveData.stats.level, currentSaveData.stats.currentExp, currentSaveData.stats.upgradePoints,
+                currentSaveData.stats.currentHealth, currentSaveData.stats.currentMana, currentSaveData.stats.currentStamina,
+                currentSaveData.playerName
+            );
+        }
+
+        if (InventoryManager.instance != null)
+        {
+            InventoryManager.instance.bagItems = currentSaveData.inventory.bagItems;
+            InventoryManager.instance.equippedWeapon = currentSaveData.inventory.equippedWeapon;
+            InventoryManager.instance.equippedArmor = currentSaveData.inventory.equippedArmor;
+            InventoryManager.instance.equippedAccessories = currentSaveData.inventory.equippedAccessories;
+            InventoryManager.instance.ForceUIUpdate();
+        }
+
+        if (QuestManager.instance != null)
+        {
+            QuestManager.instance.ImportSaveData(currentSaveData.quests);
+        }
+
+        Debug.Log("<color=cyan>[SaveManager] Loaded file, transitioning scene...</color>");
+        SceneManager.LoadScene(currentSaveData.sceneName);
+    }
+
+    private IEnumerator SyncPendingWebItemsRoutine()
+    {
+        if (!enableOnlineActivity)
+        {
+            yield break;
+        }
+
+        if (_isSyncingWebItems)
+        {
+            yield break;
+        }
+
+        string token = TokenManager.GetToken();
+        string userId = TokenManager.GetUserId();
+
+        if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(userId))
+        {
+            Debug.LogWarning("[SaveManager] Web item sync skipped: missing token or userId.");
+            yield break;
+        }
+
+        if (ItemDatabase.Items == null)
+        {
+            ItemDatabase.Initialize();
+        }
+
+        _isSyncingWebItems = true;
+
+        string pendingUrl = BuildApiUrl(userItemPendingDeliveryApi) + "/" + UnityWebRequest.EscapeURL(userId);
+
+        using (UnityWebRequest pendingRequest = UnityWebRequest.Get(pendingUrl))
+        {
+            pendingRequest.SetRequestHeader("Authorization", "Bearer " + token);
+            yield return pendingRequest.SendWebRequest();
+
+            if (pendingRequest.result != UnityWebRequest.Result.Success)
             {
-                ClassManager.Instance.SelectClass((PlayerClass)currentSaveData.playerClassIndex);
+                Debug.LogWarning($"[SaveManager] Pending delivery request failed ({pendingRequest.responseCode}): {pendingRequest.error}");
+                _isSyncingWebItems = false;
+                yield break;
             }
-            
-            // Backup phòng hờ cho GameSession cũ của bạn
-            GameSession.PlayerName = currentSaveData.playerName;
-            GameSession.PlayerClass = currentSaveData.playerClassIndex;
 
-            if (StatsManager.instance != null)
+            ApiResponse<List<PendingDeliveryItem>> response;
+            try
             {
-                StatsManager.instance.LoadSavedStats(
-                    currentSaveData.stats.level, currentSaveData.stats.currentExp, currentSaveData.stats.upgradePoints,
-                    currentSaveData.stats.currentHealth, currentSaveData.stats.currentMana, currentSaveData.stats.currentStamina,
-                    currentSaveData.playerName
-                );
+                response = DeserializePendingDeliveryResponse(pendingRequest.downloadHandler.text);
             }
-
-            if (InventoryManager.instance != null)
+            catch (Exception ex)
             {
-                InventoryManager.instance.bagItems = currentSaveData.inventory.bagItems;
-                InventoryManager.instance.equippedWeapon = currentSaveData.inventory.equippedWeapon;
-                InventoryManager.instance.equippedArmor = currentSaveData.inventory.equippedArmor;
-                InventoryManager.instance.equippedAccessories = currentSaveData.inventory.equippedAccessories;
-                InventoryManager.instance.ForceUIUpdate();
+                Debug.LogWarning($"[SaveManager] Invalid pending delivery response: {ex.Message}");
+                _isSyncingWebItems = false;
+                yield break;
             }
 
-            if (QuestManager.instance != null)
+            if (response == null || response.data == null || response.data.Count == 0)
             {
-                QuestManager.instance.ImportSaveData(currentSaveData.quests);
+                _isSyncingWebItems = false;
+                yield break;
             }
 
-            Debug.Log("<color=cyan>[SaveManager] Loaded file, transitioning scene...</color>");
-            SceneManager.LoadScene(currentSaveData.sceneName);
+            var acknowledgedItems = new List<AcknowledgeDeliveryItem>();
+
+            foreach (var webItem in response.data)
+            {
+                if (webItem == null)
+                {
+                    continue;
+                }
+
+                string webItemKey = GetWebItemDictionaryKey(webItem);
+                if (string.IsNullOrEmpty(webItemKey))
+                {
+                    continue;
+                }
+
+                int pendingAmount = webItem.quantityPending > 0 ? webItem.quantityPending : (webItem.quantity - webItem.quantityDelivered);
+                if (pendingAmount <= 0)
+                {
+                    continue;
+                }
+
+                string localItemId = ResolveLocalItemId(webItem);
+                if (string.IsNullOrEmpty(localItemId))
+                {
+                    Debug.LogWarning($"[SaveManager] Cannot map web dictionaryKey '{webItemKey}' to local ItemDatabase item.");
+                    continue;
+                }
+
+                if (InventoryManager.instance != null)
+                {
+                    InventoryManager.instance.AddItem(localItemId, pendingAmount);
+                }
+                else
+                {
+                    Debug.LogWarning($"[SaveManager] Cannot apply pending item '{webItemKey}': InventoryManager.instance is null.");
+                    continue;
+                }
+
+                acknowledgedItems.Add(new AcknowledgeDeliveryItem
+                {
+                    itemDictionaryKey = webItemKey,
+                    quantity = pendingAmount
+                });
+            }
+
+            if (acknowledgedItems.Count > 0)
+            {
+                yield return AcknowledgeWebDeliveryRoutine(userId, token, acknowledgedItems);
+            }
+        }
+
+        _isSyncingWebItems = false;
+    }
+
+    private IEnumerator AcknowledgeWebDeliveryRoutine(string userId, string token, List<AcknowledgeDeliveryItem> acknowledgedItems)
+    {
+        var payload = new AcknowledgeDeliveryPayload { items = acknowledgedItems };
+        string body = JsonConvert.SerializeObject(payload);
+        byte[] bodyBytes = Encoding.UTF8.GetBytes(body);
+
+        string acknowledgeUrl = BuildApiUrl(userItemAcknowledgeDeliveryApi) + "/" + UnityWebRequest.EscapeURL(userId);
+
+        using var acknowledgeRequest = new UnityWebRequest(acknowledgeUrl, UnityWebRequest.kHttpVerbPOST);
+        acknowledgeRequest.uploadHandler = new UploadHandlerRaw(bodyBytes);
+        acknowledgeRequest.downloadHandler = new DownloadHandlerBuffer();
+        acknowledgeRequest.SetRequestHeader("Content-Type", "application/json");
+        acknowledgeRequest.SetRequestHeader("Authorization", "Bearer " + token);
+
+        yield return acknowledgeRequest.SendWebRequest();
+
+        if (acknowledgeRequest.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogWarning($"[SaveManager] Acknowledge delivery failed ({acknowledgeRequest.responseCode}): {acknowledgeRequest.error}");
+        }
+    }
+
+    /// <summary>
+    /// Check if id exists on local resource
+    /// </summary>
+    private string ResolveLocalItemId(PendingDeliveryItem webItem)
+    {
+        string webItemKey = GetWebItemDictionaryKey(webItem);
+
+        if (!string.IsNullOrEmpty(webItemKey) && ItemDatabase.GetItem(webItemKey) != null)
+        {
+            return webItemKey;
+        }
+
+        //try matching by item name if failed to find by dictionaryKey
+        if (webItem.item != null && !string.IsNullOrEmpty(webItem.item.name))
+        {
+            if (ItemDatabase.GetItem(webItem.item.name) != null)
+            {
+                return webItem.item.name;
+            }
+
+            foreach (var kv in ItemDatabase.Items)
+            {
+                if (string.Equals(kv.Value.name, webItem.item.name, StringComparison.OrdinalIgnoreCase))
+                {
+                    return kv.Key;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private string GetWebItemDictionaryKey(PendingDeliveryItem webItem)
+    {
+        if (webItem == null || webItem.item == null)
+        {
+            return null;
+        }
+
+        return !string.IsNullOrWhiteSpace(webItem.item.dictionaryKey) ? webItem.item.dictionaryKey : null;
+    }
+
+    private ApiResponse<List<PendingDeliveryItem>> DeserializePendingDeliveryResponse(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return null;
+        }
+
+        return JsonConvert.DeserializeObject<ApiResponse<List<PendingDeliveryItem>>>(json);
+    }
+
+    private IEnumerator TryRestoreSaveFromCloudRoutine()
+    {
+        if (!enableOnlineActivity)
+        {
+            yield break;
+        }
+
+        string token = TokenManager.GetToken();
+        if (string.IsNullOrEmpty(token))
+        {
+            Debug.LogWarning("[SaveManager] Skip cloud restore: missing auth token.");
+            yield break;
+        }
+
+        string localFileName = Path.GetFileName(GetSaveFilePath());
+        string listUrl = BuildApiUrl(firebaseStorageListApi) + "?folderPath=" + UnityWebRequest.EscapeURL(cloudSaveFolderPath);
+
+        using (UnityWebRequest listRequest = UnityWebRequest.Get(listUrl))
+        {
+            listRequest.SetRequestHeader("Authorization", "Bearer " + token);
+            yield return listRequest.SendWebRequest();
+
+            if (listRequest.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogWarning($"[SaveManager] Cloud list failed ({listRequest.responseCode}): {listRequest.error}");
+                yield break;
+            }
+
+            CloudListResponse listResponse;
+            try
+            {
+                listResponse = JsonConvert.DeserializeObject<CloudListResponse>(listRequest.downloadHandler.text);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[SaveManager] Invalid cloud list response: {ex.Message}");
+                yield break;
+            }
+
+            if (listResponse == null || listResponse.files == null || listResponse.files.Count == 0)
+            {
+                yield break;
+            }
+
+            string cloudFilePath = null;
+            foreach (var filePath in listResponse.files)
+            {
+                if (string.IsNullOrWhiteSpace(filePath))
+                {
+                    continue;
+                }
+
+                if (string.Equals(Path.GetFileName(filePath), localFileName, StringComparison.OrdinalIgnoreCase))
+                {
+                    cloudFilePath = filePath;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(cloudFilePath))
+            {
+                yield break;
+            }
+
+            if (!cloudFilePath.Contains("/"))
+            {
+                cloudFilePath = cloudSaveFolderPath.TrimEnd('/') + "/" + cloudFilePath;
+            }
+
+            string downloadUrl = BuildApiUrl(firebaseStorageDownloadApi) + "?filePath=" + UnityWebRequest.EscapeURL(cloudFilePath);
+
+            using UnityWebRequest downloadRequest = UnityWebRequest.Get(downloadUrl);
+            downloadRequest.SetRequestHeader("Authorization", "Bearer " + token);
+            yield return downloadRequest.SendWebRequest();
+
+            if (downloadRequest.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogWarning($"[SaveManager] Cloud download failed ({downloadRequest.responseCode}): {downloadRequest.error}");
+                yield break;
+            }
+
+            byte[] bytes = downloadRequest.downloadHandler.data;
+            if (bytes == null || bytes.Length == 0)
+            {
+                yield break;
+            }
+
+            File.WriteAllBytes(GetSaveFilePath(), bytes);
+            Debug.Log($"<color=green>[SaveManager] Restored local save from cloud: {cloudFilePath}</color>");
         }
     }
 
@@ -236,14 +690,13 @@ public class SaveManager : MonoBehaviour
     {
         StopCoroutine(nameof(AutoSaveRoutine));
         StartCoroutine(nameof(AutoSaveRoutine));
-        
+
         StartCoroutine(ApplySceneDataRoutine());
     }
 
     private IEnumerator ApplySceneDataRoutine()
     {
         yield return new WaitForEndOfFrame();
-        yield return new WaitForEndOfFrame(); 
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null && currentSaveData.playerPosition != null)
@@ -274,10 +727,21 @@ public class SaveManager : MonoBehaviour
 
     private IEnumerator AutoSaveRoutine()
     {
+        const float saveIntervalSeconds = 10f; // 10s
+        const float cloudSaveIntervalSeconds = 600f; // 10 mins
+
+        var elapsed = 0f;
         while (true)
         {
-            yield return new WaitForSeconds(4f); // Lưu mỗi 10 giây
+            yield return new WaitForSeconds(saveIntervalSeconds);
             SaveGame();
+
+            elapsed += saveIntervalSeconds;
+            if (elapsed >= cloudSaveIntervalSeconds)
+            {
+                SaveToCloud();
+                elapsed -= cloudSaveIntervalSeconds;
+            }
         }
     }
 }

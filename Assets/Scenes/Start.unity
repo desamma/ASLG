@@ -1392,18 +1392,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8174691592367140722, guid: 7d98c62469538694c8e9ab5d4799e0a9, type: 3}
-      propertyPath: bagItems.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8174691592367140722, guid: 7d98c62469538694c8e9ab5d4799e0a9, type: 3}
-      propertyPath: bagItems.Array.data[0].amount
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8174691592367140722, guid: 7d98c62469538694c8e9ab5d4799e0a9, type: 3}
-      propertyPath: bagItems.Array.data[0].itemID
-      value: con_blood_potion
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
