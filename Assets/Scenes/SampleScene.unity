@@ -257,6 +257,157 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &163992331
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 163992334}
+  - component: {fileID: 163992333}
+  - component: {fileID: 163992332}
+  m_Layer: 2
+  m_Name: MapAudio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &163992332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163992331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e95e235d8ac0e4da52be2868df2971, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 0}
+  defaultAudioClip: {fileID: 0}
+  onPlayingAudioClip: {fileID: 0}
+  defaultVolume: 0.5
+  onPlayingVolume: 0.8
+  fadeOutDuration: 0.5
+  fadeInDuration: 0.5
+  spatialBlend: 1
+  minDistance: 1
+  maxDistance: 1000
+--- !u!82 &163992333
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163992331}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &163992334
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163992331}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.4010127, y: -0.6559311, z: -0.015225839}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &210559135
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,14 +445,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 210559141}
   movement: {fileID: 210559138}
-  normalAttackPoint: {fileID: 1505495867}
-  normalAttackRadius: 1.5
-  normalAttackHitEffect: {fileID: 0}
+  attackPoint: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8
-  normalAttackSwingAudioClip: {fileID: 8300000, guid: 8d19f1d5054be0f4f90f7764ce5336da, type: 3}
-  normalAttackHitAudioClip: {fileID: 8300000, guid: ec8406498b4529640aa1b8bdd5142d16, type: 3}
   volume: 1
 --- !u!114 &210559138
 MonoBehaviour:
@@ -1945,6 +2092,7 @@ MonoBehaviour:
   magicResistMultiplier: 0
   speedMultiplier: 0
   attackSpeedMultiplier: 0
+  goldRewardMultiplier: 0
   detectionRangeMultiplier: 0
   chaseRangeMultiplier: 0
   specialAttackFrequencyMultiplier: 0
@@ -2154,23 +2302,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16de9a89f99cb924dac4b1f6a563a922, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerName: 
+  authToken: 
+  userId: 
   _maxHealth: 10000
+  _baseMaxHealth: 2000
+  _bonusMaxHealth: 0
+  _currentHealth: 0
+  _defence: 10
+  _baseDefence: 10
+  _bonusDefence: 0
   _maxMana: 100
+  _baseMaxMana: 100
+  _bonusMaxMana: 0
+  _currentMana: 0
   _moveSpeed: 5
+  _baseMoveSpeed: 5
+  _bonusMoveSpeed: 0
   _maxStamina: 100
+  _baseMaxStamina: 100
+  _bonusMaxStamina: 0
   _staminaRegenRate: 10
+  _bonusStaminaRegenRate: 0
   _staminaCost: 25
   _dashDelay: 0.5
   _dashDuration: 0.2
+  _currentStamina: 0
   _damage: 5000
+  _baseDamage: 10
+  _bonusDamage: 0
   _weaponRange: 1.5
+  _bonusWeaponRange: 0
   _knockbackForce: 5
+  _bonusKnockbackForce: 0
   _knockbackTime: 0.2
   _stunTime: 0.3
   _cooldown: 0.5
+  _bonusCooldown: 0
   _level: 1
   _expToNextLevel: 100
   _currentExp: 0
+  _gold: 0
   _upgradePoints: 0
 --- !u!1 &1650042961
 GameObject:
@@ -2796,3 +2968,4 @@ SceneRoots:
   - {fileID: 1441244350}
   - {fileID: 1596596691}
   - {fileID: 210559143}
+  - {fileID: 163992334}
