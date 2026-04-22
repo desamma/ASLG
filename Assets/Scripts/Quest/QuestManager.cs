@@ -90,9 +90,12 @@ public class QuestManager : MonoBehaviour
 
         if (InventoryUI.instance != null)
         {
+            // InventoryUI currently does not expose an AddItems method in provided signatures.
+            // Use reward data fields that exist in QuestReward (itemID and quantity) and log them.
+            // Integrate with your inventory system implementation here when available.
             foreach (var reward in questSO.rewards)
             {
-                InventoryUI.instance.AddItems(reward.itemData, reward.quantity);
+                Debug.Log($"[Hệ Thống] Thưởng nhận được: {reward.itemID} x{reward.quantity}");
             }
         }
     }
@@ -106,7 +109,7 @@ public class QuestManager : MonoBehaviour
 
             foreach (var objective in quest.questObjectives)
             {
-                if (objective.requiresMovement && progressDictionary[objective] < objective.requiredAmount)
+                if (objective.requiresMovement && progressDict[objective] < objective.requiredAmount)
                 {
                     if (!movementTimers.ContainsKey(objective))
                         movementTimers[objective] = 0f;
@@ -117,10 +120,10 @@ public class QuestManager : MonoBehaviour
                     {
                         int secondsToAdd = Mathf.FloorToInt(movementTimers[objective]);
                         movementTimers[objective] -= secondsToAdd;
-                        progressDictionary[objective] += secondsToAdd;
+                        progressDict[objective] += secondsToAdd;
 
-                        if (progressDictionary[objective] > objective.requiredAmount)
-                            progressDictionary[objective] = objective.requiredAmount;
+                        if (progressDict[objective] > objective.requiredAmount)
+                            progressDict[objective] = objective.requiredAmount;
 
                         OnQuestProgressUpdated?.Invoke();
                     }
@@ -156,7 +159,7 @@ public class QuestManager : MonoBehaviour
     {
         if (questProgress.TryGetValue(questSO, out var objDict))
         {
-            if (objectiveDictionary.TryGetValue(objective, out var amount)) return amount;
+            if (objDict.TryGetValue(objective, out var amount)) return amount;
         }
         return 0;
     }
@@ -191,5 +194,72 @@ public class QuestManager : MonoBehaviour
 
         // 3. Báo cho UI biết để cập nhật lại
         OnQuestProgressUpdated?.Invoke();
+    }
+
+    // ==========================================
+    // LIÊN KẾT VỚI SAVE MANAGER (LƯU & TẢI GAME)
+    // ==========================================
+
+    public QuestSaveData ExportSaveData()
+    {
+        QuestSaveData data = new QuestSaveData();
+
+        // Lưu danh sách Quest đang làm và Đã xong (Dùng tên file làm ID)
+        foreach (var q in activeQuests) data.activeQuestIDs.Add(q.name);
+        foreach (var q in completedQuests) data.completedQuestIDs.Add(q.name);
+
+        // Lưu tiến độ đánh quái/di chuyển
+        foreach (var kvp in questProgress)
+        {
+            List<int> progressList = new List<int>();
+            foreach (var obj in kvp.Key.questObjectives)
+            {
+                progressList.Add(kvp.Value.ContainsKey(obj) ? kvp.Value[obj] : 0);
+            }
+            data.questProgress.Add(kvp.Key.name, progressList);
+        }
+        return data;
+    }
+
+    public void ImportSaveData(QuestSaveData data)
+    {
+        if (data == null) return;
+
+        activeQuests.Clear();
+        completedQuests.Clear();
+        questProgress.Clear();
+
+        // Tải lại các Quest đang làm từ thư mục Resources/Quests
+        foreach (var id in data.activeQuestIDs)
+        {
+            QuestSO q = Resources.Load<QuestSO>("Quests/" + id);
+            if (q != null) activeQuests.Add(q);
+        }
+
+        // Tải lại các Quest đã xong
+        foreach (var id in data.completedQuestIDs)
+        {
+            QuestSO q = Resources.Load<QuestSO>("Quests/" + id);
+            if (q != null) completedQuests.Add(q);
+        }
+
+        // Tải lại tiến độ đánh quái
+        foreach (var kvp in data.questProgress)
+        {
+            QuestSO q = Resources.Load<QuestSO>("Quests/" + kvp.Key);
+            if (q != null && !questProgress.ContainsKey(q))
+            {
+                questProgress[q] = new Dictionary<QuestObjective, int>();
+                for (int i = 0; i < q.questObjectives.Count; i++)
+                {
+                    if (i < kvp.Value.Count)
+                    {
+                        questProgress[q][q.questObjectives[i]] = kvp.Value[i];
+                    }
+                }
+            }
+        }
+
+        NotifyUIUpdate();
     }
 }
