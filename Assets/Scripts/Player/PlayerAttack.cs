@@ -1,4 +1,3 @@
-using Assets.Scripts.Player.Class;
 using UnityEngine;
 
 [DisallowMultipleComponent]

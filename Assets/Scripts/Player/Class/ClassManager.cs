@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Player.Class;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// Persists across scenes. Select the class before entering gameplay,

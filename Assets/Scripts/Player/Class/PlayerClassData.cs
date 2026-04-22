@@ -1,4 +1,3 @@
-﻿using Assets.Scripts.Player.Class;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewClassData", menuName = "RPG/Player Class Data")]
