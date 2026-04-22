@@ -8,6 +8,11 @@ public class QuestLogUI : MonoBehaviour
     [SerializeField] private QuestManager questManager;
 
     [Header("UI Của Màn Hình Chi Tiết (Bên Phải)")]
+    //Fix icon vàng exp không hiển thị
+    [Header("Icons cho Gold & Exp (Kéo thả ảnh từ thư mục vào đây)")]
+    [SerializeField] private Sprite goldIcon;
+    [SerializeField] private Sprite expIcon;
+
     [SerializeField] private TMP_Text questNameText;
     [SerializeField] private TMP_Text questDescriptionText;
     [SerializeField] private QuestObjectiveSlot[] objectiveSlots;
@@ -114,7 +119,13 @@ public class QuestLogUI : MonoBehaviour
         questManager.AcceptQuest(questSO);
         SetCanvasState(acceptCanvas, false);
         SetCanvasState(declineCanvas, false);
-        RefreshQuestList();
+        
+        // CHỈ Refresh UI bên trái nếu đang mở từ Quest Log, 
+        // không Refresh nếu đang mở từ NPC (để tránh mất các nút Quest khác)
+        if (isViewingFromQuestLog) 
+        {
+            RefreshQuestList();
+        }
     }
 
     public void OnDeclineQuestClick()
@@ -148,24 +159,23 @@ public class QuestLogUI : MonoBehaviour
 
     public void OnCompleteQuestClick()
     {
-        if (questManager == null) return;
+        if (questManager == null || questSO == null) return;
 
-        if (questSO != null) questManager.CompleteQuest(questSO);
+        // CHẶN: Chưa xong không cho trả quest
+        if (!IsQuestComplete(questSO)) return;
 
+        questManager.CompleteQuest(questSO);
         SetCanvasState(completeCanvas, false);
 
         RefreshQuestList();
 
         if (questManager.activeQuests.Count > 0)
         {
-            HandleQuestClick(questManager.activeQuests[0]);
+            HandleQuestClickFromLog(questManager.activeQuests[0]);
         }
         else
         {
-            questNameText.text = "";
-            questDescriptionText.text = "NO QUEST SELECTED";
-            foreach (var slot in objectiveSlots) slot.gameObject.SetActive(false);
-            foreach (var slot in rewardSlots) slot.gameObject.SetActive(false);
+            ClearRightPanel();
         }
     }
 
@@ -245,6 +255,11 @@ public class QuestLogUI : MonoBehaviour
 
         foreach (var slot in objectiveSlots) { if (slot != null) slot.gameObject.SetActive(false); }
         foreach (var slot in rewardSlots) { if (slot != null) slot.gameObject.SetActive(false); }
+
+        // Ẩn toàn bộ nút
+        SetCanvasState(acceptCanvas, false);
+        SetCanvasState(declineCanvas, false);
+        SetCanvasState(completeCanvas, false);
     }
 
     private void DisplayObjectives()
@@ -279,25 +294,57 @@ public class QuestLogUI : MonoBehaviour
     {
         if (questSO == null || rewardSlots == null) return;
 
-        for (int i = 0; i < rewardSlots.Length; i++)
+        // Biến đếm xem đang dùng đến ô Slot thứ mấy rồi
+        int currentSlotIndex = 0;
+
+        // 1. KIỂM TRA VÀ HIỂN THỊ GOLD
+        if (questSO.rewardGold > 0 && currentSlotIndex < rewardSlots.Length)
         {
-            if (i < questSO.rewards.Count)
+            rewardSlots[currentSlotIndex].gameObject.SetActive(true);
+            // Hiển thị icon vàng và số lượng vàng
+            rewardSlots[currentSlotIndex].DisplayReward(goldIcon, questSO.rewardGold);
+            currentSlotIndex++; // Tăng biến đếm slot lên 1
+        }
+
+        // 2. KIỂM TRA VÀ HIỂN THỊ EXP
+        if (questSO.rewardExp > 0 && currentSlotIndex < rewardSlots.Length)
+        {
+            rewardSlots[currentSlotIndex].gameObject.SetActive(true);
+            // Hiển thị icon exp và số lượng exp
+            rewardSlots[currentSlotIndex].DisplayReward(expIcon, questSO.rewardExp);
+            currentSlotIndex++;
+        }
+
+        // 3. KIỂM TRA VÀ HIỂN THỊ CÁC VẬT PHẨM (ITEMS)
+        for (int i = 0; i < questSO.rewards.Count; i++)
+        {
+            // Nếu đã hết số ô hiển thị (slots) trên UI thì ngắt vòng lặp
+            if (currentSlotIndex >= rewardSlots.Length) break; 
+
+            var reward = questSO.rewards[i];
+            rewardSlots[currentSlotIndex].gameObject.SetActive(true);
+
+            Sprite iconToDisplay = null;
+
+            if (reward.isRandomItem || string.IsNullOrEmpty(reward.itemID))
             {
-                var reward = questSO.rewards[i];
-                if (rewardSlots[i] == null) continue;
-
-                rewardSlots[i].gameObject.SetActive(true);
-
-                ItemDefinition itemDef = ItemDatabase.GetItem(reward.itemID);
-                Sprite iconToDisplay = (itemDef != null) ? itemDef.GetIcon() : null;
-
-                rewardSlots[i].DisplayReward(iconToDisplay, reward.quantity);
+                iconToDisplay = Resources.Load<Sprite>("Icons/missing_icon"); 
             }
             else
             {
-                if (rewardSlots[i] != null)
-                    rewardSlots[i].gameObject.SetActive(false);
+                ItemDefinition itemDef = ItemDatabase.GetItem(reward.itemID);
+                iconToDisplay = (itemDef != null) ? itemDef.GetIcon() : null;
             }
+
+            rewardSlots[currentSlotIndex].DisplayReward(iconToDisplay, reward.quantity);
+            currentSlotIndex++;
+        }
+
+        // 4. ẨN CÁC Ô CÒN THỪA (Những ô không có phần thưởng nào chiếm chỗ)
+        for (int i = currentSlotIndex; i < rewardSlots.Length; i++)
+        {
+            if (rewardSlots[i] != null)
+                rewardSlots[i].gameObject.SetActive(false);
         }
     }
 }

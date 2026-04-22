@@ -13,6 +13,10 @@ public class QuestSO : ScriptableObject
     [TextArea] public string questDescription;
     public int questLevel;
 
+    [Header("Rewards (Stats)")]
+    public int rewardGold;
+    public int rewardExp;
+
     public List<QuestObjective> questObjectives;
     public List<QuestReward> rewards;
 }
@@ -33,4 +37,8 @@ public class QuestReward
     [Tooltip("Nhập ID của item từ file items.json (VD: con_blood_potion)")]
     public string itemID; 
     public int quantity;
+
+    //Tick cho đồ random, ở trong Inspector ấy, a Q ưng thì đổi.
+    [Tooltip("Đánh dấu nếu muốn phần thưởng này là một Item Ngẫu Nhiên từ Database")]
+    public bool isRandomItem;
 }

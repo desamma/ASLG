@@ -57,4 +57,11 @@ public static class ItemDatabase
         if (Items != null && Items.TryGetValue(itemID, out ItemDefinition def)) return def;
         return null;
     }
+    public static string GetRandomItemID()
+    {
+        if (Items == null || Items.Count == 0) return string.Empty;
+        
+        List<string> keys = new List<string>(Items.Keys);
+        return keys[UnityEngine.Random.Range(0, keys.Count)];
+    }
 }
