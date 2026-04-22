@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d63220367668be24c9838aafb46562ab, type: 3}
+  m_Name: Silver_Amulet
+  m_EditorClassIdentifier: 
+  itemName: Silver Amulet
+  rarity: 1
+  description: A finely engraved silver pendant rumoured to ward off curses.
+  itemType: 2
+  armorSlot: 1
+  icon: {fileID: 21300000, guid: 7bfdca5f84aeed34689ea6b4eb29274b, type: 3}
+  emojiIcon: "\U0001F4FF"
+  isStackable: 0
+  maxStack: 1
+  currentStack: 1
+  goldValue: 50
+  statBonuses:
+  - statName: maxHealth
+    value: 15
+  - statName: currentMana
+    value: 10
+  worldPrefab: {fileID: 0}
