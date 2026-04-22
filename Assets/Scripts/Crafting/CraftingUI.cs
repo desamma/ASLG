@@ -1,39 +1,36 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
 public class CraftingUI : MonoBehaviour
 {
-    // ── Inspector refs ───────────────────────────────────────────────────────
-
     [Header("Managers")]
     public CraftingManager craftingManager;
     public PlayerInventory playerInventory;
 
     [Header("Prefabs")]
-    [Tooltip("Prefab 1 dòng recipe trong danh sách")]
     public GameObject recipeItemPrefab;
-    [Tooltip("Prefab 1 hàng stat trong panel bên phải")]
     public GameObject statRowPrefab;
-    [Tooltip("Prefab 1 hàng material trong panel bên phải")]
     public GameObject matRowPrefab;
 
     [Header("Left Panel")]
     public TMP_InputField searchInput;
-    public Transform recipeListContent;    // Content của ScrollRect
+    public Transform recipeListContent;
 
     [Tooltip("Thứ tự: All, Weapon, Armor, Accessory, Consumable, Misc")]
     public Button[] categoryTabButtons;
-    public Color tabActiveColor = new Color(0.35f, 0.40f, 0.15f);
-    public Color tabNormalColor = new Color(0.28f, 0.19f, 0.12f);
+    public Color tabActiveColor = new Color(0.16f, 0.16f, 0.16f, 1f); // đen nhẹ khi chọn
+    public Color tabNormalColor = new Color(0.28f, 0.19f, 0.12f, 1f);
 
-    // ĐÃ SỬA THÀNH 3 SLOT THEO GUIDE V2
+    [Header("Recipe List Layout Fix")]
+    [SerializeField] private float recipeRowHeight = 34f;
+    [SerializeField] private float recipeRowSpacing = 2f;
+
     [Header("Mid Panel – Grid 3 Slot Ngang")]
-    [Tooltip("Kéo 3 Image theo thứ tự: Slot_0 | Slot_1 | Slot_2")]
     public Image[] gridSlotImages = new Image[3];
-    [Tooltip("Text số lượng tương ứng 3 slot")]
     public TextMeshProUGUI[] gridSlotTexts = new TextMeshProUGUI[3];
 
     [Header("Mid Panel – Result & Craft")]
@@ -60,50 +57,56 @@ public class CraftingUI : MonoBehaviour
     public Color colorLegendary = new Color(1.00f, 0.70f, 0.00f);
 
     [Header("Feedback")]
-    [Tooltip("Duration hiệu ứng flash khi craft thành công (giây)")]
     public float craftFlashDuration = 0.4f;
     public Color craftSuccessColor = new Color(0.5f, 1f, 0.3f, 0.6f);
 
-    // ── Runtime ──────────────────────────────────────────────────────────────
-
-    private List<CraftingRecipe> _filteredRecipes = new List<CraftingRecipe>();
+    private readonly List<CraftingRecipe> _filteredRecipes = new List<CraftingRecipe>();
     private CraftingRecipe _selectedRecipe;
     private int _craftQty = 1;
     private string _currentCategory = "All";
     private string _searchQuery = "";
     private int _playerLevel = 1;
 
-    // ── Unity ────────────────────────────────────────────────────────────────
-
     private void Start()
     {
-        // Bind events
+        if (EventSystem.current == null)
+            Debug.LogError("[CraftingUI] Missing EventSystem in scene. UI click will not work.");
+
+        EnsureRecipeListLayout();
+
         craftButton.onClick.AddListener(OnCraftClicked);
         qtyMinusButton.onClick.AddListener(() => ChangeCraftQty(-1));
         qtyPlusButton.onClick.AddListener(() => ChangeCraftQty(1));
         searchInput.onValueChanged.AddListener(OnSearchChanged);
 
-        // Ẩn tất cả slot icon lúc khởi động
         foreach (var img in gridSlotImages)
             if (img) img.enabled = false;
         if (resultIconImage) resultIconImage.enabled = false;
         if (infoIconImage) infoIconImage.enabled = false;
 
-        // ĐÃ SỬA: Cập nhật 6 tab (Thêm Accessory vào index 3)
         for (int i = 0; i < categoryTabButtons.Length; i++)
         {
+            
             string cat = i switch
             {
-                1 => "Weapon",
-                2 => "Armor",
-                3 => "Accessory",
+                1 => "Accessory",
+                2 => "Weapon",
+                3 => "Armor",
                 4 => "Consumable",
                 5 => "Misc",
                 _ => "All"
             };
+
             int idx = i;
-            categoryTabButtons[idx].onClick.AddListener(() => OnCategorySelected(cat, idx));
+            var btn = categoryTabButtons[idx];
+            if (btn == null) continue;
+
+            btn.transition = Selectable.Transition.None;
+            btn.onClick.AddListener(() => OnCategorySelected(cat, idx));
         }
+
+        // Set trạng thái tab mặc định ngay khi mở UI
+        OnCategorySelected("All", 0);
 
         if (playerInventory != null)
             playerInventory.OnInventoryChanged += RefreshCurrentSelection;
@@ -130,12 +133,73 @@ public class CraftingUI : MonoBehaviour
         }
     }
 
-    // ── Recipe list ──────────────────────────────────────────────────────────
+    private void EnsureRecipeListLayout()
+    {
+        if (recipeListContent == null) return;
+
+        var contentRt = recipeListContent as RectTransform;
+        if (contentRt == null) return;
+
+        // 1) Normalize Content rect – top-anchored so VLG stacks downward
+        contentRt.anchorMin = new Vector2(0f, 1f);
+        contentRt.anchorMax = new Vector2(1f, 1f);
+        contentRt.pivot = new Vector2(0.5f, 1f);
+        contentRt.anchoredPosition = Vector2.zero;
+        contentRt.localScale = Vector3.one;
+
+        // 2) Remove conflicting layout components on Content
+        //    Use DestroyImmediate so they're gone before RefreshRecipeList() runs
+        var grid = recipeListContent.GetComponent<GridLayoutGroup>();
+        if (grid != null) DestroyImmediate(grid);
+
+        var hlg = recipeListContent.GetComponent<HorizontalLayoutGroup>();
+        if (hlg != null) DestroyImmediate(hlg);
+
+        // 3) Ensure VerticalLayoutGroup
+        var vlg = recipeListContent.GetComponent<VerticalLayoutGroup>();
+        if (vlg == null) vlg = recipeListContent.gameObject.AddComponent<VerticalLayoutGroup>();
+
+        vlg.childAlignment = TextAnchor.UpperLeft;
+        vlg.childControlWidth = true;
+        vlg.childControlHeight = false;   // ← FALSE: row height is driven by LayoutElement, not VLG
+        vlg.childForceExpandWidth = true;
+        vlg.childForceExpandHeight = false;
+        vlg.spacing = recipeRowSpacing;
+        vlg.padding = new RectOffset(4, 4, 4, 4);
+
+        // 4) ContentSizeFitter stretches Content height to fit all rows
+        var fitter = recipeListContent.GetComponent<ContentSizeFitter>();
+        if (fitter == null) fitter = recipeListContent.gameObject.AddComponent<ContentSizeFitter>();
+        fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        // 5) Safety: Viewport must NOT have its own layout group / fitter
+        var viewport = contentRt.parent;
+        if (viewport != null)
+        {
+            var viewportVlg = viewport.GetComponent<VerticalLayoutGroup>();
+            if (viewportVlg != null) DestroyImmediate(viewportVlg);
+
+            var viewportHlg = viewport.GetComponent<HorizontalLayoutGroup>();
+            if (viewportHlg != null) DestroyImmediate(viewportHlg);
+
+            var viewportGrid = viewport.GetComponent<GridLayoutGroup>();
+            if (viewportGrid != null) DestroyImmediate(viewportGrid);
+
+            var viewportFitter = viewport.GetComponent<ContentSizeFitter>();
+            if (viewportFitter != null) DestroyImmediate(viewportFitter);
+        }
+    }
 
     private void RefreshRecipeList()
     {
+        // Dùng DestroyImmediate để children biến mất ngay, tránh VLG
+        // tính toán layout với children cũ trong cùng frame.
+        var toDestroy = new List<GameObject>();
         foreach (Transform child in recipeListContent)
-            Destroy(child.gameObject);
+            toDestroy.Add(child.gameObject);
+        foreach (var go in toDestroy)
+            DestroyImmediate(go);
 
         var allAvailable = craftingManager != null
             ? craftingManager.GetAvailableRecipes(_playerLevel)
@@ -146,10 +210,8 @@ public class CraftingUI : MonoBehaviour
         {
             if (r.resultItem == null) continue;
 
-            bool matchCat = _currentCategory == "All" ||
-                            r.resultItem.itemType.ToString() == _currentCategory;
-            bool matchSearch = string.IsNullOrEmpty(_searchQuery) ||
-                               r.DisplayName.ToLower().Contains(_searchQuery.ToLower());
+            bool matchCat = _currentCategory == "All" || r.resultItem.itemType.ToString() == _currentCategory;
+            bool matchSearch = string.IsNullOrEmpty(_searchQuery) || r.DisplayName.ToLower().Contains(_searchQuery.ToLower());
             if (!matchCat || !matchSearch) continue;
 
             _filteredRecipes.Add(r);
@@ -158,14 +220,57 @@ public class CraftingUI : MonoBehaviour
         foreach (var recipe in _filteredRecipes)
         {
             var go = Instantiate(recipeItemPrefab, recipeListContent);
+
+            // VLG owns positioning – chỉ reset scale
+            var rt = go.GetComponent<RectTransform>();
+            if (rt != null)
+                rt.localScale = Vector3.one;
+
+            // Kill row-level fitters/layouts that fight VLG
+            var rowFitter = go.GetComponent<ContentSizeFitter>();
+            if (rowFitter != null) DestroyImmediate(rowFitter);
+
+            var rowVlg = go.GetComponent<VerticalLayoutGroup>();
+            if (rowVlg != null) DestroyImmediate(rowVlg);
+
+            var rowHlg = go.GetComponent<HorizontalLayoutGroup>();
+            if (rowHlg != null) DestroyImmediate(rowHlg);
+
+            var rowGrid = go.GetComponent<GridLayoutGroup>();
+            if (rowGrid != null) DestroyImmediate(rowGrid);
+
+            // LayoutElement: báo VLG chiều cao mỗi row
+            var le = go.GetComponent<LayoutElement>();
+            if (le == null) le = go.AddComponent<LayoutElement>();
+            le.minHeight = recipeRowHeight;
+            le.preferredHeight = recipeRowHeight;
+            le.flexibleHeight = 0f;
+            le.minWidth = -1f;
+
             var row = go.GetComponent<RecipeListItem>();
-            if (row != null)
+            if (row == null)
+                row = go.GetComponentInChildren<RecipeListItem>(true);
+
+            if (row == null)
             {
-                bool canCraft = recipe.CanCraft(playerInventory);
-                bool isSelected = _selectedRecipe == recipe;
-                row.Setup(recipe, canCraft, isSelected, () => SelectRecipe(recipe));
+                Debug.LogError("[CraftingUI] recipeItemPrefab is missing RecipeListItem component.");
+                continue;
             }
+
+            bool canCraft = recipe.CanCraft(playerInventory);
+            bool isSelected = _selectedRecipe == recipe;
+            row.Setup(recipe, canCraft, isSelected, () => SelectRecipe(recipe));
         }
+
+        // Double-rebuild: lần 1 tính preferred size, lần 2 áp dụng
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(recipeListContent as RectTransform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(recipeListContent as RectTransform);
+
+        // Reset scroll về đầu list sau mỗi lần refresh category/search
+        var scrollRect = recipeListContent.GetComponentInParent<ScrollRect>();
+        if (scrollRect != null)
+            scrollRect.verticalNormalizedPosition = 1f;
     }
 
     private void OnSearchChanged(string value)
@@ -177,15 +282,19 @@ public class CraftingUI : MonoBehaviour
     private void OnCategorySelected(string cat, int btnIndex)
     {
         _currentCategory = cat;
+
         for (int i = 0; i < categoryTabButtons.Length; i++)
         {
-            var img = categoryTabButtons[i].GetComponent<Image>();
-            if (img) img.color = (i == btnIndex) ? tabActiveColor : tabNormalColor;
+            var btn = categoryTabButtons[i];
+            if (btn == null) continue;
+
+            var img = btn.GetComponent<Image>();
+            if (img != null)
+                img.color = (i == btnIndex) ? tabActiveColor : tabNormalColor;
         }
+
         RefreshRecipeList();
     }
-
-    // ── Recipe selection ─────────────────────────────────────────────────────
 
     private void SelectRecipe(CraftingRecipe recipe)
     {
@@ -198,7 +307,6 @@ public class CraftingUI : MonoBehaviour
         RefreshRecipeList();
     }
 
-    // ĐÃ SỬA: Cập nhật lưới hiển thị 3 slot ngang theo v2
     private void UpdateGrid(CraftingRecipe recipe)
     {
         int slotCount = gridSlotImages != null ? gridSlotImages.Length : 3;
@@ -289,8 +397,6 @@ public class CraftingUI : MonoBehaviour
         }
         if (infoNameText) infoNameText.text = "Select a recipe";
         if (infoRarityText) infoRarityText.text = "—";
-
-        // Đã đổi dòng này sang tiếng Anh
         if (infoDescText) infoDescText.text = "Select a recipe to view its details.";
 
         if (statsContainer) foreach (Transform c in statsContainer) Destroy(c.gameObject);
@@ -301,8 +407,6 @@ public class CraftingUI : MonoBehaviour
             resultIconImage.enabled = false;
         }
     }
-
-    // ── Crafting ─────────────────────────────────────────────────────────────
 
     private void OnCraftClicked()
     {
@@ -332,8 +436,6 @@ public class CraftingUI : MonoBehaviour
         resultIconImage.color = originalColor;
     }
 
-    // ── Qty controls ─────────────────────────────────────────────────────────
-
     private void ChangeCraftQty(int delta)
     {
         _craftQty = Mathf.Clamp(_craftQty + delta, 1, 99);
@@ -346,8 +448,6 @@ public class CraftingUI : MonoBehaviour
     {
         if (qtyText) qtyText.text = _craftQty.ToString();
     }
-
-    // ── Helpers ──────────────────────────────────────────────────────────────
 
     private void RefreshCurrentSelection()
     {

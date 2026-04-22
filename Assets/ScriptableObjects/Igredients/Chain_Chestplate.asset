@@ -10,20 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d63220367668be24c9838aafb46562ab, type: 3}
-  m_Name: Iron_Bar
+  m_Name: Chain_Chestplate
   m_EditorClassIdentifier: 
-  itemName: Iron_Bar
-  rarity: 0
-  description: iron stupid
-  itemType: 4
+  itemName: Chain Chestplate
+  rarity: 1
+  description: Interlocked iron rings woven into a flexible body protection.
+  itemType: 1
   armorSlot: 1
-  icon: {fileID: 21300000, guid: e4c1370f8e37941439f64b43674ba5f2, type: 3}
-  emojiIcon: "\U0001F4E6"
-  isStackable: 1
-  maxStack: 99
+  icon: {fileID: 21300000, guid: 66627f2049fd80a499251367943840f2, type: 3}
+  emojiIcon: "\U0001F6E1\uFE0F"
+  isStackable: 0
+  maxStack: 1
   currentStack: 1
-  goldValue: 0
+  goldValue: 80
   statBonuses:
-  - statName: Damage
-    value: 10
+  - statName: maxHealth
+    value: 25
+  - statName: damage
+    value: -1
   worldPrefab: {fileID: 0}

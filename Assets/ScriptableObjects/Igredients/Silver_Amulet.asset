@@ -10,20 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d63220367668be24c9838aafb46562ab, type: 3}
-  m_Name: Iron_Bar
+  m_Name: Silver_Amulet
   m_EditorClassIdentifier: 
-  itemName: Iron_Bar
-  rarity: 0
-  description: iron stupid
-  itemType: 4
+  itemName: Silver Amulet
+  rarity: 1
+  description: A finely engraved silver pendant rumoured to ward off curses.
+  itemType: 2
   armorSlot: 1
-  icon: {fileID: 21300000, guid: e4c1370f8e37941439f64b43674ba5f2, type: 3}
-  emojiIcon: "\U0001F4E6"
-  isStackable: 1
-  maxStack: 99
+  icon: {fileID: 21300000, guid: 7bfdca5f84aeed34689ea6b4eb29274b, type: 3}
+  emojiIcon: "\U0001F4FF"
+  isStackable: 0
+  maxStack: 1
   currentStack: 1
-  goldValue: 0
+  goldValue: 50
   statBonuses:
-  - statName: Damage
+  - statName: maxHealth
+    value: 15
+  - statName: currentMana
     value: 10
   worldPrefab: {fileID: 0}
