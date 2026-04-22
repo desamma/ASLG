@@ -15,9 +15,6 @@ public class QuestLogUI : MonoBehaviour
 
     private QuestSO questSO;
 
-    // Tracks whether the current right-panel display was triggered from the quest log (left panel)
-    private bool isViewingFromQuestLog = false;
-
     [Header("Danh Sách Các Nút Quest Đang Làm (Bên Trái)")]
     [SerializeField] private QuestLogSlot[] questSlots;
 
@@ -48,19 +45,8 @@ public class QuestLogUI : MonoBehaviour
         if (questCanvas.alpha > 0 && questSO != null)
         {
             DisplayObjectives();
-
-            // Re-evaluate buttons if viewing from the quest log,
-            // so Complete appears automatically when all objectives are done
-            if (isViewingFromQuestLog)
-            {
-                bool isComplete = IsQuestComplete(questSO);
-                SetCanvasState(declineCanvas, !isComplete);
-                SetCanvasState(completeCanvas, isComplete);
-            }
         }
     }
-
-    // ==========================================
 
     private void Update()
     {
@@ -85,8 +71,6 @@ public class QuestLogUI : MonoBehaviour
             questCanvas.alpha = 1;
             questCanvas.blocksRaycasts = true;
             questCanvas.interactable = true;
-
-            RefreshQuestList();
             RefreshCurrentQuestDisplay();
         }
     }
@@ -99,9 +83,7 @@ public class QuestLogUI : MonoBehaviour
             return;
         }
 
-        isViewingFromQuestLog = false;
         HandleQuestClick(incomingQuestSO);
-
         SetCanvasState(questCanvas, true);
         SetCanvasState(acceptCanvas, true);
         SetCanvasState(declineCanvas, true);
@@ -110,9 +92,7 @@ public class QuestLogUI : MonoBehaviour
 
     public void ShowQuestTurnIn(QuestSO incomingQuestSO)
     {
-        isViewingFromQuestLog = false;
         HandleQuestClick(incomingQuestSO);
-
         SetCanvasState(questCanvas, true);
         SetCanvasState(acceptCanvas, false);
         SetCanvasState(declineCanvas, false);
@@ -136,51 +116,6 @@ public class QuestLogUI : MonoBehaviour
     {
         questManager.CompleteQuest(questSO);
         SetCanvasState(completeCanvas, false);
-        if (questSO != null) questManager.AcceptQuest(questSO);
-
-        SetCanvasState(acceptCanvas, false);
-        SetCanvasState(declineCanvas, false);
-
-        RefreshQuestList();
-    }
-
-    // ==========================================
-
-    public void OnDeclineQuestClick()
-    {
-        if (questSO == null) return;
-
-        // Always abandon the quest (works both from quest offer and from left panel)
-        if (questManager.activeQuests.Contains(questSO))
-        {
-            questManager.AbandonQuest(questSO);
-        }
-
-        // Hide Accept/Decline buttons
-        SetCanvasState(acceptCanvas, false);
-        SetCanvasState(declineCanvas, false);
-
-        // Refresh the left panel — the abandoned quest is now gone
-        RefreshQuestList();
-
-        // Auto-select the next quest, or clear the right panel if none remain
-        if (questManager.activeQuests.Count > 0)
-        {
-            // Select from quest log mode so Decline button shows again
-            HandleQuestClickFromLog(questManager.activeQuests[0]);
-        }
-        else
-        {
-            ClearRightPanel();
-        }
-    }
-
-    public void OnCompleteQuestClick()
-    {
-        if (questSO != null) questManager.CompleteQuest(questSO);
-
-        SetCanvasState(completeCanvas, false);
-
         RefreshQuestList();
 
         if (questManager.activeQuests.Count > 0)
@@ -196,15 +131,8 @@ public class QuestLogUI : MonoBehaviour
         }
     }
 
-            ClearRightPanel();
-        }
-    }
-
-    // ==========================================
-
     private void SetCanvasState(CanvasGroup canvasGroup, bool state)
     {
-        if (canvasGroup == null) return;
         canvasGroup.alpha = state ? 1 : 0;
         canvasGroup.blocksRaycasts = state;
         canvasGroup.interactable = state;
@@ -230,52 +158,11 @@ public class QuestLogUI : MonoBehaviour
     public void HandleQuestClick(QuestSO questSO)
     {
         this.questSO = questSO;
-    // Called when clicking a quest from the LEFT PANEL (quest log).
-    // Displays quest details on the right and shows the Decline button so the player can abandon it.
-    public void HandleQuestClickFromLog(QuestSO clickedQuestSO)
-    {
-        isViewingFromQuestLog = true;
-        HandleQuestClick(clickedQuestSO);
-
-        bool isComplete = IsQuestComplete(clickedQuestSO);
-
-        // Hide Accept always (quest is already active)
-        // Show Complete only if all objectives are done, otherwise show Decline
-        SetCanvasState(acceptCanvas, false);
-        SetCanvasState(declineCanvas, !isComplete);
-        SetCanvasState(completeCanvas, isComplete);
-    }
-
-    private bool IsQuestComplete(QuestSO quest)
-    {
-        foreach (var objective in quest.questObjectives)
-        {
-            if (questManager.GetCurrentAmount(quest, objective) < objective.requiredAmount)
-                return false;
-        }
-        return true;
-    }
-
-    // Core display logic — populates the right panel. Does NOT touch canvas states.
-    public void HandleQuestClick(QuestSO questSO)
-    {
-        this.questSO = questSO;
-
         questNameText.text = questSO.questName;
         questDescriptionText.text = questSO.questDescription;
 
         DisplayObjectives();
         DisplayRewards();
-    }
-
-    private void ClearRightPanel()
-    {
-        questSO = null;
-        isViewingFromQuestLog = false;
-        questNameText.text = "NO QUEST SELECTED";
-        questDescriptionText.text = "";
-        foreach (var slot in objectiveSlots) { if (slot != null) slot.gameObject.SetActive(false); }
-        foreach (var slot in rewardSlots) { if (slot != null) slot.gameObject.SetActive(false); }
     }
 
     private void DisplayObjectives()
@@ -288,10 +175,6 @@ public class QuestLogUI : MonoBehaviour
                 int currentAmount = questManager.GetCurrentAmount(questSO, objective);
                 string progress = questManager.GetProgressText(questSO, objective);
                 bool isCompleted = currentAmount >= objective.requiredAmount;
-
-                int curruntAmount = questManager.GetCurrentAmount(questSO, objective);
-                string progress = questManager.GetProgressText(questSO, objective);
-                bool isCompleted = curruntAmount >= objective.requiredAmount;
 
                 objectiveSlots[i].gameObject.SetActive(true);
                 objectiveSlots[i].RefreshObjectives(objective.description, progress, isCompleted);

@@ -1,4 +1,3 @@
-using Assets.Scripts.Player.Class;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
