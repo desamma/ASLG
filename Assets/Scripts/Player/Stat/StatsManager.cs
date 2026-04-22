@@ -11,6 +11,11 @@ public class StatsManager : MonoBehaviour
     [Header("Player")]
     [SerializeField] private string _playerName;
 
+    // --- BIẾN ĐIỀU PHỐI ĐỘ KHÓ CỦA AI DIRECTOR ---
+    [Header("Difficulty Multipliers")]
+    public float damageDealtMultiplier = 1f; // Nhân vào sát thương Player gây ra
+    public float damageTakenMultiplier = 1f; // Nhân vào sát thương Player nhận vào
+
     [Header("Session Data")]
     [SerializeField] private string authToken;
     [SerializeField] private string userId;
@@ -140,9 +145,10 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private float _cooldown = 0.5f;
     [SerializeField] private float _bonusCooldown = 0f;
 
+    // ĐÃ SỬA: Sát thương đầu ra giờ sẽ được nhân thêm hệ số của AI Director
     public float damage
     {
-        get => _baseDamage + _bonusDamage;
+        get => (_baseDamage + _bonusDamage) * damageDealtMultiplier;
         set { _baseDamage = Mathf.Max(0f, value); OnStatsChanged(); }
     }
     public float baseDamage
@@ -291,13 +297,25 @@ public class StatsManager : MonoBehaviour
         _currentHealth = maxHealth;
         _currentStamina = maxStamina;
         _currentMana = maxMana;
+        
+        // Reset luôn cả hệ số AI Director khi khởi tạo
+        damageDealtMultiplier = 1f;
+        damageTakenMultiplier = 1f;
+        
         OnStatsChanged();
     }
 
     public void TakeDamage(float amount)
     {
-        float damageAfterDefend = amount - defence;
-        currentHealth -= Mathf.Abs(damageAfterDefend);
+        // ĐÃ SỬA: Tính sát thương sau khi trừ giáp, sau đó nhân hệ số của AI Director
+        float damageAfterDefend = (amount - defence) * damageTakenMultiplier;
+        float actualDamage = Mathf.Max(0f, damageAfterDefend); // Đảm bảo sát thương >= 0 (không bị bơm máu ngược)
+        
+        // Báo cho AI biết Player vừa mất bao nhiêu máu
+        if (AIDifficultyManager.Instance != null) 
+            AIDifficultyManager.Instance.LogDamageTaken(actualDamage);
+
+        currentHealth -= actualDamage;
         if (IsDead) HandleDeath();
     }
 
@@ -305,6 +323,10 @@ public class StatsManager : MonoBehaviour
 
     public void AddExp(int amount)
     {
+        // ĐÃ SỬA: Cứ mỗi lần nhận EXP tức là quái đã chết, báo cho AI ghi nhận số Kill
+        if (AIDifficultyManager.Instance != null) 
+            AIDifficultyManager.Instance.LogKill();
+
         currentExp += amount;
         while (currentExp >= expToNextLevel)
         {
@@ -416,6 +438,11 @@ public class StatsManager : MonoBehaviour
     private void HandleDeath()
     {
         Debug.Log("[StatsManager] Player died!");
+        
+        // ĐÃ SỬA: Báo cho AI biết Player vừa tèo
+        if (AIDifficultyManager.Instance != null) 
+            AIDifficultyManager.Instance.LogDeath();
+
         OnPlayerDeathEvent?.Invoke();
         Destroy(gameObject);
         Time.timeScale = 0f;
