@@ -50,14 +50,15 @@ public class Enemy_Slime_Health : MonoBehaviour, IEnemy_Health
         {
             stats.CurrentHP = 0;
             isDead = true;
-            StatsManager.instance?.AddExp(Mathf.RoundToInt(stats.ExpReward));
-            StatsManager.instance?.AddGold(Mathf.RoundToInt(stats.GoldReward));
+            StatsManager.instance.AddExp(Mathf.RoundToInt(stats.ExpReward));
+            StatsManager.instance.AddGold(Mathf.RoundToInt(stats.GoldReward));
             
             if (movementComponent != null)
             {
                 var manager = movementComponent.GetStateManager();
                 manager.ChangeState(Enemy_Slime_State.Knockback);
             }
+            Destroy(gameObject);
         }
     }
 

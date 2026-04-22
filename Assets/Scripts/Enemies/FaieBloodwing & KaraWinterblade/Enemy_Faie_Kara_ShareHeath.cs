@@ -15,6 +15,8 @@ public class Enemy_Faie_Kara_ShareHealth : MonoBehaviour
 
     private Vector3 _faieSpawnPos;
     private Vector3 _karaSpawnPos;
+    private SpawnerEnemyDropHandler _faieDropHandler;
+    private SpawnerEnemyDropHandler _karaDropHandler;
     private bool _faiePosRegistered;
     private bool _karaPosRegistered;
     private int _expReward;
@@ -127,21 +129,30 @@ public class Enemy_Faie_Kara_ShareHealth : MonoBehaviour
         }
     }
 
-    public void RegisterPosition(bool isFaie, Vector3 position, GameObject phase2GO)
+    public void RegisterPosition(bool isFaie, Vector3 position, GameObject phase2GO, Transform sourceTransform = null)
     {
         if (phase2GO == null) return;
+
+        SpawnerEnemyDropHandler sourceHandler = null;
+        if (sourceTransform != null)
+        {
+            sourceTransform.TryGetComponent<SpawnerEnemyDropHandler>(out sourceHandler);
+            sourceHandler?.SuppressDrop();
+        }
 
         if (isFaie)
         {
             _faieSpawnPos = position;
             _faiePosRegistered = true;
             faiePhase2Prefab = phase2GO;
+            _faieDropHandler = sourceHandler;
         }
         else
         {
             _karaSpawnPos = position;
             _karaPosRegistered = true;
             karaPhase2Prefab = phase2GO;
+            _karaDropHandler = sourceHandler;
         }
     }
 
@@ -154,10 +165,19 @@ public class Enemy_Faie_Kara_ShareHealth : MonoBehaviour
         _karaPosRegistered = false;
 
         if (faiePhase2Prefab != null)
-            Instantiate(faiePhase2Prefab, _faieSpawnPos, Quaternion.identity);
+        {
+            var faiePhase2 = Instantiate(faiePhase2Prefab, _faieSpawnPos, Quaternion.identity);
+            _faieDropHandler?.TransferTo(faiePhase2);
+        }
 
         if (karaPhase2Prefab != null)
-            Instantiate(karaPhase2Prefab, _karaSpawnPos, Quaternion.identity);
+        {
+            var karaPhase2 = Instantiate(karaPhase2Prefab, _karaSpawnPos, Quaternion.identity);
+            _karaDropHandler?.TransferTo(karaPhase2);
+        }
+
+        _faieDropHandler = null;
+        _karaDropHandler = null;
     }
 
     public void DestroySharedHealth() => Destroy(gameObject);
