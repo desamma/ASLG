@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
 [DisallowMultipleComponent]
-public class MapAudio : MonoBehaviour
+public class MapMusic : MonoBehaviour
 {
 
     [Header("Audio Clips")]
@@ -48,7 +48,7 @@ public class MapAudio : MonoBehaviour
     /// Tracks one persistent MapAudio instance per group name.
     /// Cleared automatically when an instance is destroyed.
     /// </summary>
-    private static readonly Dictionary<string, MapAudio> s_persistentInstances = new();
+    private static readonly Dictionary<string, MapMusic> s_persistentInstances = new();
 
     private AudioSource _audioSource;
     private AudioClip _currentClip;
@@ -69,7 +69,7 @@ public class MapAudio : MonoBehaviour
         if (!persistAcrossScenes) return;
 
         //Duplicate guard
-        if (s_persistentInstances.TryGetValue(groupName, out MapAudio existing) && existing != null)
+        if (s_persistentInstances.TryGetValue(groupName, out MapMusic existing) && existing != null)
         {
             Destroy(gameObject);
             return;
@@ -92,7 +92,7 @@ public class MapAudio : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
 
         // Unregister only if this is still the tracked instance
-        if (s_persistentInstances.TryGetValue(groupName, out MapAudio tracked) && tracked == this)
+        if (s_persistentInstances.TryGetValue(groupName, out MapMusic tracked) && tracked == this)
             s_persistentInstances.Remove(groupName);
     }
 

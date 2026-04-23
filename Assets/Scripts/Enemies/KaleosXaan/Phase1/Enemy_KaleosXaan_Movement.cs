@@ -306,8 +306,16 @@ public class Enemy_KaleosXaan_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
     }
     public void Phase2Transition()
     {
+        var dropHandler = GetComponent<SpawnerEnemyDropHandler>();
+        dropHandler.SuppressDrop();
+
         var position = transform.position + new Vector3(0f, 1.2f, 0f);
-        Instantiate(phase2TransitionEffect, position, Quaternion.identity);
+        var transitionEffect = Instantiate(phase2TransitionEffect, position, Quaternion.identity);
+        if (transitionEffect != null && dropHandler != null)
+        {
+            transitionEffect.TryGetComponent<KX_Phase2_Effect>(out var effectComponent);
+            effectComponent.InitializeDropTransfer(dropHandler);
+        }
     }
 
     #region State Callbacks

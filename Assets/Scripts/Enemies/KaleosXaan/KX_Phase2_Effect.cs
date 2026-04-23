@@ -19,6 +19,8 @@ public class KX_Phase2_Effect : MonoBehaviour
     [SerializeField] private AudioClip explosionAudio;
     [SerializeField] private float volume = 1f;
 
+    private SpawnerEnemyDropHandler sourceDropHandler;
+
 
     private void Start()
     {
@@ -66,7 +68,16 @@ public class KX_Phase2_Effect : MonoBehaviour
     public void SpawnPhase2Kaleos()
     {
         var position = transform.position + new Vector3(0f, 0f, 0f);
-        Instantiate(phase2Kaleos, position, Quaternion.identity);
+        var phase2Instance = Instantiate(phase2Kaleos, position, Quaternion.identity);
+        if (phase2Instance != null)
+        {
+            sourceDropHandler?.TransferTo(phase2Instance);
+        }
+    }
+
+    public void InitializeDropTransfer(SpawnerEnemyDropHandler dropHandler)
+    {
+        sourceDropHandler = dropHandler;
     }
 
     public void PlayAudio(int num)

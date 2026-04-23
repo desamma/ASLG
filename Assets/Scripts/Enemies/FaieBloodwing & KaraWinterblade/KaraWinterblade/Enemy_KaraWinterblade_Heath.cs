@@ -73,7 +73,7 @@ public class Enemy_KaraWinterblade_Health : MonoBehaviour, IEnemy_Health
         StartCoroutine(movementComponent.DeathMovingCoroutine());
         statusEffectManager.RemoveAll();
 
-        sharedHealth.RegisterPosition(isFaie: false, transform.position, faiePhase2Prefab);
+        sharedHealth.RegisterPosition(isFaie: false, transform.position, faiePhase2Prefab, transform);
     }
 
     public void SpawnPhase2() => sharedHealth.SpawnPhase2();

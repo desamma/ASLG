@@ -362,9 +362,19 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement, IE
     private IEnumerator DeathToPhase2()
     {
         yield return new WaitForSeconds(delayToPhase2);
-        Destroy(gameObject);
+
+        var dropHandler = GetComponent<SpawnerEnemyDropHandler>();
+        dropHandler?.SuppressDrop();
+
         var location = transform.position + new Vector3(0, 1.8f, 0);
-        Instantiate(phase2EntranceEffect, location, Quaternion.identity);
+        var phase2Effect = Instantiate(phase2EntranceEffect, location, Quaternion.identity);
+        if (phase2Effect != null && dropHandler != null)
+        {
+            phase2Effect.TryGetComponent<Enemy_ArgeonHighmayne_LionHeartBlessing>(out var entranceComponent);
+            entranceComponent?.InitializeDropTransfer(dropHandler);
+        }
+
+        Destroy(gameObject);
     }
 
     public void KnockBack(Transform player, float knockbackForce, float knockbackTime, float stunTime)

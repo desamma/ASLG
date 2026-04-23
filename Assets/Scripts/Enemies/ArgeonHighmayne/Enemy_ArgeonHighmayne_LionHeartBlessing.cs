@@ -14,6 +14,8 @@ public class Enemy_ArgeonHighmayne_LionHeartBlessing : MonoBehaviour
     [SerializeField] private AudioClip audioClip;
     [SerializeField] private float volume = 1f;
     private bool hitPlayer = false;
+    private SpawnerEnemyDropHandler sourceDropHandler;
+
     private void Start()
     {
 
@@ -37,7 +39,11 @@ public class Enemy_ArgeonHighmayne_LionHeartBlessing : MonoBehaviour
             float yOffset = -1.5f;
             var spawnPosition = new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, transform.position.z);
 
-            Instantiate(argeonHighmayne, spawnPosition, Quaternion.identity);
+            var phase2Boss = Instantiate(argeonHighmayne, spawnPosition, Quaternion.identity);
+            if (phase2Boss != null)
+            {
+                sourceDropHandler.TransferTo(phase2Boss);
+            }
         }
         else
         {
@@ -45,8 +51,17 @@ public class Enemy_ArgeonHighmayne_LionHeartBlessing : MonoBehaviour
             float yOffset = -2f;
             var spawnPosition = new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, transform.position.z);
 
-            Instantiate(argeonHighmayne, spawnPosition, Quaternion.identity);
+            var phase2Boss = Instantiate(argeonHighmayne, spawnPosition, Quaternion.identity);
+            if (phase2Boss != null)
+            {
+                sourceDropHandler.TransferTo(phase2Boss);
+            }
         }
+    }
+
+    public void InitializeDropTransfer(SpawnerEnemyDropHandler dropHandler)
+    {
+        sourceDropHandler = dropHandler;
     }
 
     public void EnableTrigger()
