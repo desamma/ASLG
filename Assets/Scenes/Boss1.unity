@@ -3558,7 +3558,7 @@ Tilemap:
       - {fileID: -1203742772, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
       - {fileID: 34596137, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
       - {fileID: 1374075665, guid: cba9d12877770454c979e5d11e3224e1, type: 3}
-      m_AnimationSpeed: 3
+      m_AnimationSpeed: 3.0000002
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 4, y: -26, z: 0}
@@ -44127,6 +44127,10 @@ PrefabInstance:
       propertyPath: testData
       value: 
       objectReference: {fileID: 11400000, guid: e55a77e9af636c0489fbe2c600bd9c95, type: 2}
+    - target: {fileID: 4318455414582415825, guid: 7d98c62469538694c8e9ab5d4799e0a9, type: 3}
+      propertyPath: _damage
+      value: 10000
+      objectReference: {fileID: 0}
     - target: {fileID: 7052897822993540938, guid: 7d98c62469538694c8e9ab5d4799e0a9, type: 3}
       propertyPath: m_Name
       value: PlayerManagers
@@ -44352,6 +44356,10 @@ MonoBehaviour:
   scaleEnemyLevelByPlayerLevel: 1
   minLevelOffsetFromPlayer: -5
   maxLevelOffsetFromPlayer: 2
+  mapMusic: {fileID: 1741025134}
+  changeMapMusicOnDetection: 1
+  onDetectionAudioClip: {fileID: 8300000, guid: e23faede88136f040a0d3d346dac12d4, type: 3}
+  onDetectionAudioVolume: 0.258
 --- !u!4 &1434684064
 Transform:
   m_ObjectHideFlags: 0
@@ -44464,8 +44472,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultAudioClip: {fileID: 8300000, guid: ef021bc6710e8e740a437c6d58f92747, type: 3}
   onPlayingAudioClip: {fileID: 0}
-  defaultVolume: 0.842
-  onPlayingVolume: 0.763
+  defaultVolume: 0.595
+  onPlayingVolume: 0.258
   fadeOutDuration: 0.5
   fadeInDuration: 0.3
   persistAcrossScenes: 0

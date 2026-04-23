@@ -32,12 +32,23 @@ public class EnemyAreaSpawner : MonoBehaviour
     [SerializeField] private int minLevelOffsetFromPlayer = -5;
     [SerializeField] private int maxLevelOffsetFromPlayer = 2;
 
+    [Header("Map Audio")]
+    [SerializeField] private MapMusic mapMusic;
+    [SerializeField] private bool changeMapMusicOnDetection = true;
+    [SerializeField] private AudioClip onDetectionAudioClip;
+    [SerializeField, Range(0f, 1f)] private float onDetectionAudioVolume = 1f;
+
     private readonly List<GameObject> _aliveEnemies = new();
     private Coroutine _spawnRoutine;
     private bool _spawnedAllPrefabsOnce;
+    private bool _audioTriggeredByEnemy;
+    private Transform _playerTransform;
+    private bool _playerWasInDetectionRange;
 
     private void OnEnable()
     {
+        ResolvePlayerTransform();
+        ResolvemapMusic();
         _spawnRoutine = StartCoroutine(SpawnRoutine());
     }
 
@@ -66,6 +77,7 @@ public class EnemyAreaSpawner : MonoBehaviour
         {
             while (true)
             {
+                UpdateDetectionRange();
                 SpawnAllPrefabsOnce();
                 yield return new WaitForSeconds(0.1f);
             }
@@ -73,6 +85,7 @@ public class EnemyAreaSpawner : MonoBehaviour
 
         while (true)
         {
+            UpdateDetectionRange();
             TrySpawnEnemy();
             yield return new WaitForSeconds(spawnIntervalSeconds);
         }
@@ -82,8 +95,9 @@ public class EnemyAreaSpawner : MonoBehaviour
     {
         if (_spawnedAllPrefabsOnce) return;
 
-        CleanupDeadReferences();
         if (!IsPlayerInDetectionRange()) return;
+
+        CleanupDeadReferences();
         if (enemyPrefabs == null || enemyPrefabs.Count == 0) return;
 
         for (int i = 0; i < enemyPrefabs.Count; i++)
@@ -104,9 +118,10 @@ public class EnemyAreaSpawner : MonoBehaviour
 
     private void TrySpawnEnemy()
     {
+        if (!IsPlayerInDetectionRange()) return;
+
         CleanupDeadReferences();
 
-        if (!IsPlayerInDetectionRange()) return;
         if (_aliveEnemies.Count >= maxAliveEnemies) return;
         if (enemyPrefabs == null || enemyPrefabs.Count == 0) return;
 
@@ -145,6 +160,9 @@ public class EnemyAreaSpawner : MonoBehaviour
 
         var handler = enemy.AddComponent<SpawnerEnemyDropHandler>();
         handler.Initialize(this);
+
+        var audioDetector = enemy.AddComponent<SpawnerEnemyAudioDetector>();
+        audioDetector.Initialize(this);
     }
 
     private int GetSpawnLevelFromPlayer()
@@ -154,7 +172,7 @@ public class EnemyAreaSpawner : MonoBehaviour
         int minLevel = Mathf.Max(1, playerLevel + minLevelOffsetFromPlayer);
         int maxLevel = Mathf.Max(minLevel, playerLevel + maxLevelOffsetFromPlayer);
 
-        return Random.Range(minLevel, maxLevel + 1);
+        return Random.Range(minLevel, maxLevel);
     }
 
     private static void TryAssignCurrentLevel(MonoBehaviour component, int level)
@@ -176,13 +194,63 @@ public class EnemyAreaSpawner : MonoBehaviour
         }
     }
 
+    private void HandleEnemyDetectedPlayer()
+    {
+        if (!changeMapMusicOnDetection) return;
+        if (_audioTriggeredByEnemy) return;
+
+        if (mapMusic == null)
+            ResolvemapMusic();
+
+        if (mapMusic != null)
+        {
+            _audioTriggeredByEnemy = true;
+            if (onDetectionAudioClip != null)
+                mapMusic.ChangeAudio(onDetectionAudioClip, onDetectionAudioVolume);
+            else
+                mapMusic.PlayOnPlayingAudio();
+        }
+    }
+
+    public void OnEnemyDetectedPlayer()
+    {
+        HandleEnemyDetectedPlayer();
+    }
+
     private bool IsPlayerInDetectionRange()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null) return false;
+        if (_playerTransform == null)
+        {
+            ResolvePlayerTransform();
+            if (_playerTransform == null) return false;
+        }
 
-        float distance = Vector2.Distance(transform.position, player.transform.position);
+        float distance = Vector2.Distance(transform.position, _playerTransform.position);
         return distance <= detectionRadius;
+    }
+
+    private void UpdateDetectionRange()
+    {
+        bool isPlayerInDetectionRange = IsPlayerInDetectionRange();
+
+        if (isPlayerInDetectionRange && !_playerWasInDetectionRange)
+        {
+            // Player entered detection range
+        }
+
+        _playerWasInDetectionRange = isPlayerInDetectionRange;
+    }
+
+    private void ResolvePlayerTransform()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        _playerTransform = player != null ? player.transform : null;
+    }
+
+    private void ResolvemapMusic()
+    {
+        if (mapMusic != null) return;
+        mapMusic = FindObjectOfType<MapMusic>();
     }
 
     private void CleanupDeadReferences()
