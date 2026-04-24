@@ -9,7 +9,6 @@ public class PauseMenuManager : MonoBehaviour
     public static bool GameIsPaused = false;
     public static float mouseSensitivity = 1f;
     public static System.Action<float> OnMouseSensitivityChanged;
-    // Optional auto-apply to example CameraController if present in scene
     private TMPro.Examples.CameraController exampleCameraController;
     public bool autoApplyToExampleCamera = true;
 
@@ -27,8 +26,8 @@ public class PauseMenuManager : MonoBehaviour
 
     [Header("Audio Settings")]
     public AudioMixer mainMixer;
-    public Slider volumeSlider; // Âm lượng Tổng
-    public Slider bgmSlider;    // ĐÃ THÊM: Âm lượng Nhạc Nền (Background)
+    public Slider volumeSlider;
+    public Slider bgmSlider;
     public string masterParamName = "MasterVolume";
     public string bgmParamName = "BGMVolume";
     [Header("Exposed Audio Parameters")]
@@ -60,6 +59,17 @@ public class PauseMenuManager : MonoBehaviour
     [Header("Sound Effects")]
     public AudioClip buttonClickSound;
 
+    // === CONSTANTS ===
+    private const float BGM_MIN = 0.0001f;
+    private const float BGM_MAX = 1f;
+    private const float MOUSE_MIN = 0.1f;
+    private const float MOUSE_MAX = 5f;
+
+    void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     void Start()
     {
         if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
@@ -72,8 +82,9 @@ public class PauseMenuManager : MonoBehaviour
         if (volumeSlider != null)
         {
             float savedVolume = PlayerPrefs.GetFloat("MasterVolumePref", 1f);
+            volumeSlider.minValue = BGM_MIN;
+            volumeSlider.maxValue = BGM_MAX;
             volumeSlider.value = savedVolume;
-            // Hook slider change to apply immediately
             volumeSlider.onValueChanged.RemoveAllListeners();
             volumeSlider.onValueChanged.AddListener(SetMasterVolume);
             SetMasterVolume(savedVolume);
@@ -83,20 +94,26 @@ public class PauseMenuManager : MonoBehaviour
         if (bgmSlider != null)
         {
             float savedBGM = PlayerPrefs.GetFloat("BGMVolumePref", 1f);
-            bgmSlider.value = savedBGM;
+            // Ép slider đúng range ngay từ đầu
+            bgmSlider.minValue = BGM_MIN;
+            bgmSlider.maxValue = BGM_MAX;
+            bgmSlider.value = Mathf.Clamp(savedBGM, BGM_MIN, BGM_MAX);
             bgmSlider.onValueChanged.RemoveAllListeners();
             bgmSlider.onValueChanged.AddListener(SetBGMVolume);
-            SetBGMVolume(savedBGM);
+            SetBGMVolume(bgmSlider.value);
         }
 
         // Load Mouse
         if (mouseSlider != null)
         {
             float savedMouseSense = PlayerPrefs.GetFloat("MouseSensePref", 1f);
-            mouseSlider.value = savedMouseSense;
+            // Ép slider đúng range ngay từ đầu
+            mouseSlider.minValue = MOUSE_MIN;
+            mouseSlider.maxValue = MOUSE_MAX;
+            mouseSlider.value = Mathf.Clamp(savedMouseSense, MOUSE_MIN, MOUSE_MAX);
             mouseSlider.onValueChanged.RemoveAllListeners();
             mouseSlider.onValueChanged.AddListener(SetMouseSensitivity);
-            SetMouseSensitivity(savedMouseSense);
+            SetMouseSensitivity(mouseSlider.value);
         }
 
         // Try to auto-find example camera controller and apply mouse sensitivity
@@ -110,7 +127,7 @@ public class PauseMenuManager : MonoBehaviour
             }
         }
 
-        // Auto-hook optional buttons so Increase/Decrease work if buttons are assigned
+        // Auto-hook optional buttons
         if (volumeIncreaseButton != null) volumeIncreaseButton.onClick.AddListener(() => IncreaseVolume());
         if (volumeDecreaseButton != null) volumeDecreaseButton.onClick.AddListener(() => DecreaseVolume());
         if (bgmIncreaseButton != null) bgmIncreaseButton.onClick.AddListener(() => IncreaseBGMVolume());
@@ -150,48 +167,110 @@ public class PauseMenuManager : MonoBehaviour
     // ================== ÂM LƯỢNG TỔNG ==================
     public void SetMasterVolume(float sliderValue)
     {
-        // Clamp slider to valid range
-        sliderValue = Mathf.Clamp01(sliderValue);
-        float dbValue = Mathf.Log10(Mathf.Max(sliderValue, 0.0001f)) * 20f;
-        if (sliderValue <= 0.0001f) dbValue = -80f;
+        sliderValue = Mathf.Clamp(sliderValue, BGM_MIN, BGM_MAX);
+        float dbValue = Mathf.Log10(sliderValue) * 20f;
         if (mainMixer != null && masterParamExposed)
-        {
             mainMixer.SetFloat(masterParamName, dbValue);
-        }
         PlayerPrefs.SetFloat("MasterVolumePref", sliderValue);
     }
-    public void IncreaseVolume() { PlayClickSound(); if (volumeSlider != null) { volumeSlider.value += 0.1f; SetMasterVolume(volumeSlider.value); } }
-    public void DecreaseVolume() { PlayClickSound(); if (volumeSlider != null) { volumeSlider.value -= 0.1f; SetMasterVolume(volumeSlider.value); } }
+    public void IncreaseVolume()
+    {
+        PlayClickSound();
+        if (volumeSlider != null) volumeSlider.value = Mathf.Clamp(volumeSlider.value + 0.1f, BGM_MIN, BGM_MAX);
+        // slider.onValueChanged sẽ tự gọi SetMasterVolume
+    }
+    public void DecreaseVolume()
+    {
+        PlayClickSound();
+        if (volumeSlider != null) volumeSlider.value = Mathf.Clamp(volumeSlider.value - 0.1f, BGM_MIN, BGM_MAX);
+    }
 
     // ================== ÂM LƯỢNG NHẠC NỀN ==================
     public void SetBGMVolume(float sliderValue)
     {
-        // Clamp slider to valid range
-        sliderValue = Mathf.Clamp01(sliderValue);
-        float dbValue = Mathf.Log10(Mathf.Max(sliderValue, 0.0001f)) * 20f;
-        if (sliderValue <= 0.0001f) dbValue = -80f;
-        // LƯU Ý: Bạn cần Expose tham số trong AudioMixer của Unity nhé!
-        if (mainMixer != null && bgmParamExposed)
+        // Clamp về đúng range, tránh log10(0)
+        sliderValue = Mathf.Clamp(sliderValue, BGM_MIN, BGM_MAX);
+        float dbValue = Mathf.Log10(sliderValue) * 20f;
+
+        if (mainMixer != null)
         {
-            mainMixer.SetFloat(bgmParamName, dbValue);
+            if (bgmParamExposed)
+                mainMixer.SetFloat(bgmParamName, dbValue);
+            else
+                Debug.LogWarning("[PauseMenu] BGM param chưa Expose. Vào AudioMixer → chuột phải vào tham số → 'Expose to script'.");
         }
         PlayerPrefs.SetFloat("BGMVolumePref", sliderValue);
     }
-    public void IncreaseBGMVolume() { PlayClickSound(); float current = (bgmSlider != null) ? bgmSlider.value : PlayerPrefs.GetFloat("BGMVolumePref", 1f); current = Mathf.Clamp01(current + 0.1f); if (bgmSlider != null) bgmSlider.value = current; SetBGMVolume(current); }
-    public void DecreaseBGMVolume() { PlayClickSound(); float current = (bgmSlider != null) ? bgmSlider.value : PlayerPrefs.GetFloat("BGMVolumePref", 1f); current = Mathf.Clamp01(current - 0.1f); if (bgmSlider != null) bgmSlider.value = current; SetBGMVolume(current); }
+
+    public void IncreaseBGMVolume()
+    {
+        PlayClickSound();
+        if (bgmSlider != null)
+        {
+            // Chỉ set slider, onValueChanged tự gọi SetBGMVolume — tránh gọi 2 lần
+            bgmSlider.value = Mathf.Clamp(bgmSlider.value + 0.1f, BGM_MIN, BGM_MAX);
+        }
+        else
+        {
+            // Không có slider thì gọi thẳng
+            float current = Mathf.Clamp(PlayerPrefs.GetFloat("BGMVolumePref", 1f) + 0.1f, BGM_MIN, BGM_MAX);
+            SetBGMVolume(current);
+        }
+    }
+
+    public void DecreaseBGMVolume()
+    {
+        PlayClickSound();
+        if (bgmSlider != null)
+        {
+            bgmSlider.value = Mathf.Clamp(bgmSlider.value - 0.1f, BGM_MIN, BGM_MAX);
+        }
+        else
+        {
+            float current = Mathf.Clamp(PlayerPrefs.GetFloat("BGMVolumePref", 1f) - 0.1f, BGM_MIN, BGM_MAX);
+            SetBGMVolume(current);
+        }
+    }
 
     // ================== ĐỘ NHẠY CHUỘT ==================
     public void SetMouseSensitivity(float sliderValue)
     {
-        // Clamp to a reasonable range to avoid zero/negative values
-        sliderValue = Mathf.Clamp(sliderValue, 0f, 10f);
+        // Clamp về đúng range 0.1 - 5
+        sliderValue = Mathf.Clamp(sliderValue, MOUSE_MIN, MOUSE_MAX);
         mouseSensitivity = sliderValue;
         PlayerPrefs.SetFloat("MouseSensePref", sliderValue);
         OnMouseSensitivityChanged?.Invoke(sliderValue);
-        Debug.Log($"Mouse sensitivity set to {sliderValue}");
+        Debug.Log($"[PauseMenu] Mouse sensitivity: {sliderValue:F2}");
     }
-    public void IncreaseMouseSense() { PlayClickSound(); float current = (mouseSlider != null) ? mouseSlider.value : PlayerPrefs.GetFloat("MouseSensePref", mouseSensitivity); current = Mathf.Clamp(current + 0.1f, 0f, 10f); if (mouseSlider != null) mouseSlider.value = current; SetMouseSensitivity(current); }
-    public void DecreaseMouseSense() { PlayClickSound(); float current = (mouseSlider != null) ? mouseSlider.value : PlayerPrefs.GetFloat("MouseSensePref", mouseSensitivity); current = Mathf.Clamp(current - 0.1f, 0f, 10f); if (mouseSlider != null) mouseSlider.value = current; SetMouseSensitivity(current); }
+
+    public void IncreaseMouseSense()
+    {
+        PlayClickSound();
+        if (mouseSlider != null)
+        {
+            // Chỉ set slider, onValueChanged tự gọi SetMouseSensitivity
+            mouseSlider.value = Mathf.Clamp(mouseSlider.value + 0.1f, MOUSE_MIN, MOUSE_MAX);
+        }
+        else
+        {
+            float current = Mathf.Clamp(PlayerPrefs.GetFloat("MouseSensePref", mouseSensitivity) + 0.1f, MOUSE_MIN, MOUSE_MAX);
+            SetMouseSensitivity(current);
+        }
+    }
+
+    public void DecreaseMouseSense()
+    {
+        PlayClickSound();
+        if (mouseSlider != null)
+        {
+            mouseSlider.value = Mathf.Clamp(mouseSlider.value - 0.1f, MOUSE_MIN, MOUSE_MAX);
+        }
+        else
+        {
+            float current = Mathf.Clamp(PlayerPrefs.GetFloat("MouseSensePref", mouseSensitivity) - 0.1f, MOUSE_MIN, MOUSE_MAX);
+            SetMouseSensitivity(current);
+        }
+    }
 
     // ================== ĐỔI PHÍM ==================
     private void LoadKeybinds()
