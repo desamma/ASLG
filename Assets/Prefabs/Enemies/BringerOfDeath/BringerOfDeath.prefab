@@ -33,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5.24, y: 0.17, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7575139242310632378}
@@ -80,7 +80,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 12
   m_Sprite: {fileID: -750047184722822154, guid: 1914d95466e3d4341a618c35a56d5f82, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -221,22 +221,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 2584051434560106519}
-  behavior:
-    DetectionRange: 10
-    ChaseRange: 15
-    SpecialAttackFrequency: 0.4
-    UltimateAttackFrequency: 0
-    Aggression: 1
-    MobilityUsageFrequency: 0
-    EnrageThreshold: 0
+  isKnockbackable: 1
   hurtAnimationDuration: 0.5
-  attackRecoveryDuration: 1.5
   rb: {fileID: 1224839090521726071}
   animator: {fileID: 7186685436872888126}
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  player: {fileID: 0}
   attackComponent: {fileID: 3404049085707535281}
   detectionPoint: {fileID: 751109206023846643}
   idleToPatrolWaitTime: 2
@@ -266,8 +257,21 @@ MonoBehaviour:
     MagicResist: 0
     Speed: 0
     ExpReward: 0
+    GoldReward: 0
     AttackRange: 0
     AttackCooldown: 0
+    KnockbackForce: 0
+    KnockbackTime: 0
+    StunTime: 0
+  behavior:
+    DetectionRange: 1
+    ChaseRange: 1
+    SpecialAttackFrequency: 0
+    UltimateAttackFrequency: 0
+    Aggression: 1
+    MobilityUsageFrequency: 0
+    EnrageThreshold: 0
+  currentLevel: 1
   isDead: 0
   damageAudioClip: {fileID: 8300000, guid: df69c2cb5d8c474428300a2f7ff53da1, type: 3}
   volume: 1
