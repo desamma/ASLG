@@ -183,6 +183,28 @@ public class SaveManager : MonoBehaviour
         return File.Exists(GetSaveFilePath());
     }
 
+    public static void OnLogin()
+    {
+        if (Instance._isSaving) return;
+        if (!HasSaveFile() && Instance.enableOnlineActivity)
+        {
+            Instance.StartCoroutine(Instance.GetSaveFileFromWeb());
+        }
+    }
+
+    public IEnumerator GetSaveFileFromWeb()
+    {
+        _isSaving = true;
+
+        if (!HasSaveFile() && enableOnlineActivity)
+        {
+            yield return TryRestoreSaveFromCloudRoutine();
+        }
+
+        yield return SyncPendingWebItemsRoutine();
+        _isSaving = false;
+    }
+
     // --- LƯU GAME ---
     public void SaveGame()
     {

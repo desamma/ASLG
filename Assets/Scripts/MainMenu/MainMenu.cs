@@ -16,6 +16,7 @@ public class MainMenu : MonoBehaviour
         if (continueButton != null)
         {
             continueButton.interactable = SaveManager.HasSaveFile();
+            playButton.interactable = !SaveManager.HasSaveFile();
         }
     }
 
