@@ -24,39 +24,28 @@ public class SkillSlotUI : MonoBehaviour
 
     private void Start()
     {
-        playerGameObject = GameObject.FindGameObjectWithTag("Player");
-
-        if (playerGameObject == null)
-        {
-            Debug.LogError("Error: Could not find any GameObject with the tag 'Player'. Stopping UI setup.");
-            return;
-        }
-
-        playerSkill = playerGameObject.GetComponent<PlayerSkill>();
-
-        if (playerSkill == null)
-        {
-            Debug.LogError("Error: Found the 'Player' object, but it does NOT have the PlayerSkill script attached!");
-            return;
-        }
-
         if (upgradeSkillButton != null && upgradeSkillText != null)
         {
             upgradeSkillButton.onClick.AddListener(OnSkillClickUpgrade);
-
             upgradeSkillButton.enabled = true;
             upgradeSkillButton.interactable = true;
-
             upgradeSkillText.text = "Upgrade skill";
         }
-
-
-        RefreshSkillUI();
     }
 
     private void Update()
     {
-        if (playerSkill == null) return;
+        // ĐÃ SỬA: Tự động tìm kiếm Player liên tục cho đến khi tìm thấy, chống đơ UI
+        if (playerSkill == null)
+        {
+            playerGameObject = GameObject.FindGameObjectWithTag("Player");
+            if (playerGameObject != null)
+            {
+                playerSkill = playerGameObject.GetComponent<PlayerSkill>();
+                RefreshSkillUI();
+            }
+            if (playerSkill == null) return; // Nếu vẫn chưa có Player thì ngừng chạy Update
+        }
 
         cooldownOverlay.fillAmount = playerSkill.CooldownFraction;
         cooldownOverlay.enabled = playerSkill.CooldownFraction > 0f;
@@ -70,6 +59,8 @@ public class SkillSlotUI : MonoBehaviour
 
     private void OnSkillClickUpgrade()
     {
+        if (playerSkill == null) return;
+
         if (playerSkill.TryUpgrade())
         {
             if (playerSkill.CurrentTier == 3)
@@ -85,7 +76,6 @@ public class SkillSlotUI : MonoBehaviour
         {
             Debug.Log("Player skill upgrade failed");
         }
-
     }
 
     public void RefreshSkillUI()
@@ -100,18 +90,10 @@ public class SkillSlotUI : MonoBehaviour
 
         switch (playerSkill.CurrentTier)
         {
-            case 0:
-                skillBorder.sprite = skillBorderTier0;
-                break;
-            case 1:
-                skillBorder.sprite = skillBorderTier1;
-                break;
-            case 2:
-                skillBorder.sprite = skillBorderTier2;
-                break;
-            case 3:
-                skillBorder.sprite = skillBorderTier3;
-                break;
+            case 0: skillBorder.sprite = skillBorderTier0; break;
+            case 1: skillBorder.sprite = skillBorderTier1; break;
+            case 2: skillBorder.sprite = skillBorderTier2; break;
+            case 3: skillBorder.sprite = skillBorderTier3; break;
         }
     }
 }

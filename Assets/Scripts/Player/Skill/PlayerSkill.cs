@@ -7,7 +7,7 @@ public class PlayerSkill : MonoBehaviour
 {
     [Header("Components")]
     [SerializeField] private PlayerMovement movement;
-    [SerializeField] private Transform skillOrigin; // tip of weapon / spawn point
+    [SerializeField] private Transform skillOrigin; 
 
     [Header("Audio")]
     [SerializeField] private float volume = 1f;
@@ -20,8 +20,6 @@ public class PlayerSkill : MonoBehaviour
 
     private PlayerClassData ClassData => ClassManager.Instance.CurrentClassData;
     private SkillData SkillData => ClassData.skillData;
-
-    // ── Unity ─────────────────────────────────────────────────────────────────
 
     private void Start()
     {
@@ -39,8 +37,6 @@ public class PlayerSkill : MonoBehaviour
             TriggerSkill();
     }
 
-    // ── Conditions ────────────────────────────────────────────────────────────
-
     private bool CanUseSkill()
     {
         if (SkillData == null) return false;
@@ -53,8 +49,6 @@ public class PlayerSkill : MonoBehaviour
                !sm.IsInState(PlayerState.Knockback);
     }
 
-    // ── Trigger ───────────────────────────────────────────────────────────────
-
     private void TriggerSkill()
     {
         StatsManager.instance.currentMana -= GetCurrentManaCost();
@@ -63,16 +57,12 @@ public class PlayerSkill : MonoBehaviour
         switch (ClassManager.Instance.SelectedClass)
         {
             case PlayerClass.Knight: StartCoroutine(KnightSkillRoutine()); break;
-            case PlayerClass.Archer: ArcherSkill(); break;
+            // ĐÃ SỬA: Chuyển thành Routine để đồng bộ với state animation
+            case PlayerClass.Archer: StartCoroutine(ArcherSkillRoutine()); break;
             case PlayerClass.Rogue: StartCoroutine(RogueSkillRoutine()); break;
         }
     }
 
-    // ── Upgrade ───────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Call from a UI button. Returns true if upgrade succeeded.
-    /// </summary>
     public bool TryUpgrade()
     {
         if (SkillData == null) return false;
@@ -86,55 +76,46 @@ public class PlayerSkill : MonoBehaviour
         return true;
     }
 
-    // Exposed for UI
     public Sprite SkillIcon => SkillData.icon;
     public int CurrentTier => currentUpgradeTier;
     public int MaxTier => SkillData.upgrades?.Length ?? 0;
     public float CooldownFraction => SkillData != null ? cooldownTimer / GetCurrentCooldown() : 0f;
     public float CooldownTimer => cooldownTimer;
     public float ManaCost => GetCurrentManaCost();
-    public int NextUpgradeCost => (SkillData != null && currentUpgradeTier < MaxTier)
-                                     ? SkillData.upgrades[currentUpgradeTier].pointCost : 0;
-
-    // ── Computed stats (stack upgrade bonuses) ────────────────────────────────
+    public int NextUpgradeCost => (SkillData != null && currentUpgradeTier < MaxTier) ? SkillData.upgrades[currentUpgradeTier].pointCost : 0;
 
     private float GetCurrentManaCost()
     {
         float v = SkillData.manaCost;
-        for (int i = 0; i < currentUpgradeTier; i++)
-            v *= SkillData.upgrades[i].manaCostMultiplier;
+        for (int i = 0; i < currentUpgradeTier; i++) v *= SkillData.upgrades[i].manaCostMultiplier;
         return v;
     }
 
     private float GetCurrentCooldown()
     {
         float v = SkillData.cooldown;
-        for (int i = 0; i < currentUpgradeTier; i++)
-            v *= SkillData.upgrades[i].cooldownMultiplier;
+        for (int i = 0; i < currentUpgradeTier; i++) v *= SkillData.upgrades[i].cooldownMultiplier;
         return Mathf.Max(0.5f, v);
     }
 
     private int GetCurrentDamage()
     {
         float pct = SkillData.damagePercent;
-        for (int i = 0; i < currentUpgradeTier; i++)
-            pct += SkillData.upgrades[i].damagePercentBonus;
+        for (int i = 0; i < currentUpgradeTier; i++) pct += SkillData.upgrades[i].damagePercentBonus;
         return Mathf.RoundToInt(StatsManager.instance.damage * pct);
     }
 
-    // ── Knight: charged sword slash ───────────────────────────────────────────
-
+    // ── Knight Skill ──
     private IEnumerator KnightSkillRoutine()
     {
         isUsingSkill = true;
         var sm = movement.GetStateManager();
-        sm.ChangeState(PlayerState.KnightSkill);
+        sm.ChangeState(PlayerState.KnightSkill); // Bật Animation
 
         yield return new WaitForSeconds(SkillData.chargeTime);
 
         float stepDelay = SkillData.slashVfxStepDelay;
-        for (int i = 0; i < currentUpgradeTier; i++)
-            stepDelay *= SkillData.upgrades[i].cooldownMultiplier;
+        for (int i = 0; i < currentUpgradeTier; i++) stepDelay *= SkillData.upgrades[i].cooldownMultiplier;
         stepDelay = Mathf.Max(0.05f, stepDelay);
 
         int facingDir = transform.localScale.x > 0 ? 1 : -1;
@@ -144,7 +125,6 @@ public class PlayerSkill : MonoBehaviour
         float kbTime = StatsManager.instance.knockbackTime;
         float stun = StatsManager.instance.stunTime;
         LayerMask enemies = LayerMask.GetMask("Enemy");
-
         var alreadyHit = new HashSet<GameObject>();
 
         for (int i = 0; i < SkillData.slashVfxCount; i++)
@@ -158,41 +138,27 @@ public class PlayerSkill : MonoBehaviour
                 vfx.transform.localScale = new Vector3(facingDir * 2.5f, 2.5f, 1f);
                 Destroy(vfx, SkillData.slashVfxDuration);
             }
-
             SlashHitAtPoint(spawnPos, damage, kbForce, kbTime, stun, enemies, alreadyHit);
 
-            if (i < SkillData.slashVfxCount - 1)
-                yield return new WaitForSeconds(stepDelay);
+            if (i < SkillData.slashVfxCount - 1) yield return new WaitForSeconds(stepDelay);
         }
 
         sm.ChangeState(PlayerState.Idle);
         isUsingSkill = false;
     }
 
-    private void SlashHitAtPoint(
-        Vector3 point, int damage,
-        float kbForce, float kbTime, float stun,
-        LayerMask enemies, HashSet<GameObject> alreadyHit)
+    private void SlashHitAtPoint(Vector3 point, int damage, float kbForce, float kbTime, float stun, LayerMask enemies, HashSet<GameObject> alreadyHit)
     {
         var hits = Physics2D.OverlapCircleAll(point, SkillData.slashHitRadius, enemies);
-
         bool playedSfx = false;
-
         foreach (var hit in hits)
         {
-            if (!hit.CompareTag("Enemy")) continue;
-            if (alreadyHit.Contains(hit.gameObject)) continue;
-
+            if (!hit.CompareTag("Enemy") || alreadyHit.Contains(hit.gameObject)) continue;
             alreadyHit.Add(hit.gameObject);
-
             hit.GetComponent<IEnemy_Health>()?.ChangeHealth(-damage);
-            hit.GetComponent<IEnemy_Movement>()?.KnockBack(
-                transform, kbForce, kbTime, stun);
+            hit.GetComponent<IEnemy_Movement>()?.KnockBack(transform, kbForce, kbTime, stun);
 
-            if (ClassData.hitEffectPrefab != null)
-                Instantiate(ClassData.hitEffectPrefab,
-                            hit.transform.position, Quaternion.identity, hit.transform);
-
+            if (ClassData.hitEffectPrefab != null) Instantiate(ClassData.hitEffectPrefab, hit.transform.position, Quaternion.identity, hit.transform);
             if (!playedSfx && ClassData.hitClip != null)
             {
                 SoundFXManager.Instance.PlaySoundFXClip(ClassData.hitClip, transform, volume);
@@ -201,43 +167,36 @@ public class PlayerSkill : MonoBehaviour
         }
     }
 
-    // ── Archer: fan shot ──────────────────────────────────────────────────────
-
-    private void ArcherSkill()
+    // ── Archer Skill ──
+    private IEnumerator ArcherSkillRoutine()
     {
-        if (SkillData.arrowPrefab == null)
+        isUsingSkill = true;
+        var sm = movement.GetStateManager();
+        sm.ChangeState(PlayerState.ArcherSkill); // ĐÃ SỬA: Bật Animation
+
+        yield return new WaitForSeconds(0.2f); // Chờ giương cung
+
+        if (SkillData.arrowPrefab != null)
         {
-            Debug.LogWarning("[PlayerSkill] Archer skill has no arrow prefab.");
-            return;
-        }
+            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorld.z = 0f;
+            Vector2 baseDir = ((Vector2)(mouseWorld - skillOrigin.position)).normalized;
+            float baseAngle = Mathf.Atan2(baseDir.y, baseDir.x) * Mathf.Rad2Deg;
 
-        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorld.z = 0f;
-        Vector2 baseDir = ((Vector2)(mouseWorld - skillOrigin.position)).normalized;
-        float baseAngle = Mathf.Atan2(baseDir.y, baseDir.x) * Mathf.Rad2Deg;
+            int count = SkillData.arrowCount;
+            float fanAngle = SkillData.fanAngle;
+            for (int i = 0; i < currentUpgradeTier; i++)
+            {
+                count += SkillData.upgrades[i].arrowCountBonus;
+                fanAngle += SkillData.upgrades[i].fanAngleBonus;
+            }
 
-        // Apply upgrade bonuses
-        int count = SkillData.arrowCount;
-        float fanAngle = SkillData.fanAngle;
-        for (int i = 0; i < currentUpgradeTier; i++)
-        {
-            count += SkillData.upgrades[i].arrowCountBonus;
-            fanAngle += SkillData.upgrades[i].fanAngleBonus;
-        }
+            float step = count > 1 ? fanAngle / (count - 1) : 0f;
+            float startAngle = count > 1 ? baseAngle - (fanAngle / 2f) : baseAngle;
+            var enemies = LayerMask.GetMask("Enemy");
 
-        float step = count > 1 ? fanAngle / (count - 1) : 0f;
-        float startAngle = count > 1 ? baseAngle - (fanAngle / 2f) : baseAngle;
+            movement.FaceToward(mouseWorld.x);
 
-        var enemies = LayerMask.GetMask("Enemy");
-
-        // Flip player toward mouse
-        movement.FaceToward(mouseWorld.x);
-
-        const int MAX_ARROWS = 200;
-        if (count > MAX_ARROWS)
-        {
-            Debug.LogWarning($"[PlayerSkill] Arrow count excese {MAX_ARROWS}.");
-            // Cache every value that would otherwise be recomputed per-arrow
             int damage = GetCurrentDamage();
             float kbForce = StatsManager.instance.knockbackForce;
             float kbTime = StatsManager.instance.knockbackTime;
@@ -246,80 +205,61 @@ public class PlayerSkill : MonoBehaviour
             float life = SkillData.arrowLifetime;
             AudioClip hitSfx = ClassData.hitClip;
             GameObject hitFx = ClassData.hitEffectPrefab;
-            Vector3 origin = skillOrigin.position;
 
-            StartCoroutine(SpawnArrowBatch(
-                count, step, startAngle,
-                damage, kbForce, kbTime, stun,
-                spd, life, hitSfx, hitFx, enemies, origin));
-        }
-        else
-        {
-
-            for (int i = 0; i < count; i++)
+            if (count > 200)
             {
-                float angle = startAngle + (step * i);
-                float rad = angle * Mathf.Deg2Rad;
-                Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+                StartCoroutine(SpawnArrowBatch(count, step, startAngle, damage, kbForce, kbTime, stun, spd, life, hitSfx, hitFx, enemies, skillOrigin.position));
+            }
+            else
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    float angle = startAngle + (step * i);
+                    float rad = angle * Mathf.Deg2Rad;
+                    Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
 
-                var arrow = ArrowPool.Instance.Get();
-                arrow.transform.position = skillOrigin.position;
-                arrow.transform.rotation = Quaternion.identity;
+                    var arrow = ArrowPool.Instance.Get();
+                    arrow.transform.position = skillOrigin.position;
+                    arrow.transform.rotation = Quaternion.identity;
 
-                arrow.Initialise(
-                    dir: dir,
-                    spd: SkillData.arrowSpeed,
-                    life: SkillData.arrowLifetime,
-                    dmg: GetCurrentDamage(),
-                    kbForce: StatsManager.instance.knockbackForce,
-                    kbTime: StatsManager.instance.knockbackTime,
-                    stun: StatsManager.instance.stunTime,
-                    hitFx: ClassData.hitEffectPrefab,
-                    hitSfx: ClassData.hitClip,
-                    vol: volume,
-                    enemies: enemies);
+                    arrow.Initialise(dir, spd, life, damage, kbForce, kbTime, stun, hitFx, hitSfx, volume, enemies);
+                }
             }
         }
+
+        yield return new WaitForSeconds(0.3f); // Thời gian phục hồi sau khi bắn
+        sm.ChangeState(PlayerState.Idle);
+        isUsingSkill = false;
     }
 
     private const int ARROWS_PER_FRAME = 32;
-
-    private IEnumerator SpawnArrowBatch(
-        int count, float step, float startAngle,
-        int damage, float kbForce, float kbTime, float stun,
-        float spd, float life, AudioClip hitSfx, GameObject hitFx,
-        LayerMask enemies, Vector3 origin)
+    private IEnumerator SpawnArrowBatch(int count, float step, float startAngle, int damage, float kbForce, float kbTime, float stun, float spd, float life, AudioClip hitSfx, GameObject hitFx, LayerMask enemies, Vector3 origin)
     {
         for (int i = 0; i < count; i++)
         {
             float angle = startAngle + step * i;
             float rad = angle * Mathf.Deg2Rad;
             Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
-
             var arrow = ArrowPool.Instance.Get();
             arrow.transform.position = origin;
             arrow.transform.rotation = Quaternion.identity;
-            arrow.Initialise(dir, spd, life, damage, kbForce, kbTime, stun,
-                             hitFx, hitSfx, volume, enemies);
+            arrow.Initialise(dir, spd, life, damage, kbForce, kbTime, stun, hitFx, hitSfx, volume, enemies);
 
-            if (i > 0 && i % ARROWS_PER_FRAME == 0)
-                yield return null;
+            if (i > 0 && i % ARROWS_PER_FRAME == 0) yield return null;
         }
     }
 
-    // ── Rogue: shadow step ────────────────────────────────────────────────────
-
+    // ── Rogue Skill ──
     private IEnumerator RogueSkillRoutine()
     {
         isUsingSkill = true;
+        var sm = movement.GetStateManager();
+        sm.ChangeState(PlayerState.RogueSkill); // ĐÃ SỬA: Bật Animation
 
         float range = SkillData.teleportRange;
-        for (int i = 0; i < currentUpgradeTier; i++)
-            range += SkillData.upgrades[i].teleportRangeBonus;
+        for (int i = 0; i < currentUpgradeTier; i++) range += SkillData.upgrades[i].teleportRangeBonus;
 
-        // Find closest enemy in range
-        var hits = Physics2D.OverlapCircleAll(transform.position, range,
-                          LayerMask.GetMask("Enemy"));
+        var hits = Physics2D.OverlapCircleAll(transform.position, range, LayerMask.GetMask("Enemy"));
         Collider2D closest = null;
         float minDist = float.MaxValue;
 
@@ -332,82 +272,31 @@ public class PlayerSkill : MonoBehaviour
 
         if (closest == null)
         {
-            // No target — refund mana
             StatsManager.instance.currentMana += GetCurrentManaCost();
             cooldownTimer = 0f;
+            sm.ChangeState(PlayerState.Idle);
             isUsingSkill = false;
-            Debug.Log("[PlayerSkill] Rogue: no enemy in range, skill refunded.");
             yield break;
         }
 
-        // Spawn teleport FX at origin
-        if (SkillData.teleportFxPrefab != null)
-            Instantiate(SkillData.teleportFxPrefab, transform.position, Quaternion.identity);
+        if (SkillData.teleportFxPrefab != null) Instantiate(SkillData.teleportFxPrefab, transform.position, Quaternion.identity);
 
-        // Teleport behind the enemy relative to player's approach direction
         Vector2 toEnemy = (((Vector2)closest.transform.position - (Vector2)transform.position).normalized) * -1;
         Vector2 behindEnemy = (Vector2)closest.transform.position - toEnemy * 1.3f;
         transform.position = behindEnemy;
 
-        // Face toward the enemy from behind
         movement.FaceToward(closest.transform.position.x);
 
-        yield return null; // let physics catch up
+        yield return new WaitForSeconds(0.4f); // Chờ animation đâm lén
 
-        // Deal damage
         closest.GetComponent<IEnemy_Health>()?.ChangeHealth(-GetCurrentDamage());
-        closest.GetComponent<IEnemy_Movement>()?.KnockBack(
-            transform,
-            StatsManager.instance.knockbackForce,
-            StatsManager.instance.knockbackTime,
-            StatsManager.instance.stunTime);
+        closest.GetComponent<IEnemy_Movement>()?.KnockBack(transform, StatsManager.instance.knockbackForce, StatsManager.instance.knockbackTime, StatsManager.instance.stunTime);
 
-        if (ClassData.hitEffectPrefab != null)
-            Instantiate(ClassData.hitEffectPrefab,
-                        closest.transform.position, Quaternion.identity, closest.transform);
+        if (ClassData.hitEffectPrefab != null) Instantiate(ClassData.hitEffectPrefab, closest.transform.position, Quaternion.identity, closest.transform);
+        if (ClassData.hitClip != null) SoundFXManager.Instance.PlaySoundFXClip(ClassData.hitClip, transform, volume);
+        if (SkillData.teleportFxPrefab != null) Instantiate(SkillData.teleportFxPrefab, transform.position, Quaternion.identity);
 
-        if (ClassData.hitClip != null)
-            SoundFXManager.Instance.PlaySoundFXClip(ClassData.hitClip, transform, volume);
-
-        // Spawn teleport FX at destination
-        if (SkillData.teleportFxPrefab != null)
-            Instantiate(SkillData.teleportFxPrefab, transform.position, Quaternion.identity);
-
+        sm.ChangeState(PlayerState.Idle);
         isUsingSkill = false;
     }
-
-#if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
-    {
-        if (SkillData != null && ClassManager.Instance?.SelectedClass == PlayerClass.Knight)
-        {
-            int facingDir = transform.localScale.x > 0 ? 1 : -1;
-            Vector2 dir = new Vector2(facingDir, 0f);
-
-            for (int i = 0; i < SkillData.slashVfxCount; i++)
-            {
-                float t = (i + 1) * SkillData.slashVfxStepDistance;
-                Vector3 pos = skillOrigin != null
-                    ? skillOrigin.position + (Vector3)(dir * t)
-                    : transform.position + (Vector3)(dir * t);
-
-                float alpha = 1f - (i / (float)SkillData.slashVfxCount) * 0.4f;
-                Gizmos.color = new Color(1f, 0.85f, 0.1f, 0.25f * alpha);
-                Gizmos.DrawSphere(pos, SkillData.slashHitRadius);
-                Gizmos.color = new Color(1f, 0.85f, 0.1f, 0.9f * alpha);
-                Gizmos.DrawWireSphere(pos, SkillData.slashHitRadius);
-            }
-        } else if (SkillData != null && ClassManager.Instance?.SelectedClass == PlayerClass.Rogue)
-        {
-            float range = SkillData.teleportRange;
-            for (int i = 0; i < currentUpgradeTier && i < SkillData.upgrades.Length; i++)
-                range += SkillData.upgrades[i].teleportRangeBonus;
-
-            Gizmos.color = new Color(0.6f, 0.2f, 1f, 0.2f);
-            Gizmos.DrawSphere(transform.position, range);
-            Gizmos.color = new Color(0.6f, 0.2f, 1f, 0.8f);
-            Gizmos.DrawWireSphere(transform.position, range);
-        }
-    }
-#endif
 }
