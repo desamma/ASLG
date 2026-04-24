@@ -499,7 +499,7 @@ GameObject:
   - component: {fileID: 78916028}
   - component: {fileID: 78916032}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: InventoryCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3950,27 +3950,43 @@ MonoBehaviour:
   authToken: 
   userId: 
   _maxHealth: 100
+  _baseMaxHealth: 2000
+  _bonusMaxHealth: 0
   _currentHealth: 0
   _defence: 10
-  _magicResist: 5
+  _baseDefence: 10
+  _bonusDefence: 0
   _maxMana: 100
+  _baseMaxMana: 100
+  _bonusMaxMana: 0
   _currentMana: 0
   _moveSpeed: 5
+  _baseMoveSpeed: 5
+  _bonusMoveSpeed: 0
   _maxStamina: 100
+  _baseMaxStamina: 100
+  _bonusMaxStamina: 0
   _staminaRegenRate: 10
+  _bonusStaminaRegenRate: 0
   _staminaCost: 25
   _dashDelay: 0.5
   _dashDuration: 0.2
   _currentStamina: 0
   _damage: 10
+  _baseDamage: 10
+  _bonusDamage: 0
   _weaponRange: 1.5
+  _bonusWeaponRange: 0
   _knockbackForce: 5
+  _bonusKnockbackForce: 0
   _knockbackTime: 0.2
   _stunTime: 0.3
   _cooldown: 0.5
+  _bonusCooldown: 0
   _level: 1
   _expToNextLevel: 100
   _currentExp: 0
+  _gold: 0
   _upgradePoints: 0
 --- !u!114 &1504912997
 MonoBehaviour:
@@ -5855,7 +5871,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -2, y: 10.0000305}
+  m_AnchoredPosition: {x: -2, y: 10.000061}
   m_SizeDelta: {x: 549.3556, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2133398715
