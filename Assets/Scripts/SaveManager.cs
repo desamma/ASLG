@@ -64,10 +64,7 @@ public class GameSaveData
 {
     public string userId;
     public string playerName;
-
-    // ĐÃ FIX: Thêm lại biến lưu giữ Player Class
     public int playerClassIndex;
-
     public string sceneName;
     public SVector3 playerPosition;
 
@@ -75,6 +72,8 @@ public class GameSaveData
     public InventorySaveData inventory = new InventorySaveData();
     public QuestSaveData quests = new QuestSaveData();
     public List<CompanionSaveData> companions = new List<CompanionSaveData>();
+
+    public List<string> discoveredZones = new List<string>();
 }
 
 // ==================================================
@@ -275,6 +274,17 @@ public class SaveManager : MonoBehaviour
                 compData.chatHistory = new List<ChatMessage>(chatManager.GetChatHistory());
             }
             currentSaveData.companions.Add(compData);
+        }
+
+        // 6. Discovered Map Zones
+        if (WorldMapManager.Instance != null)
+        {
+            currentSaveData.discoveredZones.Clear();
+            foreach (var zone in WorldMapManager.Instance.zones)
+            {
+                if (zone.discovered)
+                    currentSaveData.discoveredZones.Add(zone.zoneName);
+            }
         }
 
         string json = JsonConvert.SerializeObject(currentSaveData, Formatting.Indented);
