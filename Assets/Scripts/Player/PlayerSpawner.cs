@@ -1,5 +1,5 @@
 using UnityEngine;
-using Cinemachine; // 1. Thêm thư viện Cinemachine
+using Cinemachine;
 
 public class PlayerSpawner : MonoBehaviour
 {
@@ -17,11 +17,7 @@ public class PlayerSpawner : MonoBehaviour
     private void SpawnPlayer()
     {
         var data = ClassManager.Instance?.CurrentClassData;
-        if (data == null)
-        {
-            Debug.LogWarning("[PlayerSpawner] No class data found - did ClassManager persist?");
-            return;
-        }
+        if (data == null) return;
 
         if (data.playerPrefab == null)
         {
@@ -30,39 +26,26 @@ public class PlayerSpawner : MonoBehaviour
         }
 
         Vector3 pos = spawnPoint != null ? spawnPoint.position : Vector3.zero;
+        pos.z = 0; // Đảm bảo luôn nằm đúng mặt phẳng 2D
+
+        // Đẻ ĐÚNG 1 cục Prefab duy nhất, đéo có cha con gì hết!
         var player = Instantiate(data.playerPrefab, pos, Quaternion.identity);
 
-        Debug.Log($"[PlayerSpawner] Spawned {data.playerClass} at {pos}.");
-
-        // 2. Tự động tìm Camera và gán Player vào ô Follow
+        // Gán Camera
         CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
-        if (vcam != null)
-        {
-            vcam.Follow = player.transform;
-            Debug.Log("[PlayerSpawner] Đã gán Camera bám theo Player.");
-        }
-        else
-        {
-            Debug.LogWarning("[PlayerSpawner] Không tìm thấy CinemachineVirtualCamera trong Scene!");
-        }
+        if (vcam != null) vcam.Follow = player.transform;
 
-        // 3. Xử lý logic spawn Alicia nếu là Class Summoner
-        if (ClassManager.Instance.SelectedClass == PlayerClass.Summoner)
+        // Summoner logic
+        if (ClassManager.Instance.SelectedClass == PlayerClass.Summoner && aliciaPrefab != null)
         {
-            if (aliciaPrefab != null)
+            Vector3 spawnPos = player.transform.position + new Vector3(2f, 0, 0);
+            GameObject alicia = Instantiate(aliciaPrefab, spawnPos, Quaternion.identity);
+            LLMChatManager llmManager = FindObjectOfType<LLMChatManager>();
+            if (llmManager != null)
             {
-                Vector3 spawnPos = player.transform.position + new Vector3(2f, 0, 0);
-                GameObject alicia = Instantiate(aliciaPrefab, spawnPos, Quaternion.identity);
-
-                // Gắn tự động Alicia vào LLMChatManager
-                LLMChatManager llmManager = FindObjectOfType<LLMChatManager>();
-                if (llmManager != null)
-                {
-                    NPCCompanion companionScript = alicia.GetComponent<NPCCompanion>();
-                    llmManager.aliciaScript = companionScript;
-                    if (companionScript != null) companionScript.playerTransform = player.transform;
-                }
-                Debug.Log("<color=cyan>[PlayerSpawner] CLASS SUMMONER: Alicia đã xuất hiện cùng Player!</color>");
+                NPCCompanion companionScript = alicia.GetComponent<NPCCompanion>();
+                llmManager.aliciaScript = companionScript;
+                if (companionScript != null) companionScript.playerTransform = player.transform;
             }
         }
     }

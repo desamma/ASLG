@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerClassData : ScriptableObject
 {
     [Header("Prefab")]
-    public GameObject playerPrefab;
+    public GameObject playerPrefab; // Giữ nguyên tên biến cũ
 
     [Header("Identity")]
     public PlayerClass playerClass;
@@ -13,7 +13,7 @@ public class PlayerClassData : ScriptableObject
 
     [Header("Health & Defence")]
     public float maxHealth = 2000f;
-    public float defence = 0f;           // flat damage reduction
+    public float defence = 0f;
 
     [Header("Movement")]
     public float moveSpeed = 5f;
@@ -26,7 +26,7 @@ public class PlayerClassData : ScriptableObject
     public AttackType attackType = AttackType.Melee;
     public float damage = 10;
     public float attackCooldown = 0.5f;
-    public float weaponRange = 1f;       // melee radius OR projectile lifetime (seconds)
+    public float weaponRange = 1f;
     public float knockbackForce = 5f;
     public float knockbackTime = 0.2f;
     public float stunTime = 0.3f;
@@ -39,7 +39,7 @@ public class PlayerClassData : ScriptableObject
 
     [Header("Visuals / Prefabs")]
     public GameObject hitEffectPrefab;
-    public GameObject projectilePrefab;  // ArrowProjectile prefab (Archer)
+    public GameObject projectilePrefab;
 
     [Header("Audio")]
     public AudioClip swingClip;
