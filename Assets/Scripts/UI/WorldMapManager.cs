@@ -71,6 +71,10 @@ public class WorldMapManager : MonoBehaviour
     public void ToggleMap()
     {
         isMapOpen = !isMapOpen;
+
+        Canvas c = this.GetComponent<Canvas>();
+        c.sortingOrder = isMapOpen ? 100 : 0; // Ensure map renders above other UI when open  
+
         worldMapPanel.SetActive(isMapOpen);
         minimapPanel.SetActive(!isMapOpen);   // hide minimap while map is open
 

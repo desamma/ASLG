@@ -67,10 +67,16 @@ public class CraftingUI : MonoBehaviour
     private string _searchQuery = "";
     private int _playerLevel = 1;
 
+    private CanvasGroup craftingCanvasGroup;
+    private bool craftingOpen = false;
+
     private void Start()
     {
         if (EventSystem.current == null)
             Debug.LogError("[CraftingUI] Missing EventSystem in scene. UI click will not work.");
+
+        if (craftingCanvasGroup == null)
+            craftingCanvasGroup = this.gameObject.GetComponentInParent<CanvasGroup>();
 
         EnsureRecipeListLayout();
 
@@ -120,6 +126,18 @@ public class CraftingUI : MonoBehaviour
         RefreshRecipeList();
         SetCraftButtonState(false);
         ClearInfo();
+    }
+
+    private void Update()
+    {
+        if (Input.GetButtonDown("Crafting"))
+        {
+            craftingOpen = !craftingOpen;
+            craftingCanvasGroup.alpha = craftingOpen ? 1f : 0f;
+            craftingCanvasGroup.interactable = craftingOpen;
+            craftingCanvasGroup.blocksRaycasts = craftingOpen;
+            Time.timeScale = craftingOpen ? 0f : 1f;
+        }
     }
 
     private void OnDestroy()

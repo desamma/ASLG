@@ -104,6 +104,10 @@ public class AuthManager : MonoBehaviour
             PlayerPrefs.SetString("CurrentUser", loginUsernameInput.text);
             PlayerPrefs.Save();
 
+
+            SaveManager.OnLogin();
+            
+
             // Chuyển Scene vào Game
             SceneManager.LoadScene(mainGameSceneIndex);
         }

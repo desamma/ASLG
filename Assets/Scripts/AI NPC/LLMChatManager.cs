@@ -65,6 +65,8 @@ public class LLMChatManager : MonoBehaviour
 
         // Bind Enter key event
         if (playerInputField != null) playerInputField.onSubmit.AddListener(delegate { OnSendClicked(); });
+
+        DontDestroyOnLoad(this.gameObject);
     }
 
     void Update()
