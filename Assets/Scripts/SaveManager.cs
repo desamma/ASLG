@@ -707,6 +707,33 @@ public class SaveManager : MonoBehaviour
         NPCCompanion[] allNPCs = FindObjectsOfType<NPCCompanion>();
         LLMChatManager chatManager = FindObjectOfType<LLMChatManager>();
 
+        // Restore discovered map zones
+        if (WorldMapManager.Instance != null && currentSaveData.discoveredZones != null)
+        {
+            foreach (var zoneName in currentSaveData.discoveredZones)
+            {
+                foreach (var zone in WorldMapManager.Instance.zones)
+                {
+                    if (zone.zoneName == zoneName && !zone.discovered)
+                    {
+                        zone.discovered = true;
+
+                        // Instantly hide fog (no fade — already explored)
+                        if (zone.fogCloud != null)
+                        {
+                            //zone.fogCloud.color = new Color(
+                            //    zone.fogCloud.color.r,
+                            //    zone.fogCloud.color.g,
+                            //    zone.fogCloud.color.b,
+                            //    0f
+                            //);
+                            zone.fogCloud.gameObject.SetActive(false);
+                        }
+                    }
+                }
+            }
+        }
+
         foreach (var npc in allNPCs)
         {
             var savedNpc = currentSaveData.companions.Find(c => c.npcID == npc.npcID);
