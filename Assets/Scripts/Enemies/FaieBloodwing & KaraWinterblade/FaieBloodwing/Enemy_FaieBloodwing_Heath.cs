@@ -69,7 +69,7 @@ public class Enemy_FaieBloodwing_Health : MonoBehaviour, IEnemy_Health
         SoundFXManager.Instance.PlaySoundFXClip(deathAudio, transform, volume);
         yield return new WaitForSeconds(2f);
 
-        sharedHealth.RegisterPosition(isFaie: true, transform.position, faiePhase2Prefab);
+        sharedHealth.RegisterPosition(isFaie: true, transform.position, faiePhase2Prefab, transform);
         statusEffectManager.RemoveAll();
     }
 

@@ -60,19 +60,43 @@ public class QuestManager : MonoBehaviour
 
     public bool HasCompletedQuest(QuestSO questSO) => completedQuests.Contains(questSO);
 
+//Fix Quest SO thưởng item
     public void CompleteQuest(QuestSO questSO)
     {
         if (activeQuests.Contains(questSO)) activeQuests.Remove(questSO);
         if (!completedQuests.Contains(questSO)) completedQuests.Add(questSO);
         if (questProgress.ContainsKey(questSO)) questProgress.Remove(questSO);
 
+        // 1. CỘNG VÀNG VÀ EXP THÔNG QUA STATSMANAGER
+        if (StatsManager.instance != null)
+        {
+            if (questSO.rewardGold > 0) StatsManager.instance.AddGold(questSO.rewardGold);
+            if (questSO.rewardExp > 0) StatsManager.instance.AddExp(questSO.rewardExp);
+            Debug.Log($"[Hệ Thống] Nhận thưởng: {questSO.rewardGold} Gold, {questSO.rewardExp} Exp");
+        }
+
+        // 2. PHÁT THƯỞNG ITEM (Hỗ trợ Random và kết nối Inventory)
         if (InventoryManager.instance != null)
         {
             foreach (var reward in questSO.rewards)
             {
-                Debug.Log($"[Hệ Thống] Thưởng nhận được: {reward.itemID} x{reward.quantity}");
+                string finalItemID = reward.itemID;
+
+                // Nếu tick vào isRandomItem HOẶC lỡ quên không nhập itemID, lấy đồ random
+                if (reward.isRandomItem || string.IsNullOrEmpty(finalItemID))
+                {
+                    finalItemID = ItemDatabase.GetRandomItemID();
+                }
+
+                if (!string.IsNullOrEmpty(finalItemID))
+                {
+                    InventoryManager.instance.AddItem(finalItemID, reward.quantity);
+                    Debug.Log($"[Hệ Thống] Thưởng nhận được: {finalItemID} x{reward.quantity}");
+                }
             }
         }
+        
+        OnQuestProgressUpdated?.Invoke();
     }
 
     public void AddMovementProgress(float deltaTime)

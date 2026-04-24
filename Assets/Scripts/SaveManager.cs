@@ -64,10 +64,7 @@ public class GameSaveData
 {
     public string userId;
     public string playerName;
-
-    // ĐÃ FIX: Thêm lại biến lưu giữ Player Class
     public int playerClassIndex;
-
     public string sceneName;
     public SVector3 playerPosition;
 
@@ -75,6 +72,8 @@ public class GameSaveData
     public InventorySaveData inventory = new InventorySaveData();
     public QuestSaveData quests = new QuestSaveData();
     public List<CompanionSaveData> companions = new List<CompanionSaveData>();
+
+    public List<string> discoveredZones = new List<string>();
 }
 
 // ==================================================
@@ -275,6 +274,17 @@ public class SaveManager : MonoBehaviour
                 compData.chatHistory = new List<ChatMessage>(chatManager.GetChatHistory());
             }
             currentSaveData.companions.Add(compData);
+        }
+
+        // 6. Discovered Map Zones
+        if (WorldMapManager.Instance != null)
+        {
+            currentSaveData.discoveredZones.Clear();
+            foreach (var zone in WorldMapManager.Instance.zones)
+            {
+                if (zone.discovered)
+                    currentSaveData.discoveredZones.Add(zone.zoneName);
+            }
         }
 
         string json = JsonConvert.SerializeObject(currentSaveData, Formatting.Indented);
@@ -706,6 +716,33 @@ public class SaveManager : MonoBehaviour
 
         NPCCompanion[] allNPCs = FindObjectsOfType<NPCCompanion>();
         LLMChatManager chatManager = FindObjectOfType<LLMChatManager>();
+
+        // Restore discovered map zones
+        if (WorldMapManager.Instance != null && currentSaveData.discoveredZones != null)
+        {
+            foreach (var zoneName in currentSaveData.discoveredZones)
+            {
+                foreach (var zone in WorldMapManager.Instance.zones)
+                {
+                    if (zone.zoneName == zoneName && !zone.discovered)
+                    {
+                        zone.discovered = true;
+
+                        // Instantly hide fog (no fade — already explored)
+                        if (zone.fogCloud != null)
+                        {
+                            //zone.fogCloud.color = new Color(
+                            //    zone.fogCloud.color.r,
+                            //    zone.fogCloud.color.g,
+                            //    zone.fogCloud.color.b,
+                            //    0f
+                            //);
+                            zone.fogCloud.gameObject.SetActive(false);
+                        }
+                    }
+                }
+            }
+        }
 
         foreach (var npc in allNPCs)
         {
