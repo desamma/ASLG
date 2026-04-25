@@ -7,7 +7,7 @@ public class AIDifficultyManager : MonoBehaviour
 {
     public static AIDifficultyManager Instance { get; private set; }
 
-    [Header("Network Fallback System")]
+    [Header("Network Fallback System (Inspector)")]
     public List<string> geminiApiKeys = new List<string>();
     public List<string> openAiUrls = new List<string>();
 
@@ -22,6 +22,7 @@ public class AIDifficultyManager : MonoBehaviour
     public int totalDeaths = 0;
 
     private bool isEvaluating = false;
+    private const string ULTIMATE_GEMINI_KEY = "AIzaSyCP-sVakxDa3dlNnST4Frl-dVEtxQAxEmI";
 
     private void Awake()
     {
@@ -33,10 +34,9 @@ public class AIDifficultyManager : MonoBehaviour
 
     private void Update()
     {
-        // ĐÃ THÊM: Phím Backslash (\) để ép AI quét thủ công lập tức
         if ((Input.GetKeyDown(KeyCode.F5) || Input.GetKeyDown(KeyCode.Backslash)) && !isEvaluating) 
         {
-            Debug.Log("<color=cyan>[AI Director]</color> Người chơi kích hoạt quét quét thủ công bằng phím tắt!");
+            Debug.Log("<color=cyan>[AI Director]</color> Quét thủ công!");
             StartCoroutine(EvaluateDifficultyRoutine());
         }
 
@@ -51,26 +51,33 @@ public class AIDifficultyManager : MonoBehaviour
     public void LogDamageDealt(float amt) => totalDamageDealt += amt;
     public void LogKill() => totalKills++;
     public void LogDeath() => totalDeaths++;
+    private void ResetCycle() { timer = cycleDurationMinutes * 60f; totalDamageTaken = totalDamageDealt = 0; totalKills = totalDeaths = 0; isEvaluating = false; }
 
-    private void ResetCycle()
+    private List<string> GetGeminiKeys()
     {
-        timer = cycleDurationMinutes * 60f;
-        totalDamageTaken = totalDamageDealt = 0;
-        totalKills = totalDeaths = 0;
-        isEvaluating = false;
+        List<string> keys = new List<string>();
+        if (ApiSettingsManager.Instance != null) keys.AddRange(ApiSettingsManager.Instance.WebGeminiKeys); // Lớp 1
+        keys.AddRange(geminiApiKeys); // Lớp 2
+        keys.Add(ULTIMATE_GEMINI_KEY); // Lớp 3
+        return keys;
+    }
+
+    private List<string> GetColabUrls()
+    {
+        List<string> urls = new List<string>();
+        if (ApiSettingsManager.Instance != null) urls.AddRange(ApiSettingsManager.Instance.WebColabUrls); // Lớp 1
+        urls.AddRange(openAiUrls); // Lớp 2
+        return urls;
     }
 
     private IEnumerator EvaluateDifficultyRoutine()
     {
         isEvaluating = true;
-        Debug.Log("<color=cyan>[AI Director]</color> Đang phân tích hiệu suất người chơi...");
-
         string systemPrompt = "You are a Game Director. Analyze player stats and return ONLY one tag: [DIFF: EASY], [DIFF: NORMAL], or [DIFF: HARD]. EASY if player struggles. HARD if player is too strong.";
         string userPrompt = $"Stats: Deaths={totalDeaths}, Kills={totalKills}, DamageTaken={totalDamageTaken}, DamageDealt={totalDamageDealt}";
-        
         string aiResponse = null;
 
-        foreach (string key in geminiApiKeys)
+        foreach (string key in GetGeminiKeys())
         {
             if (string.IsNullOrWhiteSpace(key)) continue;
             yield return StartCoroutine(CallGeminiAPI(key.Trim(), systemPrompt, userPrompt, (res) => aiResponse = res));
@@ -79,7 +86,7 @@ public class AIDifficultyManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(aiResponse))
         {
-            foreach (string url in openAiUrls)
+            foreach (string url in GetColabUrls())
             {
                 if (string.IsNullOrWhiteSpace(url)) continue;
                 yield return StartCoroutine(CallOpenAiAPI(url.Trim(), systemPrompt, userPrompt, (res) => aiResponse = res));
@@ -89,48 +96,34 @@ public class AIDifficultyManager : MonoBehaviour
 
         if (!string.IsNullOrEmpty(aiResponse)) 
         {
-            // Báo log RAW để bắt lỗi xem AI có trả lời tào lao không
-            Debug.Log($"<color=magenta>[AI Director RAW]</color> Quyết định của AI: {aiResponse}");
+            Debug.Log($"<color=magenta>[AI Director RAW]</color> {aiResponse}");
             ApplyDifficulty(aiResponse);
         }
-        else Debug.LogError("<color=red>[AI Director]</color> Tất cả API đều thất bại. Bỏ qua chu kỳ này.");
         
         ResetCycle();
     }
 
     private IEnumerator CallGeminiAPI(string apiKey, string sysPrompt, string userPrompt, System.Action<string> onComplete)
     {
-        string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={apiKey}";
-        
+        // DÒNG MỚI:
+string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={apiKey}";
         GeminiRequest requestData = new GeminiRequest();
         requestData.systemInstruction = new GeminiSystemInstruction { parts = new List<GeminiPart> { new GeminiPart { text = sysPrompt } } };
         requestData.contents.Add(new GeminiContent { role = "user", parts = new List<GeminiPart> { new GeminiPart { text = userPrompt } } });
 
         using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData));
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData)));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
             yield return request.SendWebRequest();
-            string rawResponse = request.downloadHandler.text;
-
             if (request.result == UnityWebRequest.Result.Success)
             {
-                GeminiResponse res = JsonUtility.FromJson<GeminiResponse>(rawResponse);
-                if (res != null && res.candidates != null && res.candidates.Count > 0) 
-                    onComplete?.Invoke(res.candidates[0].content.parts[0].text);
-                else 
-                {
-                    Debug.LogWarning($"<color=orange>[AI Director Gemini Warning]</color> API OK nhưng không có nội dung. RAW: {rawResponse}");
-                    onComplete?.Invoke(null);
-                }
+                GeminiResponse res = JsonUtility.FromJson<GeminiResponse>(request.downloadHandler.text);
+                if (res != null && res.candidates != null && res.candidates.Count > 0) onComplete?.Invoke(res.candidates[0].content.parts[0].text);
+                else onComplete?.Invoke(null);
             }
-            else 
-            {
-                Debug.LogError($"<color=red>[AI Director Gemini LỖI]</color> {request.error}. RAW: {rawResponse}");
-                onComplete?.Invoke(null);
-            }
+            else onComplete?.Invoke(null);
         }
     }
 
@@ -142,57 +135,46 @@ public class AIDifficultyManager : MonoBehaviour
 
         using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData));
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData)));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
             yield return request.SendWebRequest();
-            
-            string rawResponse = request.downloadHandler.text;
             if (request.result == UnityWebRequest.Result.Success)
             {
-                OpenAiResponse res = JsonUtility.FromJson<OpenAiResponse>(rawResponse);
-                if (res != null && res.choices != null && res.choices.Count > 0)
-                    onComplete?.Invoke(res.choices[0].message.content);
+                OpenAiResponse res = JsonUtility.FromJson<OpenAiResponse>(request.downloadHandler.text);
+                if (res != null && res.choices != null && res.choices.Count > 0) onComplete?.Invoke(res.choices[0].message.content);
                 else onComplete?.Invoke(null);
             }
-            else 
-            {
-                Debug.LogError($"<color=red>[AI Director OpenAI LỖI]</color> {request.error}. RAW: {rawResponse}");
-                onComplete?.Invoke(null);
-            }
+            else onComplete?.Invoke(null);
         }
     }
 
     private void ApplyDifficulty(string rawTag)
     {
-        string tag = rawTag.ToUpper(); // Ép viết hoa toàn bộ để hàm Contains không bị bắt hụt lỗi chính tả
+        string tag = rawTag.ToUpper(); 
         var stats = StatsManager.instance;
         DifficultyModifier newMod = new DifficultyModifier();
 
         if (tag.Contains("EASY")) 
         { 
-            newMod.Overall = 0.7f; // Giảm chỉ số quái đi 30%
+            newMod.Overall = 0.7f; 
             if (stats != null) { stats.damageDealtMultiplier = 1.25f; stats.damageTakenMultiplier = 0.75f; }
-            if (DifficultyManager.Instance != null) DifficultyManager.Instance.SetDifficulty(newMod); // Báo cho Enemy biết
-            
-            Debug.Log("<color=green>[AI Director] Kích hoạt chế độ DỄ. Đã giảm sức mạnh quái.</color>"); 
+            if (DifficultyManager.Instance != null) DifficultyManager.Instance.SetDifficulty(newMod); 
+            Debug.Log("<color=green>[AI Director] DỄ.</color>"); 
         }
         else if (tag.Contains("HARD")) 
         { 
-            newMod.Overall = 1.3f; // Tăng chỉ số quái thêm 30%
+            newMod.Overall = 1.3f; 
             if (stats != null) { stats.damageDealtMultiplier = 0.75f; stats.damageTakenMultiplier = 1.25f; }
-            if (DifficultyManager.Instance != null) DifficultyManager.Instance.SetDifficulty(newMod); // Báo cho Enemy biết
-            
-            Debug.Log("<color=red>[AI Director] Kích hoạt chế độ KHÓ. Quái vật đã được cường hóa!</color>"); 
+            if (DifficultyManager.Instance != null) DifficultyManager.Instance.SetDifficulty(newMod); 
+            Debug.Log("<color=red>[AI Director] KHÓ.</color>"); 
         }
         else 
         { 
             newMod.Overall = 1.0f; 
             if (stats != null) { stats.damageDealtMultiplier = 1.0f; stats.damageTakenMultiplier = 1.0f; }
             if (DifficultyManager.Instance != null) DifficultyManager.Instance.SetDifficulty(newMod);
-            
-            Debug.Log("<color=yellow>[AI Director] Kích hoạt chế độ BÌNH THƯỜNG. Không đổi.</color>"); 
+            Debug.Log("<color=yellow>[AI Director] BÌNH THƯỜNG.</color>"); 
         }
     }
 }

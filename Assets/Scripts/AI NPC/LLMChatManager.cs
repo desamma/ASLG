@@ -6,11 +6,8 @@ using TMPro;
 using UnityEngine.Networking;
 using System.Text.RegularExpressions;
 
-// ==========================================
-// CẤU TRÚC JSON CHO OPENAI (CLOUDFLARE)
-// ==========================================
 [System.Serializable]
-public class OpenAiRequest { public List<ChatMessage> messages = new List<ChatMessage>(); public int max_tokens = 150; public float temperature = 0.7f; }
+public class OpenAiRequest { public List<ChatMessage> messages = new List<ChatMessage>(); public int max_tokens = 300; public float temperature = 0.7f; }
 [System.Serializable]
 public class ChatMessage { public string role; public string content; }
 [System.Serializable]
@@ -18,9 +15,6 @@ public class OpenAiResponse { public List<OpenAiChoice> choices; }
 [System.Serializable]
 public class OpenAiChoice { public ChatMessage message; }
 
-// ==========================================
-// CẤU TRÚC JSON CHO GOOGLE GEMINI 1.5
-// ==========================================
 [System.Serializable]
 public class GeminiRequest { public GeminiSystemInstruction systemInstruction; public List<GeminiContent> contents = new List<GeminiContent>(); public GeminiConfig generationConfig = new GeminiConfig(); }
 [System.Serializable]
@@ -40,7 +34,7 @@ public class LLMChatManager : MonoBehaviour
 {
     public static LLMChatManager Instance { get; private set; }
 
-    [Header("Network Fallback System")]
+    [Header("Network Fallback System (Inspector)")]
     public List<string> geminiApiKeys = new List<string>();
     public List<string> openAiUrls = new List<string>();
 
@@ -58,6 +52,7 @@ public class LLMChatManager : MonoBehaviour
 
     [SerializeField] private List<ChatMessage> chatHistory = new List<ChatMessage>();
     private bool isChatting = false;
+    private const string ULTIMATE_GEMINI_KEY = "AIzaSyDLh58g7EDbM7w2ih3BxoOvSqYToKThH0c"; // Tuyến phòng thủ cuối
 
     private void Awake()
     {
@@ -68,9 +63,9 @@ public class LLMChatManager : MonoBehaviour
     void Start()
     {
         if (chatCanvas != null) chatCanvas.SetActive(false);
-        if (sendButton != null) { Navigation n = sendButton.navigation; n.mode = Navigation.Mode.None; sendButton.navigation = n; sendButton.onClick.AddListener(OnSendClicked); }
-        if (exitButton != null) { Navigation n = exitButton.navigation; n.mode = Navigation.Mode.None; exitButton.navigation = n; exitButton.onClick.AddListener(CloseChat); }
-        if (playerInputField != null) { Navigation n = playerInputField.navigation; n.mode = Navigation.Mode.None; playerInputField.navigation = n; playerInputField.onSubmit.AddListener(delegate { OnSendClicked(); }); }
+        if (sendButton != null) sendButton.onClick.AddListener(OnSendClicked);
+        if (exitButton != null) exitButton.onClick.AddListener(CloseChat);
+        if (playerInputField != null) playerInputField.onSubmit.AddListener(delegate { OnSendClicked(); });
     }
 
     void Update()
@@ -95,82 +90,67 @@ public class LLMChatManager : MonoBehaviour
         }
     }
 
-    public void OpenChat()
-    {
-        if (chatCanvas == null) return;
-        isChatting = true;
-        chatCanvas.SetActive(true);
-
-        if (playerMovement != null) playerMovement.SetMovementLock(true);
-        if (playerAttack != null) playerAttack.enabled = false;
-
-        if (chatHistory.Count == 0) npcTextDisplay.text = "Alicia: Cậu cần gì sao?";
-        StartCoroutine(FocusInputDelay());
-    }
-
-    private IEnumerator FocusInputDelay()
-    {
-        yield return new WaitForEndOfFrame();
-        if (UnityEngine.EventSystems.EventSystem.current != null)
-            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(playerInputField.gameObject);
-        if (playerInputField != null) playerInputField.ActivateInputField();
-    }
-
-    public void CloseChat()
-    {
-        if (chatCanvas == null) return;
-        isChatting = false;
-        chatCanvas.SetActive(false);
-
-        if (playerMovement != null) playerMovement.SetMovementLock(false);
-        if (playerAttack != null) playerAttack.enabled = true;
-    }
+    // --- Các hàm UI (OpenChat, CloseChat, Focus) giữ nguyên ---
+    public void OpenChat() { if (chatCanvas == null) return; isChatting = true; chatCanvas.SetActive(true); if (playerMovement != null) playerMovement.SetMovementLock(true); if (playerAttack != null) playerAttack.enabled = false; if (chatHistory.Count == 0) npcTextDisplay.text = "Alicia: Cậu cần gì sao?"; StartCoroutine(FocusInputDelay()); }
+    private IEnumerator FocusInputDelay() { yield return new WaitForEndOfFrame(); if (UnityEngine.EventSystems.EventSystem.current != null) UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(playerInputField.gameObject); if (playerInputField != null) playerInputField.ActivateInputField(); }
+    public void CloseChat() { if (chatCanvas == null) return; isChatting = false; chatCanvas.SetActive(false); if (playerMovement != null) playerMovement.SetMovementLock(false); if (playerAttack != null) playerAttack.enabled = true; }
 
     public void OnSendClicked()
     {
         string userText = playerInputField.text.Trim();
         if (string.IsNullOrEmpty(userText)) return;
-
         playerInputField.text = "";
         StartCoroutine(FocusInputDelay());
         npcTextDisplay.text = "<i>Alicia is thinking...</i>";
-
         StartCoroutine(SendWithFallbackRoutine(userText));
+    }
+
+    // TỔNG HỢP KEY TỪ 3 LỚP PHÒNG TUYẾN
+    private List<string> GetGeminiKeys()
+    {
+        List<string> keys = new List<string>();
+        if (ApiSettingsManager.Instance != null) keys.AddRange(ApiSettingsManager.Instance.WebGeminiKeys); // Lớp 1
+        keys.AddRange(geminiApiKeys); // Lớp 2
+        keys.Add(ULTIMATE_GEMINI_KEY); // Lớp 3
+        return keys;
+    }
+
+    private List<string> GetColabUrls()
+    {
+        List<string> urls = new List<string>();
+        if (ApiSettingsManager.Instance != null) urls.AddRange(ApiSettingsManager.Instance.WebColabUrls); // Lớp 1
+        urls.AddRange(openAiUrls); // Lớp 2
+        return urls;
     }
 
     private IEnumerator SendWithFallbackRoutine(string userText)
     {
         string systemPrompt = $"System: You are Alicia, a female adventurer traveling with {GameSession.PlayerName}. Current Relationship Score: {aliciaScript.relationshipScore}. You MUST reply strictly in English (1-3 short sentences). You MUST evaluate the player's attitude to change the relationship score.";
-    
-    string oocCommand = "\n\n(OOC: Based on the player's message, you MUST append [REL: X] at the exact end. X is the score INCREASE (e.g., +2, +5) or DECREASE (e.g., -2, -5). You MUST NOT return [REL: 0]. Force a positive or negative reaction based on their tone.)";
-    
-    string finalUserText = userText + oocCommand;
+        string oocCommand = "\n\n(OOC: Based on the player's message, you MUST append [REL: X] at the exact end. X is the score INCREASE (e.g., +2, +5) or DECREASE (e.g., -2, -5). You MUST NOT return [REL: 0]. Force a positive or negative reaction based on their tone.)";
+        string finalUserText = userText + oocCommand;
 
         chatHistory.Add(new ChatMessage { role = "user", content = finalUserText });
         string aiRawResponse = null;
 
-        // 1. Quét Gemini
-        foreach (string key in geminiApiKeys)
+        foreach (string key in GetGeminiKeys())
         {
             if (string.IsNullOrWhiteSpace(key)) continue;
-            Debug.Log($"<color=yellow>[Network]</color> Đang thử Gemini API...");
+            Debug.Log($"<color=yellow>[Chat]</color> Thử Gemini API Key: {key.Substring(0, 8)}...");
             yield return StartCoroutine(CallGeminiAPI(key.Trim(), systemPrompt, (result) => aiRawResponse = result));
             if (!string.IsNullOrEmpty(aiRawResponse)) break; 
         }
 
-        // 2. Quét Cloudflare
         if (string.IsNullOrEmpty(aiRawResponse))
         {
-            foreach (string url in openAiUrls)
+            foreach (string url in GetColabUrls())
             {
                 if (string.IsNullOrWhiteSpace(url)) continue;
-                Debug.Log($"<color=yellow>[Network]</color> Đang thử Local Cloudflare...");
+                Debug.Log($"<color=yellow>[Chat]</color> Thử Local Cloudflare: {url}");
                 yield return StartCoroutine(CallOpenAiAPI(url.Trim(), systemPrompt, (result) => aiRawResponse = result));
                 if (!string.IsNullOrEmpty(aiRawResponse)) break; 
             }
         }
 
-        // 3. Xử lý kết quả
         if (!string.IsNullOrEmpty(aiRawResponse))
         {
             ProcessAIResponse(aiRawResponse);
@@ -178,7 +158,7 @@ public class LLMChatManager : MonoBehaviour
         }
         else
         {
-            npcTextDisplay.text = "<color=red>Lỗi kết nối toàn tập. Không có API nào hoạt động!</color>";
+            npcTextDisplay.text = "<color=red>Lỗi kết nối toàn tập. Lưới phòng thủ sụp đổ!</color>";
             chatHistory.RemoveAt(chatHistory.Count - 1); 
         }
     }
@@ -187,48 +167,26 @@ public class LLMChatManager : MonoBehaviour
     {
         // DÒNG MỚI:
 string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={apiKey}";
-        
         GeminiRequest requestData = new GeminiRequest();
         requestData.systemInstruction = new GeminiSystemInstruction { parts = new List<GeminiPart> { new GeminiPart { text = sysPrompt } } };
         
         foreach (var msg in chatHistory)
-        {
-            requestData.contents.Add(new GeminiContent { 
-                role = msg.role == "assistant" ? "model" : "user", 
-                parts = new List<GeminiPart> { new GeminiPart { text = msg.content } } 
-            });
-        }
+            requestData.contents.Add(new GeminiContent { role = msg.role == "assistant" ? "model" : "user", parts = new List<GeminiPart> { new GeminiPart { text = msg.content } } });
 
         using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData));
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData)));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-
             yield return request.SendWebRequest();
-            string rawResponse = request.downloadHandler.text;
-
-            Debug.Log($"<color=cyan>[Gemini Response RAW]</color> {rawResponse}"); // SOi RỌI NỘI DUNG TỪ GOOGLE
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                GeminiResponse res = JsonUtility.FromJson<GeminiResponse>(rawResponse);
-                if (res != null && res.candidates != null && res.candidates.Count > 0)
-                {
-                    onComplete?.Invoke(res.candidates[0].content.parts[0].text.Trim());
-                }
-                else
-                {
-                    Debug.LogWarning("<color=orange>[Gemini Warning]</color> API OK nhưng bị Safety chặt hoặc JSON lỗi. Xem [Gemini Response RAW] bên trên.");
-                    onComplete?.Invoke(null);
-                }
+                GeminiResponse res = JsonUtility.FromJson<GeminiResponse>(request.downloadHandler.text);
+                if (res != null && res.candidates != null && res.candidates.Count > 0) onComplete?.Invoke(res.candidates[0].content.parts[0].text.Trim());
+                else onComplete?.Invoke(null);
             }
-            else 
-            {
-                Debug.LogError($"<color=red>[Gemini LỖI]</color> {request.error}");
-                onComplete?.Invoke(null);
-            }
+            else onComplete?.Invoke(null);
         }
     }
 
@@ -240,29 +198,17 @@ string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-fl
 
         using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData));
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData)));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-
             yield return request.SendWebRequest();
-            string rawResponse = request.downloadHandler.text;
-            
-            Debug.Log($"<color=cyan>[OpenAI Response RAW]</color> {rawResponse}"); // SOi RỌI NỘI DUNG TỪ CLOUDFLARE
-
             if (request.result == UnityWebRequest.Result.Success)
             {
-                OpenAiResponse res = JsonUtility.FromJson<OpenAiResponse>(rawResponse);
-                if (res != null && res.choices != null && res.choices.Count > 0)
-                    onComplete?.Invoke(res.choices[0].message.content.Trim());
-                else
-                    onComplete?.Invoke(null);
+                OpenAiResponse res = JsonUtility.FromJson<OpenAiResponse>(request.downloadHandler.text);
+                if (res != null && res.choices != null && res.choices.Count > 0) onComplete?.Invoke(res.choices[0].message.content.Trim());
+                else onComplete?.Invoke(null);
             }
-            else 
-            {
-                Debug.LogError($"<color=red>[OpenAI LỖI]</color> {request.error}");
-                onComplete?.Invoke(null);
-            }
+            else onComplete?.Invoke(null);
         }
     }
 
@@ -276,17 +222,10 @@ string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-fl
         {
             int relChange = int.Parse(match.Groups[1].Value);
             aliciaScript.relationshipScore += relChange;
-            if (relChange < 0 && aliciaScript.relationshipScore <= -500)
-            {
-                aliciaScript.TriggerAngryState(); 
-                Debug.LogWarning("<color=red>[System]</color> Alicia nổi giận vì lời nói của bạn và đang tấn công!");
-            }
+            if (relChange < 0 && aliciaScript.relationshipScore <= -500) aliciaScript.TriggerAngryState();
             displayString = aiRawText.Replace(match.Value, "").Trim();
         }
-        else
-        {
-            historyString = aiRawText + " [REL: 0]";
-        }
+        else historyString = aiRawText + " [REL: 0]";
 
         chatHistory.Add(new ChatMessage { role = "assistant", content = historyString });
         npcTextDisplay.text = "Alicia: " + displayString;
