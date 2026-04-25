@@ -30,7 +30,7 @@ public class CharacterCreation : MonoBehaviour
     [SerializeField] private TMP_Text attatckTypeText;
 
     [Header("Scene")]
-    [SerializeField] private int gameSceneIndex = 2;
+    [SerializeField] private int gameSceneIndex = 5;
 
     private PlayerClass selectedClass = PlayerClass.Knight;
 

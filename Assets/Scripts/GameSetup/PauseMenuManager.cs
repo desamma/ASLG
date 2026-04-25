@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PauseMenuManager : MonoBehaviour
 {
@@ -64,7 +65,17 @@ public class PauseMenuManager : MonoBehaviour
     private const float BGM_MAX = 1f;
     private const float MOUSE_MIN = 0.1f;
     private const float MOUSE_MAX = 5f;
+    [SerializeField] private bool isSettingAvailable;
 
+    [SerializeField] private CanvasGroup settingCanvasGroup;
+    [SerializeField] private CanvasGroup pauseSettingCanvasGroup;
+    [SerializeField] private CanvasGroup pausePanelCanvasGroup;
+    [SerializeField] private CanvasGroup soundCanvasGroup;
+    [SerializeField] private CanvasGroup mouseCanvasGroup;
+    [SerializeField] private CanvasGroup keybindCanvasGroup;
+
+    [SerializeField] private Button resumeButton;
+    [SerializeField] private Button pauseButton;
     void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
@@ -72,12 +83,6 @@ public class PauseMenuManager : MonoBehaviour
 
     void Start()
     {
-        if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
-        if (settingMenuUI != null) settingMenuUI.SetActive(false);
-        if (soundPanel != null) soundPanel.SetActive(false);
-        if (mousePanel != null) mousePanel.SetActive(false);
-        if (keybindPanel != null) keybindPanel.SetActive(false);
-
         // Load Audio
         if (volumeSlider != null)
         {
@@ -140,29 +145,131 @@ public class PauseMenuManager : MonoBehaviour
 
     void Update()
     {
+        if (!IsSettingsAvailable())
+            return;
+
         if (Input.GetKeyDown(KeyCode.Escape) && actionToRebind == null)
+            HandleEscape();
+    }
+
+    private bool IsSettingsAvailable()
+    {
+        string sceneName = SceneManager.GetActiveScene().name;
+
+        if (sceneName == "Creation" || sceneName == "Start")
+            return false;
+
+        return true;
+    }
+
+    private void HandleEscape()
+    {
+        resumeButton.onClick.RemoveAllListeners();
+        pauseButton.onClick.RemoveAllListeners();
+
+        if (IsAnySubMenuOpen())
         {
-            if ((soundPanel != null && soundPanel.activeSelf) || (mousePanel != null && mousePanel.activeSelf) || (keybindPanel != null && keybindPanel.activeSelf))
-                BackToOptionMenu();
-            else if (settingMenuUI != null && settingMenuUI.activeSelf)
-                CloseSettings();
-            else if (GameIsPaused)
-                Resume();
-            else
-                Pause();
+            BackToOptionMenu();
+        }
+        else if (IsSettingMenuOpen())
+        {
+            CloseSettings();
+        }
+        else if (GameIsPaused)
+        {
+            Resume();
+        }
+        else
+        {
+            resumeButton.onClick.AddListener(Resume);
+            pauseButton.onClick.AddListener(OpenSettings);
+            Pause();
         }
     }
 
-    // ================== MENU CHÍNH ==================
-    public void Resume() { PlayClickSound(); pauseMenuUI.SetActive(false); Time.timeScale = 1f; GameIsPaused = false; }
-    void Pause() { pauseMenuUI.SetActive(true); Time.timeScale = 0f; GameIsPaused = true; }
-    public void OpenSettings() { PlayClickSound(); pauseMenuUI.SetActive(false); soundPanel.SetActive(false); mousePanel.SetActive(false); keybindPanel.SetActive(false); settingMenuUI.SetActive(true); }
-    public void CloseSettings() { PlayClickSound(); settingMenuUI.SetActive(false); pauseMenuUI.SetActive(true); }
+    private bool IsAnySubMenuOpen()
+    {
+        return IsVisible(soundCanvasGroup) ||
+               IsVisible(mouseCanvasGroup) ||
+               IsVisible(keybindCanvasGroup);
+    }
 
-    public void OpenSoundTab() { PlayClickSound(); settingMenuUI.SetActive(false); soundPanel.SetActive(true); }
-    public void OpenMouseTab() { PlayClickSound(); settingMenuUI.SetActive(false); mousePanel.SetActive(true); }
-    public void OpenKeybindTab() { PlayClickSound(); settingMenuUI.SetActive(false); keybindPanel.SetActive(true); }
-    public void BackToOptionMenu() { PlayClickSound(); soundPanel.SetActive(false); mousePanel.SetActive(false); keybindPanel.SetActive(false); settingMenuUI.SetActive(true); }
+    private bool IsSettingMenuOpen()
+    {
+        return IsVisible(pauseSettingCanvasGroup);
+    }
+
+    private bool IsVisible(CanvasGroup canvasGroup)
+    {
+        return canvasGroup != null && canvasGroup.alpha > 0f;
+    }
+
+    // ================== MENU CHÍNH ==================
+    public void Resume()
+    {
+        PlayClickSound();
+        SetCanvas(settingCanvasGroup, false);
+        SetCanvas(pausePanelCanvasGroup, false);
+        Time.timeScale = 1f;
+        GameIsPaused = false;
+    }
+    void Pause()
+    {
+        SetCanvas(settingCanvasGroup, true);
+        SetCanvas(pausePanelCanvasGroup, true);
+        Time.timeScale = 0f;
+        GameIsPaused = true;
+    }
+    public void OpenSettings()
+    {
+        PlayClickSound();
+        SetCanvas(soundCanvasGroup, false);
+        SetCanvas(keybindCanvasGroup, false);
+        SetCanvas(mouseCanvasGroup, false);
+        SetCanvas(pausePanelCanvasGroup, false);
+        SetCanvas(pauseSettingCanvasGroup, true);
+    }
+    public void CloseSettings()
+    {
+        PlayClickSound();
+        SetCanvas(pauseSettingCanvasGroup, false);
+        SetCanvas(pausePanelCanvasGroup, true);
+    }
+
+    public void OpenSoundTab()
+    {
+        PlayClickSound();
+        SetCanvas(pauseSettingCanvasGroup, false);
+        SetCanvas(soundCanvasGroup, true);
+    }
+
+    public void OpenMouseTab()
+    {
+        PlayClickSound();
+        SetCanvas(pauseSettingCanvasGroup, false);
+        SetCanvas(mouseCanvasGroup, true);
+    }
+    public void OpenKeybindTab()
+    {
+        PlayClickSound();
+        SetCanvas(pauseSettingCanvasGroup, false);
+        SetCanvas(keybindCanvasGroup, true);
+    }
+    public void BackToOptionMenu()
+    {
+        PlayClickSound();
+        SetCanvas(soundCanvasGroup, false);
+        SetCanvas(mouseCanvasGroup, false);
+        SetCanvas(keybindCanvasGroup, false);
+        SetCanvas(pauseSettingCanvasGroup, true);
+    }
+
+    public void SetCanvas(CanvasGroup canvasGroup, bool visible)
+    {
+        canvasGroup.alpha = visible ? 1f : 0f;
+        canvasGroup.interactable = visible;
+        canvasGroup.blocksRaycasts = visible;
+    }
 
     // ================== ÂM LƯỢNG TỔNG ==================
     public void SetMasterVolume(float sliderValue)
