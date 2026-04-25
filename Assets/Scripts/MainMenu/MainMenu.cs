@@ -7,17 +7,35 @@ public class MainMenu : MonoBehaviour
     [Header("Buttons")]
     public Button playButton; // Tương đương New Game
     public Button continueButton; 
+    public Button yesButton; 
+    public Button noButton;
+    public CanvasGroup recreateCanvasGroup;
 
     void Start()
     {
+        recreateCanvasGroup = GameObject.Find("RecreateCanvas").GetComponent<CanvasGroup>();
+        recreateCanvasGroup.alpha = 0f;
+        recreateCanvasGroup.interactable = false;
+        recreateCanvasGroup.blocksRaycasts = false;
+
         Debug.Log("Script MainMenu đã sẵn sàng!");
 
         // Kiểm tra file save của UserID hiện tại: Nếu có thì sáng nút Continue, không có thì làm mờ (không cho bấm)
         if (continueButton != null)
         {
             continueButton.interactable = SaveManager.HasSaveFile();
-            playButton.interactable = !SaveManager.HasSaveFile();
+            if (SaveManager.HasSaveFile())
+            {
+                playButton.onClick.AddListener(OpenRecreateMenu);
+            }
+            else
+            {
+                playButton.onClick.AddListener(PlayGame);
+            }
         }
+
+        yesButton.onClick.AddListener(PlayGame);
+        noButton.onClick.AddListener(Return);
     }
 
     // GỌI KHI BẤM NÚT "NEW GAME" / "PLAY"
@@ -35,6 +53,20 @@ public class MainMenu : MonoBehaviour
         {
             Debug.LogError("Chưa đưa Scene Creation vào Build Settings!");
         }
+    }
+
+    public void OpenRecreateMenu()
+    {
+        recreateCanvasGroup.alpha = 1f;
+        recreateCanvasGroup.interactable = true;
+        recreateCanvasGroup.blocksRaycasts = true;
+    }
+
+    public void Return()
+    {
+        recreateCanvasGroup.alpha = 0f;
+        recreateCanvasGroup.interactable = false;
+        recreateCanvasGroup.blocksRaycasts = false;
     }
 
     // GỌI KHI BẤM NÚT "CONTINUE"

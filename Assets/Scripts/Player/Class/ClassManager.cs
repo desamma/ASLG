@@ -82,6 +82,7 @@ public class ClassManager : MonoBehaviour
         var d = CurrentClassData;
 
         s.baseMaxHealth = d.maxHealth;
+        s.baseDefence = d.defence;
         s.baseMoveSpeed = d.moveSpeed;
         s.baseMaxStamina = d.maxStamina;
         s.staminaCost = d.staminaCost;
