@@ -23,8 +23,6 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 dashDirection;
     private KnockbackHandler knockbackHandler;
-    
-    // ĐÃ THÊM: Biến kiểm soát khóa di chuyển an toàn thay vì disable script
     private bool isMovementStopped = false;
 
     private void Awake()
@@ -32,6 +30,11 @@ public class PlayerMovement : MonoBehaviour
         rb = rb != null ? rb : GetComponent<Rigidbody2D>();
         animator = animator != null ? animator : GetComponent<Animator>();
         if (animator != null) animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+        
+        // ====================================================================
+        // ĐÃ FIX: Ngăn Rigidbody ngủ đông làm chết Animator AnimatePhysics!
+        // ====================================================================
+        rb.sleepMode = RigidbodySleepMode2D.NeverSleep; 
     }
 
     private void Start()
@@ -168,7 +171,6 @@ public class PlayerMovement : MonoBehaviour
 
     public StateManager<PlayerState> GetStateManager() => stateManager;
 
-    // ĐÃ SỬA: Hàm khóa cứng di chuyển an toàn cho Chat (Không làm hỏng Animator)
     public void SetMovementLock(bool isLocked)
     {
         isMovementStopped = isLocked;
@@ -204,18 +206,12 @@ public class PlayerMovement : MonoBehaviour
         if (stateName == "move") stateName = "walk";
         else if (stateName.Contains("skill")) stateName = "skill";
 
-        // ĐÃ FIX LỖI CRASH ANIMATOR: Kiểm tra xem animation có tồn tại không trước khi ép chạy
-        if (animator != null) 
+        // ====================================================================
+        // ĐÃ FIX CHỐNG CRASH: Ngăn lỗi "Invalid Layer Index -1" nếu đồng đội quên gắn Controller
+        // ====================================================================
+        if (animator != null && animator.runtimeAnimatorController != null) 
         {
-            string animClipName = $"{className}_{stateName}";
-            if (animator.HasState(0, Animator.StringToHash(animClipName)))
-            {
-                animator.Play(animClipName);
-            }
-            else
-            {
-                Debug.LogWarning($"<color=orange>[Animator Warning]</color> Đồng đội bạn quên làm Animation: {animClipName}");
-            }
+            animator.Play($"{className}_{stateName}");
         }
         
         switch (state)
