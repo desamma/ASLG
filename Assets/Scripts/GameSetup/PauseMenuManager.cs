@@ -78,11 +78,22 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Button pauseButton;
     void Awake()
     {
+        // Singleton guard — destroy duplicate, keep original
+        if (FindObjectsOfType<PauseMenuManager>().Length > 1)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         DontDestroyOnLoad(this.gameObject);
     }
 
     void Start()
     {
+        // Wire buttons immediately on Start, not only inside HandleEscape
+        if (resumeButton != null) resumeButton.onClick.AddListener(Resume);
+        if (pauseButton != null) pauseButton.onClick.AddListener(OpenSettings);
+
         // Load Audio
         if (volumeSlider != null)
         {
@@ -164,10 +175,8 @@ public class PauseMenuManager : MonoBehaviour
 
     private void HandleEscape()
     {
-        resumeButton.onClick.RemoveAllListeners();
-        pauseButton.onClick.RemoveAllListeners();
-
-        if (IsAnySubMenuOpen())
+        if (
+            IsAnySubMenuOpen())
         {
             BackToOptionMenu();
         }
@@ -181,8 +190,6 @@ public class PauseMenuManager : MonoBehaviour
         }
         else
         {
-            resumeButton.onClick.AddListener(Resume);
-            pauseButton.onClick.AddListener(OpenSettings);
             Pause();
         }
     }

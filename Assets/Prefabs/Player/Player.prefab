@@ -82,7 +82,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 12
+  m_SortingOrder: 20
   m_Sprite: {fileID: 28044250, guid: 0a31095e04d120c46a6c18e70e0b7460, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
@@ -370,6 +370,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3672534107794639065}
     m_Modifications:
+    - target: {fileID: 712853210155678134, guid: ba00b4d57bb38e74e9f2b042eb178350, type: 3}
+      propertyPath: m_SortingOrder
+      value: 19
+      objectReference: {fileID: 0}
+    - target: {fileID: 813566572163263056, guid: ba00b4d57bb38e74e9f2b042eb178350, type: 3}
+      propertyPath: m_SortingOrder
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585930913749433996, guid: ba00b4d57bb38e74e9f2b042eb178350, type: 3}
+      propertyPath: m_SortingOrder
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 2168014423617152464, guid: ba00b4d57bb38e74e9f2b042eb178350, type: 3}
+      propertyPath: m_SortingOrder
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 2941968912453654189, guid: ba00b4d57bb38e74e9f2b042eb178350, type: 3}
+      propertyPath: m_SortingOrder
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 3002477993326898618, guid: ba00b4d57bb38e74e9f2b042eb178350, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.064
@@ -410,9 +430,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3024938898743040931, guid: ba00b4d57bb38e74e9f2b042eb178350, type: 3}
+      propertyPath: m_SortingOrder
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 4135122526431229401, guid: ba00b4d57bb38e74e9f2b042eb178350, type: 3}
       propertyPath: m_Name
       value: knight
+      objectReference: {fileID: 0}
+    - target: {fileID: 4264354686830765977, guid: ba00b4d57bb38e74e9f2b042eb178350, type: 3}
+      propertyPath: m_SortingOrder
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4321617926356286771, guid: ba00b4d57bb38e74e9f2b042eb178350, type: 3}
+      propertyPath: m_SortingOrder
+      value: 16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
