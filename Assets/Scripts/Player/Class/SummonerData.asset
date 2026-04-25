@@ -16,7 +16,7 @@ MonoBehaviour:
   playerClass: 3
   displayName: Summoner
   description: 
-  maxHealth: 600
+  maxHealth: 300
   defence: 10
   moveSpeed: 3.5
   maxStamina: 100
@@ -24,13 +24,13 @@ MonoBehaviour:
   dashDuration: 0.2
   dashDelay: 0.5
   attackType: 0
-  damage: 100
+  damage: 80
   attackCooldown: 0.9
   weaponRange: 1.5
   knockbackForce: 5
   knockbackTime: 0.2
   stunTime: 0.3
-  skillData: {fileID: 11400000, guid: 7bdcd5aa0bb899049b4fc711568eb485, type: 2}
+  skillData: {fileID: 11400000, guid: c0e29d3f91ae0984583bc292159f784d, type: 2}
   projectileSpeed: 12
   hitEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}

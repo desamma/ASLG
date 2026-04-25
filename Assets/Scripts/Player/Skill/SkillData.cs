@@ -12,10 +12,10 @@ public class SkillData : ScriptableObject
     [Header("Base cost & cooldown")]
     public float manaCost = 30f;
     public float cooldown = 8f;
-    [Tooltip("Damage = player base damage � this value")]
+    [Tooltip("Damage = player base damage × this value")]
     public float damagePercent = 1.5f;
 
-    [Header("Knight � charged slash")]
+    [Header("Knight — charged slash")]
     public float chargeTime = 0.4f;
     public GameObject slashVfxPrefab;      
     public int slashVfxCount = 3;           
@@ -24,16 +24,23 @@ public class SkillData : ScriptableObject
     public float slashHitRadius = 0.8f;     
     public float slashVfxDuration = 1f;      
 
-    [Header("Archer � fan shot")]
+    [Header("Archer — fan shot")]
     public GameObject arrowPrefab;       
     public int arrowCount = 8;
     public float fanAngle = 120f;        
     public float arrowSpeed = 16f;
     public float arrowLifetime = 2f;
 
-    [Header("Rogue � shadow step")]
+    [Header("Rogue — shadow step")]
     public float teleportRange = 7f;
     public GameObject teleportFxPrefab; 
+
+    // ==========================================
+    // ĐÃ THÊM: Dữ liệu đạn cho chiêu của Summoner
+    // ==========================================
+    [Header("Summoner — Alicia's Wrath")]
+    public GameObject summonerBulletPrefab; // Kéo thả magicBulletPrefab của Alicia vào đây
+    public int summonerBulletCount = 12;    // Số lượng đạn mặc định bắn ra
 
     [Header("Upgrades (up to 3 tiers)")]
     public SkillUpgradeTier[] upgrades = new SkillUpgradeTier[3];

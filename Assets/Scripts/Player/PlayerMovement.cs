@@ -112,13 +112,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateAnimatorState()
     {
-        // ĐÃ SỬA: Bảo vệ các trạng thái Skill không bị Update() ghi đè lập tức
+        // ĐÃ SỬA: Bảo vệ các trạng thái Skill (Bao gồm cả Summoner) không bị Update ghi đè
         if (stateManager.IsInState(PlayerState.Attack) || 
             stateManager.IsInState(PlayerState.Hurt) || 
             stateManager.IsInState(PlayerState.Death) ||
             stateManager.IsInState(PlayerState.KnightSkill) ||
             stateManager.IsInState(PlayerState.ArcherSkill) ||
-            stateManager.IsInState(PlayerState.RogueSkill)) 
+            stateManager.IsInState(PlayerState.RogueSkill) ||
+            stateManager.IsInState(PlayerState.SummonerSkill)) // Thêm ở đây
             return;
         
         if (moveInput.sqrMagnitude > 0) stateManager.ChangeState(PlayerState.Move);
@@ -190,7 +191,6 @@ public class PlayerMovement : MonoBehaviour
         string stateName = state.ToString().ToLower(); 
 
         if (stateName == "move") stateName = "walk";
-        // ĐÃ SỬA: Tự động gom chữ "knightskill", "archerskill" thành "skill"
         else if (stateName.Contains("skill")) stateName = "skill";
 
         if (animator != null) 
@@ -210,10 +210,10 @@ public class PlayerMovement : MonoBehaviour
             case PlayerState.Attack:
             case PlayerState.Hurt:
             case PlayerState.Death:
-            // ĐÃ SỬA: Đứng yên khi dùng Skill
             case PlayerState.KnightSkill:
             case PlayerState.ArcherSkill:
             case PlayerState.RogueSkill:
+            case PlayerState.SummonerSkill: // ĐÃ SỬA: Đứng yên khi Summoner dùng Skill
                 rb.velocity = Vector2.zero;
                 break;
         }
