@@ -457,8 +457,8 @@ public class StatsManager : MonoBehaviour
             AIDifficultyManager.Instance.LogDeath();
 
         OnPlayerDeathEvent?.Invoke();
-        Destroy(gameObject);
-        Time.timeScale = 0f;
+        Destroy(GameObject.FindGameObjectWithTag("Player"));
+        //Time.timeScale = 0f;
     }
 
     private int CalculateExpToNextLevel(int nextLevel) => Mathf.RoundToInt(100 * Mathf.Pow(nextLevel, 1.5f));

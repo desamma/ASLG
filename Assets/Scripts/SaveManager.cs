@@ -92,7 +92,7 @@ public class SaveManager : MonoBehaviour
 
     [Header("Cloud Save")]
     [SerializeField] private bool enableOnlineActivity = true;
-    [SerializeField] private string backendUrl = "https://localhost:7206";
+    [SerializeField] private string backendUrl = "https://aslbe-apapajdug3ege4cm.eastasia-01.azurewebsites.net";
     [SerializeField] private string firebaseStorageUploadApi = "/api/FirebaseStorage/upload";
     [SerializeField] private string firebaseStorageDownloadApi = "/api/FirebaseStorage/download";
     [SerializeField] private string firebaseStorageListApi = "/api/FirebaseStorage/list";
