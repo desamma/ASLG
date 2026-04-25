@@ -1,36 +1,15 @@
 public enum PlayerState
 {
-    [StateAnimator("isIdle")]
-    Idle,
-
-    [StateAnimator("isMoving")]
-    Move,
-
-    [StateAnimator("isAttacking")]
-    Attack,
-
-    [StateAnimator("isHurt")]
-    Hurt,
-
-    [StateAnimator("isDeath")]
-    Death,
-
-    [StateAnimator("isDash")]
-    Dash,
-
-    [StateAnimator("isKnockback")]
-    Knockback,
-
-    [StateAnimator("isKnightSkill")]
-    KnightSkill,
-
-    [StateAnimator("isArcherSkill")]
-    ArcherSkill,
-
-    [StateAnimator("isRogueSkill")]
-    RogueSkill,
-
-    // ĐÃ THÊM: Trạng thái múa skill của Summoner
-    [StateAnimator("isSummonerSkill")]
-    SummonerSkill
+    [StateAnimator("isIdle")] Idle,
+    [StateAnimator("isMoving")] Move,
+    [StateAnimator("isAttacking")] Attack,
+    [StateAnimator("isHurt")] Hurt,
+    [StateAnimator("isDeath")] Death,
+    [StateAnimator("isDash")] Dash,
+    [StateAnimator("isKnockback")] Knockback,
+    [StateAnimator("isKnightSkill")] KnightSkill,
+    [StateAnimator("isArcherSkill")] ArcherSkill,
+    [StateAnimator("isRogueSkill")] RogueSkill,
+    // ĐỒNG ĐỘI BẠN ĐÃ XÓA DÒNG NÀY:
+    [StateAnimator("isSummonerSkill")] SummonerSkill
 }

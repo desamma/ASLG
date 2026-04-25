@@ -23,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 dashDirection;
     private KnockbackHandler knockbackHandler;
+    
+    // ĐÃ THÊM: Biến kiểm soát khóa di chuyển an toàn thay vì disable script
     private bool isMovementStopped = false;
 
     private void Awake()
@@ -112,14 +114,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateAnimatorState()
     {
-        // ĐÃ SỬA: Bảo vệ các trạng thái Skill (Bao gồm cả Summoner) không bị Update ghi đè
         if (stateManager.IsInState(PlayerState.Attack) || 
             stateManager.IsInState(PlayerState.Hurt) || 
             stateManager.IsInState(PlayerState.Death) ||
             stateManager.IsInState(PlayerState.KnightSkill) ||
             stateManager.IsInState(PlayerState.ArcherSkill) ||
             stateManager.IsInState(PlayerState.RogueSkill) ||
-            stateManager.IsInState(PlayerState.SummonerSkill)) // Thêm ở đây
+            stateManager.IsInState(PlayerState.SummonerSkill))
             return;
         
         if (moveInput.sqrMagnitude > 0) stateManager.ChangeState(PlayerState.Move);
@@ -167,6 +168,18 @@ public class PlayerMovement : MonoBehaviour
 
     public StateManager<PlayerState> GetStateManager() => stateManager;
 
+    // ĐÃ SỬA: Hàm khóa cứng di chuyển an toàn cho Chat (Không làm hỏng Animator)
+    public void SetMovementLock(bool isLocked)
+    {
+        isMovementStopped = isLocked;
+        if (isLocked)
+        {
+            moveInput = Vector2.zero;
+            rb.velocity = Vector2.zero;
+            stateManager.ChangeState(PlayerState.Idle);
+        }
+    }
+
     public void StopMovement(float duration)
     {
         StopCoroutine(nameof(StopMovementRoutine));
@@ -175,11 +188,9 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator StopMovementRoutine(float duration)
     {
-        isMovementStopped = true;
-        moveInput = Vector2.zero;
-        rb.velocity = Vector2.zero;
+        SetMovementLock(true);
         yield return new WaitForSeconds(duration);
-        isMovementStopped = false;
+        SetMovementLock(false);
     }
 
     #region State Callbacks
@@ -193,9 +204,18 @@ public class PlayerMovement : MonoBehaviour
         if (stateName == "move") stateName = "walk";
         else if (stateName.Contains("skill")) stateName = "skill";
 
+        // ĐÃ FIX LỖI CRASH ANIMATOR: Kiểm tra xem animation có tồn tại không trước khi ép chạy
         if (animator != null) 
         {
-            animator.Play($"{className}_{stateName}");
+            string animClipName = $"{className}_{stateName}";
+            if (animator.HasState(0, Animator.StringToHash(animClipName)))
+            {
+                animator.Play(animClipName);
+            }
+            else
+            {
+                Debug.LogWarning($"<color=orange>[Animator Warning]</color> Đồng đội bạn quên làm Animation: {animClipName}");
+            }
         }
         
         switch (state)
@@ -213,7 +233,7 @@ public class PlayerMovement : MonoBehaviour
             case PlayerState.KnightSkill:
             case PlayerState.ArcherSkill:
             case PlayerState.RogueSkill:
-            case PlayerState.SummonerSkill: // ĐÃ SỬA: Đứng yên khi Summoner dùng Skill
+            case PlayerState.SummonerSkill:
                 rb.velocity = Vector2.zero;
                 break;
         }
