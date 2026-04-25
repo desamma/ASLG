@@ -93,7 +93,6 @@ public class WorldMapManager : MonoBehaviour
     /// </summary>
     public void SetCurrentZone(string zoneName)
     {
-        // Reset previous marker to base position
         if (playerPin != null)
             playerPin.anchoredPosition = activeMarkerBase;
 
@@ -101,15 +100,20 @@ public class WorldMapManager : MonoBehaviour
         {
             if (zone.zoneName != zoneName) continue;
 
-            // ── Discover zone & fade fog ──
             if (!zone.discovered)
             {
                 zone.discovered = true;
                 if (zone.fogCloud != null)
                     StartCoroutine(FadeOutFog(zone.fogCloud));
+
+                //write discovery to save data immediately
+                if (SaveManager.Instance != null &&
+                    !SaveManager.Instance.currentSaveData.discoveredZones.Contains(zoneName))
+                {
+                    SaveManager.Instance.currentSaveData.discoveredZones.Add(zoneName);
+                }
             }
 
-            // ── Move player pin ──
             if (playerPin != null)
             {
                 playerPin.anchoredPosition = zone.marker.anchoredPosition;
@@ -117,14 +121,11 @@ public class WorldMapManager : MonoBehaviour
                     locationLabel.rectTransform.anchoredPosition = playerPin.anchoredPosition + locationLabelOffset;
             }
 
-            // ── Update label ──
             if (locationLabel != null)
                 locationLabel.text = zone.zoneName;
 
-            // ── Track player pin for bounce ──
             activeMarker = playerPin;
             activeMarkerBase = playerPin != null ? playerPin.anchoredPosition : Vector2.zero;
-
             break;
         }
     }

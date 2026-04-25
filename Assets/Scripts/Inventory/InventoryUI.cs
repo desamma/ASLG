@@ -9,6 +9,7 @@ public class InventoryUI : MonoBehaviour
 
     [Header("Inventory Panel")]
     [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private CanvasGroup inventoryCanvasGroup;
     [SerializeField] private GameObject itemSlotPrefab;
     [SerializeField] private Transform slotGrid;
     [SerializeField] private Button btn_nextPage;
@@ -47,7 +48,7 @@ public class InventoryUI : MonoBehaviour
         btn_drop?.onClick.AddListener(DropSelected);
 
         SpawnSlots();
-        inventoryPanel.SetActive(false);
+        SetCanvas(inventoryCanvasGroup, false);
 
         // Lắng nghe thay đổi từ túi đồ gốc
         if (InventoryManager.instance != null)
@@ -63,7 +64,7 @@ public class InventoryUI : MonoBehaviour
     public void Toggle()
     {
         isOpen = !isOpen;
-        inventoryPanel.SetActive(isOpen);
+        SetCanvas(inventoryCanvasGroup, isOpen);
         if (isOpen) { currentPage = 0; RenderPage(); ShowEmptyPreview(); }
     }
 
@@ -194,5 +195,12 @@ public class InventoryUI : MonoBehaviour
 
         InventoryManager.instance.RemoveBagItem(selectedStack);
         ShowEmptyPreview();
+    }
+
+    public void SetCanvas(CanvasGroup canvasGroup, bool visible)
+    {
+        canvasGroup.alpha = visible ? 1f : 0f;
+        canvasGroup.interactable = visible;
+        canvasGroup.blocksRaycasts = visible;
     }
 }
