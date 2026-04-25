@@ -25,7 +25,7 @@ public class ClassManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             // Default to knight so the game works even without a selection screen
-            SelectClass(SelectedClass);
+            //SelectClass(SelectedClass);
         }
         else
         {
@@ -43,7 +43,7 @@ public class ClassManager : MonoBehaviour
             PlayerClass.Knight => knightData,
             PlayerClass.Archer => archerData,
             PlayerClass.Rogue => rogueData,
-            PlayerClass.Test => testData,
+            //PlayerClass.Test => testData,
             PlayerClass.Summoner => summonerData != null ? summonerData : knightData, // Dùng tạm data Knight nếu quên kéo thả
             _ => knightData
         };
@@ -61,7 +61,7 @@ public class ClassManager : MonoBehaviour
         PlayerClass.Knight => knightData,
         PlayerClass.Archer => archerData,
         PlayerClass.Rogue => rogueData,
-        PlayerClass.Test => testData,
+        //PlayerClass.Test => testData,
         PlayerClass.Summoner => summonerData != null ? summonerData : knightData,
         _ => knightData
     };

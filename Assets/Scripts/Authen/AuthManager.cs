@@ -26,7 +26,7 @@ public class AuthManager : MonoBehaviour
     private Coroutine notificationCoroutine;
 
     // TODO: BẠN CẦN THAY ĐỔI ĐƯỜNG DẪN NÀY CHO KHỚP VỚI API CỦA BẠN
-    private readonly string baseUrl = "https://localhost:7206/api/auth";
+    private readonly string baseUrl = "https://aslbe-apapajdug3ege4cm.eastasia-01.azurewebsites.net/api/auth";
 
     private void Awake()
     {
