@@ -30,6 +30,11 @@ public class PlayerMovement : MonoBehaviour
         rb = rb != null ? rb : GetComponent<Rigidbody2D>();
         animator = animator != null ? animator : GetComponent<Animator>();
         if (animator != null) animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+        
+        // ====================================================================
+        // ĐÃ FIX: Ngăn Rigidbody ngủ đông làm chết Animator AnimatePhysics!
+        // ====================================================================
+        rb.sleepMode = RigidbodySleepMode2D.NeverSleep; 
     }
 
     private void Start()
@@ -112,14 +117,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateAnimatorState()
     {
-        // ĐÃ SỬA: Bảo vệ các trạng thái Skill (Bao gồm cả Summoner) không bị Update ghi đè
         if (stateManager.IsInState(PlayerState.Attack) || 
             stateManager.IsInState(PlayerState.Hurt) || 
             stateManager.IsInState(PlayerState.Death) ||
             stateManager.IsInState(PlayerState.KnightSkill) ||
             stateManager.IsInState(PlayerState.ArcherSkill) ||
             stateManager.IsInState(PlayerState.RogueSkill) ||
-            stateManager.IsInState(PlayerState.SummonerSkill)) // Thêm ở đây
+            stateManager.IsInState(PlayerState.SummonerSkill))
             return;
         
         if (moveInput.sqrMagnitude > 0) stateManager.ChangeState(PlayerState.Move);
@@ -167,6 +171,17 @@ public class PlayerMovement : MonoBehaviour
 
     public StateManager<PlayerState> GetStateManager() => stateManager;
 
+    public void SetMovementLock(bool isLocked)
+    {
+        isMovementStopped = isLocked;
+        if (isLocked)
+        {
+            moveInput = Vector2.zero;
+            rb.velocity = Vector2.zero;
+            stateManager.ChangeState(PlayerState.Idle);
+        }
+    }
+
     public void StopMovement(float duration)
     {
         StopCoroutine(nameof(StopMovementRoutine));
@@ -175,11 +190,9 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator StopMovementRoutine(float duration)
     {
-        isMovementStopped = true;
-        moveInput = Vector2.zero;
-        rb.velocity = Vector2.zero;
+        SetMovementLock(true);
         yield return new WaitForSeconds(duration);
-        isMovementStopped = false;
+        SetMovementLock(false);
     }
 
     #region State Callbacks
@@ -193,7 +206,10 @@ public class PlayerMovement : MonoBehaviour
         if (stateName == "move") stateName = "walk";
         else if (stateName.Contains("skill")) stateName = "skill";
 
-        if (animator != null) 
+        // ====================================================================
+        // ĐÃ FIX CHỐNG CRASH: Ngăn lỗi "Invalid Layer Index -1" nếu đồng đội quên gắn Controller
+        // ====================================================================
+        if (animator != null && animator.runtimeAnimatorController != null) 
         {
             animator.Play($"{className}_{stateName}");
         }
@@ -213,7 +229,7 @@ public class PlayerMovement : MonoBehaviour
             case PlayerState.KnightSkill:
             case PlayerState.ArcherSkill:
             case PlayerState.RogueSkill:
-            case PlayerState.SummonerSkill: // ĐÃ SỬA: Đứng yên khi Summoner dùng Skill
+            case PlayerState.SummonerSkill:
                 rb.velocity = Vector2.zero;
                 break;
         }

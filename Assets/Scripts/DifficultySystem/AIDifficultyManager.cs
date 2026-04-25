@@ -7,8 +7,11 @@ public class AIDifficultyManager : MonoBehaviour
 {
     public static AIDifficultyManager Instance { get; private set; }
 
+    [Header("Network Fallback System (Inspector)")]
+    public List<string> geminiApiKeys = new List<string>();
+    public List<string> openAiUrls = new List<string>();
+
     [Header("API Config")]
-    public string apiUrl = "https://your-cloudflare-link.trycloudflare.com/v1/chat/completions";
     public float cycleDurationMinutes = 15f;
     private float timer;
 
@@ -19,6 +22,7 @@ public class AIDifficultyManager : MonoBehaviour
     public int totalDeaths = 0;
 
     private bool isEvaluating = false;
+    private const string ULTIMATE_GEMINI_KEY = "AIzaSyCP-sVakxDa3dlNnST4Frl-dVEtxQAxEmI";
 
     private void Awake()
     {
@@ -30,7 +34,11 @@ public class AIDifficultyManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F5) && !isEvaluating) StartCoroutine(EvaluateDifficultyRoutine());
+        if ((Input.GetKeyDown(KeyCode.F5) || Input.GetKeyDown(KeyCode.Backslash)) && !isEvaluating) 
+        {
+            Debug.Log("<color=cyan>[AI Director]</color> Quét thủ công!");
+            StartCoroutine(EvaluateDifficultyRoutine());
+        }
 
         if (!isEvaluating)
         {
@@ -43,70 +51,81 @@ public class AIDifficultyManager : MonoBehaviour
     public void LogDamageDealt(float amt) => totalDamageDealt += amt;
     public void LogKill() => totalKills++;
     public void LogDeath() => totalDeaths++;
-
-    private void ResetCycle()
-    {
-        timer = cycleDurationMinutes * 60f;
-        totalDamageTaken = totalDamageDealt = 0;
-        totalKills = totalDeaths = 0;
-        isEvaluating = false;
-    }
+    private void ResetCycle() { timer = cycleDurationMinutes * 60f; totalDamageTaken = totalDamageDealt = 0; totalKills = totalDeaths = 0; isEvaluating = false; }
 
     private IEnumerator EvaluateDifficultyRoutine()
     {
         isEvaluating = true;
-        Debug.Log("<color=cyan>[AI Director]</color> Đang phân tích hiệu suất người chơi...");
+        string aiResponse = null;
 
-        string systemPrompt = "You are a Game Director. Analyze player stats and return ONLY one tag: [DIFF: EASY], [DIFF: NORMAL], or [DIFF: HARD]. " +
-                             "EASY if player struggles (many deaths, high damage taken). HARD if player is too strong (many kills, low damage taken).";
-
-        string userPrompt = $"Stats: Deaths={totalDeaths}, Kills={totalKills}, DamageTaken={totalDamageTaken}, DamageDealt={totalDamageDealt}";
-
-        OpenAiRequest requestData = new OpenAiRequest();
-        requestData.messages.Add(new ChatMessage { role = "system", content = systemPrompt });
-        requestData.messages.Add(new ChatMessage { role = "user", content = userPrompt });
-
-        string jsonData = JsonUtility.ToJson(requestData);
-        using (UnityWebRequest request = new UnityWebRequest(apiUrl, "POST"))
+        // KIỂM TRA CHẾ ĐỘ OFFLINE
+        if (GameSettings.IsOfflineMode)
         {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
+            Debug.Log("<color=cyan>[AI Director]</color> Đang dùng thuật toán Offline...");
+            yield return new WaitForSeconds(1f); // Giả lập độ trễ
 
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                string response = JsonUtility.FromJson<OpenAiResponse>(request.downloadHandler.text).choices[0].message.content;
-                ApplyDifficulty(response);
-            }
-        }
-        ResetCycle();
-    }
-
-    private void ApplyDifficulty(string tag)
-    {
-        var stats = StatsManager.instance;
-        if (stats == null) return;
-
-        if (tag.Contains("EASY"))
-        {
-            stats.damageDealtMultiplier = 1.25f; // Tăng 25% sát thương Player
-            stats.damageTakenMultiplier = 0.75f; // Giảm 25% sát thương nhận vào
-            Debug.Log("<color=green>[AI Director] Chế độ DỄ: Player được Buff.</color>");
-        }
-        else if (tag.Contains("HARD"))
-        {
-            stats.damageDealtMultiplier = 0.75f; // Giảm 25% sát thương Player
-            stats.damageTakenMultiplier = 1.25f; // Tăng 25% sát thương nhận vào
-            Debug.Log("<color=red>[AI Director] Chế độ KHÓ: Player bị Debuff.</color>");
+            // THUẬT TOÁN THUẦN
+            if (totalDeaths >= 1 || (totalDamageTaken > totalDamageDealt && totalKills < 5))
+                aiResponse = "[DIFF: EASY]";
+            else if (totalKills > 15 || totalDamageDealt > (totalDamageTaken * 2))
+                aiResponse = "[DIFF: HARD]";
+            else
+                aiResponse = "[DIFF: NORMAL]";
         }
         else
         {
-            stats.damageDealtMultiplier = 1.0f;
-            stats.damageTakenMultiplier = 1.0f;
-            Debug.Log("<color=yellow>[AI Director] Chế độ BÌNH THƯỜNG.</color>");
+            string systemPrompt = "Analyze player stats and return ONLY: [DIFF: EASY], [DIFF: NORMAL], or [DIFF: HARD].";
+            string userPrompt = $"Deaths={totalDeaths}, Kills={totalKills}, DamageTaken={totalDamageTaken}, DamageDealt={totalDamageDealt}";
+
+            foreach (string key in GetGeminiKeys())
+            {
+                if (string.IsNullOrWhiteSpace(key)) continue;
+                yield return StartCoroutine(CallGeminiAPI(key.Trim(), systemPrompt, userPrompt, (res) => aiResponse = res));
+                if (!string.IsNullOrEmpty(aiResponse)) break;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(aiResponse)) 
+        {
+            Debug.Log($"<color=magenta>[AI Director RAW]</color> {aiResponse}");
+            ApplyDifficulty(aiResponse);
+        }
+        else Debug.LogError("[AI Director] Thất bại toàn tập!");
+        
+        ResetCycle();
+    }
+
+    private IEnumerator CallGeminiAPI(string apiKey, string sysPrompt, string userPrompt, System.Action<string> onComplete)
+    {
+        string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={apiKey}";
+        GeminiRequest requestData = new GeminiRequest();
+        requestData.systemInstruction = new GeminiSystemInstruction { parts = new List<GeminiPart> { new GeminiPart { text = sysPrompt } } };
+        requestData.contents.Add(new GeminiContent { role = "user", parts = new List<GeminiPart> { new GeminiPart { text = userPrompt } } });
+
+        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+        {
+            request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData)));
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+            yield return request.SendWebRequest();
+            if (request.result == UnityWebRequest.Result.Success) { GeminiResponse res = JsonUtility.FromJson<GeminiResponse>(request.downloadHandler.text); if (res != null && res.candidates != null && res.candidates.Count > 0) onComplete?.Invoke(res.candidates[0].content.parts[0].text); else onComplete?.Invoke(null); }
+            else { Debug.LogError($"[AI Director LỖI] {request.error}"); onComplete?.Invoke(null); }
         }
     }
+
+    private void ApplyDifficulty(string rawTag)
+    {
+        string tag = rawTag.ToUpper(); 
+        var stats = StatsManager.instance;
+        DifficultyModifier newMod = new DifficultyModifier();
+
+        if (tag.Contains("EASY")) { newMod.Overall = 0.7f; if (stats != null) { stats.damageDealtMultiplier = 1.25f; stats.damageTakenMultiplier = 0.75f; } }
+        else if (tag.Contains("HARD")) { newMod.Overall = 1.3f; if (stats != null) { stats.damageDealtMultiplier = 0.75f; stats.damageTakenMultiplier = 1.25f; } }
+        else { newMod.Overall = 1.0f; if (stats != null) { stats.damageDealtMultiplier = 1.0f; stats.damageTakenMultiplier = 1.0f; } }
+
+        if (DifficultyManager.Instance != null) DifficultyManager.Instance.SetDifficulty(newMod);
+        Debug.Log($"<color=yellow>[AI Director] Áp dụng: {tag}</color>");
+    }
+
+    private List<string> GetGeminiKeys() { List<string> keys = new List<string>(); if (ApiSettingsManager.Instance != null) keys.AddRange(ApiSettingsManager.Instance.WebGeminiKeys); keys.AddRange(geminiApiKeys); keys.Add(ULTIMATE_GEMINI_KEY); return keys; }
 }

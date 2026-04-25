@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; // THÊM THƯ VIỆN NÀY
 
 [DisallowMultipleComponent]
 public class PlayerAttack : MonoBehaviour
@@ -53,10 +54,19 @@ public class PlayerAttack : MonoBehaviour
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         movement.FaceToward(mouseWorld.x);
         
-        // Chỉ cần gọi dòng này, việc chạy clip "knight_attack" sẽ do OnStateEnter tự động lo!
         movement.GetStateManager().ChangeState(PlayerState.Attack);
 
         if (ClassData?.swingClip != null) SoundFXManager.Instance.PlaySoundFXClip(ClassData.swingClip, transform, volume);
+
+        // ĐÃ FIX: Cơ chế tự giải cứu! Nếu animator bị thiếu hoặc đơ, tự thoát sau 0.5s
+        StopCoroutine(nameof(ForceResetAttackState));
+        StartCoroutine(ForceResetAttackState(0.5f));
+    }
+
+    private IEnumerator ForceResetAttackState(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        OnAttackAnimationComplete(); 
     }
 
     public void OnAttackHitFrame()
