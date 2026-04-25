@@ -1,10 +1,26 @@
-using UnityEngine;
-using Cinemachine; // 1. Thêm thư viện Cinemachine
+﻿using UnityEngine;
+using Cinemachine;
+
+[System.Serializable]
+public class SpawnEntry
+{
+    [Tooltip("The zoneName of the MapZoneSetter that brought the player HERE")]
+    public string fromZoneName;
+    [Tooltip("Where to spawn the player when arriving from that zone")]
+    public Transform spawnPoint;
+}
 
 public class PlayerSpawner : MonoBehaviour
 {
-    [Header("Spawn Point")]
-    [SerializeField] private Transform spawnPoint;
+    [Header("Spawn Points")]
+    [SerializeField] private SpawnEntry[] spawnEntries;
+
+    [Header("Fallback Spawn")]
+    [SerializeField] private Transform defaultSpawnPoint;
+
+    [Header("World Map")]
+    [Tooltip("The WorldMapManager zoneName for this scene, clears fog and updates pin on arrival")]
+    [SerializeField] private string arrivalZoneName;
 
     [Header("Summoner Settings")]
     [SerializeField] private GameObject aliciaPrefab;
@@ -14,55 +30,47 @@ public class PlayerSpawner : MonoBehaviour
         SpawnPlayer();
     }
 
+    private Transform ResolveSpawnPoint()
+    {
+        string origin = MapSceneTransitionState.OriginZoneName;
+        if (!string.IsNullOrEmpty(origin) && spawnEntries != null)
+        {
+            foreach (var entry in spawnEntries)
+            {
+                if (entry.fromZoneName == origin && entry.spawnPoint != null)
+                    return entry.spawnPoint;
+            }
+        }
+        return defaultSpawnPoint;
+    }
+
     private void SpawnPlayer()
     {
-        var data = ClassManager.Instance?.CurrentClassData;
-        if (data == null)
-        {
-            Debug.LogWarning("[PlayerSpawner] No class data found - did ClassManager persist?");
-            return;
-        }
+        var data = ClassManager.Instance.CurrentClassData;
+        if (data == null) { Debug.LogWarning("[PlayerSpawner] No class data."); return; }
+        if (data.playerPrefab == null) { Debug.LogWarning("[PlayerSpawner] No prefab."); return; }
 
-        if (data.playerPrefab == null)
-        {
-            Debug.LogWarning($"[PlayerSpawner] No prefab assigned on {data.playerClass} data.");
-            return;
-        }
+        Transform spawn = ResolveSpawnPoint();
+        Vector3 pos = spawn != null ? spawn.position : Vector3.zero;
 
-        Vector3 pos = spawnPoint != null ? spawnPoint.position : Vector3.zero;
         var player = Instantiate(data.playerPrefab, pos, Quaternion.identity);
 
         Debug.Log($"[PlayerSpawner] Spawned {data.playerClass} at {pos}.");
 
         // 2. Tự động tìm Camera và gán Player vào ô Follow
         CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
-        if (vcam != null)
-        {
-            vcam.Follow = player.transform;
-            Debug.Log("[PlayerSpawner] Đã gán Camera bám theo Player.");
-        }
-        else
-        {
-            Debug.LogWarning("[PlayerSpawner] Không tìm thấy CinemachineVirtualCamera trong Scene!");
-        }
+        if (vcam != null) vcam.Follow = player.transform;
 
-        // 3. Xử lý logic spawn Alicia nếu là Class Summoner
-        if (ClassManager.Instance.SelectedClass == PlayerClass.Summoner)
+        if (ClassManager.Instance.SelectedClass == PlayerClass.Summoner && aliciaPrefab != null)
         {
-            if (aliciaPrefab != null)
+            Vector3 aliciaPos = player.transform.position + new Vector3(2f, 0, 0);
+            GameObject alicia = Instantiate(aliciaPrefab, aliciaPos, Quaternion.identity);
+            LLMChatManager llmManager = FindObjectOfType<LLMChatManager>();
+            if (llmManager != null)
             {
-                Vector3 spawnPos = player.transform.position + new Vector3(2f, 0, 0);
-                GameObject alicia = Instantiate(aliciaPrefab, spawnPos, Quaternion.identity);
-
-                // Gắn tự động Alicia vào LLMChatManager
-                LLMChatManager llmManager = FindObjectOfType<LLMChatManager>();
-                if (llmManager != null)
-                {
-                    NPCCompanion companionScript = alicia.GetComponent<NPCCompanion>();
-                    llmManager.aliciaScript = companionScript;
-                    if (companionScript != null) companionScript.playerTransform = player.transform;
-                }
-                Debug.Log("<color=cyan>[PlayerSpawner] CLASS SUMMONER: Alicia đã xuất hiện cùng Player!</color>");
+                NPCCompanion companionScript = alicia.GetComponent<NPCCompanion>();
+                llmManager.aliciaScript = companionScript;
+                if (companionScript != null) companionScript.playerTransform = player.transform;
             }
         }
     }

@@ -37,8 +37,12 @@ public static class EnemyDataRepository
             Defense =           baseStats.Defense          +   growth.Defense          *   levelsGained,
             MagicResist =       baseStats.MagicResist      +   growth.MagicResist      *   levelsGained,
             Speed =             baseStats.Speed            +   growth.Speed            *   levelsGained,
-          //AttackRange =       baseStats.AttackRange      +   growth.AttackRange      *   levelsGained,        Not scaled
+            AttackRange =       baseStats.AttackRange,
             AttackCooldown =    baseStats.AttackCooldown   +   growth.AttackCooldown   *   levelsGained,
+
+            KnockbackForce =    baseStats.KnockbackForce,
+            KnockbackTime =     baseStats.KnockbackTime,
+            StunTime =          baseStats.StunTime,
         };
     }
 }

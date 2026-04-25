@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bagItems: []
+  starterItems: []
   equippedWeapon: 
   equippedAccessories: []
 --- !u!114 &4318455414582415825
@@ -63,30 +64,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerName: 
+  damageDealtMultiplier: 1
+  damageTakenMultiplier: 1
   authToken: 
   userId: 
   _maxHealth: 20000
+  _baseMaxHealth: 2000
+  _bonusMaxHealth: 0
   _currentHealth: 0
   _defence: 10
-  _magicResist: 5
-  _maxMana: 100
-  _currentMana: 0
+  _baseDefence: 10
+  _bonusDefence: 0
+  _maxMana: 999
+  _baseMaxMana: 999
+  _bonusMaxMana: 0
+  _currentMana: 999
   _moveSpeed: 5
+  _baseMoveSpeed: 5
+  _bonusMoveSpeed: 0
   _maxStamina: 100
+  _baseMaxStamina: 100
+  _bonusMaxStamina: 0
   _staminaRegenRate: 5
+  _bonusStaminaRegenRate: 0
   _staminaCost: 25
   _dashDelay: 0.5
   _dashDuration: 0.2
   _currentStamina: 0
   _damage: 10
+  _baseDamage: 10
+  _bonusDamage: 0
   _weaponRange: 1.5
+  _bonusWeaponRange: 0
   _knockbackForce: 5
+  _bonusKnockbackForce: 0
   _knockbackTime: 0.2
   _stunTime: 0.3
   _cooldown: 0.5
+  _bonusCooldown: 0
   _level: 1
   _expToNextLevel: 100
   _currentExp: 0
+  _gold: 0
   _upgradePoints: 0
 --- !u!114 &2088240897685045331
 MonoBehaviour:

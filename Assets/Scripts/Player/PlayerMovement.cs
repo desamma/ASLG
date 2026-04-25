@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Animator))]
+[RequireComponent(typeof(Rigidbody2D))]
 [DisallowMultipleComponent]
 public class PlayerMovement : MonoBehaviour
 {
@@ -20,17 +20,16 @@ public class PlayerMovement : MonoBehaviour
     private AudioSource loopingAudioSource;
 
     private StateManager<PlayerState> stateManager;
-
     private Vector2 moveInput;
     private Vector2 dashDirection;
     private KnockbackHandler knockbackHandler;
     private bool isMovementStopped = false;
+
     private void Awake()
     {
         rb = rb != null ? rb : GetComponent<Rigidbody2D>();
         animator = animator != null ? animator : GetComponent<Animator>();
-
-        animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+        if (animator != null) animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
     }
 
     private void Start()
@@ -53,10 +52,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        HandleDashInput();
-    }
+    private void Update() { HandleDashInput(); }
 
     private void FixedUpdate()
     {
@@ -69,24 +65,16 @@ public class PlayerMovement : MonoBehaviour
         UpdateAnimatorState();
         ApplyMovement();
 
-        if (moveInput.sqrMagnitude > 0)
-        {
-            if (QuestManager.instance != null)
-            {
-                QuestManager.instance.AddMovementProgress(Time.fixedDeltaTime);
-            }
-        }
+        if (moveInput.sqrMagnitude > 0 && QuestManager.instance != null)
+            QuestManager.instance.AddMovementProgress(Time.fixedDeltaTime);
 
         if (StatsManager.instance.currentStamina < StatsManager.instance.maxStamina)
-        {
             StatsManager.instance.currentStamina += StatsManager.instance.staminaRegenRate * Time.deltaTime;
-        }
     }
 
     private void HandleDashInput()
     {
-        if (Input.GetButtonDown("Dash") && CanDash())
-            StartDash();
+        if (Input.GetButtonDown("Dash") && CanDash()) StartDash();
     }
 
     private void ReadMoveInput()
@@ -97,18 +85,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyMovement()
     {
-        rb.velocity = moveInput.sqrMagnitude > 0
-            ? moveInput.normalized * StatsManager.instance.moveSpeed
-            : Vector2.zero;
+        rb.velocity = moveInput.sqrMagnitude > 0 ? moveInput.normalized * StatsManager.instance.moveSpeed : Vector2.zero;
     }
 
     private void HandleFlip()
     {
         bool movingRight = moveInput.x > 0 && facingDirection == -1;
         bool movingLeft = moveInput.x < 0 && facingDirection == 1;
-
-        if ((movingRight || movingLeft) && !stateManager.IsInState(PlayerState.Attack))
-            Flip();
+        if ((movingRight || movingLeft) && !stateManager.IsInState(PlayerState.Attack)) Flip();
     }
 
     private void Flip()
@@ -123,59 +107,47 @@ public class PlayerMovement : MonoBehaviour
     {
         bool shouldFaceRight = worldX > transform.position.x;
         bool alreadyFacingRight = facingDirection == 1;
-
-        if (shouldFaceRight != alreadyFacingRight)
-            Flip();
+        if (shouldFaceRight != alreadyFacingRight) Flip();
     }
 
     private void UpdateAnimatorState()
     {
-        if (stateManager.IsInState(PlayerState.Attack) ||
-            stateManager.IsInState(PlayerState.Hurt) ||
-            stateManager.IsInState(PlayerState.Death))
+        // ĐÃ SỬA: Bảo vệ các trạng thái Skill không bị Update() ghi đè lập tức
+        if (stateManager.IsInState(PlayerState.Attack) || 
+            stateManager.IsInState(PlayerState.Hurt) || 
+            stateManager.IsInState(PlayerState.Death) ||
+            stateManager.IsInState(PlayerState.KnightSkill) ||
+            stateManager.IsInState(PlayerState.ArcherSkill) ||
+            stateManager.IsInState(PlayerState.RogueSkill)) 
             return;
-
-        if (moveInput.sqrMagnitude > 0)
-            stateManager.ChangeState(PlayerState.Move);
-        else
-            stateManager.ChangeState(PlayerState.Idle);
+        
+        if (moveInput.sqrMagnitude > 0) stateManager.ChangeState(PlayerState.Move);
+        else stateManager.ChangeState(PlayerState.Idle);
     }
 
-    private bool CanDash() =>
-        !stateManager.IsInState(PlayerState.Dash) &&
-        !stateManager.IsInState(PlayerState.Knockback) &&
-        StatsManager.instance.currentStamina >= StatsManager.instance.staminaCost;
+    private bool CanDash() => !stateManager.IsInState(PlayerState.Dash) && !stateManager.IsInState(PlayerState.Knockback) && StatsManager.instance.currentStamina >= StatsManager.instance.staminaCost;
 
     private void StartDash()
     {
-        dashDirection = moveInput.sqrMagnitude > 0
-            ? moveInput.normalized
-            : new Vector2(facingDirection, 0f);
-
+        dashDirection = moveInput.sqrMagnitude > 0 ? moveInput.normalized : new Vector2(facingDirection, 0f);
         StatsManager.instance.currentStamina -= StatsManager.instance.staminaCost;
-
         StartCoroutine(DashRoutine());
     }
 
     private IEnumerator DashRoutine()
     {
         stateManager.ChangeState(PlayerState.Dash);
-
         float dashSpeed = StatsManager.instance.moveSpeed * 2.5f;
         float dashDuration = StatsManager.instance.dashDuration;
         float elapsed = 0f;
-
         while (elapsed < dashDuration)
         {
             rb.velocity = dashDirection * dashSpeed;
             elapsed += Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
         }
-
         rb.velocity = Vector2.zero;
-
         yield return new WaitForSeconds(StatsManager.instance.dashDelay);
-
         stateManager.ChangeState(PlayerState.Idle);
     }
 
@@ -186,15 +158,10 @@ public class PlayerMovement : MonoBehaviour
             () => stateManager.ChangeState(PlayerState.Idle));
     }
 
-    /// <summary>
-    /// Called by animation event when attack animation completes
-    /// </summary>
     public void OnAttackAnimationComplete()
     {
         if (stateManager == null) return;
-
-        if (stateManager.IsInState(PlayerState.Attack))
-            stateManager.ChangeState(PlayerState.Idle);
+        if (stateManager.IsInState(PlayerState.Attack)) stateManager.ChangeState(PlayerState.Idle);
     }
 
     public StateManager<PlayerState> GetStateManager() => stateManager;
@@ -210,39 +177,43 @@ public class PlayerMovement : MonoBehaviour
         isMovementStopped = true;
         moveInput = Vector2.zero;
         rb.velocity = Vector2.zero;
-
         yield return new WaitForSeconds(duration);
-
         isMovementStopped = false;
     }
 
     #region State Callbacks
-    private void OnStateChanged(PlayerState previousState, PlayerState newState)
-    {
-    }
-
+    private void OnStateChanged(PlayerState previousState, PlayerState newState) { }
+    
     private void OnStateEnter(PlayerState state)
     {
+        string className = ClassManager.Instance.CurrentClassData.playerClass.ToString().ToLower();
+        string stateName = state.ToString().ToLower(); 
+
+        if (stateName == "move") stateName = "walk";
+        // ĐÃ SỬA: Tự động gom chữ "knightskill", "archerskill" thành "skill"
+        else if (stateName.Contains("skill")) stateName = "skill";
+
+        if (animator != null) 
+        {
+            animator.Play($"{className}_{stateName}");
+        }
+        
         switch (state)
         {
             case PlayerState.Move:
                 if (movementAudioClip != null)
                 {
-                    loopingAudioSource = SoundFXManager.Instance.PlayLoopingSoundFXClip(
-                        movementAudioClip, transform, volume, minAudioDistance, maxAudioDistance);
-                    if (loopingAudioSource != null)
-                    {
-                        loopingAudioSource.transform.SetParent(transform);
-                    }
+                    loopingAudioSource = SoundFXManager.Instance.PlayLoopingSoundFXClip(movementAudioClip, transform, volume, minAudioDistance, maxAudioDistance);
+                    if (loopingAudioSource != null) loopingAudioSource.transform.SetParent(transform);
                 }
                 break;
             case PlayerState.Attack:
-                rb.velocity = Vector2.zero;
-                break;
             case PlayerState.Hurt:
-                rb.velocity = Vector2.zero;
-                break;
             case PlayerState.Death:
+            // ĐÃ SỬA: Đứng yên khi dùng Skill
+            case PlayerState.KnightSkill:
+            case PlayerState.ArcherSkill:
+            case PlayerState.RogueSkill:
                 rb.velocity = Vector2.zero;
                 break;
         }
@@ -250,12 +221,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnStateExit(PlayerState state)
     {
-        switch (state)
+        if (state == PlayerState.Move)
         {
-            case PlayerState.Move:
-                SoundFXManager.Instance.StopAndDestroyAudioSource(loopingAudioSource);
-                loopingAudioSource = null;
-                break;
+            SoundFXManager.Instance.StopAndDestroyAudioSource(loopingAudioSource);
+            loopingAudioSource = null;
         }
     }
     #endregion

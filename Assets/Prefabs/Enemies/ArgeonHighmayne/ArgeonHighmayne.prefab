@@ -68,6 +68,7 @@ Transform:
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4155379862723733861}
   - {fileID: 4979612526641555784}
   - {fileID: 2557345960031235543}
   - {fileID: 4428245483693766236}
@@ -277,8 +278,21 @@ MonoBehaviour:
     MagicResist: 0
     Speed: 0
     ExpReward: 0
+    GoldReward: 0
     AttackRange: 0
     AttackCooldown: 0
+    KnockbackForce: 0
+    KnockbackTime: 0
+    StunTime: 0
+  behavior:
+    DetectionRange: 1
+    ChaseRange: 1
+    SpecialAttackFrequency: 0
+    UltimateAttackFrequency: 0
+    Aggression: 1
+    MobilityUsageFrequency: 0
+    EnrageThreshold: 0
+  currentLevel: 1
   damageReductionPercentage: 0
   isDead: 0
 --- !u!114 &9001046993169077029
@@ -294,14 +308,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 8708754496514025349}
-  behavior:
-    DetectionRange: 1
-    ChaseRange: 1
-    SpecialAttackFrequency: 0.3
-    UltimateAttackFrequency: 0.2
-    Aggression: 1
-    MobilityUsageFrequency: 0
-    EnrageThreshold: 0
+  isKnockbackable: 0
   auraFarmingDuration: 5
   rb: {fileID: 4173689126913912952}
   charCollider: {fileID: 8939149112938453236}
@@ -309,7 +316,6 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  player: {fileID: 0}
   deathEffect: {fileID: 2538167804726959248, guid: d4a56b17f14761948b6e631739a29d16, type: 3}
   deathSoundEffect: {fileID: 8300000, guid: 974ce541db63f824db3ae27614d7df62, type: 3}
   phase2EntranceEffect: {fileID: 2013676730256567545, guid: 0f8ccdb5143e4b1499d221a5f4e5ce7b, type: 3}
@@ -332,7 +338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 604776c40de33374d9f9ccad97873323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hud: {fileID: 0}
+  isPlayer: 0
   vfxAnchor: {fileID: 5234564009758256889}
   destroyDelay: 2
 --- !u!1 &2355795031676004834
@@ -366,6 +372,90 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2135362086171877439}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4280224249093265342
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4155379862723733861}
+  - component: {fileID: 1788455120095223991}
+  m_Layer: 8
+  m_Name: MinimapIcon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4155379862723733861
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4280224249093265342}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.008726557, y: -0, z: -0, w: 0.999962}
+  m_LocalPosition: {x: -0.001, y: -0.029, z: -0.00067052967}
+  m_LocalScale: {x: 0.33333334, y: 0.33340102, z: 0.9993912}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 2135362086171877439}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &1788455120095223991
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4280224249093265342}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1
+  m_Sprite: {fileID: -2135585597343286014, guid: 5aa8b770bc43046bc8d993d0d5b7f4a5, type: 3}
+  m_Color: {r: 1, g: 0.03207121, b: 0, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 32, y: 16}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &4568295191331329749
 GameObject:
   m_ObjectHideFlags: 0
