@@ -54,9 +54,15 @@ public class StatsSaveData
     public int level;
     public int currentExp;
     public int upgradePoints;
+    public float baseMaxHealth;
     public float currentHealth;
+    public float baseMaxMana;
     public float currentMana;
+    public float baseMaxStamina;
     public float currentStamina;
+    public float baseMoveSpeed;
+    public float baseDamage;
+    public float baseCooldown;
 }
 
 [Serializable]
@@ -97,7 +103,7 @@ public class SaveManager : MonoBehaviour
     private bool _isCloudSaving;
     private bool _isSaving;
     private bool _isSyncingWebItems;
-
+    private bool _pendingPositionRestore = false;
     [Serializable]
     private class CloudListResponse
     {
@@ -256,9 +262,15 @@ public class SaveManager : MonoBehaviour
             currentSaveData.stats.level = StatsManager.instance.level;
             currentSaveData.stats.currentExp = StatsManager.instance.currentExp;
             currentSaveData.stats.upgradePoints = StatsManager.instance.upgradePoints;
+            currentSaveData.stats.baseMaxHealth = StatsManager.instance.baseMaxHealth;
             currentSaveData.stats.currentHealth = StatsManager.instance.currentHealth;
+            currentSaveData.stats.baseMaxMana = StatsManager.instance.baseMaxMana;
             currentSaveData.stats.currentMana = StatsManager.instance.currentMana;
+            currentSaveData.stats.baseMaxStamina = StatsManager.instance.baseMaxStamina;
             currentSaveData.stats.currentStamina = StatsManager.instance.currentStamina;
+            currentSaveData.stats.baseDamage = StatsManager.instance.baseDamage;
+            currentSaveData.stats.baseCooldown = StatsManager.instance.baseCooldown;
+            currentSaveData.stats.baseMoveSpeed = StatsManager.instance.baseMoveSpeed;
         }
 
         // 3. Dữ liệu Inventory
@@ -395,6 +407,7 @@ public class SaveManager : MonoBehaviour
 
     private void ApplyCurrentSaveDataAndLoadScene()
     {
+
         if (currentSaveData == null)
         {
             Debug.LogWarning("[SaveManager] Save data is null.");
@@ -416,7 +429,8 @@ public class SaveManager : MonoBehaviour
             StatsManager.instance.LoadSavedStats(
                 currentSaveData.stats.level, currentSaveData.stats.currentExp, currentSaveData.stats.upgradePoints,
                 currentSaveData.stats.currentHealth, currentSaveData.stats.currentMana, currentSaveData.stats.currentStamina,
-                currentSaveData.playerName
+                currentSaveData.playerName, currentSaveData.stats.baseMaxHealth, currentSaveData.stats.baseMaxMana, currentSaveData.stats.baseMaxStamina,
+                currentSaveData.stats.baseDamage, currentSaveData.stats.baseCooldown, currentSaveData.stats.baseMoveSpeed
             );
         }
 
@@ -435,6 +449,7 @@ public class SaveManager : MonoBehaviour
         }
 
         Debug.Log("<color=cyan>[SaveManager] Loaded file, transitioning scene...</color>");
+        _pendingPositionRestore = true;
         SceneManager.LoadScene(currentSaveData.sceneName);
     }
 
@@ -731,9 +746,10 @@ public class SaveManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null && currentSaveData.playerPosition != null)
+        if (player != null && _pendingPositionRestore && currentSaveData.playerPosition != null)
         {
             player.transform.position = currentSaveData.playerPosition.Get();
+            _pendingPositionRestore = false;  // consume the flag
         }
 
         NPCCompanion[] allNPCs = FindObjectsOfType<NPCCompanion>();
@@ -753,12 +769,6 @@ public class SaveManager : MonoBehaviour
                         // Instantly hide fog (no fade — already explored)
                         if (zone.fogCloud != null)
                         {
-                            //zone.fogCloud.color = new Color(
-                            //    zone.fogCloud.color.r,
-                            //    zone.fogCloud.color.g,
-                            //    zone.fogCloud.color.b,
-                            //    0f
-                            //);
                             zone.fogCloud.gameObject.SetActive(false);
                         }
                     }

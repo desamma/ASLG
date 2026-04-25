@@ -1,10 +1,26 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Cinemachine;
+
+[System.Serializable]
+public class SpawnEntry
+{
+    [Tooltip("The zoneName of the MapZoneSetter that brought the player HERE")]
+    public string fromZoneName;
+    [Tooltip("Where to spawn the player when arriving from that zone")]
+    public Transform spawnPoint;
+}
 
 public class PlayerSpawner : MonoBehaviour
 {
-    [Header("Spawn Point")]
-    [SerializeField] private Transform spawnPoint;
+    [Header("Spawn Points")]
+    [SerializeField] private SpawnEntry[] spawnEntries;
+
+    [Header("Fallback Spawn")]
+    [SerializeField] private Transform defaultSpawnPoint;
+
+    [Header("World Map")]
+    [Tooltip("The WorldMapManager zoneName for this scene, clears fog and updates pin on arrival")]
+    [SerializeField] private string arrivalZoneName;
 
     [Header("Summoner Settings")]
     [SerializeField] private GameObject aliciaPrefab;
@@ -14,32 +30,41 @@ public class PlayerSpawner : MonoBehaviour
         SpawnPlayer();
     }
 
+    private Transform ResolveSpawnPoint()
+    {
+        string origin = MapSceneTransitionState.OriginZoneName;
+        if (!string.IsNullOrEmpty(origin) && spawnEntries != null)
+        {
+            foreach (var entry in spawnEntries)
+            {
+                if (entry.fromZoneName == origin && entry.spawnPoint != null)
+                    return entry.spawnPoint;
+            }
+        }
+        return defaultSpawnPoint;
+    }
+
     private void SpawnPlayer()
     {
-        var data = ClassManager.Instance?.CurrentClassData;
-        if (data == null) return;
+        var data = ClassManager.Instance.CurrentClassData;
+        if (data == null) { Debug.LogWarning("[PlayerSpawner] No class data."); return; }
+        if (data.playerPrefab == null) { Debug.LogWarning("[PlayerSpawner] No prefab."); return; }
 
-        if (data.playerPrefab == null)
-        {
-            Debug.LogWarning($"[PlayerSpawner] No prefab assigned on {data.playerClass} data.");
-            return;
-        }
+        Transform spawn = ResolveSpawnPoint();
+        Vector3 pos = spawn != null ? spawn.position : Vector3.zero;
 
-        Vector3 pos = spawnPoint != null ? spawnPoint.position : Vector3.zero;
-        pos.z = 0; // Đảm bảo luôn nằm đúng mặt phẳng 2D
-
-        // Đẻ ĐÚNG 1 cục Prefab duy nhất, đéo có cha con gì hết!
         var player = Instantiate(data.playerPrefab, pos, Quaternion.identity);
 
-        // Gán Camera
+        Debug.Log($"[PlayerSpawner] Spawned {data.playerClass} at {pos}.");
+
+        // 2. Tự động tìm Camera và gán Player vào ô Follow
         CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
         if (vcam != null) vcam.Follow = player.transform;
 
-        // Summoner logic
         if (ClassManager.Instance.SelectedClass == PlayerClass.Summoner && aliciaPrefab != null)
         {
-            Vector3 spawnPos = player.transform.position + new Vector3(2f, 0, 0);
-            GameObject alicia = Instantiate(aliciaPrefab, spawnPos, Quaternion.identity);
+            Vector3 aliciaPos = player.transform.position + new Vector3(2f, 0, 0);
+            GameObject alicia = Instantiate(aliciaPrefab, aliciaPos, Quaternion.identity);
             LLMChatManager llmManager = FindObjectOfType<LLMChatManager>();
             if (llmManager != null)
             {
