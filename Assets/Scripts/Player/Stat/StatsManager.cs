@@ -142,7 +142,7 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private float _bonusKnockbackForce = 0f;
     [SerializeField] private float _knockbackTime = 0.2f;
     [SerializeField] private float _stunTime = 0.3f;
-    [SerializeField] private float _cooldown = 0.5f;
+    [SerializeField] private float _baseCooldown = 0.5f;
     [SerializeField] private float _bonusCooldown = 0f;
 
     // ĐÃ SỬA: Sát thương đầu ra giờ sẽ được nhân thêm hệ số của AI Director
@@ -170,13 +170,13 @@ public class StatsManager : MonoBehaviour
     public float stunTime { get => _stunTime; set { _stunTime = value; OnStatsChanged(); } }
     public float cooldown
     {
-        get => Mathf.Max(0.1f, _cooldown + _bonusCooldown);
-        set { _cooldown = Mathf.Max(0.1f, value); OnStatsChanged(); }
+        get => Mathf.Max(0.1f, _baseCooldown + _bonusCooldown);
+        set { _baseCooldown = Mathf.Max(0.1f, value); OnStatsChanged(); }
     }
     public float baseCooldown
     {
-        get => Mathf.Max(0.1f, _cooldown);
-        set { _cooldown = Mathf.Max(0.1f, value); OnStatsChanged(); }
+        get => Mathf.Max(0.1f, _baseCooldown);
+        set { _baseCooldown = Mathf.Max(0.1f, value); OnStatsChanged(); }
     }
 
     [Header("Experience & Levelling")]
@@ -259,7 +259,7 @@ public class StatsManager : MonoBehaviour
     // ==========================================
     // DÀNH CHO SAVE MANAGER NẠP DỮ LIỆU
     // ==========================================
-    public void LoadSavedStats(int savedLevel, int savedExp, int savedPts, float hp, float mana, float stam, string pName)
+    public void LoadSavedStats(int savedLevel, int savedExp, int savedPts, float hp, float mana, float stam, string pName, float baseMaxHealth, float baseMaxMana, float baseMaxStamina, float baseDamage, float baseCooldown, float baseMoveSpeed)
     {
         _level = savedLevel;
         _currentExp = savedExp;
@@ -270,6 +270,12 @@ public class StatsManager : MonoBehaviour
         _currentMana = mana;
         _currentStamina = stam;
         _playerName = pName;
+        _baseMaxHealth = baseMaxHealth;
+        _baseMaxMana = baseMaxMana;
+        _baseMaxStamina = baseMaxStamina;
+        _baseDamage = baseDamage;
+        _baseCooldown = baseCooldown;
+        _baseMoveSpeed = baseMoveSpeed;
         
         OnStatsChanged();
     }
@@ -427,7 +433,20 @@ public class StatsManager : MonoBehaviour
         OnStatsChanged();
     }
 
-    private void OnStatsChanged() => OnStatsChangedEvent?.Invoke();
+    private void OnStatsChanged()
+    {
+        _maxHealth = maxHealth;
+        _defence = defence;
+        _maxMana = maxMana;
+        _moveSpeed = moveSpeed;
+        _maxStamina = maxStamina;
+        _damage = damage;
+        _weaponRange = weaponRange;
+        _knockbackForce = knockbackForce;
+        _baseCooldown = cooldown;
+
+        OnStatsChangedEvent?.Invoke();
+    }
 
     private void HandleDeath()
     {
