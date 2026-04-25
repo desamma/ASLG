@@ -310,16 +310,8 @@ public class SaveManager : MonoBehaviour
             currentSaveData.companions.Add(compData);
         }
 
-        // 6. Discovered Map Zones
-        if (WorldMapManager.Instance != null)
-        {
-            currentSaveData.discoveredZones.Clear();
-            foreach (var zone in WorldMapManager.Instance.zones)
-            {
-                if (zone.discovered)
-                    currentSaveData.discoveredZones.Add(zone.zoneName);
-            }
-        }
+        // ensure the list isn't null before serializing
+        currentSaveData.discoveredZones ??= new List<string>();
 
         string json = JsonConvert.SerializeObject(currentSaveData, Formatting.Indented);
         File.WriteAllText(GetSaveFilePath(), json);
@@ -743,19 +735,7 @@ public class SaveManager : MonoBehaviour
 
     private IEnumerator ApplySceneDataRoutine()
     {
-        yield return new WaitForEndOfFrame();
-
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null && _pendingPositionRestore && currentSaveData.playerPosition != null)
-        {
-            player.transform.position = currentSaveData.playerPosition.Get();
-            _pendingPositionRestore = false;  // consume the flag
-        }
-
-        NPCCompanion[] allNPCs = FindObjectsOfType<NPCCompanion>();
-        LLMChatManager chatManager = FindObjectOfType<LLMChatManager>();
-
-        // Restore discovered map zones
+        //restore zones before end of frame so PlayerSpawner sees correct state
         if (WorldMapManager.Instance != null && currentSaveData.discoveredZones != null)
         {
             foreach (var zoneName in currentSaveData.discoveredZones)
@@ -765,17 +745,26 @@ public class SaveManager : MonoBehaviour
                     if (zone.zoneName == zoneName && !zone.discovered)
                     {
                         zone.discovered = true;
-
-                        // Instantly hide fog (no fade — already explored)
                         if (zone.fogCloud != null)
-                        {
                             zone.fogCloud.gameObject.SetActive(false);
-                        }
                     }
                 }
             }
         }
 
+        yield return new WaitForEndOfFrame();
+
+        // Position restore
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null && _pendingPositionRestore && currentSaveData.playerPosition != null)
+        {
+            player.transform.position = currentSaveData.playerPosition.Get();
+            _pendingPositionRestore = false;
+        }
+
+        // NPC restore
+        NPCCompanion[] allNPCs = FindObjectsOfType<NPCCompanion>();
+        LLMChatManager chatManager = FindObjectOfType<LLMChatManager>();
         foreach (var npc in allNPCs)
         {
             var savedNpc = currentSaveData.companions.Find(c => c.npcID == npc.npcID);
@@ -785,11 +774,8 @@ public class SaveManager : MonoBehaviour
                 npc.transform.position = savedNpc.position.Get();
                 npc.relationshipScore = savedNpc.relationshipScore;
                 npc.UpdateRelationshipUI();
-
                 if (chatManager != null && chatManager.aliciaScript == npc)
-                {
                     chatManager.SetChatHistory(savedNpc.chatHistory);
-                }
             }
         }
     }

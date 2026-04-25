@@ -14,6 +14,7 @@ public class CharacterCreation : MonoBehaviour
     [SerializeField] private Button knightButton;
     [SerializeField] private Button archerButton;
     [SerializeField] private Button rogueButton;
+    [SerializeField] private Button summonerButton;
 
     [Header("Selected Highlight")]
     [SerializeField] private Color selectedColor = new Color(0.3f, 0.7f, 1f);
@@ -42,6 +43,7 @@ public class CharacterCreation : MonoBehaviour
         knightButton.onClick.AddListener(() => SelectClass(PlayerClass.Knight));
         archerButton.onClick.AddListener(() => SelectClass(PlayerClass.Archer));
         rogueButton.onClick.AddListener(() => SelectClass(PlayerClass.Rogue));
+        summonerButton.onClick.AddListener(() => SelectClass(PlayerClass.Summoner));
 
         nameInput.onValueChanged.AddListener(_ => RefreshStartButton());
         startButton.onClick.AddListener(OnStartClicked);
@@ -55,6 +57,7 @@ public class CharacterCreation : MonoBehaviour
         knightButton.onClick.RemoveAllListeners();
         archerButton.onClick.RemoveAllListeners();
         rogueButton.onClick.RemoveAllListeners();
+        summonerButton.onClick.RemoveAllListeners();
         startButton.onClick.RemoveAllListeners();
     }
 
@@ -73,6 +76,7 @@ public class CharacterCreation : MonoBehaviour
         SetButtonHighlight(knightButton, selectedClass == PlayerClass.Knight);
         SetButtonHighlight(archerButton, selectedClass == PlayerClass.Archer);
         SetButtonHighlight(rogueButton, selectedClass == PlayerClass.Rogue);
+        SetButtonHighlight(summonerButton, selectedClass == PlayerClass.Summoner);
     }
 
     private void SetButtonHighlight(Button button, bool isSelected)
