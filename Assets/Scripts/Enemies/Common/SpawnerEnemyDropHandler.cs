@@ -39,8 +39,7 @@ public class SpawnerEnemyDropHandler : MonoBehaviour
     {
         if (nextPhase == null || _spawner == null) return null;
 
-        var nextHandler = nextPhase.GetComponent<SpawnerEnemyDropHandler>();
-        if (nextHandler == null)
+        if (!nextPhase.TryGetComponent<SpawnerEnemyDropHandler>(out var nextHandler))
         {
             nextHandler = nextPhase.AddComponent<SpawnerEnemyDropHandler>();
         }
