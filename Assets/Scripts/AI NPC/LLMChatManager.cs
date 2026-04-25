@@ -24,7 +24,7 @@ public class GeminiContent { public string role; public List<GeminiPart> parts =
 [System.Serializable]
 public class GeminiPart { public string text; }
 [System.Serializable]
-public class GeminiConfig { public int maxOutputTokens = 1024; public float temperature = 0.5f; }
+public class GeminiConfig { public int maxOutputTokens = 2048; public float temperature = 0.5f; }
 [System.Serializable]
 public class GeminiResponse { public List<GeminiCandidate> candidates; }
 [System.Serializable]
@@ -57,7 +57,7 @@ public class LLMChatManager : MonoBehaviour
 
     [SerializeField] private List<ChatMessage> chatHistory = new List<ChatMessage>();
     private bool isChatting = false;
-    private const string ULTIMATE_GEMINI_KEY = "AIzaSyCP-sVakxDa3dlNnST4Frl-dVEtxQAxEmI"; 
+    private const string ULTIMATE_GEMINI_KEY = "AIzaSyDYF3fqeTVOf-BXBFV5zSv70au5sJ1yKaI"; 
 
     private bool hasActiveAiQuest = false;
     private bool isGeneratingQuest = false;
