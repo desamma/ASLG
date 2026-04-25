@@ -97,7 +97,7 @@ public class SaveManager : MonoBehaviour
     private bool _isCloudSaving;
     private bool _isSaving;
     private bool _isSyncingWebItems;
-
+    private bool _pendingPositionRestore = false;
     [Serializable]
     private class CloudListResponse
     {
@@ -395,6 +395,7 @@ public class SaveManager : MonoBehaviour
 
     private void ApplyCurrentSaveDataAndLoadScene()
     {
+
         if (currentSaveData == null)
         {
             Debug.LogWarning("[SaveManager] Save data is null.");
@@ -435,6 +436,7 @@ public class SaveManager : MonoBehaviour
         }
 
         Debug.Log("<color=cyan>[SaveManager] Loaded file, transitioning scene...</color>");
+        _pendingPositionRestore = true;
         SceneManager.LoadScene(currentSaveData.sceneName);
     }
 
@@ -731,9 +733,10 @@ public class SaveManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null && currentSaveData.playerPosition != null)
+        if (player != null && _pendingPositionRestore && currentSaveData.playerPosition != null)
         {
             player.transform.position = currentSaveData.playerPosition.Get();
+            _pendingPositionRestore = false;  // consume the flag
         }
 
         NPCCompanion[] allNPCs = FindObjectsOfType<NPCCompanion>();
@@ -753,12 +756,6 @@ public class SaveManager : MonoBehaviour
                         // Instantly hide fog (no fade — already explored)
                         if (zone.fogCloud != null)
                         {
-                            //zone.fogCloud.color = new Color(
-                            //    zone.fogCloud.color.r,
-                            //    zone.fogCloud.color.g,
-                            //    zone.fogCloud.color.b,
-                            //    0f
-                            //);
                             zone.fogCloud.gameObject.SetActive(false);
                         }
                     }

@@ -276,12 +276,6 @@ public class StatsManager : MonoBehaviour
 
     public void ResetStats()
     {
-        _baseMaxHealth = _maxHealth;
-        _baseMaxMana = _maxMana;
-        _baseMaxStamina = _maxStamina;
-        _baseDamage = _damage;
-        _baseDefence = _defence;
-        _baseMoveSpeed = _moveSpeed;
 
         _bonusMaxHealth = 0f;
         _bonusMaxMana = 0f;

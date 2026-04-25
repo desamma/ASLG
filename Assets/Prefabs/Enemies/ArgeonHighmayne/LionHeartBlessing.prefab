@@ -75,7 +75,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 99
   m_Sprite: {fileID: 21300000, guid: f523f4a9a0da6de42b5023cf20557116, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -169,5 +169,6 @@ MonoBehaviour:
   destroyTime: 3
   argeonHighmayne: {fileID: 1492802115615131335, guid: c213aed68fe2572418b280b3c4a83e28, type: 3}
   spellCollider: {fileID: 8281747070353890199}
+  isPhase2Offset: 0
   audioClip: {fileID: 8300000, guid: 91e6ce6e4a7647248a34a31ce26de89c, type: 3}
   volume: 1
