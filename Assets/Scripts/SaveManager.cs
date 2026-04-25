@@ -395,6 +395,8 @@ public class SaveManager : MonoBehaviour
     {
         string json = File.ReadAllText(GetSaveFilePath());
         currentSaveData = JsonConvert.DeserializeObject<GameSaveData>(json);
+
+        currentSaveData.discoveredZones ??= new List<string>();
     }
 
     private void ApplyCurrentSaveDataAndLoadScene()
@@ -611,6 +613,12 @@ public class SaveManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void ForceSaveNow()
+    {
+        if (GameObject.FindGameObjectWithTag("Player") == null) return;
+        SaveGameToLocalFile();
     }
 
     private string GetWebItemDictionaryKey(PendingDeliveryItem webItem)

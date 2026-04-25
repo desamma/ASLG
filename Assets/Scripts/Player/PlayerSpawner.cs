@@ -57,6 +57,9 @@ public class PlayerSpawner : MonoBehaviour
 
         Debug.Log($"[PlayerSpawner] Spawned {data.playerClass} at {pos}.");
 
+        if (WorldMapManager.Instance != null && !string.IsNullOrWhiteSpace(arrivalZoneName))
+            WorldMapManager.Instance.SetCurrentZone(arrivalZoneName);
+
         // 2. Tự động tìm Camera và gán Player vào ô Follow
         CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
         if (vcam != null) vcam.Follow = player.transform;
