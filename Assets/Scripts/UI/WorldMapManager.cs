@@ -6,9 +6,9 @@ using TMPro;
 [System.Serializable]
 public class MapZone
 {
-    public string zoneName;         // Display name e.g. "Haunted Dungeon"
-    public RectTransform marker;    // The pin/icon on the world map
-    public Image fogCloud;          // Cloud image covering this zone (can be null)
+    public string zoneName;    
+    public RectTransform marker;
+    public Image fogCloud;      
     [HideInInspector] public bool discovered = false;
 }
 
@@ -17,8 +17,8 @@ public class WorldMapManager : MonoBehaviour
     public static WorldMapManager Instance { get; private set; }
 
     [Header("Panels")]
-    public GameObject worldMapPanel;   // Full world map panel — assign in Inspector
-    public GameObject minimapPanel;    // Your existing minimap panel — assign in Inspector
+    public GameObject worldMapPanel;  
+    public GameObject minimapPanel; 
 
     [Header("Zones")]
     public MapZone[] zones;
@@ -26,13 +26,14 @@ public class WorldMapManager : MonoBehaviour
     [Header("Player Pin")]
     public RectTransform playerPin;    // Small icon showing current location
     public TMP_Text locationLabel;     // Text showing current zone name
+    public Vector2 locationLabelOffset = new Vector2(0f, 50f);
 
     [Header("Marker Bounce")]
     public float bounceSpeed = 3f;
-    public float bounceHeight = 10f;   // pixels up/down
+    public float bounceHeight = 10f;  
 
     [Header("Fog Fade")]
-    public float fogFadeDuration = 1.5f;
+    public float fogFadeDuration = 3f;
 
     private bool isMapOpen = false;
     private RectTransform activeMarker;
@@ -51,8 +52,8 @@ public class WorldMapManager : MonoBehaviour
 
     void Start()
     {
-        worldMapPanel.SetActive(false);   // map closed by default
-        minimapPanel.SetActive(true);     // minimap visible by default
+        worldMapPanel.SetActive(false);
+        minimapPanel.SetActive(true);   
     }
 
     void Update()
@@ -65,6 +66,9 @@ public class WorldMapManager : MonoBehaviour
         {
             float offsetY = Mathf.Sin(Time.time * bounceSpeed) * bounceHeight;
             activeMarker.anchoredPosition = activeMarkerBase + new Vector2(0f, offsetY);
+
+            if (locationLabel != null)
+                locationLabel.rectTransform.anchoredPosition = activeMarker.anchoredPosition + locationLabelOffset;
         }
     }
 
@@ -79,8 +83,8 @@ public class WorldMapManager : MonoBehaviour
         minimapPanel.SetActive(!isMapOpen);   // hide minimap while map is open
 
         // Reset marker to base so it doesn't freeze mid-bounce when closing
-        if (!isMapOpen && activeMarker != null)
-            activeMarker.anchoredPosition = activeMarkerBase;
+        if (!isMapOpen && playerPin != null)
+            playerPin.anchoredPosition = activeMarkerBase;
     }
 
     /// <summary>
@@ -90,8 +94,8 @@ public class WorldMapManager : MonoBehaviour
     public void SetCurrentZone(string zoneName)
     {
         // Reset previous marker to base position
-        if (activeMarker != null)
-            activeMarker.anchoredPosition = activeMarkerBase;
+        if (playerPin != null)
+            playerPin.anchoredPosition = activeMarkerBase;
 
         foreach (var zone in zones)
         {
@@ -107,15 +111,19 @@ public class WorldMapManager : MonoBehaviour
 
             // ── Move player pin ──
             if (playerPin != null)
+            {
                 playerPin.anchoredPosition = zone.marker.anchoredPosition;
+                if (locationLabel != null)
+                    locationLabel.rectTransform.anchoredPosition = playerPin.anchoredPosition + locationLabelOffset;
+            }
 
             // ── Update label ──
             if (locationLabel != null)
                 locationLabel.text = zone.zoneName;
 
-            // ── Track marker for bounce ──
-            activeMarker = zone.marker;
-            activeMarkerBase = zone.marker.anchoredPosition;
+            // ── Track player pin for bounce ──
+            activeMarker = playerPin;
+            activeMarkerBase = playerPin != null ? playerPin.anchoredPosition : Vector2.zero;
 
             break;
         }
