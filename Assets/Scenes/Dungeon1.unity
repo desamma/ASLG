@@ -488,7 +488,12 @@ MonoBehaviour:
   - {fileID: 5729182800678616739, guid: b2c1fb0f7060d1c45b7dd4de0beb2751, type: 3}
   - {fileID: 3831566749463287279, guid: 8df13e59a3bfc734db16e7ef4edd0028, type: 3}
   - {fileID: 2951733918824199701, guid: 9275748acf3b75140a21f5220893cabb, type: 3}
-  farmDropEntries: []
+  lockArenaWhenPlayerEnters: 0
+  hideArenaBordersUntilLocked: 1
+  arenaBorders: []
+  farmDropEntries:
+  - itemID: con_health_potion
+    dropRate: 0.4
   scaleEnemyLevelByPlayerLevel: 1
   minLevelOffsetFromPlayer: -5
   maxLevelOffsetFromPlayer: 2
@@ -15167,7 +15172,12 @@ MonoBehaviour:
   - {fileID: 5729182800678616739, guid: b2c1fb0f7060d1c45b7dd4de0beb2751, type: 3}
   - {fileID: 3831566749463287279, guid: 8df13e59a3bfc734db16e7ef4edd0028, type: 3}
   - {fileID: 2951733918824199701, guid: 9275748acf3b75140a21f5220893cabb, type: 3}
-  farmDropEntries: []
+  lockArenaWhenPlayerEnters: 0
+  hideArenaBordersUntilLocked: 1
+  arenaBorders: []
+  farmDropEntries:
+  - itemID: con_health_potion
+    dropRate: 0.4
   scaleEnemyLevelByPlayerLevel: 1
   minLevelOffsetFromPlayer: -5
   maxLevelOffsetFromPlayer: 2

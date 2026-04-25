@@ -15946,7 +15946,9 @@ MonoBehaviour:
   spawnIntervalSeconds: -1
   enemyPrefabs:
   - {fileID: 7815599334424515753, guid: 41cf81b72e3b5604298f993838b5c21f, type: 3}
-  farmDropEntries: []
+  farmDropEntries:
+  - itemID: con_health_potion
+    dropRate: 1
   scaleEnemyLevelByPlayerLevel: 0
   minLevelOffsetFromPlayer: -5
   maxLevelOffsetFromPlayer: 2
