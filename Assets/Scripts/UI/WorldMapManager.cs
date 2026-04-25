@@ -1,14 +1,15 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 [System.Serializable]
 public class MapZone
 {
-    public string zoneName;    
+    public string zoneName;
     public RectTransform marker;
-    public Image fogCloud;      
+    public Image fogCloud;
     [HideInInspector] public bool discovered = false;
 }
 
@@ -17,8 +18,8 @@ public class WorldMapManager : MonoBehaviour
     public static WorldMapManager Instance { get; private set; }
 
     [Header("Panels")]
-    public GameObject worldMapPanel;  
-    public GameObject minimapPanel; 
+    public GameObject worldMapPanel;
+    public GameObject minimapPanel;
 
     [Header("Zones")]
     public MapZone[] zones;
@@ -30,7 +31,7 @@ public class WorldMapManager : MonoBehaviour
 
     [Header("Marker Bounce")]
     public float bounceSpeed = 3f;
-    public float bounceHeight = 10f;  
+    public float bounceHeight = 10f;
 
     [Header("Fog Fade")]
     public float fogFadeDuration = 3f;
@@ -53,7 +54,7 @@ public class WorldMapManager : MonoBehaviour
     void Start()
     {
         worldMapPanel.SetActive(false);
-        minimapPanel.SetActive(true);   
+        minimapPanel.SetActive(true);
     }
 
     void Update()
@@ -106,11 +107,15 @@ public class WorldMapManager : MonoBehaviour
                 if (zone.fogCloud != null)
                     StartCoroutine(FadeOutFog(zone.fogCloud));
 
-                //write discovery to save data immediately
-                if (SaveManager.Instance != null &&
-                    !SaveManager.Instance.currentSaveData.discoveredZones.Contains(zoneName))
+                if (SaveManager.Instance != null)
                 {
-                    SaveManager.Instance.currentSaveData.discoveredZones.Add(zoneName);
+                    SaveManager.Instance.currentSaveData.discoveredZones ??= new List<string>();
+
+                    if (!SaveManager.Instance.currentSaveData.discoveredZones.Contains(zoneName))
+                        SaveManager.Instance.currentSaveData.discoveredZones.Add(zoneName);
+
+                    // Force immediate disk write — don't wait for autosave
+                    SaveManager.Instance.ForceSaveNow();
                 }
             }
 
