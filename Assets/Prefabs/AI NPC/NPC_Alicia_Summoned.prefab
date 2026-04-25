@@ -512,12 +512,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97952bd1ba13bea4a90cc419f5505a53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcID: npc_alicia
   npcName: Alicia
   relationshipScore: 0
   maxHealth: 500
   currentHealth: 0
   respawnTime: 15
-  playerTransform: {fileID: 0}
+  playerTransform: {fileID: 3672534107794639065, guid: 08dd2b34980a15a48b753400a5f80384, type: 3}
   followDistance: 4
   moveSpeed: 5
   magicBulletPrefab: {fileID: 4985830346478485982, guid: 37ddaa10e0a21324b8aaeb2aebfcf332, type: 3}
