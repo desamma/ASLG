@@ -54,11 +54,14 @@ public class PlayerSkill : MonoBehaviour
         StatsManager.instance.currentMana -= GetCurrentManaCost();
         cooldownTimer = GetCurrentCooldown();
 
-        switch (ClassManager.Instance.SelectedClass)
+        // Lấy Class trực tiếp từ Data để luôn gọi đúng Skill kể cả khi mượn Data
+        switch (ClassData.playerClass)
         {
             case PlayerClass.Knight: StartCoroutine(KnightSkillRoutine()); break;
             case PlayerClass.Archer: StartCoroutine(ArcherSkillRoutine()); break;
             case PlayerClass.Rogue: StartCoroutine(RogueSkillRoutine()); break;
+            case PlayerClass.Summoner: StartCoroutine(SummonerSkillRoutine()); break;
+            default: StartCoroutine(KnightSkillRoutine()); break; // Fallback an toàn
         }
     }
 
@@ -162,7 +165,6 @@ public class PlayerSkill : MonoBehaviour
             if (i < SkillData.slashVfxCount - 1) yield return new WaitForSeconds(stepDelay);
         }
 
-        // ĐÃ SỬA: Chờ nốt Animation múa kiếm chứ không ép về Idle ngay
         yield return StartCoroutine(WaitAnimationFinish());
     }
 
@@ -246,7 +248,6 @@ public class PlayerSkill : MonoBehaviour
             }
         }
 
-        // ĐÃ SỬA: Chờ Animation hạ cung kết thúc tự nhiên
         yield return StartCoroutine(WaitAnimationFinish());
     }
 
@@ -314,7 +315,60 @@ public class PlayerSkill : MonoBehaviour
         if (ClassData.hitClip != null) SoundFXManager.Instance.PlaySoundFXClip(ClassData.hitClip, transform, volume);
         if (SkillData.teleportFxPrefab != null) Instantiate(SkillData.teleportFxPrefab, transform.position, Quaternion.identity);
 
-        // ĐÃ SỬA: Đợi Animation thu dao hoàn tất
+        yield return StartCoroutine(WaitAnimationFinish());
+    }
+
+    // ── Summoner Skill ──
+    private IEnumerator SummonerSkillRoutine()
+    {
+        isUsingSkill = true;
+        var sm = movement.GetStateManager();
+        
+        // Bật Animation niệm chú của Summoner
+        sm.ChangeState(PlayerState.SummonerSkill); 
+
+        // Tìm Alicia đang đứng ở đâu trên màn hình
+        NPCCompanion alicia = FindObjectOfType<NPCCompanion>();
+
+        if (alicia != null && SkillData.summonerBulletPrefab != null)
+        {
+            if (ClassData.swingClip != null) SoundFXManager.Instance.PlaySoundFXClip(ClassData.swingClip, transform, volume);
+
+            Vector3 origin = alicia.transform.position; // Lấy tâm phát nổ là Alicia
+            int count = SkillData.summonerBulletCount;
+            int damage = GetCurrentDamage();
+            
+            // Nếu có nâng cấp Skill, tăng thêm số lượng đạn (Mỗi Tier + 4 viên)
+            for (int i = 0; i < currentUpgradeTier; i++) count += 4; 
+
+            float angleStep = 360f / count; // Chia đều góc 360 độ
+
+            // Bắn đạn tỏa ra xung quanh Alicia
+            for (int i = 0; i < count; i++)
+            {
+                float angle = i * angleStep;
+                float rad = angle * Mathf.Deg2Rad;
+                Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+
+                GameObject bullet = Instantiate(SkillData.summonerBulletPrefab, origin, Quaternion.identity);
+                CompanionProjectile projScript = bullet.GetComponent<CompanionProjectile>();
+                
+                if (projScript != null) 
+                {
+                    // Truyền sát thương của Player vào đạn. "false" = Không làm hại Player
+                    projScript.Setup(dir, damage, false); 
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Không tìm thấy Alicia hoặc chưa kéo Prefab đạn vào SkillData của Summoner!");
+            // Trả lại mana nếu bấm xịt (giống Rogue)
+            StatsManager.instance.currentMana += GetCurrentManaCost();
+            cooldownTimer = 0f;
+        }
+
+        // Đợi Animation niệm chú của Summoner xong mới cho di chuyển tiếp
         yield return StartCoroutine(WaitAnimationFinish());
     }
 }

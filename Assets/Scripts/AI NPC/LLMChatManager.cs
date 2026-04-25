@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 using System.Text.RegularExpressions;
 using System.IO;
 
-// JSON Structure for OpenAI API
+// Cấu trúc dữ liệu cho API
 [System.Serializable]
 public class OpenAiRequest
 {
@@ -37,17 +37,19 @@ public class Choice
 
 public class LLMChatManager : MonoBehaviour
 {
+    public static LLMChatManager Instance { get; private set; }
+
     [Header("API Connection")]
     public string apiUrl = "https://your-cloudflare-link.trycloudflare.com/v1/chat/completions";
 
-    [Header("UI References")]
+    [Header("UI References (Must be child of this object)")]
     public GameObject chatCanvas;
     public TMP_Text npcTextDisplay;
     public TMP_InputField playerInputField;
     public Button sendButton;
     public Button exitButton;
 
-    [Header("Game References")]
+    [Header("Game References (Auto-Assigned)")]
     public NPCCompanion aliciaScript;
     public PlayerMovement playerMovement;
     public PlayerAttack playerAttack;
@@ -55,77 +57,94 @@ public class LLMChatManager : MonoBehaviour
     [SerializeField] private List<ChatMessage> chatHistory = new List<ChatMessage>();
     private bool isChatting = false;
 
+    private void Awake()
+    {
+        // Cơ chế Singleton đảm bảo chỉ có 1 Manager tồn tại xuyên suốt các Scene
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void Start()
     {
         if (chatCanvas != null) chatCanvas.SetActive(false);
 
-        // Bind button events
         if (sendButton != null) sendButton.onClick.AddListener(OnSendClicked);
         if (exitButton != null) exitButton.onClick.AddListener(CloseChat);
-
-        // Bind Enter key event
         if (playerInputField != null) playerInputField.onSubmit.AddListener(delegate { OnSendClicked(); });
-
-        DontDestroyOnLoad(this.gameObject);
     }
 
     void Update()
     {
-        // Check for Escape key to close chat
+        // --- CƠ CHẾ AUTO-ASSIGN THÔNG MINH ---
+        // 1. Tự động tìm lại Alicia nếu bị mất liên kết (ví dụ khi chuyển Scene)
+        if (aliciaScript == null)
+        {
+            aliciaScript = FindObjectOfType<NPCCompanion>();
+        }
+
+        // 2. Tự động "bắt" Player từ Alicia (Cực kỳ chính xác vì Spawner đã nối dây sẵn cho Alicia)
+        if (aliciaScript != null && (playerMovement == null || playerAttack == null))
+        {
+            if (aliciaScript.playerTransform != null)
+            {
+                playerMovement = aliciaScript.playerTransform.GetComponent<PlayerMovement>();
+                playerAttack = aliciaScript.playerTransform.GetComponent<PlayerAttack>();
+                
+                if (playerMovement != null) 
+                {
+                    Debug.Log("<color=green>[LLM Manager]</color> Đã tự động nhận diện Player từ Alicia thành công!");
+                }
+            }
+            else 
+            {
+                // Fallback: Nếu Alicia chưa có Transform của Player, thử tìm theo Tag "Player"
+                GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+                if (playerObj != null)
+                {
+                    playerMovement = playerObj.GetComponent<PlayerMovement>();
+                    playerAttack = playerObj.GetComponent<PlayerAttack>();
+                }
+            }
+        }
+
+        // --- LOGIC XỬ LÝ PHÍM BẤM ---
         if (isChatting && Input.GetKeyDown(KeyCode.Escape))
         {
             CloseChat();
             return;
         }
 
-        // Ignore inputs if input field is focused
-        if (playerInputField != null && playerInputField.isFocused)
-        {
-            return;
-        }
+        if (playerInputField != null && playerInputField.isFocused) return;
 
-        // Tự động tìm Player nếu được spawn động (chưa được gán vào Inspector)
-        if (playerMovement == null)
+        // Chỉ kiểm tra nhấn E khi đã có đủ thông tin Alicia và Player để đo khoảng cách
+        if (!isChatting && Input.GetKeyDown(KeyCode.E) && aliciaScript != null && playerMovement != null)
         {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null)
+            float dist = Vector2.Distance(playerMovement.transform.position, aliciaScript.transform.position);
+            // Khoảng cách 2.5 khớp với thời điểm hiện Talk Icon trên đầu Alicia
+            if (dist <= 2.5f)
             {
-                playerMovement = playerObj.GetComponent<PlayerMovement>();
-                playerAttack = playerObj.GetComponent<PlayerAttack>();
-            }
-        }
-
-        // Check for interaction key to open chat
-        if (!isChatting && Input.GetKeyDown(KeyCode.E) && aliciaScript != null)
-        {
-            if (playerMovement != null)
-            {
-                float dist = Vector2.Distance(playerMovement.transform.position, aliciaScript.transform.position);
-                if (dist <= 2.5f)
-                {
-                    OpenChat();
-                }
+                OpenChat();
             }
         }
     }
 
     public void OpenChat()
     {
+        if (chatCanvas == null) return;
+
         isChatting = true;
         chatCanvas.SetActive(true);
 
-        // Disable player movement
+        // Khóa điều khiển nhân vật khi đang chat
         if (playerMovement != null) playerMovement.enabled = false;
-
-        // Disable player attack to prevent accidental clicks
-        if (playerAttack != null)
-        {
-            playerAttack.enabled = false;
-        }
-        else
-        {
-            Debug.LogError("<color=red>Missing PlayerAttack reference in the Inspector.</color>");
-        }
+        if (playerAttack != null) playerAttack.enabled = false;
 
         playerInputField.ActivateInputField();
         if (chatHistory.Count == 0) npcTextDisplay.text = "Alicia: Cậu cần gì sao?";
@@ -133,10 +152,12 @@ public class LLMChatManager : MonoBehaviour
 
     public void CloseChat()
     {
+        if (chatCanvas == null) return;
+
         isChatting = false;
         chatCanvas.SetActive(false);
 
-        // Re-enable player controls
+        // Mở lại điều khiển nhân vật
         if (playerMovement != null) playerMovement.enabled = true;
         if (playerAttack != null) playerAttack.enabled = true;
     }
@@ -155,12 +176,10 @@ public class LLMChatManager : MonoBehaviour
 
     IEnumerator SendToLLM(string userText)
     {
-        // Add user message to history
         chatHistory.Add(new ChatMessage { role = "user", content = userText });
         OpenAiRequest requestData = new OpenAiRequest();
 
-        // System prompt configuration
-        // Chèn tên Player từ GameSession vào Prompt để AI nhận diện
+        // Cấu hình tính cách cho AI
         string systemPrompt =
             $"You are Alicia, a female adventurer traveling with a player named {GameSession.PlayerName}. " +
             $"Current Relationship Score: {aliciaScript.relationshipScore} (-1000 to +1000). " +
@@ -169,11 +188,9 @@ public class LLMChatManager : MonoBehaviour
         requestData.messages.Add(new ChatMessage { role = "system", content = systemPrompt });
         requestData.messages.AddRange(chatHistory);
 
-        // Inject OOC command to enforce formatting
         string oocCommand = "\n\n(OOC: Respond in character. You MUST end your message with the exact tag [REL: X]. X is the relationship point change from -50 to 50. Even if nothing changes, write [REL: 0].)";
         requestData.messages[requestData.messages.Count - 1].content = userText + oocCommand;
 
-        // Serialize request to JSON
         string jsonData = JsonUtility.ToJson(requestData);
 
         using (UnityWebRequest request = new UnityWebRequest(apiUrl, "POST"))
@@ -190,24 +207,20 @@ public class LLMChatManager : MonoBehaviour
                 OpenAiResponse response = JsonUtility.FromJson<OpenAiResponse>(request.downloadHandler.text);
                 string aiRawText = response.choices[0].message.content.Trim();
 
-                Debug.Log($"<color=cyan>[RAW AI RESPONSE]</color> {aiRawText}");
-
                 string displayString = aiRawText;
                 string historyString = aiRawText;
 
-                // Parse relationship tag
+                // Xử lý điểm hảo cảm [REL: X]
                 Match match = Regex.Match(aiRawText, @"\[(?:REL|rel|Rel).*?([+-]?\d+)\]");
 
                 if (match.Success)
                 {
                     int relChange = int.Parse(match.Groups[1].Value);
                     aliciaScript.relationshipScore += relChange;
-                    Debug.Log($"<color=green>[System]</color> Relationship updated: {relChange}. Current score: {aliciaScript.relationshipScore}");
-
-                    // Nếu bị trừ hảo cảm VÀ tổng điểm rớt xuống <= -500 (Hoặc vốn dĩ đã dỗi)
+                    
                     if (relChange < 0 && aliciaScript.relationshipScore <= -500)
                     {
-                        aliciaScript.TriggerAngryState(); // Gọi AI phản công Player 5 giây
+                        aliciaScript.TriggerAngryState(); 
                         Debug.LogWarning("<color=red>[System]</color> Alicia nổi giận vì lời nói của bạn và đang tấn công!");
                     }
 
@@ -215,15 +228,15 @@ public class LLMChatManager : MonoBehaviour
                 }
                 else
                 {
-                    // Memory injection for missing tag
-                    Debug.LogWarning("<color=orange>[System]</color> Missing tag detected. Injecting [REL: 0] into history.");
                     displayString = aiRawText;
                     historyString = aiRawText + " [REL: 0]";
                 }
 
-                // Save to history and update UI
                 chatHistory.Add(new ChatMessage { role = "assistant", content = historyString });
                 npcTextDisplay.text = "Alicia: " + displayString;
+                
+                // Cập nhật lại UI sau khi điểm hảo cảm thay đổi
+                aliciaScript.UpdateRelationshipUI();
             }
             else
             {
@@ -233,9 +246,6 @@ public class LLMChatManager : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // DÀNH CHO SAVE MANAGER LẤY VÀ NẠP DỮ LIỆU
-    // ==========================================
     public List<ChatMessage> GetChatHistory() => chatHistory;
     
     public void SetChatHistory(List<ChatMessage> history) 

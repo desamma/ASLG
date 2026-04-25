@@ -28,5 +28,9 @@ public enum PlayerState
     ArcherSkill,
 
     [StateAnimator("isRogueSkill")]
-    RogueSkill
+    RogueSkill,
+
+    // ĐÃ THÊM: Trạng thái múa skill của Summoner
+    [StateAnimator("isSummonerSkill")]
+    SummonerSkill
 }
