@@ -160,9 +160,6 @@ MonoBehaviour:
   - {fileID: 8089928883051871313, guid: e7757fb21e260bc4c96c8b5341cdea26, type: 3}
   - {fileID: 8217960046450129111, guid: b02e301c95cfd8a46953fd032f13abbf, type: 3}
   - {fileID: 687891589065825552, guid: b879d7b94cedcdf41ab486c5e5e36695, type: 3}
-  lockArenaWhenPlayerEnters: 0
-  hideArenaBordersUntilLocked: 1
-  arenaBorders: []
   farmDropEntries:
   - itemID: con_health_potion
     dropRate: 0.3
@@ -37302,7 +37299,7 @@ Tilemap:
       - {fileID: 1145407303, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1368572362, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1285190508, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 43, y: -34, z: 0}
@@ -37437,7 +37434,7 @@ Tilemap:
       - {fileID: 680274100, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 907413992, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 34393759, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -19, y: -26, z: 0}
@@ -37737,7 +37734,7 @@ Tilemap:
       - {fileID: 680274100, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 907413992, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 34393759, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -19, y: -6, z: 0}
@@ -37767,7 +37764,7 @@ Tilemap:
       - {fileID: 680274100, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 907413992, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 34393759, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -19, y: -4, z: 0}
@@ -37947,7 +37944,7 @@ Tilemap:
       - {fileID: 680274100, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 907413992, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 34393759, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -19, y: 10, z: 0}
@@ -38172,7 +38169,7 @@ Tilemap:
       - {fileID: -206701831, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1448543681, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 228511767, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -10, y: 16, z: 0}
@@ -38352,7 +38349,7 @@ Tilemap:
       - {fileID: -206701831, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1448543681, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 228511767, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 2, y: 16, z: 0}
@@ -38427,7 +38424,7 @@ Tilemap:
       - {fileID: -206701831, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1448543681, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 228511767, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 7, y: 16, z: 0}
@@ -38472,7 +38469,7 @@ Tilemap:
       - {fileID: -206701831, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1448543681, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 228511767, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 10, y: 16, z: 0}
@@ -38652,7 +38649,7 @@ Tilemap:
       - {fileID: -206701831, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1448543681, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 228511767, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 22, y: 16, z: 0}
@@ -38937,7 +38934,7 @@ Tilemap:
       - {fileID: -206701831, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1448543681, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 228511767, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 41, y: 16, z: 0}
@@ -64324,9 +64321,6 @@ MonoBehaviour:
   - {fileID: 8089928883051871313, guid: e7757fb21e260bc4c96c8b5341cdea26, type: 3}
   - {fileID: 8217960046450129111, guid: b02e301c95cfd8a46953fd032f13abbf, type: 3}
   - {fileID: 687891589065825552, guid: b879d7b94cedcdf41ab486c5e5e36695, type: 3}
-  lockArenaWhenPlayerEnters: 0
-  hideArenaBordersUntilLocked: 1
-  arenaBorders: []
   farmDropEntries:
   - itemID: con_health_potion
     dropRate: 0.3

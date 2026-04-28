@@ -37,6 +37,8 @@ public class Enemy_KaraWinterblade_Health : MonoBehaviour, IEnemy_Health
             sharedHealth.InitHP(stats.MaxHP);
 
         sharedHealth.OnDeath += HandleDeath;
+        var bossBorder = FindAnyObjectByType<BossFightBorder>();
+        bossBorder.AddEnemy(gameObject);
     }
 
     private void OnDestroy()

@@ -40,6 +40,8 @@ public class Enemy_KaleosXaan_Health : MonoBehaviour, IEnemy_Health
             bossHealthUI.Initialize("Kaleos Xaan", stats.MaxHP, Color.white, Color.red, bottom);
             bossHealthUI.Show();
         }
+        var bossBorder = FindAnyObjectByType<BossFightBorder>();
+        bossBorder.AddEnemy(gameObject);
     }
 
     private void OnEnable()

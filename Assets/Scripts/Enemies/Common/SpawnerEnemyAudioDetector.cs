@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Reflection;
 
 [DisallowMultipleComponent]
 public class SpawnerEnemyAudioDetector : MonoBehaviour
@@ -26,43 +25,14 @@ public class SpawnerEnemyAudioDetector : MonoBehaviour
 
     private bool IsEnemyInCombatState()
     {
-        // Get all components that might have a StateManager
         var components = GetComponents<MonoBehaviour>();
-        
-        foreach (var component in components)
+
+        foreach (var behaviour in components)
         {
-            if (component == null) continue;
-
-            // Look for GetStateManager method
-            var method = component.GetType().GetMethod("GetStateManager",  BindingFlags.Public | BindingFlags.Instance);
-
-            if (method == null) continue;
-
-            object stateManager = method.Invoke(component, null);
-            if (stateManager == null) continue;
-
-            // Get the current state from the StateManager
-            var currentStateProperty = stateManager.GetType().GetProperty("CurrentState",
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-
-            if (currentStateProperty != null)
-            {
-                object currentState = currentStateProperty.GetValue(stateManager);
-                if (currentState != null)
-                {
-                    string stateName = currentState.ToString();
-                    
-                    // Check for common combat state names
-                    if (stateName.Contains("Chase") || 
-                        stateName.Contains("Attack") || 
-                        stateName.Contains("Cast"))
-                    {
-                        return true;
-                    }
-                }
-            }
+            if (behaviour is IEnemyMovementContext component)
+                return component.IsInAnyAttackState();
         }
 
         return false;
     }
-}
+} 

@@ -235,7 +235,13 @@ public class EnemyAreaSpawner : MonoBehaviour
 
         if (isPlayerInDetectionRange && !_playerWasInDetectionRange)
         {
-            // Player entered detection range
+            // Player entered detection range - reset audio trigger so it can play when enemy detects
+            _audioTriggeredByEnemy = false;
+        }
+        else if (!isPlayerInDetectionRange && _playerWasInDetectionRange)
+        {
+            //_spawnedAllPrefabsOnce = false;
+            _audioTriggeredByEnemy = false;
         }
 
         _playerWasInDetectionRange = isPlayerInDetectionRange;

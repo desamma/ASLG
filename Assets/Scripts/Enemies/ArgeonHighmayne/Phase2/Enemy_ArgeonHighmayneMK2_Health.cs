@@ -35,6 +35,8 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
             bossHealthUI.Initialize("Argeon Highmayne", stats.MaxHP, Color.yellow, Color.red, Color.white);
             bossHealthUI.Show();
         }
+        var bossBorder = FindAnyObjectByType<BossFightBorder>();
+        bossBorder.AddEnemy(gameObject);
     }
 
     private void OnEnable()

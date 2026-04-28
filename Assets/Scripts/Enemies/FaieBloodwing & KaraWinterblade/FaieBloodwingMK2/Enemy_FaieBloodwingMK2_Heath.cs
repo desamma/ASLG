@@ -38,6 +38,8 @@ public class Enemy_FaieBloodwingMK2_Health : MonoBehaviour, IEnemy_Health
         statusEffectManager = GetComponent<StatusEffectManager>();
 
         sharedHealth.OnDeath += HandleDeath;
+        var bossBorder = FindAnyObjectByType<BossFightBorder>();
+        bossBorder.AddEnemy(gameObject);
     }
 
     private void OnDestroy()

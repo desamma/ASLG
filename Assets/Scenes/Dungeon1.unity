@@ -488,9 +488,6 @@ MonoBehaviour:
   - {fileID: 5729182800678616739, guid: b2c1fb0f7060d1c45b7dd4de0beb2751, type: 3}
   - {fileID: 3831566749463287279, guid: 8df13e59a3bfc734db16e7ef4edd0028, type: 3}
   - {fileID: 2951733918824199701, guid: 9275748acf3b75140a21f5220893cabb, type: 3}
-  lockArenaWhenPlayerEnters: 0
-  hideArenaBordersUntilLocked: 1
-  arenaBorders: []
   farmDropEntries:
   - itemID: con_health_potion
     dropRate: 0.4
@@ -500,7 +497,7 @@ MonoBehaviour:
   mapMusic: {fileID: 0}
   changeMapMusicOnDetection: 1
   onDetectionAudioClip: {fileID: 8300000, guid: f957f7f7c8c86754a913274d7cd92db9, type: 3}
-  onDetectionAudioVolume: 1
+  onDetectionAudioVolume: 0.3
 --- !u!4 &128222844
 Transform:
   m_ObjectHideFlags: 0
@@ -15172,9 +15169,6 @@ MonoBehaviour:
   - {fileID: 5729182800678616739, guid: b2c1fb0f7060d1c45b7dd4de0beb2751, type: 3}
   - {fileID: 3831566749463287279, guid: 8df13e59a3bfc734db16e7ef4edd0028, type: 3}
   - {fileID: 2951733918824199701, guid: 9275748acf3b75140a21f5220893cabb, type: 3}
-  lockArenaWhenPlayerEnters: 0
-  hideArenaBordersUntilLocked: 1
-  arenaBorders: []
   farmDropEntries:
   - itemID: con_health_potion
     dropRate: 0.4
@@ -15184,7 +15178,7 @@ MonoBehaviour:
   mapMusic: {fileID: 0}
   changeMapMusicOnDetection: 1
   onDetectionAudioClip: {fileID: 8300000, guid: f957f7f7c8c86754a913274d7cd92db9, type: 3}
-  onDetectionAudioVolume: 1
+  onDetectionAudioVolume: 0.3
 --- !u!4 &832239889
 Transform:
   m_ObjectHideFlags: 0
@@ -111244,8 +111238,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultAudioClip: {fileID: 8300000, guid: 43ebf65f94cb2a544966d0e828a5fdcf, type: 3}
   onPlayingAudioClip: {fileID: 0}
-  defaultVolume: 0.8
-  onPlayingVolume: 0.776
+  defaultVolume: 0.7
+  onPlayingVolume: 0.3
   fadeOutDuration: 0.5
   fadeInDuration: 0.5
   persistAcrossScenes: 1
