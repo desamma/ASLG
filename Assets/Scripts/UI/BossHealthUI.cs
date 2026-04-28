@@ -41,10 +41,6 @@ public class BossHealthUI : MonoBehaviour
 
     #region Overloads initialize
 
-    private void Start()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
     public void Initialize(string name, float maxHealth)
     {
         Setup(name, maxHealth);

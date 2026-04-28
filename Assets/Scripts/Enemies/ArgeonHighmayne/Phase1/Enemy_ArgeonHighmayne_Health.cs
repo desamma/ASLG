@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// ArgeonHighmayne enemy Stats and Health
@@ -34,6 +35,8 @@ public class Enemy_ArgeonHighmayne_Health : MonoBehaviour, IEnemy_Health
             bossHealthUI.Initialize("Argeon Highmayne", stats.MaxHP);
             bossHealthUI.Show();
         }
+        var bossBorder = FindAnyObjectByType<BossFightBorder>();
+        bossBorder.AddEnemy(gameObject);
     }
 
     private void OnEnable()

@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Place this on a Canvas UI GameObject below the health bar. <para/>
@@ -48,6 +48,17 @@ public class StatusEffectHUD : MonoBehaviour
     {
         if (_slots.TryGetValue(active.InstanceKey, out var slot))
             slot.OnRefresh();
+    }
+
+    public void Clear()
+    {
+        foreach (var slot in _slots.Values)
+        {
+            if (slot != null)
+                Destroy(slot.gameObject);
+        }
+
+        _slots.Clear();
     }
 
     private void ReorderSlots()

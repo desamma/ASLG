@@ -58,15 +58,15 @@ public class Enemy_Okkadok_Health : MonoBehaviour, IEnemy_Health
         {
             stats.CurrentHP = 0;
             isDead = true;
-            StatsManager.instance?.AddExp(Mathf.RoundToInt(stats.ExpReward));
-            StatsManager.instance?.AddGold(Mathf.RoundToInt(stats.GoldReward));
+            StatsManager.instance.AddExp(Mathf.RoundToInt(stats.ExpReward));
+            StatsManager.instance.AddGold(Mathf.RoundToInt(stats.GoldReward));
 
             if (movementComponent != null)
             {
                 var manager = movementComponent.GetStateManager();
                 manager.ChangeState(Enemy_Okkadok_State.Death);
             }
-            return;
+            Destroy(gameObject, 2f);
         }
     }
 

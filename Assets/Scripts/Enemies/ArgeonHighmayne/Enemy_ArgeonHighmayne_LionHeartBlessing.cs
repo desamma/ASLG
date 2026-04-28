@@ -40,10 +40,13 @@ public class Enemy_ArgeonHighmayne_LionHeartBlessing : MonoBehaviour
             var spawnPosition = new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, transform.position.z);
 
             var phase2Boss = Instantiate(argeonHighmayne, spawnPosition, Quaternion.identity);
-            if (phase2Boss != null)
-            {
-                sourceDropHandler.TransferTo(phase2Boss);
-            }
+            //if (phase2Boss != null)
+            //{
+            //    if (sourceDropHandler != null)
+            //    {
+            //        sourceDropHandler.TransferTo(phase2Boss);
+            //    }
+            //}
         }
         else
         {
@@ -51,11 +54,14 @@ public class Enemy_ArgeonHighmayne_LionHeartBlessing : MonoBehaviour
             float yOffset = -2f;
             var spawnPosition = new Vector3(transform.position.x + xOffset, transform.position.y + yOffset, transform.position.z);
 
-            var phase2Boss = Instantiate(argeonHighmayne, spawnPosition, Quaternion.identity);
-            if (phase2Boss != null)
-            {
-                sourceDropHandler.TransferTo(phase2Boss);
-            }
+            var phase1Boss = Instantiate(argeonHighmayne, spawnPosition, Quaternion.identity);
+            //if (phase1Boss != null)
+            //{
+            //    if (sourceDropHandler != null)
+            //    {
+            //        sourceDropHandler.TransferTo(phase1Boss);
+            //    }
+            //}
         }
     }
 

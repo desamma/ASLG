@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using Cinemachine;
+﻿using Cinemachine;
+using UnityEngine;
 
 [System.Serializable]
 public class SpawnEntry
@@ -44,6 +44,16 @@ public class PlayerSpawner : MonoBehaviour
         return defaultSpawnPoint;
     }
 
+    private void ClearStatusEffectHud()
+    {
+        var huds = FindObjectsOfType<StatusEffectHUD>();
+        for (int i = 0; i < huds.Length; i++)
+        {
+            if (huds[i] != null)
+                huds[i].Clear();
+        }
+    }
+
     private void SpawnPlayer()
     {
         var data = ClassManager.Instance.CurrentClassData;
@@ -56,6 +66,8 @@ public class PlayerSpawner : MonoBehaviour
         var player = Instantiate(data.playerPrefab, pos, Quaternion.identity);
 
         Debug.Log($"[PlayerSpawner] Spawned {data.playerClass} at {pos}.");
+
+        ClearStatusEffectHud();
 
         if (WorldMapManager.Instance != null && !string.IsNullOrWhiteSpace(arrivalZoneName))
             WorldMapManager.Instance.SetCurrentZone(arrivalZoneName);
