@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -6,8 +5,7 @@ public class QuestLogUI : MonoBehaviour
 {
     [SerializeField] private QuestManager questManager;
 
-    [Header("UI Của Màn Hình Chi Tiết (Bên Phải)")]
-    [Header("Icons cho Gold & Exp")]
+    [Header("Reward Icons")]
     [SerializeField] private Sprite goldIcon;
     [SerializeField] private Sprite expIcon;
 
@@ -16,121 +14,127 @@ public class QuestLogUI : MonoBehaviour
     [SerializeField] private QuestObjectiveSlot[] objectiveSlots;
     [SerializeField] private QuestRewardSlot[] rewardSlots;
 
-    private QuestSO questSO;
-
-    [Header("Danh Sách Các Nút Quest Đang Làm (Bên Trái)")]
+    [Header("Quest List")]
     [SerializeField] private QuestLogSlot[] questSlots;
 
-    [Header("Các Cụm UI Canvas (Bật/Tắt)")]
+    [Header("Canvas Groups")]
     [SerializeField] private CanvasGroup questCanvas;
     [SerializeField] private CanvasGroup acceptCanvas;
     [SerializeField] private CanvasGroup declineCanvas;
     [SerializeField] private CanvasGroup completeCanvas;
 
+    private QuestSO questSO;
+
+    public bool IsOpen => questCanvas != null && questCanvas.alpha > 0f;
+
     private void Start()
     {
         if (questManager != null)
-        {
             questManager.OnQuestProgressUpdated += RefreshCurrentQuestDisplay;
-        }
     }
 
     private void OnDestroy()
     {
         if (questManager != null)
-        {
             questManager.OnQuestProgressUpdated -= RefreshCurrentQuestDisplay;
-        }
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.J))
-        {
             ToggleQuestUI();
-        }
     }
 
     public void ToggleQuestUI()
     {
-        if (questCanvas == null) return;
+        SetOpen(!IsOpen);
+    }
 
-        bool isShowing = questCanvas.alpha > 0;
+    public void Toggle()
+    {
+        ToggleQuestUI();
+    }
 
-        if (isShowing)
+    public void Open()
+    {
+        SetOpen(true);
+    }
+
+    public void Close()
+    {
+        SetOpen(false);
+    }
+
+    public void SetOpen(bool visible)
+    {
+        if (questCanvas == null)
+            return;
+
+        if (!visible)
         {
             SetCanvasState(questCanvas, false);
+            return;
         }
-        else
+
+        SetCanvasState(questCanvas, true);
+
+        foreach (var slot in questSlots)
         {
-            SetCanvasState(questCanvas, true);
-            
-            // Khi mở bảng lên, tự động click vào nhiệm vụ đầu tiên còn tồn tại để hiển thị
-            foreach (var slot in questSlots)
+            if (slot.gameObject.activeSelf && slot.currentQuest != null)
             {
-                if (slot.gameObject.activeSelf && slot.currentQuest != null)
-                {
-                    OnQuestSlotClicked(slot.currentQuest);
-                    return;
-                }
+                OnQuestSlotClicked(slot.currentQuest);
+                return;
             }
-            ClearRightPanel();
         }
+
+        ClearRightPanel();
     }
 
     public void OnQuestSlotClicked(QuestSO clickedQuestSO)
     {
-        if (clickedQuestSO == null) return;
-        
-        HandleQuestClick(clickedQuestSO); 
+        if (clickedQuestSO == null || questManager == null)
+            return;
 
-        // Kiểm tra xem Quest này đã được bấm Accept trước đó chưa
+        HandleQuestClick(clickedQuestSO);
+
         bool isAccepted = questManager.activeQuests.Contains(clickedQuestSO);
         bool isComplete = IsQuestComplete(clickedQuestSO);
 
         if (!isAccepted)
         {
-            // CHƯA NHẬN: Hiện Accept để người chơi chọn, hiện Decline để từ chối không làm
             SetCanvasState(acceptCanvas, true);
             SetCanvasState(declineCanvas, true);
             SetCanvasState(completeCanvas, false);
         }
-        else 
+        else
         {
-            // ĐÃ NHẬN: Ẩn Accept, hiện Decline để hủy, hiện Complete nếu đã đánh xong quái
             SetCanvasState(acceptCanvas, false);
-            SetCanvasState(declineCanvas, true); 
+            SetCanvasState(declineCanvas, true);
             SetCanvasState(completeCanvas, isComplete);
         }
     }
 
     public void OnAcceptQuestClick()
     {
-        if (questManager == null || questSO == null) return;
+        if (questManager == null || questSO == null)
+            return;
 
-        // Bấm Accept -> Ghi vào Manager
         questManager.AcceptQuest(questSO);
-        
-        // Ẩn nút Accept đi, kiểm tra xem xong chưa để mở nút Complete
         SetCanvasState(acceptCanvas, false);
         SetCanvasState(completeCanvas, IsQuestComplete(questSO));
     }
 
     public void OnDeclineQuestClick()
     {
-        if (questManager == null || questSO == null) return;
+        if (questManager == null || questSO == null)
+            return;
 
-        // Nếu đã lỡ Accept rồi thì Hủy (Abandon) khỏi Manager
         if (questManager.activeQuests.Contains(questSO))
-        {
             questManager.AbandonQuest(questSO);
-        }
 
-        // Dù đã nhận hay chưa nhận, bấm Decline là xóa luôn khỏi Bảng
         RemoveQuestFromUI(questSO);
         ClearRightPanel();
 
-        // Mở thông tin của Quest tiếp theo (nếu còn)
         foreach (var slot in questSlots)
         {
             if (slot.gameObject.activeSelf && slot.currentQuest != null)
@@ -143,17 +147,13 @@ public class QuestLogUI : MonoBehaviour
 
     public void OnCompleteQuestClick()
     {
-        if (questManager == null || questSO == null) return;
-
-        if (!IsQuestComplete(questSO)) return;
+        if (questManager == null || questSO == null || !IsQuestComplete(questSO))
+            return;
 
         questManager.CompleteQuest(questSO);
-        
-        // Xong rồi thì xóa khỏi bảng luôn
         RemoveQuestFromUI(questSO);
         ClearRightPanel();
 
-        // Mở thông tin của Quest tiếp theo (nếu còn)
         foreach (var slot in questSlots)
         {
             if (slot.gameObject.activeSelf && slot.currentQuest != null)
@@ -166,9 +166,10 @@ public class QuestLogUI : MonoBehaviour
 
     private void HandleQuestClick(QuestSO targetQuestSO)
     {
-        if (targetQuestSO == null) return;
+        if (targetQuestSO == null)
+            return;
 
-        this.questSO = targetQuestSO;
+        questSO = targetQuestSO;
         questNameText.text = questSO.questName;
         questDescriptionText.text = questSO.questDescription;
 
@@ -178,16 +179,16 @@ public class QuestLogUI : MonoBehaviour
 
     private void RefreshCurrentQuestDisplay()
     {
-        if (questCanvas != null && questCanvas.alpha > 0 && questSO != null)
+        if (!IsOpen || questSO == null)
+            return;
+
+        DisplayObjectives();
+
+        if (completeCanvas != null && IsQuestComplete(questSO))
         {
-            DisplayObjectives();
-            
-            if (completeCanvas != null && IsQuestComplete(questSO))
-            {
-                SetCanvasState(acceptCanvas, false);
-                SetCanvasState(declineCanvas, true); 
-                SetCanvasState(completeCanvas, true);
-            }
+            SetCanvasState(acceptCanvas, false);
+            SetCanvasState(declineCanvas, true);
+            SetCanvasState(completeCanvas, true);
         }
     }
 
@@ -195,11 +196,23 @@ public class QuestLogUI : MonoBehaviour
     {
         questSO = null;
 
-        if (questNameText != null) questNameText.text = "NO QUEST SELECTED";
-        if (questDescriptionText != null) questDescriptionText.text = "";
+        if (questNameText != null)
+            questNameText.text = "NO QUEST SELECTED";
 
-        foreach (var slot in objectiveSlots) { if (slot != null) slot.gameObject.SetActive(false); }
-        foreach (var slot in rewardSlots) { if (slot != null) slot.gameObject.SetActive(false); }
+        if (questDescriptionText != null)
+            questDescriptionText.text = string.Empty;
+
+        foreach (var slot in objectiveSlots)
+        {
+            if (slot != null)
+                slot.gameObject.SetActive(false);
+        }
+
+        foreach (var slot in rewardSlots)
+        {
+            if (slot != null)
+                slot.gameObject.SetActive(false);
+        }
 
         SetCanvasState(acceptCanvas, false);
         SetCanvasState(declineCanvas, false);
@@ -208,7 +221,8 @@ public class QuestLogUI : MonoBehaviour
 
     private void DisplayObjectives()
     {
-        if (questSO == null || objectiveSlots == null || questManager == null) return;
+        if (questSO == null || objectiveSlots == null || questManager == null)
+            return;
 
         for (int i = 0; i < objectiveSlots.Length; i++)
         {
@@ -225,17 +239,17 @@ public class QuestLogUI : MonoBehaviour
                     objectiveSlots[i].RefreshObjectives(objective.description, progress, isCompleted);
                 }
             }
-            else
+            else if (objectiveSlots[i] != null)
             {
-                if (objectiveSlots[i] != null)
-                    objectiveSlots[i].gameObject.SetActive(false);
+                objectiveSlots[i].gameObject.SetActive(false);
             }
         }
     }
 
     private void DisplayRewards()
     {
-        if (questSO == null || rewardSlots == null) return;
+        if (questSO == null || rewardSlots == null)
+            return;
 
         int currentSlotIndex = 0;
 
@@ -243,7 +257,7 @@ public class QuestLogUI : MonoBehaviour
         {
             rewardSlots[currentSlotIndex].gameObject.SetActive(true);
             rewardSlots[currentSlotIndex].DisplayReward(goldIcon, questSO.rewardGold);
-            currentSlotIndex++; 
+            currentSlotIndex++;
         }
 
         if (questSO.rewardExp > 0 && currentSlotIndex < rewardSlots.Length)
@@ -255,21 +269,21 @@ public class QuestLogUI : MonoBehaviour
 
         for (int i = 0; i < questSO.rewards.Count; i++)
         {
-            if (currentSlotIndex >= rewardSlots.Length) break; 
+            if (currentSlotIndex >= rewardSlots.Length)
+                break;
 
             var reward = questSO.rewards[i];
             rewardSlots[currentSlotIndex].gameObject.SetActive(true);
 
-            Sprite iconToDisplay = null;
-
+            Sprite iconToDisplay;
             if (reward.isRandomItem || string.IsNullOrEmpty(reward.itemID))
             {
-                iconToDisplay = Resources.Load<Sprite>("Icons/missing_icon"); 
+                iconToDisplay = Resources.Load<Sprite>("Icons/missing_icon");
             }
             else
             {
                 ItemDefinition itemDef = ItemDatabase.GetItem(reward.itemID);
-                iconToDisplay = (itemDef != null) ? itemDef.GetIcon() : null;
+                iconToDisplay = itemDef?.GetIcon();
             }
 
             rewardSlots[currentSlotIndex].DisplayReward(iconToDisplay, reward.quantity);
@@ -285,27 +299,33 @@ public class QuestLogUI : MonoBehaviour
 
     private bool IsQuestComplete(QuestSO quest)
     {
-        if (quest == null || questManager == null) return false;
+        if (quest == null || questManager == null)
+            return false;
 
         foreach (var objective in quest.questObjectives)
         {
             if (questManager.GetCurrentAmount(quest, objective) < objective.requiredAmount)
                 return false;
         }
+
         return true;
     }
 
     private void SetCanvasState(CanvasGroup canvasGroup, bool state)
     {
-        if (canvasGroup == null) return;
-        canvasGroup.alpha = state ? 1 : 0;
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.alpha = state ? 1f : 0f;
         canvasGroup.blocksRaycasts = state;
         canvasGroup.interactable = state;
     }
 
     private void RemoveQuestFromUI(QuestSO quest)
     {
-        if (quest == null || questSlots == null) return;
+        if (quest == null || questSlots == null)
+            return;
+
         foreach (var slot in questSlots)
         {
             if (slot != null && slot.currentQuest == quest)

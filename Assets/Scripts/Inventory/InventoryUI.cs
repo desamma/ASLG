@@ -34,6 +34,8 @@ public class InventoryUI : MonoBehaviour
     private List<GameObject> spawnedSlots = new List<GameObject>();
     private ItemStack selectedStack;
 
+    public bool IsOpen => isOpen;
+
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -63,9 +65,30 @@ public class InventoryUI : MonoBehaviour
 
     public void Toggle()
     {
-        isOpen = !isOpen;
+        SetOpen(!isOpen);
+    }
+
+    public void Open()
+    {
+        SetOpen(true);
+    }
+
+    public void Close()
+    {
+        SetOpen(false);
+    }
+
+    public void SetOpen(bool visible)
+    {
+        isOpen = visible;
         SetCanvas(inventoryCanvasGroup, isOpen);
-        if (isOpen) { currentPage = 0; RenderPage(); ShowEmptyPreview(); }
+
+        if (isOpen)
+        {
+            currentPage = 0;
+            RenderPage();
+            ShowEmptyPreview();
+        }
     }
 
     private void SpawnSlots()
@@ -78,13 +101,13 @@ public class InventoryUI : MonoBehaviour
     private void RenderPage()
     {
         if (!isOpen || InventoryManager.instance == null) return;
-        
+
         List<ItemStack> bag = InventoryManager.instance.bagItems;
 
         int total = Mathf.Max(1, Mathf.CeilToInt((float)bag.Count / slotsPerPage));
         currentPage = Mathf.Clamp(currentPage, 0, total - 1);
         txt_pageIndicator?.SetText($"{currentPage + 1} / {total}");
-        
+
         btn_prevPage?.gameObject.SetActive(currentPage > 0);
         btn_nextPage?.gameObject.SetActive(currentPage < total - 1);
 
@@ -93,7 +116,7 @@ public class InventoryUI : MonoBehaviour
         {
             ItemSlot slot = spawnedSlots[i].GetComponent<ItemSlot>();
             int idx = start + i;
-            
+
             if (idx < bag.Count)
             {
                 ItemStack stack = bag[idx];
@@ -101,7 +124,7 @@ public class InventoryUI : MonoBehaviour
             }
             else slot.SetEmpty();
         }
-        
+
         // Refresh lại Preview nếu món đồ đang chọn bị dùng hoặc trang bị
         if (selectedStack != null) ShowPreview(selectedStack);
     }
@@ -120,17 +143,17 @@ public class InventoryUI : MonoBehaviour
         emptyHint?.SetActive(false);
         previewContent?.SetActive(true);
 
-        if (img_previewIcon) 
-        { 
+        if (img_previewIcon)
+        {
             Sprite s = def.GetIcon();
-            img_previewIcon.sprite = s; 
-            img_previewIcon.enabled = (s != null); 
+            img_previewIcon.sprite = s;
+            img_previewIcon.enabled = (s != null);
         }
-        
+
         txt_previewName?.SetText(def.name);
-        
+
         if (txt_previewRarity) { txt_previewRarity.SetText(def.rarity.ToUpper()); }
-        
+
         if (txt_previewType)
         {
             string typeLabel = def.itemType switch
@@ -154,7 +177,7 @@ public class InventoryUI : MonoBehaviour
         {
             btn_equip.gameObject.SetActive(true);
             var btnText = btn_equip.GetComponentInChildren<TextMeshProUGUI>();
-            
+
             if (def.itemType == "Consumable") btnText.text = "USE";
             else if (def.itemType == "Weapon" || def.itemType == "Armor" || def.itemType == "Accessory")
             {
@@ -188,10 +211,10 @@ public class InventoryUI : MonoBehaviour
     public void DropSelected()
     {
         if (selectedStack == null) return;
-        
+
         // Tháo đồ trước khi vứt (nếu đang mặc)
         if (InventoryManager.instance.IsEquipped(selectedStack.itemID))
-            InventoryManager.instance.ToggleEquip(selectedStack.itemID); 
+            InventoryManager.instance.ToggleEquip(selectedStack.itemID);
 
         InventoryManager.instance.RemoveBagItem(selectedStack);
         ShowEmptyPreview();
