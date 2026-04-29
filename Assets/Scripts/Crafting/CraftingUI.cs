@@ -70,6 +70,8 @@ public class CraftingUI : MonoBehaviour
     private CanvasGroup craftingCanvasGroup;
     private bool craftingOpen = false;
 
+    public bool IsOpen => craftingOpen;
+
     private void Start()
     {
         if (EventSystem.current == null)
@@ -132,11 +134,7 @@ public class CraftingUI : MonoBehaviour
     {
         if (Input.GetButtonDown("Crafting"))
         {
-            craftingOpen = !craftingOpen;
-            craftingCanvasGroup.alpha = craftingOpen ? 1f : 0f;
-            craftingCanvasGroup.interactable = craftingOpen;
-            craftingCanvasGroup.blocksRaycasts = craftingOpen;
-            Time.timeScale = craftingOpen ? 0f : 1f;
+            Toggle();
         }
     }
 
@@ -498,4 +496,35 @@ public class CraftingUI : MonoBehaviour
         ItemRarity.Legendary => colorLegendary,
         _ => Color.white
     };
+
+    public void Toggle()
+    {
+        SetOpen(!craftingOpen);
+    }
+
+    public void Open()
+    {
+        SetOpen(true);
+    }
+
+    public void Close()
+    {
+        SetOpen(false);
+    }
+
+    public void SetOpen(bool visible)
+    {
+        craftingOpen = visible;
+
+        if (craftingCanvasGroup == null)
+            craftingCanvasGroup = GetComponentInParent<CanvasGroup>();
+
+        if (craftingCanvasGroup == null)
+            return;
+
+        craftingCanvasGroup.alpha = craftingOpen ? 1f : 0f;
+        craftingCanvasGroup.interactable = craftingOpen;
+        craftingCanvasGroup.blocksRaycasts = craftingOpen;
+        Time.timeScale = craftingOpen ? 0f : 1f;
+    }
 }

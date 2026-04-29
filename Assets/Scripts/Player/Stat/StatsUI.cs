@@ -17,6 +17,8 @@ public class StatsUI : MonoBehaviour
 
     private bool statOpen = false;
 
+    public bool IsOpen => statOpen;
+
     private void Start()
     {
         if (StatsManager.instance != null)
@@ -40,10 +42,7 @@ public class StatsUI : MonoBehaviour
     {
         if (Input.GetButtonDown("ToggleStats"))
         {
-            statOpen = !statOpen;
-            if (statOpen) RefreshUI();
-            SetCanvasVisible(statOpen);
-            Time.timeScale = statOpen ? 0f : 1f;
+            Toggle();
         }
     }
 
@@ -71,5 +70,31 @@ public class StatsUI : MonoBehaviour
     private static void SetText(TextMeshProUGUI label, string value)
     {
         if (label != null) label.text = value;
+    }
+
+    public void Toggle()
+    {
+        SetOpen(!statOpen);
+    }
+
+    public void Open()
+    {
+        SetOpen(true);
+    }
+
+    public void Close()
+    {
+        SetOpen(false);
+    }
+
+    public void SetOpen(bool visible)
+    {
+        statOpen = visible;
+
+        if (statOpen)
+            RefreshUI();
+
+        SetCanvasVisible(statOpen);
+        Time.timeScale = statOpen ? 0f : 1f;
     }
 }

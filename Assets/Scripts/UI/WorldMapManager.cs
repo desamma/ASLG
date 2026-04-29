@@ -45,6 +45,8 @@ public class WorldMapManager : MonoBehaviour
 
     private bool isTeleportMode = false; // MỚI: Cờ đánh dấu đang mở bằng Tế đàn
 
+    public bool IsMapOpen => isMapOpen;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -144,7 +146,22 @@ public class WorldMapManager : MonoBehaviour
 
     public void ToggleMap()
     {
-        isMapOpen = !isMapOpen;
+        SetMapOpen(!isMapOpen);
+    }
+
+    public void OpenMap()
+    {
+        SetMapOpen(true);
+    }
+
+    public void CloseMap()
+    {
+        SetMapOpen(false);
+    }
+
+    public void SetMapOpen(bool visible)
+    {
+        isMapOpen = visible;
 
         // MỚI: Xử lý tắt chế độ Teleport và mở khóa di chuyển khi đóng Map
         if (!isMapOpen) 
