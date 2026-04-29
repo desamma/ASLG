@@ -1,6 +1,5 @@
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
 
 public class OfflineToggle : MonoBehaviour
 {
@@ -8,16 +7,25 @@ public class OfflineToggle : MonoBehaviour
     public Color offlineColor = Color.green;
     public Color onlineColor = Color.white;
 
+    private void OnEnable()
+    {
+        RefreshVisualState();
+    }
+
     public void ToggleOfflineMode()
     {
-        GameSettings.IsOfflineMode = !GameSettings.IsOfflineMode;
-        
-        if (buttonText != null)
+        GameSettings.SetOfflineMode(!GameSettings.IsOfflineMode);
+        RefreshVisualState();
+    }
+
+    private void RefreshVisualState()
+    {
+        if (buttonText == null)
         {
-            buttonText.text = GameSettings.IsOfflineMode ? "MODE: OFFLINE" : "MODE: ONLINE";
-            buttonText.color = GameSettings.IsOfflineMode ? offlineColor : onlineColor;
+            return;
         }
 
-        Debug.Log($"<color=yellow>[System]</color> Chế độ Offline: {GameSettings.IsOfflineMode}");
+        buttonText.text = GameSettings.IsOfflineMode ? "MODE: OFFLINE" : "MODE: ONLINE";
+        buttonText.color = GameSettings.IsOfflineMode ? offlineColor : onlineColor;
     }
 }

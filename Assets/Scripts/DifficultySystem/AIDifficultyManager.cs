@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 public class AIDifficultyManager : MonoBehaviour
 {
     public static AIDifficultyManager Instance { get; private set; }
+    [SerializeField] private bool enableOnlineActivity = true;
 
     [Header("Network Fallback System (Inspector)")]
     public List<string> geminiApiKeys = new List<string>();
@@ -23,6 +24,7 @@ public class AIDifficultyManager : MonoBehaviour
 
     private bool isEvaluating = false;
     private const string ULTIMATE_GEMINI_KEY = "AIzaSyCP-sVakxDa3dlNnST4Frl-dVEtxQAxEmI";
+    private bool UseOfflineEvaluation => GameSettings.IsOfflineMode || !enableOnlineActivity;
 
     private void Awake()
     {
@@ -59,7 +61,7 @@ public class AIDifficultyManager : MonoBehaviour
         string aiResponse = null;
 
         // KIỂM TRA CHẾ ĐỘ OFFLINE
-        if (GameSettings.IsOfflineMode)
+        if (UseOfflineEvaluation)
         {
             Debug.Log("<color=cyan>[AI Director]</color> Đang dùng thuật toán Offline...");
             yield return new WaitForSeconds(1f); // Giả lập độ trễ

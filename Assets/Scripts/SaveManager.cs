@@ -99,6 +99,7 @@ public class SaveManager : MonoBehaviour
     [SerializeField] private string cloudSaveFolderPath = "userSaveFile";
     [SerializeField] private string userItemPendingDeliveryApi = "/api/UserItem/pending-delivery";
     [SerializeField] private string userItemAcknowledgeDeliveryApi = "/api/UserItem/acknowledge-delivery";
+    private bool IsOnlineActivityEnabled => enableOnlineActivity && !GameSettings.IsOfflineMode;
 
     private bool _isCloudSaving;
     private bool _isSaving;
@@ -192,7 +193,7 @@ public class SaveManager : MonoBehaviour
     public static void OnLogin()
     {
         if (Instance._isSaving) return;
-        if (!HasSaveFile() && Instance.enableOnlineActivity)
+        if (!HasSaveFile() && Instance.IsOnlineActivityEnabled)
         {
             Instance.StartCoroutine(Instance.GetSaveFileFromWeb());
         }
@@ -202,7 +203,7 @@ public class SaveManager : MonoBehaviour
     {
         _isSaving = true;
 
-        if (!HasSaveFile() && enableOnlineActivity)
+        if (!HasSaveFile() && IsOnlineActivityEnabled)
         {
             yield return TryRestoreSaveFromCloudRoutine();
         }
@@ -229,7 +230,7 @@ public class SaveManager : MonoBehaviour
             yield break;
         }
 
-        if (!HasSaveFile() && enableOnlineActivity)
+        if (!HasSaveFile() && IsOnlineActivityEnabled)
         {
             yield return TryRestoreSaveFromCloudRoutine();
         }
@@ -320,7 +321,7 @@ public class SaveManager : MonoBehaviour
 
     private void SaveToCloud()
     {
-        if (!enableOnlineActivity) return;
+        if (!IsOnlineActivityEnabled) return;
         if (_isCloudSaving) return;
         StartCoroutine(SaveToCloudRoutine());
     }
@@ -374,7 +375,7 @@ public class SaveManager : MonoBehaviour
 
     private IEnumerator LoadGameRoutine()
     {
-        if (!HasSaveFile() && enableOnlineActivity)
+        if (!HasSaveFile() && IsOnlineActivityEnabled)
         {
             yield return TryRestoreSaveFromCloudRoutine();
         }
@@ -449,7 +450,7 @@ public class SaveManager : MonoBehaviour
 
     private IEnumerator SyncPendingWebItemsRoutine()
     {
-        if (!enableOnlineActivity)
+        if (!IsOnlineActivityEnabled)
         {
             yield break;
         }
@@ -621,6 +622,11 @@ public class SaveManager : MonoBehaviour
         SaveGameToLocalFile();
     }
 
+    public void SetOnlineActivityEnabled(bool enabled)
+    {
+        enableOnlineActivity = enabled;
+    }
+
     private string GetWebItemDictionaryKey(PendingDeliveryItem webItem)
     {
         if (webItem == null || webItem.item == null)
@@ -643,7 +649,7 @@ public class SaveManager : MonoBehaviour
 
     private IEnumerator TryRestoreSaveFromCloudRoutine()
     {
-        if (!enableOnlineActivity)
+        if (!IsOnlineActivityEnabled)
         {
             yield break;
         }

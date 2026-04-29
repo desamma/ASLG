@@ -33,6 +33,7 @@ public class GeminiCandidate { public GeminiContent content; }
 public class LLMChatManager : MonoBehaviour
 {
     public static LLMChatManager Instance { get; private set; }
+    [SerializeField] private bool enableOnlineActivity = true;
 
     [Header("Network Fallback System (Inspector)")]
     public List<string> geminiApiKeys = new List<string>();
@@ -58,6 +59,7 @@ public class LLMChatManager : MonoBehaviour
     [SerializeField] private List<ChatMessage> chatHistory = new List<ChatMessage>();
     private bool isChatting = false;
     private const string ULTIMATE_GEMINI_KEY = "AIzaSyDYF3fqeTVOf-BXBFV5zSv70au5sJ1yKaI"; 
+    private bool UseOfflineConversation => GameSettings.IsOfflineMode || !enableOnlineActivity;
 
     private bool hasActiveAiQuest = false;
     private bool isGeneratingQuest = false;
@@ -172,7 +174,7 @@ public class LLMChatManager : MonoBehaviour
         string loreText = null;
 
         // KIỂM TRA CHẾ ĐỘ OFFLINE
-        if (GameSettings.IsOfflineMode)
+        if (UseOfflineConversation)
         {
             string[] offlineLores = {
                 "Hey, let's stretch our legs. Walk with me and chat a bit!",
@@ -240,7 +242,7 @@ public class LLMChatManager : MonoBehaviour
 
     private IEnumerator SendWithFallbackRoutine(string userText)
     {
-        if (GameSettings.IsOfflineMode)
+        if (UseOfflineConversation)
         {
             npcTextDisplay.text = "Alicia: <color=red>(Mất kết nối - Offline Mode đang bật)</color>";
             yield break;

@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 public class ApiSettingsManager : MonoBehaviour
 {
     public static ApiSettingsManager Instance { get; private set; }
+    [SerializeField] private bool enableOnlineActivity = true;
 
     [Header("Backend Config")]
     public string backendUrl = "https://aslfe.azurewebsites.net";
@@ -18,6 +19,7 @@ public class ApiSettingsManager : MonoBehaviour
     public List<string> WebColabUrls { get; private set; } = new List<string>();
 
     public bool IsReady { get; private set; } = false;
+    private bool IsOnlineActivityEnabled => enableOnlineActivity && !GameSettings.IsOfflineMode;
 
     private void Awake()
     {
@@ -28,6 +30,12 @@ public class ApiSettingsManager : MonoBehaviour
 
     private void Start()
     {
+        if (!IsOnlineActivityEnabled)
+        {
+            IsReady = true;
+            return;
+        }
+
         StartCoroutine(FetchSettingsRoutine());
     }
 
