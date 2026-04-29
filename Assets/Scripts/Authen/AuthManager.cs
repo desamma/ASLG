@@ -9,6 +9,7 @@ public class AuthManager : MonoBehaviour
 {
     [Header("Scene Settings")]
     public int mainGameSceneIndex = 0;
+    [SerializeField] private bool enableOnlineActivity = true;
 
     [Header("Common UI")]
     public TMP_Text notificationText;
@@ -24,13 +25,15 @@ public class AuthManager : MonoBehaviour
     public TMP_InputField registerConfirmPasswordInput;
 
     private Coroutine notificationCoroutine;
-
-    // TODO: BẠN CẦN THAY ĐỔI ĐƯỜNG DẪN NÀY CHO KHỚP VỚI API CỦA BẠN
     private readonly string baseUrl = "https://aslbe-apapajdug3ege4cm.eastasia-01.azurewebsites.net/api/auth";
+    private bool IsOnlineActivityEnabled => enableOnlineActivity && !GameSettings.IsOfflineMode;
 
     private void Awake()
     {
-        if (notificationText != null) notificationText.text = "";
+        if (notificationText != null)
+        {
+            notificationText.text = string.Empty;
+        }
     }
 
     private void Start()
@@ -47,8 +50,15 @@ public class AuthManager : MonoBehaviour
 
     private void ShowNotification(string message, Color color)
     {
-        if (notificationText == null) return;
-        if (notificationCoroutine != null) StopCoroutine(notificationCoroutine);
+        if (notificationText == null)
+        {
+            return;
+        }
+
+        if (notificationCoroutine != null)
+        {
+            StopCoroutine(notificationCoroutine);
+        }
 
         notificationText.text = message;
         notificationText.color = color;
@@ -58,7 +68,11 @@ public class AuthManager : MonoBehaviour
     private IEnumerator ClearNotificationAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        notificationText.text = "";
+
+        if (notificationText != null)
+        {
+            notificationText.text = string.Empty;
+        }
     }
 
     #region Scene Transitions
@@ -69,8 +83,8 @@ public class AuthManager : MonoBehaviour
     #region Login API
     public void OnLoginButtonClicked()
     {
-        string email = loginUsernameInput.text;
-        string password = loginPasswordInput.text;
+        string email = loginUsernameInput != null ? loginUsernameInput.text : string.Empty;
+        string password = loginPasswordInput != null ? loginPasswordInput.text : string.Empty;
 
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
@@ -78,7 +92,8 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
-        // Tạo dữ liệu JSON để gửi đi
+        PrepareOnlineSession();
+
         LoginRequestData requestData = new LoginRequestData { email = email, password = password };
         string jsonData = JsonUtility.ToJson(requestData);
 
@@ -99,17 +114,18 @@ public class AuthManager : MonoBehaviour
         {
             // 3. LƯU TOKEN VÀ USER ID VÀO TOKEN MANAGER (Gọn gàng và an toàn tuyệt đối)
             TokenManager.SaveSession(responseData.token, responseData.userId);
-
             ShowNotification("Đăng nhập thành công!", Color.green);
-            PlayerPrefs.SetString("CurrentUser", loginUsernameInput.text);
-            PlayerPrefs.Save();
+            //PlayerPrefs.SetString("CurrentUser", loginUsernameInput.text);
+            //PlayerPrefs.Save();
 
+            GameSettings.BeginOnlineSession(loginUsernameInput != null ? loginUsernameInput.text : null);
+            SetOnlineActivityEnabled(true);
 
             SaveManager.OnLogin();
-            
 
             // Chuyển Scene vào Game
             SceneManager.LoadScene(mainGameSceneIndex);
+            return;
         }
         else
         {
@@ -122,10 +138,10 @@ public class AuthManager : MonoBehaviour
     #region Register API
     public void OnRegisterButtonClicked()
     {
-        string username = registerUsernameInput.text;
-        string email = registerEmailInput.text;
-        string password = registerPasswordInput.text;
-        string confirmPassword = registerConfirmPasswordInput.text;
+        string username = registerUsernameInput != null ? registerUsernameInput.text : string.Empty;
+        string email = registerEmailInput != null ? registerEmailInput.text : string.Empty;
+        string password = registerPasswordInput != null ? registerPasswordInput.text : string.Empty;
+        string confirmPassword = registerConfirmPasswordInput != null ? registerConfirmPasswordInput.text : string.Empty;
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
@@ -140,6 +156,7 @@ public class AuthManager : MonoBehaviour
         }
 
         // Tạo dữ liệu JSON
+        PrepareOnlineSession();
         RegisterRequestData requestData = new RegisterRequestData
         {
             userName = username,
@@ -167,6 +184,14 @@ public class AuthManager : MonoBehaviour
     {
         ShowNotification("Đang xử lý...", Color.white);
         Debug.Log($"[API] Bắt đầu gửi POST tới: {url}");
+        if (!IsOnlineActivityEnabled)
+        {
+            ShowNotification("Offline mode dang bat, khong the goi API.", Color.yellow);
+            yield break;
+        }
+
+        ShowNotification("Dang xu ly...", Color.white);
+        Debug.Log($"[API] POST {url}");
 
         using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
@@ -202,8 +227,30 @@ public class AuthManager : MonoBehaviour
         }
     }
     #endregion
-}
 
+    public void OnPlayOfflineButtonClicked()
+    {
+        GameSettings.BeginGuestSession();
+        SetOnlineActivityEnabled(false);
+        SceneManager.LoadScene(mainGameSceneIndex);
+    }
+
+    private void PrepareOnlineSession()
+    {
+        GameSettings.BeginOnlineSession();
+        SetOnlineActivityEnabled(true);
+    }
+
+    private void SetOnlineActivityEnabled(bool enabled)
+    {
+        enableOnlineActivity = enabled;
+
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.SetOnlineActivityEnabled(enabled);
+        }
+    }
+}
 
 [System.Serializable]
 public class LoginRequestData

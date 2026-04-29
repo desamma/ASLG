@@ -238,6 +238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainGameSceneIndex: 0
+  enableOnlineActivity: 1
   notificationText: {fileID: 0}
   loginUsernameInput: {fileID: 1910911399}
   loginPasswordInput: {fileID: 794492034}
@@ -819,7 +820,7 @@ GameObject:
   - component: {fileID: 834559885}
   - component: {fileID: 834559884}
   m_Layer: 5
-  m_Name: ForgotPasswordBtn
+  m_Name: PlayOfflineBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -858,7 +859,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: -1
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -891,7 +892,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1404994980}
         m_TargetAssemblyTypeName: AuthManager, Assembly-CSharp
-        m_MethodName: OnClick_ForgotPasswordBtn
+        m_MethodName: OnPlayOfflineButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1130,7 +1131,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Forgot password?
+  m_text: Play Offline
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
@@ -1660,6 +1661,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainGameSceneIndex: 0
+  enableOnlineActivity: 1
   notificationText: {fileID: 0}
   loginUsernameInput: {fileID: 1910911399}
   loginPasswordInput: {fileID: 794492034}
