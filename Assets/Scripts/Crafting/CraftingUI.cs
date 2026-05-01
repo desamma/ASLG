@@ -9,7 +9,6 @@ public class CraftingUI : MonoBehaviour
 {
     [Header("Managers")]
     public CraftingManager craftingManager;
-    public PlayerInventory playerInventory;
 
     [Header("Prefabs")]
     public GameObject recipeItemPrefab;
@@ -22,14 +21,14 @@ public class CraftingUI : MonoBehaviour
 
     [Tooltip("Thứ tự: All, Weapon, Armor, Accessory, Consumable, Misc")]
     public Button[] categoryTabButtons;
-    public Color tabActiveColor = new Color(0.16f, 0.16f, 0.16f, 1f); // đen nhẹ khi chọn
+    public Color tabActiveColor = new Color(0.16f, 0.16f, 0.16f, 1f);
     public Color tabNormalColor = new Color(0.28f, 0.19f, 0.12f, 1f);
 
     [Header("Recipe List Layout Fix")]
     [SerializeField] private float recipeRowHeight = 34f;
     [SerializeField] private float recipeRowSpacing = 2f;
 
-    [Header("Mid Panel – Grid 3 Slot Ngang")]
+    [Header("Mid Panel – Grid 3 Slot")]
     public Image[] gridSlotImages = new Image[3];
     public TextMeshProUGUI[] gridSlotTexts = new TextMeshProUGUI[3];
 
@@ -60,26 +59,22 @@ public class CraftingUI : MonoBehaviour
     public float craftFlashDuration = 0.4f;
     public Color craftSuccessColor = new Color(0.5f, 1f, 0.3f, 0.6f);
 
-    private readonly List<CraftingRecipe> _filteredRecipes = new List<CraftingRecipe>();
-    private CraftingRecipe _selectedRecipe;
+    private readonly List<RecipeDefinition> _filteredRecipes = new List<RecipeDefinition>();
+    private RecipeDefinition _selectedRecipe;
     private int _craftQty = 1;
     private string _currentCategory = "All";
     private string _searchQuery = "";
     private int _playerLevel = 1;
 
-    private CanvasGroup craftingCanvasGroup;
-    private bool craftingOpen = false;
+    private CanvasGroup _canvasGroup;
+    private bool _isOpen = false;
+    public bool IsOpen => _isOpen;
 
-    public bool IsOpen => craftingOpen;
+    // ── Unity ────────────────────────────────────────────────────────────
 
     private void Start()
     {
-        if (EventSystem.current == null)
-            Debug.LogError("[CraftingUI] Missing EventSystem in scene. UI click will not work.");
-
-        if (craftingCanvasGroup == null)
-            craftingCanvasGroup = this.gameObject.GetComponentInParent<CanvasGroup>();
-
+        _canvasGroup = GetComponentInParent<CanvasGroup>();
         EnsureRecipeListLayout();
 
         craftButton.onClick.AddListener(OnCraftClicked);
@@ -87,37 +82,32 @@ public class CraftingUI : MonoBehaviour
         qtyPlusButton.onClick.AddListener(() => ChangeCraftQty(1));
         searchInput.onValueChanged.AddListener(OnSearchChanged);
 
-        foreach (var img in gridSlotImages)
-            if (img) img.enabled = false;
+        foreach (var img in gridSlotImages) if (img) img.enabled = false;
         if (resultIconImage) resultIconImage.enabled = false;
         if (infoIconImage) infoIconImage.enabled = false;
 
         for (int i = 0; i < categoryTabButtons.Length; i++)
         {
-            
             string cat = i switch
             {
-                1 => "Accessory",
-                2 => "Weapon",
-                3 => "Armor",
+                1 => "Weapon",
+                2 => "Armor",
+                3 => "Accessory",
                 4 => "Consumable",
                 5 => "Misc",
                 _ => "All"
             };
-
             int idx = i;
             var btn = categoryTabButtons[idx];
             if (btn == null) continue;
-
             btn.transition = Selectable.Transition.None;
             btn.onClick.AddListener(() => OnCategorySelected(cat, idx));
         }
 
-        // Set trạng thái tab mặc định ngay khi mở UI
         OnCategorySelected("All", 0);
 
-        if (playerInventory != null)
-            playerInventory.OnInventoryChanged += RefreshCurrentSelection;
+        if (InventoryManager.instance != null)
+            InventoryManager.instance.OnInventoryChanged += RefreshCurrentSelection;
 
         if (craftingManager != null)
         {
@@ -132,16 +122,14 @@ public class CraftingUI : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("Crafting"))
-        {
-            Toggle();
-        }
+        if (Input.GetButtonDown("Crafting")) Toggle();
     }
 
     private void OnDestroy()
     {
-        if (playerInventory != null)
-            playerInventory.OnInventoryChanged -= RefreshCurrentSelection;
+        if (InventoryManager.instance != null)
+            InventoryManager.instance.OnInventoryChanged -= RefreshCurrentSelection;
+
         if (craftingManager != null)
         {
             craftingManager.OnCraftSuccess -= HandleCraftSuccess;
@@ -149,170 +137,106 @@ public class CraftingUI : MonoBehaviour
         }
     }
 
+    // ── Layout ───────────────────────────────────────────────────────────
+
     private void EnsureRecipeListLayout()
     {
         if (recipeListContent == null) return;
-
         var contentRt = recipeListContent as RectTransform;
         if (contentRt == null) return;
 
-        // 1) Normalize Content rect – top-anchored so VLG stacks downward
         contentRt.anchorMin = new Vector2(0f, 1f);
         contentRt.anchorMax = new Vector2(1f, 1f);
         contentRt.pivot = new Vector2(0.5f, 1f);
         contentRt.anchoredPosition = Vector2.zero;
         contentRt.localScale = Vector3.one;
 
-        // 2) Remove conflicting layout components on Content
-        //    Use DestroyImmediate so they're gone before RefreshRecipeList() runs
-        var grid = recipeListContent.GetComponent<GridLayoutGroup>();
-        if (grid != null) DestroyImmediate(grid);
+        var grid = recipeListContent.GetComponent<GridLayoutGroup>(); if (grid != null) DestroyImmediate(grid);
+        var hlg = recipeListContent.GetComponent<HorizontalLayoutGroup>(); if (hlg != null) DestroyImmediate(hlg);
 
-        var hlg = recipeListContent.GetComponent<HorizontalLayoutGroup>();
-        if (hlg != null) DestroyImmediate(hlg);
-
-        // 3) Ensure VerticalLayoutGroup
         var vlg = recipeListContent.GetComponent<VerticalLayoutGroup>();
         if (vlg == null) vlg = recipeListContent.gameObject.AddComponent<VerticalLayoutGroup>();
-
         vlg.childAlignment = TextAnchor.UpperLeft;
         vlg.childControlWidth = true;
-        vlg.childControlHeight = false;   // ← FALSE: row height is driven by LayoutElement, not VLG
+        vlg.childControlHeight = false;
         vlg.childForceExpandWidth = true;
         vlg.childForceExpandHeight = false;
         vlg.spacing = recipeRowSpacing;
         vlg.padding = new RectOffset(4, 4, 4, 4);
 
-        // 4) ContentSizeFitter stretches Content height to fit all rows
         var fitter = recipeListContent.GetComponent<ContentSizeFitter>();
         if (fitter == null) fitter = recipeListContent.gameObject.AddComponent<ContentSizeFitter>();
         fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
         fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-        // 5) Safety: Viewport must NOT have its own layout group / fitter
-        var viewport = contentRt.parent;
-        if (viewport != null)
-        {
-            var viewportVlg = viewport.GetComponent<VerticalLayoutGroup>();
-            if (viewportVlg != null) DestroyImmediate(viewportVlg);
-
-            var viewportHlg = viewport.GetComponent<HorizontalLayoutGroup>();
-            if (viewportHlg != null) DestroyImmediate(viewportHlg);
-
-            var viewportGrid = viewport.GetComponent<GridLayoutGroup>();
-            if (viewportGrid != null) DestroyImmediate(viewportGrid);
-
-            var viewportFitter = viewport.GetComponent<ContentSizeFitter>();
-            if (viewportFitter != null) DestroyImmediate(viewportFitter);
-        }
     }
+
+    // ── Recipe List ──────────────────────────────────────────────────────
 
     private void RefreshRecipeList()
     {
-        // Dùng DestroyImmediate để children biến mất ngay, tránh VLG
-        // tính toán layout với children cũ trong cùng frame.
         var toDestroy = new List<GameObject>();
-        foreach (Transform child in recipeListContent)
-            toDestroy.Add(child.gameObject);
-        foreach (var go in toDestroy)
-            DestroyImmediate(go);
+        foreach (Transform child in recipeListContent) toDestroy.Add(child.gameObject);
+        foreach (var go in toDestroy) DestroyImmediate(go);
 
         var allAvailable = craftingManager != null
             ? craftingManager.GetAvailableRecipes(_playerLevel)
-            : new List<CraftingRecipe>();
+            : new List<RecipeDefinition>();
 
         _filteredRecipes.Clear();
         foreach (var r in allAvailable)
         {
-            if (r.resultItem == null) continue;
+            var def = r.GetResultDefinition();
+            if (def == null) continue;
 
-            bool matchCat = _currentCategory == "All" || r.resultItem.itemType.ToString() == _currentCategory;
-            bool matchSearch = string.IsNullOrEmpty(_searchQuery) || r.DisplayName.ToLower().Contains(_searchQuery.ToLower());
+            bool matchCat = _currentCategory == "All" || def.itemType == _currentCategory;
+            bool matchSearch = string.IsNullOrEmpty(_searchQuery) ||
+                               r.DisplayName.ToLower().Contains(_searchQuery.ToLower());
             if (!matchCat || !matchSearch) continue;
-
             _filteredRecipes.Add(r);
         }
 
         foreach (var recipe in _filteredRecipes)
         {
             var go = Instantiate(recipeItemPrefab, recipeListContent);
-
-            // VLG owns positioning – chỉ reset scale
             var rt = go.GetComponent<RectTransform>();
-            if (rt != null)
-                rt.localScale = Vector3.one;
+            if (rt != null) rt.localScale = Vector3.one;
 
-            // Kill row-level fitters/layouts that fight VLG
-            var rowFitter = go.GetComponent<ContentSizeFitter>();
-            if (rowFitter != null) DestroyImmediate(rowFitter);
-
-            var rowVlg = go.GetComponent<VerticalLayoutGroup>();
-            if (rowVlg != null) DestroyImmediate(rowVlg);
-
-            var rowHlg = go.GetComponent<HorizontalLayoutGroup>();
-            if (rowHlg != null) DestroyImmediate(rowHlg);
-
-            var rowGrid = go.GetComponent<GridLayoutGroup>();
-            if (rowGrid != null) DestroyImmediate(rowGrid);
-
-            // LayoutElement: báo VLG chiều cao mỗi row
             var le = go.GetComponent<LayoutElement>();
             if (le == null) le = go.AddComponent<LayoutElement>();
-            le.minHeight = recipeRowHeight;
-            le.preferredHeight = recipeRowHeight;
+            le.minHeight = le.preferredHeight = recipeRowHeight;
             le.flexibleHeight = 0f;
-            le.minWidth = -1f;
 
-            var row = go.GetComponent<RecipeListItem>();
-            if (row == null)
-                row = go.GetComponentInChildren<RecipeListItem>(true);
+            var row = go.GetComponent<RecipeListItem>() ?? go.GetComponentInChildren<RecipeListItem>(true);
+            if (row == null) { Debug.LogError("[CraftingUI] recipeItemPrefab thiếu RecipeListItem."); continue; }
 
-            if (row == null)
-            {
-                Debug.LogError("[CraftingUI] recipeItemPrefab is missing RecipeListItem component.");
-                continue;
-            }
-
-            bool canCraft = recipe.CanCraft(playerInventory);
-            bool isSelected = _selectedRecipe == recipe;
-            row.Setup(recipe, canCraft, isSelected, () => SelectRecipe(recipe));
+            row.Setup(recipe, recipe.CanCraft(_craftQty), _selectedRecipe == recipe, () => SelectRecipe(recipe));
         }
 
-        // Double-rebuild: lần 1 tính preferred size, lần 2 áp dụng
         Canvas.ForceUpdateCanvases();
         LayoutRebuilder.ForceRebuildLayoutImmediate(recipeListContent as RectTransform);
         LayoutRebuilder.ForceRebuildLayoutImmediate(recipeListContent as RectTransform);
 
-        // Reset scroll về đầu list sau mỗi lần refresh category/search
-        var scrollRect = recipeListContent.GetComponentInParent<ScrollRect>();
-        if (scrollRect != null)
-            scrollRect.verticalNormalizedPosition = 1f;
+        var scroll = recipeListContent.GetComponentInParent<ScrollRect>();
+        if (scroll != null) scroll.verticalNormalizedPosition = 1f;
     }
 
-    private void OnSearchChanged(string value)
-    {
-        _searchQuery = value;
-        RefreshRecipeList();
-    }
+    private void OnSearchChanged(string value) { _searchQuery = value; RefreshRecipeList(); }
 
     private void OnCategorySelected(string cat, int btnIndex)
     {
         _currentCategory = cat;
-
         for (int i = 0; i < categoryTabButtons.Length; i++)
         {
-            var btn = categoryTabButtons[i];
-            if (btn == null) continue;
-
+            var btn = categoryTabButtons[i]; if (btn == null) continue;
             var img = btn.GetComponent<Image>();
-            if (img != null)
-                img.color = (i == btnIndex) ? tabActiveColor : tabNormalColor;
+            if (img != null) img.color = (i == btnIndex) ? tabActiveColor : tabNormalColor;
         }
-
         RefreshRecipeList();
     }
 
-    private void SelectRecipe(CraftingRecipe recipe)
+    // ── Selection ────────────────────────────────────────────────────────
+
+    private void SelectRecipe(RecipeDefinition recipe)
     {
         _selectedRecipe = recipe;
         _craftQty = 1;
@@ -323,114 +247,99 @@ public class CraftingUI : MonoBehaviour
         RefreshRecipeList();
     }
 
-    private void UpdateGrid(CraftingRecipe recipe)
+    private void UpdateGrid(RecipeDefinition recipe)
     {
         int slotCount = gridSlotImages != null ? gridSlotImages.Length : 3;
-        var ingredientMap = new (Sprite icon, int qty)[slotCount];
-
-        int slot = 0;
-        foreach (var ing in recipe.ingredients)
-        {
-            if (ing.item == null || slot >= slotCount) continue;
-            ingredientMap[slot] = (ing.item.icon, ing.amount);
-            slot++;
-        }
 
         for (int i = 0; i < slotCount; i++)
         {
+            bool hasItem = i < recipe.ingredients.Count &&
+                           !string.IsNullOrEmpty(recipe.ingredients[i].itemKey);
+
+            Sprite icon = null;
+            int qty = 0;
+
+            if (hasItem)
+            {
+                var def = recipe.ingredients[i].GetDefinition();
+                icon = def?.GetIcon();
+                qty = recipe.ingredients[i].amount;
+            }
+
             var img = (gridSlotImages != null && i < gridSlotImages.Length) ? gridSlotImages[i] : null;
             var txt = (gridSlotTexts != null && i < gridSlotTexts.Length) ? gridSlotTexts[i] : null;
 
-            bool hasItem = ingredientMap[i].icon != null || ingredientMap[i].qty > 0;
-            if (img)
-            {
-                img.sprite = ingredientMap[i].icon;
-                img.enabled = hasItem;
-            }
-            if (txt)
-            {
-                txt.text = (hasItem && ingredientMap[i].qty > 1) ? $"x{ingredientMap[i].qty}" : "";
-                txt.enabled = hasItem;
-            }
+            if (img) { img.sprite = icon; img.enabled = hasItem; }
+            if (txt) { txt.text = (hasItem && qty > 1) ? $"x{qty}" : ""; txt.enabled = hasItem; }
         }
 
         if (resultIconImage)
         {
-            resultIconImage.sprite = recipe.resultItem != null ? recipe.resultItem.icon : null;
-            resultIconImage.enabled = recipe.resultItem != null && recipe.resultItem.icon != null;
+            var icon = recipe.GetResultDefinition()?.GetIcon();
+            resultIconImage.sprite = icon;
+            resultIconImage.enabled = icon != null;
         }
     }
 
-    private void UpdateInfoPanel(CraftingRecipe recipe)
+    private void UpdateInfoPanel(RecipeDefinition recipe)
     {
-        if (recipe.resultItem == null) { ClearInfo(); return; }
-        var item = recipe.resultItem;
+        var def = recipe.GetResultDefinition();
+        if (def == null) { ClearInfo(); return; }
 
-        if (infoIconImage)
-        {
-            infoIconImage.sprite = item.icon;
-            infoIconImage.enabled = item.icon != null;
-        }
-        if (infoNameText) infoNameText.text = item.itemName;
-        if (infoRarityText)
-        {
-            infoRarityText.text = item.rarity.ToString();
-            infoRarityText.color = GetRarityColor(item.rarity);
-        }
-        if (infoDescText) infoDescText.text = item.description;
+        if (infoIconImage) { var icon = def.GetIcon(); infoIconImage.sprite = icon; infoIconImage.enabled = icon != null; }
+        if (infoNameText) infoNameText.text = def.name;
+        if (infoRarityText) { infoRarityText.text = def.rarity; infoRarityText.color = GetRarityColor(def.rarity); }
+        if (infoDescText) infoDescText.text = def.description;
 
         if (statsContainer)
         {
-            foreach (Transform child in statsContainer) Destroy(child.gameObject);
-            foreach (var bonus in item.statBonuses)
+            foreach (Transform c in statsContainer) Destroy(c.gameObject);
+            foreach (var bonus in def.statBonuses)
             {
                 var row = Instantiate(statRowPrefab, statsContainer);
                 var sr = row.GetComponent<StatRowUI>();
-                if (sr) sr.Setup(bonus.statName, bonus.value);
+                if (sr) sr.Setup(bonus.Key, bonus.Value);
             }
         }
 
         if (materialsContainer)
         {
-            foreach (Transform child in materialsContainer) Destroy(child.gameObject);
+            foreach (Transform c in materialsContainer) Destroy(c.gameObject);
             foreach (var ing in recipe.ingredients)
             {
-                if (ing.item == null) continue;
+                if (string.IsNullOrEmpty(ing.itemKey)) continue;
+                var ingDef = ing.GetDefinition();
+                if (ingDef == null) continue;
+
                 var row = Instantiate(matRowPrefab, materialsContainer);
                 var mr = row.GetComponent<MaterialRowUI>();
-                int have = playerInventory != null ? playerInventory.GetItemCount(ing.item) : 0;
-                if (mr) mr.Setup(ing.item, ing.amount * _craftQty, have);
+                int have = InventoryManager.instance != null
+                    ? InventoryManager.instance.GetItemCount(ing.itemKey) : 0;
+                if (mr) mr.Setup(ingDef, ing.amount * _craftQty, have);
             }
         }
     }
 
     private void ClearInfo()
     {
-        if (infoIconImage)
-        {
-            infoIconImage.sprite = null;
-            infoIconImage.enabled = false;
-        }
+        if (infoIconImage) { infoIconImage.sprite = null; infoIconImage.enabled = false; }
         if (infoNameText) infoNameText.text = "Select a recipe";
         if (infoRarityText) infoRarityText.text = "—";
         if (infoDescText) infoDescText.text = "Select a recipe to view its details.";
-
         if (statsContainer) foreach (Transform c in statsContainer) Destroy(c.gameObject);
         if (materialsContainer) foreach (Transform c in materialsContainer) Destroy(c.gameObject);
-        if (resultIconImage)
-        {
-            resultIconImage.sprite = null;
-            resultIconImage.enabled = false;
-        }
+        if (resultIconImage) { resultIconImage.sprite = null; resultIconImage.enabled = false; }
     }
+
+    // ── Craft ────────────────────────────────────────────────────────────
 
     private void OnCraftClicked()
     {
-        if (_selectedRecipe == null || craftingManager == null || playerInventory == null) return;
-        craftingManager.TryCraft(_selectedRecipe, playerInventory, _craftQty);
+        if (_selectedRecipe == null || craftingManager == null) return;
+        craftingManager.TryCraft(_selectedRecipe, _craftQty);
     }
 
-    private void HandleCraftSuccess(CraftingRecipe recipe, int qty)
+    private void HandleCraftSuccess(RecipeDefinition recipe, int qty)
     {
         Debug.Log($"[Crafting] Crafted {qty}x {recipe.DisplayName}");
         StartCoroutine(FlashCraftSuccess());
@@ -438,19 +347,19 @@ public class CraftingUI : MonoBehaviour
         RefreshRecipeList();
     }
 
-    private void HandleCraftFailed(CraftingRecipe recipe, string reason)
-    {
-        Debug.LogWarning($"[Crafting] Failed: {reason}");
-    }
+    private void HandleCraftFailed(RecipeDefinition recipe, string reason)
+        => Debug.LogWarning($"[Crafting] Failed: {reason}");
 
     private IEnumerator FlashCraftSuccess()
     {
         if (resultIconImage == null) yield break;
-        var originalColor = resultIconImage.color;
+        var original = resultIconImage.color;
         resultIconImage.color = craftSuccessColor;
         yield return new WaitForSeconds(craftFlashDuration);
-        resultIconImage.color = originalColor;
+        resultIconImage.color = original;
     }
+
+    // ── Qty ──────────────────────────────────────────────────────────────
 
     private void ChangeCraftQty(int delta)
     {
@@ -460,10 +369,7 @@ public class CraftingUI : MonoBehaviour
         RefreshCraftButton();
     }
 
-    private void UpdateQtyDisplay()
-    {
-        if (qtyText) qtyText.text = _craftQty.ToString();
-    }
+    private void UpdateQtyDisplay() { if (qtyText) qtyText.text = _craftQty.ToString(); }
 
     private void RefreshCurrentSelection()
     {
@@ -474,11 +380,8 @@ public class CraftingUI : MonoBehaviour
 
     private void RefreshCraftButton()
     {
-        bool canCraft = _selectedRecipe != null &&
-                        craftingManager != null &&
-                        playerInventory != null &&
-                        _selectedRecipe.CanCraft(playerInventory, _craftQty);
-        SetCraftButtonState(canCraft);
+        bool can = _selectedRecipe != null && _selectedRecipe.CanCraft(_craftQty);
+        SetCraftButtonState(can);
     }
 
     private void SetCraftButtonState(bool interactable)
@@ -487,44 +390,30 @@ public class CraftingUI : MonoBehaviour
         if (craftButtonText) craftButtonText.alpha = interactable ? 1f : 0.5f;
     }
 
-    private Color GetRarityColor(ItemRarity rarity) => rarity switch
+    private Color GetRarityColor(string rarity) => rarity?.ToLower() switch
     {
-        ItemRarity.Common => colorCommon,
-        ItemRarity.Uncommon => colorUncommon,
-        ItemRarity.Rare => colorRare,
-        ItemRarity.Epic => colorEpic,
-        ItemRarity.Legendary => colorLegendary,
+        "common" => colorCommon,
+        "uncommon" => colorUncommon,
+        "rare" => colorRare,
+        "epic" => colorEpic,
+        "legendary" => colorLegendary,
         _ => Color.white
     };
 
-    public void Toggle()
-    {
-        SetOpen(!craftingOpen);
-    }
+    // ── Toggle ───────────────────────────────────────────────────────────
 
-    public void Open()
-    {
-        SetOpen(true);
-    }
-
-    public void Close()
-    {
-        SetOpen(false);
-    }
+    public void Toggle() => SetOpen(!_isOpen);
+    public void Open() => SetOpen(true);
+    public void Close() => SetOpen(false);
 
     public void SetOpen(bool visible)
     {
-        craftingOpen = visible;
-
-        if (craftingCanvasGroup == null)
-            craftingCanvasGroup = GetComponentInParent<CanvasGroup>();
-
-        if (craftingCanvasGroup == null)
-            return;
-
-        craftingCanvasGroup.alpha = craftingOpen ? 1f : 0f;
-        craftingCanvasGroup.interactable = craftingOpen;
-        craftingCanvasGroup.blocksRaycasts = craftingOpen;
-        Time.timeScale = craftingOpen ? 0f : 1f;
+        _isOpen = visible;
+        if (_canvasGroup == null) _canvasGroup = GetComponentInParent<CanvasGroup>();
+        if (_canvasGroup == null) return;
+        _canvasGroup.alpha = _isOpen ? 1f : 0f;
+        _canvasGroup.interactable = _isOpen;
+        _canvasGroup.blocksRaycasts = _isOpen;
+        Time.timeScale = _isOpen ? 0f : 1f;
     }
 }
