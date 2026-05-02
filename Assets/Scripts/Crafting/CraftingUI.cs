@@ -90,9 +90,9 @@ public class CraftingUI : MonoBehaviour
         {
             string cat = i switch
             {
-                1 => "Weapon",
-                2 => "Armor",
-                3 => "Accessory",
+                1 => "Accessory",
+                2 => "Weapon",
+                3 => "Armor",
                 4 => "Consumable",
                 5 => "Misc",
                 _ => "All"
@@ -100,7 +100,7 @@ public class CraftingUI : MonoBehaviour
             int idx = i;
             var btn = categoryTabButtons[idx];
             if (btn == null) continue;
-            btn.transition = Selectable.Transition.None;
+
             btn.onClick.AddListener(() => OnCategorySelected(cat, idx));
         }
 
