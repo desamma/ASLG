@@ -3,19 +3,16 @@ on:
   push:
     branches:
     - dev
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
+    - uses: actions/checkout@v4
     - name: Cache Library
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: Library
         key: Library-${{ hashFiles('Assets/**', 'ProjectSettings/**') }}
-
     - name: Build
       uses: game-ci/unity-builder@v4
       env:
@@ -25,9 +22,8 @@ jobs:
       with:
         unityVersion: 2022.3.62f3
         targetPlatform: StandaloneWindows64
-
     - name: Upload Build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Build
         path: build
