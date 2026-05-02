@@ -1,7 +1,8 @@
-﻿﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections.Generic;
+using System.Data;
 using TMPro;
-using System.Collections.Generic;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -12,8 +13,6 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private CanvasGroup inventoryCanvasGroup;
     [SerializeField] private GameObject itemSlotPrefab;
     [SerializeField] private Transform slotGrid;
-    [SerializeField] private Button btn_nextPage;
-    [SerializeField] private Button btn_prevPage;
     [SerializeField] private TextMeshProUGUI txt_pageIndicator;
     [SerializeField] private int slotsPerPage = 10;
 
@@ -28,6 +27,10 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txt_previewStats;
     [SerializeField] private Button btn_equip;
     [SerializeField] private Button btn_drop;
+    [SerializeField] private Slider slider_health;
+    [SerializeField] private Slider slider_mana;
+    [SerializeField] private Slider slider_stamina;
+    [SerializeField] private Slider slider_exp;
 
     private bool isOpen;
     private int currentPage;
@@ -44,8 +47,8 @@ public class InventoryUI : MonoBehaviour
 
     private void Start()
     {
-        btn_nextPage?.onClick.AddListener(NextPage);
-        btn_prevPage?.onClick.AddListener(PrevPage);
+        //btn_nextPage?.onClick.AddListener(NextPage);
+        //btn_prevPage?.onClick.AddListener(PrevPage);
         btn_equip?.onClick.AddListener(OnEquipUseClicked);
         btn_drop?.onClick.AddListener(DropSelected);
 
@@ -55,12 +58,17 @@ public class InventoryUI : MonoBehaviour
         // Lắng nghe thay đổi từ túi đồ gốc
         if (InventoryManager.instance != null)
             InventoryManager.instance.OnInventoryChanged += RenderPage;
+
+        if (StatsManager.instance != null)
+            StatsManager.instance.OnStatsChangedEvent += UpdateStatsUI;
     }
 
     private void OnDestroy()
     {
         if (InventoryManager.instance != null)
             InventoryManager.instance.OnInventoryChanged -= RenderPage;
+        if (StatsManager.instance != null)
+            StatsManager.instance.OnStatsChangedEvent -= UpdateStatsUI;
     }
 
     public void Toggle()
@@ -91,6 +99,15 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
+    private void UpdateStatsUI()
+    {
+        if (StatsManager.instance == null) return;
+        slider_health.value = StatsManager.instance.currentHealth / StatsManager.instance.maxHealth;
+        slider_mana.value   = StatsManager.instance.currentMana   / StatsManager.instance.maxMana;
+        slider_stamina.value= StatsManager.instance.currentStamina / StatsManager.instance.maxStamina;
+        slider_exp.value    = StatsManager.instance.currentExp     / StatsManager.instance.expToNextLevel;
+    }
+
     private void SpawnSlots()
     {
         foreach (var s in spawnedSlots) Destroy(s);
@@ -108,8 +125,8 @@ public class InventoryUI : MonoBehaviour
         currentPage = Mathf.Clamp(currentPage, 0, total - 1);
         txt_pageIndicator?.SetText($"{currentPage + 1} / {total}");
 
-        btn_prevPage?.gameObject.SetActive(currentPage > 0);
-        btn_nextPage?.gameObject.SetActive(currentPage < total - 1);
+        //btn_prevPage?.gameObject.SetActive(currentPage > 0);
+        //btn_nextPage?.gameObject.SetActive(currentPage < total - 1);
 
         int start = currentPage * slotsPerPage;
         for (int i = 0; i < slotsPerPage; i++)
