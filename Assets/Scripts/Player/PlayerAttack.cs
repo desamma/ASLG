@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections; // THÊM THƯ VIỆN NÀY
 
 [DisallowMultipleComponent]
 public class PlayerAttack : MonoBehaviour
@@ -53,20 +52,10 @@ public class PlayerAttack : MonoBehaviour
         attackCooldownTimer = StatsManager.instance.cooldown;
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         movement.FaceToward(mouseWorld.x);
-        
+
         movement.GetStateManager().ChangeState(PlayerState.Attack);
 
-        if (ClassData?.swingClip != null) SoundFXManager.Instance.PlaySoundFXClip(ClassData.swingClip, transform, volume);
-
-        // ĐÃ FIX: Cơ chế tự giải cứu! Nếu animator bị thiếu hoặc đơ, tự thoát sau 0.5s
-        StopCoroutine(nameof(ForceResetAttackState));
-        StartCoroutine(ForceResetAttackState(0.5f));
-    }
-
-    private IEnumerator ForceResetAttackState(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        OnAttackAnimationComplete(); 
+        if (ClassData.swingClip != null) SoundFXManager.Instance.PlaySoundFXClip(ClassData.swingClip, transform, volume);
     }
 
     public void OnAttackHitFrame()
@@ -91,7 +80,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 npc.TakeDamage(StatsManager.instance.damage, true);
                 SpawnHitEffect(hit.transform.position, hit.transform);
-                continue; 
+                continue;
             }
             if (hit.CompareTag("Enemy")) HandleEnemyHit(hit);
         }

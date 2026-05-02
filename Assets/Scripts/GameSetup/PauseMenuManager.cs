@@ -65,6 +65,7 @@ public class PauseMenuManager : MonoBehaviour
     private const float BGM_MAX = 1f;
     private const float MOUSE_MIN = 0.1f;
     private const float MOUSE_MAX = 5f;
+    private const string START_SCENE_NAME = "Start";
     [SerializeField] private bool isSettingAvailable;
 
     [SerializeField] private CanvasGroup settingCanvasGroup;
@@ -220,6 +221,35 @@ public class PauseMenuManager : MonoBehaviour
         Time.timeScale = 1f;
         GameIsPaused = false;
     }
+
+    public void SaveGameAndBackToStart()
+    {
+        PlayClickSound();
+
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.ForceSaveNow();
+        }
+        else
+        {
+            Debug.LogWarning("[PauseMenu] SaveManager.Instance is null, returning to Start without saving.");
+        }
+
+        PlayerPrefs.Save();
+
+        SetCanvas(soundCanvasGroup, false);
+        SetCanvas(mouseCanvasGroup, false);
+        SetCanvas(keybindCanvasGroup, false);
+        SetCanvas(pauseSettingCanvasGroup, false);
+        SetCanvas(pausePanelCanvasGroup, false);
+        SetCanvas(settingCanvasGroup, false);
+
+        Time.timeScale = 1f;
+        GameIsPaused = false;
+
+        SceneManager.LoadScene(START_SCENE_NAME);
+    }
+
     void Pause()
     {
         SetCanvas(settingCanvasGroup, true);
