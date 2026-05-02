@@ -398,10 +398,12 @@ MonoBehaviour:
   colorEpic: {r: 0.8, g: 0.2, b: 0.95, a: 1}
   colorLegendary: {r: 1, g: 0.7, b: 0, a: 1}
   alphaCantCraft: 0.55
-  rowHeight: 36
-  iconSize: 24
-  leftPadding: 8
-  rightPadding: 10
+  rowHeight: 72
+  iconSize: 40
+  leftPadding: 12
+  rightPadding: 12
+  nameFontSize: 18
+  rarityFontSize: 14
 --- !u!114 &6222162466180003008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,10 +417,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   preset: 0
-  rowHeight: 34
-  iconSize: 18
-  leftPadding: 8
-  rightPadding: 8
+  rowHeight: 72
+  iconSize: 40
+  leftPadding: 12
+  rightPadding: 12
   contentTopBottomPadding: 2
 --- !u!1 &906045806874224794
 GameObject:
