@@ -25,7 +25,7 @@ public class AuthManager : MonoBehaviour
     public TMP_InputField registerConfirmPasswordInput;
 
     private Coroutine notificationCoroutine;
-    private readonly string baseUrl = "https://aslbe-apapajdug3ege4cm.eastasia-01.azurewebsites.net/api/auth";
+    private readonly string baseUrl = "https://aslbe-gsetazbeg8f2g9b0.indonesiacentral-01.azurewebsites.net/api/auth";
     private bool IsOnlineActivityEnabled => enableOnlineActivity && !GameSettings.IsOfflineMode;
 
     private void Awake()
@@ -124,7 +124,7 @@ public class AuthManager : MonoBehaviour
             SaveManager.OnLogin();
 
             // Chuyển Scene vào Game
-            SceneManager.LoadScene(mainGameSceneIndex);
+            SceneManager.LoadScene("Start");
             return;
         }
         else
@@ -232,7 +232,7 @@ public class AuthManager : MonoBehaviour
     {
         GameSettings.BeginGuestSession();
         SetOnlineActivityEnabled(false);
-        SceneManager.LoadScene(mainGameSceneIndex);
+        SceneManager.LoadScene("Start");
     }
 
     private void PrepareOnlineSession()

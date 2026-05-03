@@ -77,6 +77,6 @@ public class DeathUIManager : MonoBehaviour
         Time.timeScale = 1f;
 
         // 6. ĐÁ VỀ SCENE START (ID = 0)
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("Start");
     }
 }

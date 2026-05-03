@@ -95,7 +95,7 @@ public class SaveManager : MonoBehaviour
 
     [Header("Cloud Save")]
     [SerializeField] private bool enableOnlineActivity = true;
-    [SerializeField] private string backendUrl = "https://aslbe-apapajdug3ege4cm.eastasia-01.azurewebsites.net";
+    [SerializeField] private string backendUrl = "https://aslbe-gsetazbeg8f2g9b0.indonesiacentral-01.azurewebsites.net";
     [SerializeField] private string firebaseStorageUploadApi = "/api/FirebaseStorage/upload";
     [SerializeField] private string firebaseStorageDownloadApi = "/api/FirebaseStorage/download";
     [SerializeField] private string firebaseStorageListApi = "/api/FirebaseStorage/list";
@@ -386,8 +386,8 @@ public class SaveManager : MonoBehaviour
         if (HasSaveFile())
         {
             LoadFromLocalFile();
-            yield return SyncPendingWebItemsRoutine();
             ApplyCurrentSaveDataAndLoadScene();
+            yield return SyncPendingWebItemsRoutine();
         }
         else
         {
@@ -559,6 +559,7 @@ public class SaveManager : MonoBehaviour
             if (acknowledgedItems.Count > 0)
             {
                 yield return AcknowledgeWebDeliveryRoutine(userId, token, acknowledgedItems);
+                ForceSaveNow();
             }
         }
 

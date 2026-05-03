@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public class InventoryToggle : MonoBehaviour
@@ -8,9 +9,11 @@ public class InventoryToggle : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
+    
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
-            InventoryUI.instance?.Toggle();
+        if (Input.GetKeyDown(KeyCode.B) && SceneManager.GetActiveScene() != SceneManager.GetSceneByName("Start"))
+            InventoryUI.instance.Toggle();
     }
 }

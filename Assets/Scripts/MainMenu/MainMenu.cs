@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour
     public Button yesButton; 
     public Button noButton;
     public CanvasGroup recreateCanvasGroup;
+    private const string SEEN_INTRO_KEY = "LoreIntro_Seen";
 
     void Start()
     {
@@ -47,7 +48,7 @@ public class MainMenu : MonoBehaviour
             if (InventoryManager.instance != null) InventoryManager.instance.ClearAndLoadStarterItems();
             if (StatsManager.instance != null) StatsManager.instance.ResetStats();
 
-            SceneManager.LoadScene(1); // Chuyển sang Scene Creation (ID 1)
+            SceneManager.LoadScene("Creation"); // Chuyển sang Scene Creation (ID 1)
         }
         else
         {
@@ -57,6 +58,7 @@ public class MainMenu : MonoBehaviour
 
     public void OpenRecreateMenu()
     {
+        PlayerPrefs.DeleteKey(SEEN_INTRO_KEY);
         recreateCanvasGroup.alpha = 1f;
         recreateCanvasGroup.interactable = true;
         recreateCanvasGroup.blocksRaycasts = true;
