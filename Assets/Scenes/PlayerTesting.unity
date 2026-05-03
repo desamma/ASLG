@@ -3133,7 +3133,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8653719598885068355, guid: e6674822b8a4fb74882ade7c6d23b378, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8653719598885068355, guid: e6674822b8a4fb74882ade7c6d23b378, type: 3}
       propertyPath: m_TagString
@@ -5252,12 +5252,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8957c4fdaca57be48a8fecea99ac3109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  apiUrl: https://rom-consult-babies-additional.trycloudflare.com/v1/chat/completions
+  enableOnlineActivity: 1
+  geminiApiKeys: []
+  openAiUrls: []
   chatCanvas: {fileID: 200730324}
   npcTextDisplay: {fileID: 1285259198}
   playerInputField: {fileID: 431417118}
   sendButton: {fileID: 1656838383}
   exitButton: {fileID: 1475377903}
+  questButton: {fileID: 0}
+  aiQuestPanel: {fileID: 0}
+  aiQuestText: {fileID: 0}
   aliciaScript: {fileID: 79728813}
   playerMovement: {fileID: 1464415266}
   playerAttack: {fileID: 1464415268}
@@ -6056,7 +6061,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 751459520}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
@@ -6545,7 +6550,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 833478375}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
@@ -12749,7 +12754,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 134245782773997193, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.005004883
+      value: -0.0048828125
       objectReference: {fileID: 0}
     - target: {fileID: 134245782773997193, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -12757,11 +12762,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 863343521143023857, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.000030517578
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 863343521143023857, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000030517578
+      value: -0.000061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 2198021136691917623, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.0703125
+      objectReference: {fileID: 0}
+    - target: {fileID: 3608416723565070375, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3608416723565070375, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 7.4801025
+      objectReference: {fileID: 0}
+    - target: {fileID: 5584623946251485913, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.05987549
+      objectReference: {fileID: 0}
+    - target: {fileID: 5584623946251485913, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.0049438477
       objectReference: {fileID: 0}
     - target: {fileID: 6123585262856864736, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
       propertyPath: m_UiScaleMode
@@ -12786,6 +12811,10 @@ PrefabInstance:
     - target: {fileID: 7424043305019371593, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
       propertyPath: m_SortingOrder
       value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7940139370273075675, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.07055664
       objectReference: {fileID: 0}
     - target: {fileID: 8467677668856367109, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
       propertyPath: m_Pivot.x
@@ -12866,6 +12895,10 @@ PrefabInstance:
     - target: {fileID: 8467677668856367109, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9182646667349471284, guid: bf51dfc3d4c754d4db590acfe2e181fa, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 1.079956
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

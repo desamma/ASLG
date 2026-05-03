@@ -13,7 +13,7 @@ public class ClassManager : MonoBehaviour
     [SerializeField] private PlayerClassData archerData;
     [SerializeField] private PlayerClassData rogueData;
     [SerializeField] private PlayerClassData summonerData;
-    [SerializeField] private PlayerClassData testData;
+    //[SerializeField] private PlayerClassData testData;
 
     public PlayerClassData CurrentClassData { get; private set; }
     public PlayerClass SelectedClass { get; private set; } = PlayerClass.Test;
