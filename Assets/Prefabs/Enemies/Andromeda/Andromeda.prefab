@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: 648916660578394710}
   - component: {fileID: 3587152422956623083}
   - component: {fileID: 528000232991313604}
+  - component: {fileID: 7565813675086946293}
   m_Layer: 3
   m_Name: Andromeda
   m_TagString: Enemy
@@ -341,6 +342,19 @@ MonoBehaviour:
     EnrageThreshold: 0
   currentLevel: 1
   isDead: 0
+--- !u!114 &7565813675086946293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5753314420078804458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b473a2cbdd4eb4c8141c19b68b0581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 4
 --- !u!1 &5998056390106921844
 GameObject:
   m_ObjectHideFlags: 0

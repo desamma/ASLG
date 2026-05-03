@@ -37,6 +37,9 @@ public class QuestSaveData
     public List<string> activeQuestIDs = new List<string>();
     public List<string> completedQuestIDs = new List<string>();
     public Dictionary<string, List<int>> questProgress = new Dictionary<string, List<int>>();
+    public Dictionary<string, bool> questStatus = new Dictionary<string, bool>();
+
+    public Dictionary<string, long> dailyQuestCompletionTimes = new Dictionary<string, long>();
 }
 
 [Serializable]

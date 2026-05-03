@@ -77,7 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b75f73533173b74aab162a067686369, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewardImage: {fileID: 6275719411995524648}
+  rewardImage: {fileID: 0}
   rewardQuantity: {fileID: 8398036887606794125}
 --- !u!1 &4878648935011103460
 GameObject:
@@ -278,7 +278,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ba6ce63231ff6564bb342ae79ed7279b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a5ed25b58f185de4a923e87a21604518, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

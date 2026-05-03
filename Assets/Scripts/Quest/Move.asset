@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a748864d8035514dbae295ae61f0829, type: 3}
   m_Name: Move
   m_EditorClassIdentifier: 
+  questID: quest_daily_01
+  questType: 1
+  requiredLevel: 1
+  requiredMapUnlocked: 
+  requiredBossKilled: 0
   questName: Moving
   questDescription: Moving in 3 seconds
   questLevel: 1
-  questObjectives:
-  - description: Now moving in 3 seconds
-    target: {fileID: 0}
-    targetEnemyType: 0
-    requiresMovement: 1
-    requiredAmount: 3
+  rewardGold: 50
+  rewardExp: 50
+  questObjectives: []
   rewards:
-  - itemData: {fileID: 11400000, guid: db0687c3cc901ff408cc0ff3623e210c, type: 2}
+  - itemID: 
     quantity: 1
+    isRandomItem: 0

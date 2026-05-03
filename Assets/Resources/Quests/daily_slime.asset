@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a748864d8035514dbae295ae61f0829, type: 3}
+  m_Name: daily_slime
+  m_EditorClassIdentifier: 
+  questID: kill_slime_01
+  questType: 1
+  requiredLevel: 1
+  requiredMapUnlocked: 
+  requiredBossKilled: 15
+  requiredPreviousQuest: {fileID: 0}
+  questName: 'Kill Slime '
+  questDescription: Kill 3 slimes
+  questLevel: 1
+  rewardGold: 100
+  rewardExp: 200
+  questObjectives:
+  - description: Kill 3 slimes
+    target: {fileID: 8217960046450129111, guid: b02e301c95cfd8a46953fd032f13abbf, type: 3}
+    targetEnemyType: 15
+    targetMapName: 
+    requiresTeleport: 0
+    requiresMovement: 0
+    requiredAmount: 3
+  rewards:
+  - itemID: 
+    quantity: 1
+    isRandomItem: 0

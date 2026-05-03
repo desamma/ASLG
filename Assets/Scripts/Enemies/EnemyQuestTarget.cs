@@ -4,23 +4,39 @@ using UnityEngine;
 public class EnemyQuestTarget : MonoBehaviour
 {
     [Header("Quest Target Settings")]
-    [Tooltip("Select the specific type of this enemy. The Quest System uses this to track required kills (e.g., set to 'Slime' for a Slime prefab).")]
+    [Tooltip("Chọn loại quái vật từ danh sách Enum (VD: Slime).")]
     public EnemyType myType;
 
-    // Global broadcast channel for enemy deaths
     public static event Action<EnemyType> OnEnemyDied;
 
+    private bool isApplicationQuitting = false;
+
+    private void OnApplicationQuit()
+    {
+        isApplicationQuitting = true;
+    }
+
     /// <summary>
-    /// Call this method from the enemy's Health/Stats script exactly when its HP reaches 0.
+    /// Hàm của Unity: Tự động chạy khi gameObject bị xóa (Destroy)
     /// </summary>
-    public void NotifyDeath()
+    private void OnDestroy()
+    {
+        if (!isApplicationQuitting && gameObject.scene.isLoaded)
+        {
+            NotifyDeath();
+        }
+    }
+
+    private void NotifyDeath()
     {
         if (myType == EnemyType.None)
         {
-            Debug.LogError($"[Missing Setup] The enemy '{gameObject.name}' has no EnemyType assigned in the EnemyQuestTarget script!");
+            Debug.LogWarning($"[Quest System] Quái '{gameObject.name}' bị tiêu diệt nhưng chưa được gắn EnemyType!");
             return;
         }
 
+        // Phát thông báo cho QuestManager biết
         OnEnemyDied?.Invoke(myType);
+        Debug.Log($"[Quest System] Đã tự động báo tử: {myType}");
     }
 }

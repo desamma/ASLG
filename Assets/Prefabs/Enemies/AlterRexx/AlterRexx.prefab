@@ -78,6 +78,7 @@ GameObject:
   - component: {fileID: 7843879566687003004}
   - component: {fileID: 6833721947544121967}
   - component: {fileID: 3256247584448044599}
+  - component: {fileID: -8483240906239682904}
   m_Layer: 3
   m_Name: AlterRexx
   m_TagString: Enemy
@@ -288,8 +289,12 @@ MonoBehaviour:
     MagicResist: 0
     Speed: 0
     ExpReward: 0
+    GoldReward: 0
     AttackRange: 0
     AttackCooldown: 0
+    KnockbackForce: 0
+    KnockbackTime: 0
+    StunTime: 0
   isDead: 0
 --- !u!114 &3256247584448044599
 MonoBehaviour:
@@ -304,6 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 6833721947544121967}
+  isKnockbackable: 1
   behavior:
     DetectionRange: 1
     ChaseRange: 1
@@ -325,3 +331,16 @@ MonoBehaviour:
   volume: 0.2
   minAudioDistance: 1
   maxAudioDistance: 100
+--- !u!114 &-8483240906239682904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3665754767460197776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b473a2cbdd4eb4c8141c19b68b0581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 0

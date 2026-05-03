@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 5393610601723819902}
   - component: {fileID: 7747914096168600801}
   - component: {fileID: 7205975618735708259}
+  - component: {fileID: -7770719539980170237}
   m_Layer: 3
   m_Name: KaraWinterBladeMK2
   m_TagString: Enemy
@@ -413,6 +414,19 @@ MonoBehaviour:
   isPlayer: 0
   vfxAnchor: {fileID: 1852455233561346940}
   destroyDelay: 2
+--- !u!114 &-7770719539980170237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4124837341439492768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b473a2cbdd4eb4c8141c19b68b0581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 3
 --- !u!1 &4879181759483315442
 GameObject:
   m_ObjectHideFlags: 0

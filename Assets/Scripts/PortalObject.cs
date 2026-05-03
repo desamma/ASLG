@@ -4,7 +4,7 @@ public class PortalObject : MonoBehaviour
 {
     [Header("Cài đặt Tế Đàn")]
     public float interactDistance = 3f;
-    public GameObject interactHint; // Chữ "Nhấn F để dịch chuyển"
+    public GameObject interactHint; 
 
     private Transform playerTransform;
 
@@ -27,6 +27,11 @@ public class PortalObject : MonoBehaviour
             if (WorldMapManager.Instance != null)
             {
                 WorldMapManager.Instance.OpenMapForTeleport();
+            }
+
+            if (QuestManager.instance != null)
+            {
+                QuestManager.instance.OnPlayerTeleported();
             }
         }
     }
