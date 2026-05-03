@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 3404049085707535281}
   - component: {fileID: 5404712226148250833}
   - component: {fileID: 2584051434560106519}
+  - component: {fileID: -840886739863206742}
   m_Layer: 3
   m_Name: BringerOfDeath
   m_TagString: Enemy
@@ -276,6 +277,19 @@ MonoBehaviour:
   isDead: 0
   damageAudioClip: {fileID: 8300000, guid: df69c2cb5d8c474428300a2f7ff53da1, type: 3}
   volume: 1
+--- !u!114 &-840886739863206742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3831566749463287279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b473a2cbdd4eb4c8141c19b68b0581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 7
 --- !u!1 &5162682603909260349
 GameObject:
   m_ObjectHideFlags: 0

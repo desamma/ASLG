@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a748864d8035514dbae295ae61f0829, type: 3}
+  m_Name: MainQuest3
+  m_EditorClassIdentifier: 
+  questID: main_quest_3
+  questType: 0
+  requiredLevel: 3
+  requiredMapUnlocked: 
+  requiredBossKilled: 0
+  requiredPreviousQuest: {fileID: 11400000, guid: 5cf9240a12abf0c46a1cdebc40ed38fd, type: 2}
+  questName: Main quest
+  questDescription: Finding and moving through the space portal 2
+  questLevel: 3
+  rewardGold: 200
+  rewardExp: 250
+  questObjectives:
+  - description: Finding and moving through the space portal
+    target: {fileID: 0}
+    targetEnemyType: 0
+    targetMapName: 
+    requiresTeleport: 0
+    requiresMovement: 0
+    requiredAmount: 1
+  rewards:
+  - itemID: 
+    quantity: 2
+    isRandomItem: 1

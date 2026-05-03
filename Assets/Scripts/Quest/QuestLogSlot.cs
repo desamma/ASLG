@@ -9,36 +9,31 @@ public class QuestLogSlot : MonoBehaviour
     [SerializeField] private TMP_Text questLevelText;
 
     public QuestSO currentQuest;
-    public QuestLogUI questLogUI;
+
+    public void Initialize(QuestSO questSO)
+    {
+        currentQuest = questSO;
+
+        if (questNameText != null)
+            questNameText.text = currentQuest.questName;
+
+        if (questLevelText != null)
+            questLevelText.text = "Lv." + currentQuest.questLevel.ToString();
+
+        gameObject.SetActive(true);
+    }
 
     private void OnValidate()
     {
         if (currentQuest != null)
-            SetQuests(currentQuest);
+            Initialize(currentQuest);
         else
             gameObject.SetActive(false);
     }
 
-    public void SetQuests(QuestSO questSO)
-    {
-        currentQuest = questSO;
-        questNameText.text = currentQuest.questName;
-        questLevelText.text = "Lv." + questSO.questLevel.ToString();
-        gameObject.SetActive(true);
-    }
-
-    public void ClearSlot() 
+    public void ClearSlot()
     {
         currentQuest = null;
         gameObject.SetActive(false);
-    }
-
-    public void OnSlotClick()
-    {
-        if (questLogUI != null && currentQuest != null)
-        {
-            // Gọi hàm xử lý click mới, để UI tự quyết định hiển thị nút gì
-            questLogUI.OnQuestSlotClicked(currentQuest); 
-        }
     }
 }

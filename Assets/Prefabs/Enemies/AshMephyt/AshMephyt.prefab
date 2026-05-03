@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 3590163018594690792}
   - component: {fileID: 2422130641270107866}
   - component: {fileID: 2241113427373051428}
+  - component: {fileID: 3922618456653603456}
   m_Layer: 3
   m_Name: AshMephyt
   m_TagString: Enemy
@@ -444,6 +445,19 @@ MonoBehaviour:
   detectionPoint: {fileID: 722183836987121982}
   idleToPatrolWaitTime: 5
   patrolDistance: 3
+--- !u!114 &3922618456653603456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5729182800678616739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b473a2cbdd4eb4c8141c19b68b0581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 6
 --- !u!1 &6732100102273567901
 GameObject:
   m_ObjectHideFlags: 0

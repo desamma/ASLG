@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-[DisallowMultipleComponent]
 
+[DisallowMultipleComponent]
 /// <summary>
 /// Andromeda enemy Stats and Health
 /// </summary>
@@ -36,17 +36,22 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
             bossHealthUI.Show();
         }
         var bossBorder = FindAnyObjectByType<BossFightBorder>();
-        bossBorder.AddEnemy(gameObject);
+        if (bossBorder != null)
+        {
+            bossBorder.AddEnemy(gameObject);
+        }
     }
 
     private void OnEnable()
     {
-        DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
+        if (DifficultyManager.Instance != null)
+            DifficultyManager.Instance.OnDifficultyChanged += OnDifficultyChanged;
     }
 
     private void OnDisable()
     {
-        DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
+        if (DifficultyManager.Instance != null)
+            DifficultyManager.Instance.OnDifficultyChanged -= OnDifficultyChanged;
     }
 
     public void ChangeHealth(float amount)
@@ -60,7 +65,11 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
         }
 
         stats.CurrentHP += amount;
-        bossHealthUI.UpdateHealth(stats.CurrentHP);
+
+        if (bossHealthUI != null)
+        {
+            bossHealthUI.UpdateHealth(stats.CurrentHP);
+        }
 
         if (stats.CurrentHP > stats.MaxHP)
         {
@@ -70,13 +79,12 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
         {
             stats.CurrentHP = 0;
             isDead = true;
-            StatsManager.instance?.AddExp(Mathf.RoundToInt(stats.ExpReward));
-            StatsManager.instance?.AddGold(Mathf.RoundToInt(stats.GoldReward));
 
-            // =========================================================
-            // THÊM MỚI: BÁO CÁO CHO HỆ THỐNG NHIỆM VỤ LÀ BOSS ĐÃ CHẾT
-            // =========================================================
-            GetComponent<EnemyQuestTarget>()?.NotifyDeath();
+            if (StatsManager.instance != null)
+            {
+                StatsManager.instance.AddExp(Mathf.RoundToInt(stats.ExpReward));
+                StatsManager.instance.AddGold(Mathf.RoundToInt(stats.GoldReward));
+            }
 
             if (movementComponent != null)
             {
@@ -95,11 +103,17 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
     {
         var data = EnemyDataRepository.LoadEnemy("ArgeonHighmayneMK2");
 
-        stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
-        behavior = data.Behavior;
+        if (data != null)
+        {
+            stats = EnemyDataRepository.ApplyScalling(data.Stats, data.Growth, currentLevel);
+            behavior = data.Behavior;
+        }
 
-        stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
-        behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        if (DifficultyManager.Instance != null)
+        {
+            stats.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+            behavior.ApplyDifficulty(DifficultyManager.Instance.CurrentDifficulty);
+        }
 
         isDead = false;
     }
@@ -114,6 +128,9 @@ public class Enemy_ArgeonHighmayneMK2_Health : MonoBehaviour, IEnemy_Health
     public void DestroyEnemy()
     {
         Destroy(gameObject);
-        bossHealthUI.Hide();
+        if (bossHealthUI != null)
+        {
+            bossHealthUI.Hide();
+        }
     }
 }

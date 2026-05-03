@@ -162,6 +162,7 @@ GameObject:
   - component: {fileID: 8382529338531385028}
   - component: {fileID: 756714757113027967}
   - component: {fileID: 2869238438004370744}
+  - component: {fileID: 1323125140367482682}
   m_Layer: 3
   m_Name: Coalfist
   m_TagString: Enemy
@@ -419,6 +420,19 @@ MonoBehaviour:
   detectionPoint: {fileID: 6034381029366499329}
   idleToPatrolWaitTime: 5
   patrolDistance: 3
+--- !u!114 &1323125140367482682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8363892014152547967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b473a2cbdd4eb4c8141c19b68b0581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 10
 --- !u!1001 &7698045717643014753
 PrefabInstance:
   m_ObjectHideFlags: 0
