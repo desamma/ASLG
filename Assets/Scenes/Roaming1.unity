@@ -162,9 +162,33 @@ MonoBehaviour:
   - {fileID: 687891589065825552, guid: b879d7b94cedcdf41ab486c5e5e36695, type: 3}
   farmDropEntries:
   - itemID: con_health_potion
-    dropRate: 0.3
+    dropRate: 0.15
   - itemID: con_mana_potion
+    dropRate: 0.12
+  - itemID: msc_rough_twine
+    dropRate: 0.65
+  - itemID: msc_whetstone
+    dropRate: 0.35
+  - itemID: msc_iron_scrap
+    dropRate: 0.7
+  - itemID: msc_leather_strip
+    dropRate: 0.5
+  - itemID: msc_cloth_scraps
+    dropRate: 0.65
+  - itemID: msc_iron_ingot
+    dropRate: 0.2
+  - itemID: msc_hardened_bone
+    dropRate: 0.25
+  - itemID: msc_copper_wire
+    dropRate: 0.15
+  - itemID: msc_chain_links
+    dropRate: 0.1
+  - itemID: msc_rivets
     dropRate: 0.3
+  - itemID: msc_pine_tar
+    dropRate: 0.35
+  - itemID: msc_tallow
+    dropRate: 0.4
   scaleEnemyLevelByPlayerLevel: 1
   minLevelOffsetFromPlayer: -5
   maxLevelOffsetFromPlayer: -2
@@ -36774,7 +36798,7 @@ Tilemap:
       - {fileID: 1145407303, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1368572362, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1285190508, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 8, y: -34, z: 0}
@@ -37029,7 +37053,7 @@ Tilemap:
       - {fileID: 1145407303, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1368572362, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1285190508, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 25, y: -34, z: 0}
@@ -37779,7 +37803,7 @@ Tilemap:
       - {fileID: 680274100, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 907413992, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 34393759, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -19, y: -1, z: 0}
@@ -38424,7 +38448,7 @@ Tilemap:
       - {fileID: -206701831, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1448543681, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 228511767, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 7, y: 16, z: 0}
@@ -38604,7 +38628,7 @@ Tilemap:
       - {fileID: -206701831, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1448543681, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 228511767, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 19, y: 16, z: 0}
@@ -38934,7 +38958,7 @@ Tilemap:
       - {fileID: -206701831, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: -1448543681, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
       - {fileID: 228511767, guid: 90c090aa57b40114a877388cab7cb4e9, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 41, y: 16, z: 0}
@@ -64323,9 +64347,33 @@ MonoBehaviour:
   - {fileID: 687891589065825552, guid: b879d7b94cedcdf41ab486c5e5e36695, type: 3}
   farmDropEntries:
   - itemID: con_health_potion
-    dropRate: 0.3
+    dropRate: 0.15
   - itemID: con_mana_potion
+    dropRate: 0.12
+  - itemID: msc_rough_twine
+    dropRate: 0.65
+  - itemID: msc_whetstone
+    dropRate: 0.35
+  - itemID: msc_iron_scrap
+    dropRate: 0.7
+  - itemID: msc_leather_strip
+    dropRate: 0.5
+  - itemID: msc_cloth_scraps
+    dropRate: 0.65
+  - itemID: msc_iron_ingot
+    dropRate: 0.2
+  - itemID: msc_hardened_bone
+    dropRate: 0.25
+  - itemID: msc_copper_wire
+    dropRate: 0.15
+  - itemID: msc_chain_links
+    dropRate: 0.1
+  - itemID: msc_rivets
     dropRate: 0.3
+  - itemID: msc_pine_tar
+    dropRate: 0.35
+  - itemID: msc_tallow
+    dropRate: 0.4
   scaleEnemyLevelByPlayerLevel: 1
   minLevelOffsetFromPlayer: -5
   maxLevelOffsetFromPlayer: -2

@@ -5295,7 +5295,33 @@ MonoBehaviour:
   - {fileID: 8888211439400148669, guid: 3d1b567a93868a1428a60f370f0b94d8, type: 3}
   farmDropEntries:
   - itemID: con_health_potion
-    dropRate: 1
+    dropRate: 0.15
+  - itemID: con_mana_potion
+    dropRate: 0.12
+  - itemID: msc_rough_twine
+    dropRate: 0.65
+  - itemID: msc_whetstone
+    dropRate: 0.35
+  - itemID: msc_iron_scrap
+    dropRate: 0.7
+  - itemID: msc_leather_strip
+    dropRate: 0.5
+  - itemID: msc_cloth_scraps
+    dropRate: 0.65
+  - itemID: msc_iron_ingot
+    dropRate: 0.2
+  - itemID: msc_hardened_bone
+    dropRate: 0.25
+  - itemID: msc_copper_wire
+    dropRate: 0.15
+  - itemID: msc_chain_links
+    dropRate: 0.1
+  - itemID: msc_rivets
+    dropRate: 0.3
+  - itemID: msc_pine_tar
+    dropRate: 0.35
+  - itemID: msc_tallow
+    dropRate: 0.4
   scaleEnemyLevelByPlayerLevel: 0
   minLevelOffsetFromPlayer: -5
   maxLevelOffsetFromPlayer: 2
