@@ -163,6 +163,7 @@ GameObject:
   - component: {fileID: 7066981295910279213}
   - component: {fileID: 4076632972476789794}
   - component: {fileID: 1857916283805878432}
+  - component: {fileID: 210556032107093485}
   m_Layer: 3
   m_Name: Pax
   m_TagString: Enemy
@@ -460,3 +461,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.7301371, y: 0.49526238}
   m_EdgeRadius: 0
+--- !u!114 &210556032107093485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8089928883051871313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b473a2cbdd4eb4c8141c19b68b0581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 13

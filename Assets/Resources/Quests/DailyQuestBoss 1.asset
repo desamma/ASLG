@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a748864d8035514dbae295ae61f0829, type: 3}
+  m_Name: DailyQuestBoss 1
+  m_EditorClassIdentifier: 
+  questID: Daily_Boss_1
+  questType: 1
+  requiredLevel: 10
+  requiredMapUnlocked: 
+  requiredBossKilled: 1
+  requiredPreviousQuest: {fileID: 0}
+  questName: Defeat boss
+  questDescription: Find Ash Mephyt and defeat
+  questLevel: 10
+  rewardGold: 500
+  rewardExp: 1000
+  questObjectives:
+  - description: defeat boss
+    target: {fileID: 1492802115615131335, guid: c213aed68fe2572418b280b3c4a83e28, type: 3}
+    targetEnemyType: 1
+    targetMapName: 
+    requiresTeleport: 0
+    requiresMovement: 0
+    requiredAmount: 1
+  rewards:
+  - itemID: 
+    quantity: 3
+    isRandomItem: 1

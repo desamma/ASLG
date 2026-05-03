@@ -1156,7 +1156,35 @@ MonoBehaviour:
   - {fileID: 8363892014152547967, guid: 40b0da4eb44502545b8d9dc0e2ffadce, type: 3}
   - {fileID: 687891589065825552, guid: b879d7b94cedcdf41ab486c5e5e36695, type: 3}
   - {fileID: 8363892014152547967, guid: 40b0da4eb44502545b8d9dc0e2ffadce, type: 3}
-  farmDropEntries: []
+  farmDropEntries:
+  - itemID: con_health_potion
+    dropRate: 0.15
+  - itemID: con_mana_potion
+    dropRate: 0.12
+  - itemID: msc_rough_twine
+    dropRate: 0.65
+  - itemID: msc_whetstone
+    dropRate: 0.35
+  - itemID: msc_iron_scrap
+    dropRate: 0.7
+  - itemID: msc_leather_strip
+    dropRate: 0.5
+  - itemID: msc_cloth_scraps
+    dropRate: 0.65
+  - itemID: msc_iron_ingot
+    dropRate: 0.2
+  - itemID: msc_hardened_bone
+    dropRate: 0.25
+  - itemID: msc_copper_wire
+    dropRate: 0.15
+  - itemID: msc_chain_links
+    dropRate: 0.1
+  - itemID: msc_rivets
+    dropRate: 0.3
+  - itemID: msc_pine_tar
+    dropRate: 0.35
+  - itemID: msc_tallow
+    dropRate: 0.4
   scaleEnemyLevelByPlayerLevel: 1
   minLevelOffsetFromPlayer: -5
   maxLevelOffsetFromPlayer: 2
@@ -35174,7 +35202,35 @@ MonoBehaviour:
   - {fileID: 3831566749463287279, guid: 8df13e59a3bfc734db16e7ef4edd0028, type: 3}
   - {fileID: 8023044424760747169, guid: 6d7ba79c6d1d9ec4da71e2e10ecaf418, type: 3}
   - {fileID: 8363892014152547967, guid: 40b0da4eb44502545b8d9dc0e2ffadce, type: 3}
-  farmDropEntries: []
+  farmDropEntries:
+  - itemID: con_health_potion
+    dropRate: 0.15
+  - itemID: con_mana_potion
+    dropRate: 0.12
+  - itemID: msc_rough_twine
+    dropRate: 0.65
+  - itemID: msc_whetstone
+    dropRate: 0.35
+  - itemID: msc_iron_scrap
+    dropRate: 0.7
+  - itemID: msc_leather_strip
+    dropRate: 0.5
+  - itemID: msc_cloth_scraps
+    dropRate: 0.65
+  - itemID: msc_iron_ingot
+    dropRate: 0.2
+  - itemID: msc_hardened_bone
+    dropRate: 0.25
+  - itemID: msc_copper_wire
+    dropRate: 0.15
+  - itemID: msc_chain_links
+    dropRate: 0.1
+  - itemID: msc_rivets
+    dropRate: 0.3
+  - itemID: msc_pine_tar
+    dropRate: 0.35
+  - itemID: msc_tallow
+    dropRate: 0.4
   scaleEnemyLevelByPlayerLevel: 1
   minLevelOffsetFromPlayer: -5
   maxLevelOffsetFromPlayer: 2

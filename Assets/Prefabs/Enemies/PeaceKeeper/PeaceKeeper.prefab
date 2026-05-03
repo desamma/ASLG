@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: 7341746387677254529}
   - component: {fileID: 153635368871575914}
   - component: {fileID: 3450703810586332211}
+  - component: {fileID: -5251724558535948498}
   m_Layer: 3
   m_Name: PeaceKeeper
   m_TagString: Enemy
@@ -362,6 +363,19 @@ MonoBehaviour:
   aggressionHigh: 3
   aggressionRampDuration: 2
   aggressionCooldown: 5
+--- !u!114 &-5251724558535948498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4953295983069915907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b473a2cbdd4eb4c8141c19b68b0581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 14
 --- !u!1 &5416928641315884664
 GameObject:
   m_ObjectHideFlags: 0

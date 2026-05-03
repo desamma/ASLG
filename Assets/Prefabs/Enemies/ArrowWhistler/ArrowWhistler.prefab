@@ -162,6 +162,7 @@ GameObject:
   - component: {fileID: 2083520546785987010}
   - component: {fileID: 6318315133275473992}
   - component: {fileID: 309854027843366346}
+  - component: {fileID: -4215888450860405579}
   m_Layer: 3
   m_Name: ArrowWhistler
   m_TagString: Enemy
@@ -422,3 +423,16 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 34d09b1650d6c774ead75c2c38172cdf, type: 3}
   bowDraw: {fileID: 8300000, guid: 60eaa6dd05b01134097fdabb04a8e174, type: 3}
   volume: 1
+--- !u!114 &-4215888450860405579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8023044424760747169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b473a2cbdd4eb4c8141c19b68b0581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 5

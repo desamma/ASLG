@@ -490,6 +490,32 @@ MonoBehaviour:
   - {fileID: 2951733918824199701, guid: 9275748acf3b75140a21f5220893cabb, type: 3}
   farmDropEntries:
   - itemID: con_health_potion
+    dropRate: 0.15
+  - itemID: con_mana_potion
+    dropRate: 0.12
+  - itemID: msc_rough_twine
+    dropRate: 0.65
+  - itemID: msc_whetstone
+    dropRate: 0.35
+  - itemID: msc_iron_scrap
+    dropRate: 0.7
+  - itemID: msc_leather_strip
+    dropRate: 0.5
+  - itemID: msc_cloth_scraps
+    dropRate: 0.65
+  - itemID: msc_iron_ingot
+    dropRate: 0.2
+  - itemID: msc_hardened_bone
+    dropRate: 0.25
+  - itemID: msc_copper_wire
+    dropRate: 0.15
+  - itemID: msc_chain_links
+    dropRate: 0.1
+  - itemID: msc_rivets
+    dropRate: 0.3
+  - itemID: msc_pine_tar
+    dropRate: 0.35
+  - itemID: msc_tallow
     dropRate: 0.4
   scaleEnemyLevelByPlayerLevel: 1
   minLevelOffsetFromPlayer: -5
@@ -15171,6 +15197,32 @@ MonoBehaviour:
   - {fileID: 2951733918824199701, guid: 9275748acf3b75140a21f5220893cabb, type: 3}
   farmDropEntries:
   - itemID: con_health_potion
+    dropRate: 0.15
+  - itemID: con_mana_potion
+    dropRate: 0.12
+  - itemID: msc_rough_twine
+    dropRate: 0.65
+  - itemID: msc_whetstone
+    dropRate: 0.35
+  - itemID: msc_iron_scrap
+    dropRate: 0.7
+  - itemID: msc_leather_strip
+    dropRate: 0.5
+  - itemID: msc_cloth_scraps
+    dropRate: 0.65
+  - itemID: msc_iron_ingot
+    dropRate: 0.2
+  - itemID: msc_hardened_bone
+    dropRate: 0.25
+  - itemID: msc_copper_wire
+    dropRate: 0.15
+  - itemID: msc_chain_links
+    dropRate: 0.1
+  - itemID: msc_rivets
+    dropRate: 0.3
+  - itemID: msc_pine_tar
+    dropRate: 0.35
+  - itemID: msc_tallow
     dropRate: 0.4
   scaleEnemyLevelByPlayerLevel: 1
   minLevelOffsetFromPlayer: -5

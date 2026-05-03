@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 5065978323015826662}
   - component: {fileID: 7171116340309194434}
   - component: {fileID: 6958379989903448751}
+  - component: {fileID: -6022915399540243085}
   m_Layer: 3
   m_Name: KaleosXaanMK2
   m_TagString: Enemy
@@ -448,6 +449,19 @@ MonoBehaviour:
   isPlayer: 0
   vfxAnchor: {fileID: 7298647170712069107}
   destroyDelay: 2
+--- !u!114 &-6022915399540243085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2314203090524842943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b473a2cbdd4eb4c8141c19b68b0581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 2
 --- !u!1 &2345226777245344867
 GameObject:
   m_ObjectHideFlags: 0
