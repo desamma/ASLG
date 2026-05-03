@@ -30,8 +30,10 @@ public class CharacterCreation : MonoBehaviour
     [SerializeField] private TMP_Text attackCooldownText;
     [SerializeField] private TMP_Text attatckTypeText;
 
-    [Header("Scene")]
-    [SerializeField] private int gameSceneIndex = 5;
+    //[Header("Scene")]
+    //[SerializeField] private string gameSceneName = "StarterVillage
+
+    public event System.Action OnStartButtonClickEvent;
 
     private PlayerClass selectedClass = PlayerClass.Knight;
 
@@ -119,6 +121,7 @@ public class CharacterCreation : MonoBehaviour
         if (string.IsNullOrWhiteSpace(playerName)) return;
 
         StatsManager.instance.playerName = playerName;
-        SceneManager.LoadScene(gameSceneIndex);
+        //SceneManager.LoadScene("StarterVillage");
+        OnStartButtonClickEvent?.Invoke();
     }
 }
