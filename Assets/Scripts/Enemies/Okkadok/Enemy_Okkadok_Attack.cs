@@ -34,31 +34,36 @@ public class Enemy_Okkadok_Attack : MonoBehaviour
     public void NormalAttack(int attackNumber)
     {
         bool hitPlayer = false;
-        var hits = Physics2D.OverlapBoxAll(attackPoint.position, attackHitBox, playerLayer);
+        var hits = Physics2D.OverlapBoxAll(attackPoint.position, attackHitBox, 0f, playerLayer);
         if (hits.Length > 0)
         {
             foreach (var hit in hits)
             {
-                if (hit.CompareTag("Player"))
+                if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
                 {
                     player = hit.gameObject;
-                    player.TryGetComponent<PlayerMovement>(out var playerMovement);
-                    switch (attackNumber)
+                    
+                    float multiplier = attackNumber switch
                     {
-                        case 1:
-                            StatsManager.instance.TakeDamage(health.stats.Strength * firstAttackMultiplier);
-                            break;
-                        case 2:
-                            StatsManager.instance.TakeDamage(health.stats.Strength * secondAttackMultiplier);
+                        1 => firstAttackMultiplier,
+                        2 => secondAttackMultiplier,
+                        _ => 1f
+                    };
 
-                            if (playerMovement != null)
-                            {
-                                playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
-                            }
-                            break;
-                        default:
-                            StatsManager.instance.TakeDamage(health.stats.Strength);
-                            break;
+                    if (hit.CompareTag("Player"))
+                    {
+                        StatsManager.instance.TakeDamage(health.stats.Strength * multiplier);
+                        if (attackNumber == 2 && player.TryGetComponent<PlayerMovement>(out var playerMovement))
+                        {
+                            playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
+                        }
+                    }
+                    else if (hit.CompareTag("NPC"))
+                    {
+                        if (hit.TryGetComponent<NPCCompanion>(out var npc))
+                        {
+                            npc.TakeDamage(health.stats.Strength * multiplier, false);
+                        }
                     }
 
                     if (hitPlayer == false)

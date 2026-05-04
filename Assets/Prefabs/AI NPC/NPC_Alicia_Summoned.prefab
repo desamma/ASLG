@@ -494,7 +494,7 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -514,6 +514,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcID: npc_alicia
   npcName: Alicia
+  systemPrompt: 'You are Alicia. Reply strictly in English (1-3 sentences). Append
+    [REL: X] at the end.'
+  companionClass: 0
   relationshipScore: 0
   maxHealth: 500
   currentHealth: 0
@@ -522,6 +525,7 @@ MonoBehaviour:
   followDistance: 4
   moveSpeed: 5
   magicBulletPrefab: {fileID: 4985830346478485982, guid: 37ddaa10e0a21324b8aaeb2aebfcf332, type: 3}
+  ultimateEffectPrefab: {fileID: 0}
   firePoint: {fileID: 2962647063834380551}
   attackRange: 10
   baseAttackCooldown: 2

@@ -382,7 +382,7 @@ MonoBehaviour:
   movementComponent: {fileID: 0}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   player: {fileID: 0}
   projectile: {fileID: 810035435956559075, guid: 89ee339a881408942a4723f0ffa93628, type: 3}
   frozen: {fileID: 2921853918720526967, guid: c6dae3af087281d4483026904ad95a83, type: 3}
@@ -458,7 +458,7 @@ MonoBehaviour:
   animator: {fileID: 864754837662349962}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   attackComponent: {fileID: 4610264118796218309}
   detectionPoint: {fileID: 4474612198587669004}
 --- !u!114 &3654042612316359593

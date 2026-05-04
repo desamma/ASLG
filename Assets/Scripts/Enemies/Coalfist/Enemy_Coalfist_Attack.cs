@@ -37,9 +37,6 @@ public class Enemy_Coalfist_Attack : MonoBehaviour
         if (movement == null)
             movement = GetComponent<Enemy_Coalfist_Movement>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
-
         difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
     }
 
@@ -51,17 +48,18 @@ public class Enemy_Coalfist_Attack : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (!hit.CompareTag("Player")) continue;
-
-            player = hit.transform;
-            if (hitPlayer)
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
             {
-                PlayAudio(1);
-                hitPlayer = false;
-            }
+                player = hit.transform;
+                if (hitPlayer)
+                {
+                    PlayAudio(1);
+                    hitPlayer = false;
+                }
 
-            DealDamage();
-            hitEffect.SetActive(true);
+                DealDamage();
+                hitEffect.SetActive(true);
+            }
         }
         hitPlayer = true;
     }
@@ -70,10 +68,21 @@ public class Enemy_Coalfist_Attack : MonoBehaviour
     {
         if (player == null) return;
         float damage = health.stats.Strength * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
-        StatsManager.instance.TakeDamage(damage);
-        if(player.TryGetComponent<PlayerMovement>(out var playerMovement))
+        
+        if (player.CompareTag("Player"))
         {
-            playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
+            StatsManager.instance.TakeDamage(damage);
+            if(player.TryGetComponent<PlayerMovement>(out var playerMovement))
+            {
+                playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
+            }
+        }
+        else if (player.CompareTag("NPC"))
+        {
+            if (player.TryGetComponent<NPCCompanion>(out var npc))
+            {
+                npc.TakeDamage(damage, false);
+            }
         }
     }
 

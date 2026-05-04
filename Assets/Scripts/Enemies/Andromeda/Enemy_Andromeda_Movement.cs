@@ -65,11 +65,6 @@ public class Enemy_Andromeda_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-        {
-            playerLayer = LayerMask.GetMask("Player");
-        }
-
         attackRecovery = new EnemyAttackRecovery(this, rb);
         knockbackHandler = new KnockbackHandler(this, rb);
 

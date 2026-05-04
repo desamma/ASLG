@@ -389,7 +389,7 @@ MonoBehaviour:
   secondAttackMultiplier: 1.5
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   attackPoint: {fileID: 4639096325513837904}
   attackHitBox: {x: 2.2, y: 1.1, z: 0}
   attackHitEffect: {fileID: 6714486070070996579, guid: 5dfd3f3d30fb919498c6e6b15c42b7ac, type: 3}
@@ -425,7 +425,7 @@ MonoBehaviour:
   animator: {fileID: 2705404525209801753}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   player: {fileID: 0}
   attackComponent: {fileID: 8363830029179227847}
   detectionPoint: {fileID: 7050320934421540381}

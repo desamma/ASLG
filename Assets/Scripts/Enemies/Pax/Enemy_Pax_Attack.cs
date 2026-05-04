@@ -37,18 +37,6 @@ public class Enemy_Pax_Attack : MonoBehaviour
     private void Start()
     {
         stats = GetComponent<Enemy_Pax_Health>().stats;
-
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-        {
-            player = playerObj.transform;
-        }
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-        {
-            playerLayer = LayerMask.GetMask("Player");
-        }
-
         rb = GetComponent<Rigidbody2D>();
         movementComponent = GetComponent<Enemy_Pax_Movement>();
     }
@@ -63,6 +51,7 @@ public class Enemy_Pax_Attack : MonoBehaviour
 
     public void LauchForward()
     {
+        player = movementComponent.PlayerTransform;
         if (player == null) return;
         Vector2 direction = (player.position - transform.position).normalized;
         direction.x *= jumpForce * movementComponent.GetBehavior().Aggression;
@@ -95,7 +84,7 @@ public class Enemy_Pax_Attack : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
             {
                 if (!hitEffectAnimated)
                 {
@@ -104,13 +93,20 @@ public class Enemy_Pax_Attack : MonoBehaviour
                 }
                 if (Time.time - lastDamageTime >= damageInterval)
                 {
-                    StatsManager.instance.TakeDamage(stats.Strength * attackMultiplier);
-
-                    player.TryGetComponent<PlayerMovement>(out var playerMovement);
-
-                    if (playerMovement != null)
+                    if (hit.CompareTag("Player"))
                     {
-                        playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                        StatsManager.instance.TakeDamage(stats.Strength * attackMultiplier);
+                        if (hit.TryGetComponent<PlayerMovement>(out var playerMovement))
+                        {
+                            playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                        }
+                    }
+                    else if (hit.CompareTag("NPC"))
+                    {
+                        if (hit.TryGetComponent<NPCCompanion>(out var npc))
+                        {
+                            npc.TakeDamage(stats.Strength * attackMultiplier, false);
+                        }
                     }
 
                     lastDamageTime = Time.time;

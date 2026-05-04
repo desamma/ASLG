@@ -263,7 +263,7 @@ MonoBehaviour:
   attackPoint: {fileID: 4202499218142490024}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   lightningBoltPrefab: {fileID: 3923498346312241271, guid: 5aea7ae6e031cba40a1a02ef662ff384, type: 3}
   charge: {fileID: 8300000, guid: 5025929810f4bef4a82709fbdd32ace5, type: 3}
   meleeAttackHitAudioClip: {fileID: 8300000, guid: f78a6f8d02ccd8644bc63de2f5c9031f, type: 3}
@@ -323,7 +323,7 @@ MonoBehaviour:
   animator: {fileID: 4904416308540737462}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   player: {fileID: 0}
   attackComponent: {fileID: 7843879566687003004}
   detectionPoint: {fileID: 7236448939617428260}

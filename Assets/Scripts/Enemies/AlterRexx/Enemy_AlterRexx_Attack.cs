@@ -25,11 +25,6 @@ public class Enemy_AlterRexx_Attack : MonoBehaviour
     private void Start()
     {
         stats = GetComponent<Enemy_AlterRexx_Health>().stats;
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-        {
-            playerLayer = LayerMask.GetMask("Player");
-        }
     }
 
     public void PlayChargeSound()
@@ -51,14 +46,28 @@ public class Enemy_AlterRexx_Attack : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player") && !audioPlayed)
+            if ((hit.CompareTag("Player") || hit.CompareTag("NPC")) && !audioPlayed)
             {
                 SoundFXManager.Instance.StopAndDestroyAudioSource(chargeAudioSource);
                 chargeAudioSource = null;
 
                 SoundFXManager.Instance.PlaySoundFXClip(meleeAttackHitAudioClip, transform, volume);
-                // TODO: Hook into player damage system
-                // Apply physical damage based on stats.Strength
+                
+                if (hit.CompareTag("Player"))
+                {
+                    StatsManager.instance.TakeDamage(stats.Strength);
+                    if (hit.TryGetComponent<PlayerMovement>(out var playerMovement))
+                    {
+                        playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                    }
+                }
+                else if (hit.CompareTag("NPC"))
+                {
+                    if (hit.TryGetComponent<NPCCompanion>(out var npc))
+                    {
+                        npc.TakeDamage(stats.Strength, false);
+                    }
+                }
                 audioPlayed = true;
             }
         }

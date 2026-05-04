@@ -65,7 +65,7 @@ public class Enemy_Chakkram_FlyingWheel : MonoBehaviour
         if (collision == null)
             return;
 
-        if (collision.CompareTag("Player") && !hitPlayer)
+        if ((collision.CompareTag("Player") || collision.CompareTag("NPC")) && !hitPlayer)
         {
             hitPlayer = true;
 
@@ -84,7 +84,17 @@ public class Enemy_Chakkram_FlyingWheel : MonoBehaviour
 
             float damage = casterStats.Magic * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
 
-            StatsManager.instance.TakeDamage(damage);
+            if (collision.CompareTag("Player"))
+            {
+                StatsManager.instance.TakeDamage(damage);
+            }
+            else if (collision.CompareTag("NPC"))
+            {
+                if (collision.TryGetComponent<NPCCompanion>(out var npc))
+                {
+                    npc.TakeDamage(damage, false);
+                }
+            }
 
             Destroy(gameObject);
         }

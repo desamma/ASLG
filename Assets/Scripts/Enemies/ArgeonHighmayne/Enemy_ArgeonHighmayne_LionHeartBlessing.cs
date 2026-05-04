@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 
 public class Enemy_ArgeonHighmayne_LionHeartBlessing : MonoBehaviour
 {
@@ -86,10 +86,20 @@ public class Enemy_ArgeonHighmayne_LionHeartBlessing : MonoBehaviour
         if (collision == null)
             return;
 
-        if (collision.CompareTag("Player") && !hitPlayer)
+        if ((collision.CompareTag("Player") || collision.CompareTag("NPC")) && !hitPlayer)
         {
             hitPlayer = true;
-            StatsManager.instance.TakeDamage(magicDamage);
+            if (collision.CompareTag("Player"))
+            {
+                StatsManager.instance.TakeDamage(magicDamage);
+            }
+            else if (collision.CompareTag("NPC"))
+            {
+                if (collision.TryGetComponent<NPCCompanion>(out var npc))
+                {
+                    npc.TakeDamage(magicDamage, false);
+                }
+            }
         }
     }
 }

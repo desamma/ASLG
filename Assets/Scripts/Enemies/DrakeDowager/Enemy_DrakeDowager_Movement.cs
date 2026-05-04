@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -80,9 +80,6 @@ public class Enemy_DrakeDowager_Movement : MonoBehaviour, IEnemy_Movement, IEnem
 
         knockbackHandler = new KnockbackHandler(this, rb);
         attackRecovery = new EnemyAttackRecovery(this, rb);
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
 
         if (health == null)
             health = GetComponent<Enemy_DrakeDowager_Health>();

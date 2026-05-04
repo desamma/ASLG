@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -82,9 +82,6 @@ public class Enemy_Dogehai_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMove
 
         if (charCollider == null)
             charCollider = GetComponent<Collider2D>();
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
 
         if (health == null)
             health = GetComponent<Enemy_Dogehai_Health>();

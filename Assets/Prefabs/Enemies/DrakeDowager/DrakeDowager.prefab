@@ -132,7 +132,7 @@ MonoBehaviour:
   movement: {fileID: 6795825293394686733}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   player: {fileID: 0}
   chainLightning: {fileID: 8704966469824424822, guid: 96f6164a1a13f7745936e660b2ae16f9, type: 3}
   chainLightningSpawnPoint: {fileID: 3605472299235077658}
@@ -199,7 +199,7 @@ MonoBehaviour:
   animator: {fileID: 3374461862349486254}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   attackComponent: {fileID: 6555763715269183924}
   detectionPoint: {fileID: 1589033716833273768}
   chargeAudioClip: {fileID: 8300000, guid: b282474e27bf06e44ac58e1bc5690b82, type: 3}
