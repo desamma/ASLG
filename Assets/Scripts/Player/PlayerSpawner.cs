@@ -76,6 +76,13 @@ public class PlayerSpawner : MonoBehaviour
         // 2. Tự động tìm Camera và gán Player vào ô Follow
         CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
         if (vcam != null) vcam.Follow = player.transform;
+        
+        // Load persisted skill upgrade tier
+        var playerSkill = player.GetComponent<PlayerSkill>();
+        if (playerSkill != null && SaveManager.Instance != null)
+        {
+            playerSkill.LoadSkillTier(SaveManager.Instance.currentSaveData.stats.skillUpgradeTier);
+        }
 
         LLMChatManager llmManager = FindObjectOfType<LLMChatManager>();
 

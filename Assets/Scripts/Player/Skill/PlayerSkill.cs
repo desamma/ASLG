@@ -78,6 +78,13 @@ public class PlayerSkill : MonoBehaviour
         return true;
     }
 
+    public void LoadSkillTier(int tier)
+    {
+        if (SkillData == null) return;
+        currentUpgradeTier = Mathf.Clamp(tier, 0, SkillData.upgrades?.Length ?? 0);
+        Debug.Log($"[PlayerSkill] Loaded skill tier: {currentUpgradeTier}");
+    }
+
     public Sprite SkillIcon => SkillData.icon;
     public int CurrentTier => currentUpgradeTier;
     public int MaxTier => SkillData.upgrades?.Length ?? 0;
