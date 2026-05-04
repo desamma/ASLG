@@ -5,9 +5,14 @@ using UnityEngine.UI;
 
 public class NPCCompanion : MonoBehaviour
 {
+    public enum CompanionClass { MageRanged, MeleeBrawler }
+    
     [Header("Core Settings")]
     public string npcID = "npc_alicia"; // THÊM DÒNG NÀY (Để Save file phân biệt các NPC)
     public string npcName = "Alicia";
+    [TextArea(2,4)]
+    public string systemPrompt = "You are Alicia. Reply strictly in English (1-3 sentences). Append [REL: X] at the end.";
+    public CompanionClass companionClass = CompanionClass.MageRanged;
     public int relationshipScore = 0;
 
     [Header("Health & Respawn")]
@@ -22,7 +27,11 @@ public class NPCCompanion : MonoBehaviour
     public float moveSpeed = 4f;
 
     [Header("Combat")]
+    [Tooltip("Alicia: Prefab Đạn ma thuật.\nJohnson: Prefab Vụ nổ AOE cho Skill 1.")]
     public GameObject magicBulletPrefab;
+    
+    [Tooltip("Hiệu ứng hình ảnh khi tung Ultimate (Dành cho Johnson).")]
+    public GameObject ultimateEffectPrefab; 
     public Transform firePoint;
     public float attackRange = 7f;
     public float baseAttackCooldown = 2f;
@@ -249,29 +258,32 @@ public class NPCCompanion : MonoBehaviour
 
         if (target == null) return;
 
-        // SKILL 2: Quả cầu năng lượng khổng lồ AOE (Mỗi 30s)
-        if (skill2Timer <= 0f)
+        if (companionClass == CompanionClass.MageRanged)
         {
-            StartCoroutine(CastSkill2GiantBall(target));
-            skill2Timer = skill2Cooldown;
-            return;
+            if (skill2Timer <= 0f) { StartCoroutine(CastSkill2GiantBall(target)); skill2Timer = skill2Cooldown; return; }
+            if (skill1Timer <= 0f) { StartCoroutine(CastSkill1Cone(target)); skill1Timer = skill1Cooldown; return; }
+            
+            attackTimer -= Time.deltaTime;
+            if (attackTimer <= 0f)
+            {
+                float currentCooldown = (relationshipScore >= 500) ? baseAttackCooldown / 4f : baseAttackCooldown;
+                ShootAtTarget(target);
+                attackTimer = currentCooldown;
+            }
         }
-
-        // SKILL 1: Nón năng lượng 3 đợt (Mỗi 10s)
-        if (skill1Timer <= 0f)
+        else if (companionClass == CompanionClass.MeleeBrawler)
         {
-            StartCoroutine(CastSkill1Cone(target));
-            skill1Timer = skill1Cooldown;
-            return;
-        }
-
-        // Đánh thường
-        attackTimer -= Time.deltaTime;
-        if (attackTimer <= 0f)
-        {
-            float currentCooldown = (relationshipScore >= 500) ? baseAttackCooldown / 4f : baseAttackCooldown;
-            ShootAtTarget(target);
-            attackTimer = currentCooldown;
+            // AI JOHNSON
+            if (skill2Timer <= 0f) { StartCoroutine(JohnsonUltimateBuff()); skill2Timer = skill2Cooldown; return; }
+            if (skill1Timer <= 0f) { StartCoroutine(JohnsonSkill1Explode(target)); skill1Timer = skill1Cooldown; return; }
+            
+            attackTimer -= Time.deltaTime;
+            if (attackTimer <= 0f)
+            {
+                float currentCooldown = (relationshipScore >= 500) ? baseAttackCooldown / 4f : baseAttackCooldown;
+                JohnsonMeleeAttack(target);
+                attackTimer = currentCooldown;
+            }
         }
     }
 
@@ -330,6 +342,52 @@ public class NPCCompanion : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1.5f); // Thời gian đứng im chờ giáng đòn
+        isCastingSkill2 = false;
+    }
+
+    // ==========================================
+    // KỸ NĂNG CỦA JOHNSON (MELEE BRAWLER)
+    // ==========================================
+    private void JohnsonMeleeAttack(Transform target)
+    {
+        // Chỉ đánh khi ở gần (Cận chiến)
+        if (Vector2.Distance(transform.position, target.position) <= 2.5f)
+        {
+            var enemyHealth = target.GetComponent<IEnemy_Health>();
+            if (enemyHealth != null) enemyHealth.ChangeHealth(-bulletDamage);
+            else if (angryTimer > 0f && target == playerTransform) StatsManager.instance.TakeDamage(bulletDamage);
+        }
+    }
+
+    private IEnumerator JohnsonSkill1Explode(Transform target)
+    {
+        // Dịch chuyển đến kẻ địch và nổ AOE
+        transform.position = target.position + new Vector3(Random.Range(-0.5f, 0.5f), 0, 0);
+        if (magicBulletPrefab != null)
+        {
+            GameObject explosion = Instantiate(magicBulletPrefab, transform.position, Quaternion.identity);
+            CompanionProjectile proj = explosion.GetComponent<CompanionProjectile>();
+            if (proj != null) proj.SetupAoE(transform.position, bulletDamage * 2f, 3f, angryTimer > 0f);
+        }
+        yield return null;
+    }
+
+    private IEnumerator JohnsonUltimateBuff()
+    {
+        isCastingSkill2 = true;
+        // Dịch chuyển về Player
+        transform.position = playerTransform.position + new Vector3(1f, 0, 0);
+        
+        // Hiển thị Asset 2 ảnh vụ nổ mà bạn kéo thả vào inspector
+        if (ultimateEffectPrefab != null)
+        {
+            Instantiate(ultimateEffectPrefab, transform.position, Quaternion.identity);
+        }
+
+        if (StatsManager.instance != null && !StatsManager.instance.IsDead) { StatsManager.instance.Heal(1000f); StatsManager.instance.isInvincible = true; }
+        yield return new WaitForSeconds(5f); // 5s buff miễn thương
+        if (StatsManager.instance != null) StatsManager.instance.isInvincible = false;
+        
         isCastingSkill2 = false;
     }
 }
