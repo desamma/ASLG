@@ -8,7 +8,7 @@ public class NPCCompanion : MonoBehaviour
     public enum CompanionClass { MageRanged, MeleeBrawler }
     
     [Header("Core Settings")]
-    public string npcID = "npc_alicia"; // THÊM DÒNG NÀY (Để Save file phân biệt các NPC)
+    public string npcID = "npc_alicia";
     public string npcName = "Alicia";
     [TextArea(2,4)]
     public string systemPrompt = "You are Alicia. Reply strictly in English (1-3 sentences). Append [REL: X] at the end.";
@@ -44,18 +44,18 @@ public class NPCCompanion : MonoBehaviour
 
     [Header("New Skills & Behaviors")]
     public float skill1Cooldown = 10f;
-    private float skill1Timer = 5f; // Khởi tạo 5s để không xả skill ngay khi vừa vào game
+    private float skill1Timer = 5f; 
     public float skill2Cooldown = 30f;
     private float skill2Timer = 15f;
     private bool isCastingSkill2 = false;
     private float angryTimer = 0f;
     private Vector2 wanderTarget;
     private float wanderTimer;
+    private Transform currentTarget;
 
     [Header("UI References")]
     public Slider healthSlider;
     public TMP_Text nameText;
-    public TMP_Text relationshipText;
     public GameObject talkIcon;
 
     private void Start()
@@ -71,7 +71,6 @@ public class NPCCompanion : MonoBehaviour
         if (talkIcon != null) talkIcon.SetActive(false);
         if (playerTransform == null) playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
-        // Gọi lần đầu để setup UI cảm xúc
         UpdateRelationshipUI();
     }
 
@@ -83,26 +82,47 @@ public class NPCCompanion : MonoBehaviour
         skill1Timer -= Time.deltaTime;
         skill2Timer -= Time.deltaTime;
 
+        FindTarget();
         HandleMovement();
         HandleRelationshipBehaviors();
         HandleCombat();
     }
 
-    // --- HỆ THỐNG CẢM XÚC (UI) ---
-    public void UpdateRelationshipUI()
+    private void FindTarget()
     {
-        if (relationshipText == null) return;
+        if (angryTimer > 0f)
+        {
+            currentTarget = playerTransform;
+            return;
+        }
 
-        string icon = "😐"; // 0: Neutral
-        if (relationshipScore >= 500) icon = "❤️";
-        else if (relationshipScore >= 200) icon = "😄";
-        else if (relationshipScore <= -500) icon = "🔥";
-        else if (relationshipScore <= -200) icon = "😢";
+        currentTarget = null;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(playerTransform.position, followDistance * 2f);
+        float closestDist = float.MaxValue;
 
-        relationshipText.text = $"{icon} {relationshipScore}";
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Enemy"))
+            {
+                float dist = Vector2.Distance(transform.position, hit.transform.position);
+                if (dist < closestDist)
+                {
+                    closestDist = dist;
+                    currentTarget = hit.transform;
+                }
+            }
+        }
     }
 
-    // --- HỆ THỐNG NHẬN SÁT THƯƠNG ---
+    public void UpdateRelationshipUI()
+    {
+        // Gửi tín hiệu sang LLMChatManager để cập nhật chữ lên màn hình (chỉ khi đang chat với NPC này)
+        if (LLMChatManager.Instance != null && LLMChatManager.Instance.activeNPC == this)
+        {
+            LLMChatManager.Instance.UpdateRelationshipUI();
+        }
+    }
+
     public void TakeDamage(float amount, bool isFromPlayer)
     {
         if (isDead) return;
@@ -113,10 +133,9 @@ public class NPCCompanion : MonoBehaviour
         if (isFromPlayer)
         {
             relationshipScore -= 1;
-            UpdateRelationshipUI(); // Phải gọi dòng này để icon đổi ngay
-            Debug.Log($"<color=orange>[Hệ thống]</color> Bạn vừa chém trúng Alicia! Relationship: {relationshipScore}");
+            UpdateRelationshipUI();
+            Debug.Log($"<color=orange>[Hệ thống]</color> Bạn vừa chém trúng {npcName}! Relationship: {relationshipScore}");
             
-            // Nếu đang ở trạng thái dỗi mà bạn còn đánh cô ấy -> Phản công!
             if (relationshipScore <= -500)
             {
                 TriggerAngryState();
@@ -131,16 +150,16 @@ public class NPCCompanion : MonoBehaviour
 
     public void TriggerAngryState()
     {
-        angryTimer = 5f; // Tức giận và tấn công Player trong 5 giây
-        Debug.Log("<color=red>[Alicia]</color> Grrr! Đừng có chọc tức tôi!");
+        angryTimer = 5f; 
+        Debug.Log($"<color=red>[{npcName}]</color> Grrr! Đừng có chọc tức tôi!");
     }
 
     private void Die()
     {
         isDead = true;
         relationshipScore -= 10;
-        UpdateRelationshipUI(); // Phải gọi dòng này để icon đổi ngay
-        Debug.Log($"<color=red>[Hệ thống]</color> Alicia đã tử trận! Bị trừ 10 điểm. Relationship: {relationshipScore}");
+        UpdateRelationshipUI(); 
+        Debug.Log($"<color=red>[Hệ thống]</color> {npcName} đã tử trận! Bị trừ 10 điểm. Relationship: {relationshipScore}");
 
         if (healthSlider != null) healthSlider.value = 0;
 
@@ -152,7 +171,6 @@ public class NPCCompanion : MonoBehaviour
             if (child.GetComponent<Canvas>() != null) child.gameObject.SetActive(false);
         }
 
-        // Ngắt toàn bộ chiêu thức đang niệm dang dở nếu lỡ chết
         isCastingSkill2 = false;
         StopAllCoroutines();
 
@@ -176,22 +194,20 @@ public class NPCCompanion : MonoBehaviour
         }
 
         if (healthSlider != null) healthSlider.value = currentHealth;
-        Debug.Log("<color=green>[Hệ thống]</color> Alicia đã hồi sinh!");
+        Debug.Log($"<color=green>[Hệ thống]</color> {npcName} đã hồi sinh!");
     }
 
-    // --- CÁC HÀM XỬ LÝ HÀNH VI ---
     private void HandleMovement()
     {
-        if (isCastingSkill2) return; // Đứng yên tuyệt đối khi niệm chú Skill 2
+        if (isCastingSkill2) return; 
 
         if (relationshipScore <= -500 && angryTimer <= 0f) 
         {
-            // Trạng thái dỗi: Lảng vảng ngẫu nhiên (Wandering), không bám theo Player
             wanderTimer -= Time.deltaTime;
             if (wanderTimer <= 0f || Vector2.Distance(transform.position, wanderTarget) < 0.5f)
             {
                 wanderTarget = (Vector2)transform.position + Random.insideUnitCircle * 5f;
-                wanderTimer = 3f; // Đổi hướng sau mỗi 3 giây
+                wanderTimer = 3f; 
             }
             transform.position = Vector2.MoveTowards(transform.position, wanderTarget, moveSpeed * 0.5f * Time.deltaTime);
             Vector3 wScale = transform.localScale;
@@ -203,18 +219,34 @@ public class NPCCompanion : MonoBehaviour
         float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
         if (talkIcon != null) talkIcon.SetActive(distanceToPlayer <= 2.5f);
 
-        if (distanceToPlayer > followDistance)
+        if (currentTarget != null)
         {
-            transform.position = Vector2.MoveTowards(transform.position, playerTransform.position, moveSpeed * Time.deltaTime);
-            Vector3 scale = transform.localScale;
-            scale.x = (playerTransform.position.x > transform.position.x) ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
-            transform.localScale = scale;
+            float distanceToTarget = Vector2.Distance(transform.position, currentTarget.position);
+            
+            float stopDistance = (companionClass == CompanionClass.MageRanged) ? attackRange * 0.8f : 1.2f;
+
+            if (distanceToTarget > stopDistance)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, currentTarget.position, moveSpeed * Time.deltaTime);
+                Vector3 scale = transform.localScale;
+                scale.x = (currentTarget.position.x > transform.position.x) ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
+                transform.localScale = scale;
+            }
+        }
+        else 
+        {
+            if (distanceToPlayer > followDistance)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, playerTransform.position, moveSpeed * Time.deltaTime);
+                Vector3 scale = transform.localScale;
+                scale.x = (playerTransform.position.x > transform.position.x) ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
+                transform.localScale = scale;
+            }
         }
     }
 
     private void HandleRelationshipBehaviors()
     {
-        // Khi đạt 500 hảo cảm, hồi 1% máu mỗi 10 giây (theo code cũ của bạn)
         if (relationshipScore >= 500)
         {
             healTimer -= Time.deltaTime;
@@ -225,7 +257,7 @@ public class NPCCompanion : MonoBehaviour
                     float healAmount = StatsManager.instance.maxHealth * 0.01f;
                     StatsManager.instance.Heal(healAmount);
                     healTimer = healCooldown;
-                    Debug.Log($"<color=green>[Alicia]</color> Đã buff {healAmount} HP cho bạn! ❤️");
+                    Debug.Log($"<color=green>[{npcName}]</color> Đã buff {healAmount} HP cho bạn! ❤️");
                 }
             }
         }
@@ -233,55 +265,31 @@ public class NPCCompanion : MonoBehaviour
 
     private void HandleCombat()
     {
-        if (isCastingSkill2) return;
-
-        Transform target = null;
-        
-        // Xác định mục tiêu: Ưu tiên đập Player nếu đang tức giận
-        if (angryTimer > 0f)
-        {
-            target = playerTransform;
-        }
-        else
-        {
-            // Fix: Quét toàn bộ và check Tag để tránh lỗi quên set Layer "Enemy" trong Unity
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange);
-            foreach (var hit in hits)
-            {
-                if (hit.CompareTag("Enemy"))
-                {
-                    target = hit.transform;
-                    break;
-                }
-            }
-        }
-
-        if (target == null) return;
+        if (isCastingSkill2 || currentTarget == null) return;
 
         if (companionClass == CompanionClass.MageRanged)
         {
-            if (skill2Timer <= 0f) { StartCoroutine(CastSkill2GiantBall(target)); skill2Timer = skill2Cooldown; return; }
-            if (skill1Timer <= 0f) { StartCoroutine(CastSkill1Cone(target)); skill1Timer = skill1Cooldown; return; }
+            if (skill2Timer <= 0f) { StartCoroutine(CastSkill2GiantBall(currentTarget)); skill2Timer = skill2Cooldown; return; }
+            if (skill1Timer <= 0f) { StartCoroutine(CastSkill1Cone(currentTarget)); skill1Timer = skill1Cooldown; return; }
             
             attackTimer -= Time.deltaTime;
             if (attackTimer <= 0f)
             {
                 float currentCooldown = (relationshipScore >= 500) ? baseAttackCooldown / 4f : baseAttackCooldown;
-                ShootAtTarget(target);
+                ShootAtTarget(currentTarget);
                 attackTimer = currentCooldown;
             }
         }
         else if (companionClass == CompanionClass.MeleeBrawler)
         {
-            // AI JOHNSON
             if (skill2Timer <= 0f) { StartCoroutine(JohnsonUltimateBuff()); skill2Timer = skill2Cooldown; return; }
-            if (skill1Timer <= 0f) { StartCoroutine(JohnsonSkill1Explode(target)); skill1Timer = skill1Cooldown; return; }
+            if (skill1Timer <= 0f) { StartCoroutine(JohnsonSkill1Explode(currentTarget)); skill1Timer = skill1Cooldown; return; }
             
             attackTimer -= Time.deltaTime;
             if (attackTimer <= 0f)
             {
                 float currentCooldown = (relationshipScore >= 500) ? baseAttackCooldown / 4f : baseAttackCooldown;
-                JohnsonMeleeAttack(target);
+                JohnsonMeleeAttack(currentTarget);
                 attackTimer = currentCooldown;
             }
         }
@@ -296,14 +304,13 @@ public class NPCCompanion : MonoBehaviour
         if (projScript != null)
         {
             Vector2 direction = (target.position - spawnPos).normalized;
-            // Chỉ gây sát thương cho Player nếu đang ở trạng thái Angry (phản công)
             projScript.Setup(direction, bulletDamage, angryTimer > 0f);
         }
     }
 
     private IEnumerator CastSkill1Cone(Transform target)
     {
-        for (int wave = 0; wave < 3; wave++) // 3 đợt
+        for (int wave = 0; wave < 3; wave++) 
         {
             if (target == null) break;
             Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
@@ -311,46 +318,41 @@ public class NPCCompanion : MonoBehaviour
             float angleStep = 15f; 
             float startAngle = -((8 - 1) * angleStep) / 2f;
 
-            for (int i = 0; i < 8; i++) // 8 quả mỗi đợt
+            for (int i = 0; i < 8; i++) 
             {
                 float currentAngle = startAngle + (i * angleStep);
                 Vector2 dir = Quaternion.Euler(0, 0, currentAngle) * baseDir;
                 
                 GameObject bullet = Instantiate(magicBulletPrefab, spawnPos, Quaternion.identity);
                 CompanionProjectile projScript = bullet.GetComponent<CompanionProjectile>();
-                if (projScript != null) projScript.Setup(dir, bulletDamage * 0.8f, angryTimer > 0f); // Sát thương 80% mỗi viên
+                if (projScript != null) projScript.Setup(dir, bulletDamage * 0.8f, angryTimer > 0f); 
             }
-            yield return new WaitForSeconds(0.3f); // Delay giữa các đợt
+            yield return new WaitForSeconds(0.3f); 
         }
     }
 
     private IEnumerator CastSkill2GiantBall(Transform target)
     {
         isCastingSkill2 = true;
-        Vector2 targetPos = target.position; // Khóa chết vị trí lúc bắt đầu cast
+        Vector2 targetPos = target.position; 
         
         Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
-        // Triệu hồi quả cầu và phóng to
         GameObject giantBall = Instantiate(magicBulletPrefab, spawnPos, Quaternion.identity);
-        giantBall.transform.localScale = Vector3.one * 3f; // Phóng to 3 lần
+        giantBall.transform.localScale = Vector3.one * 3f; 
         
         CompanionProjectile proj = giantBall.GetComponent<CompanionProjectile>();
         if (proj != null)
         {
-             bool canHurtPlayer = (angryTimer > 0f); // Có làm tổn thương Player không?
+             bool canHurtPlayer = (angryTimer > 0f); 
              proj.SetupAoE(targetPos, bulletDamage * 3f, 4f, canHurtPlayer);
         }
 
-        yield return new WaitForSeconds(1.5f); // Thời gian đứng im chờ giáng đòn
+        yield return new WaitForSeconds(1.5f); 
         isCastingSkill2 = false;
     }
 
-    // ==========================================
-    // KỸ NĂNG CỦA JOHNSON (MELEE BRAWLER)
-    // ==========================================
     private void JohnsonMeleeAttack(Transform target)
     {
-        // Chỉ đánh khi ở gần (Cận chiến)
         if (Vector2.Distance(transform.position, target.position) <= 2.5f)
         {
             var enemyHealth = target.GetComponent<IEnemy_Health>();
@@ -361,7 +363,6 @@ public class NPCCompanion : MonoBehaviour
 
     private IEnumerator JohnsonSkill1Explode(Transform target)
     {
-        // Dịch chuyển đến kẻ địch và nổ AOE
         transform.position = target.position + new Vector3(Random.Range(-0.5f, 0.5f), 0, 0);
         if (magicBulletPrefab != null)
         {
@@ -375,18 +376,16 @@ public class NPCCompanion : MonoBehaviour
     private IEnumerator JohnsonUltimateBuff()
     {
         isCastingSkill2 = true;
-        // Dịch chuyển về Player
         transform.position = playerTransform.position + new Vector3(1f, 0, 0);
         
-        // Hiển thị Asset 2 ảnh vụ nổ mà bạn kéo thả vào inspector
         if (ultimateEffectPrefab != null)
         {
             GameObject effect = Instantiate(ultimateEffectPrefab, transform.position, Quaternion.identity);
-            Destroy(effect, 2f); // Tự động xóa hiệu ứng sau 2 giây để tránh lag game
+            Destroy(effect, 2f); 
         }
 
         if (StatsManager.instance != null && !StatsManager.instance.IsDead) { StatsManager.instance.Heal(1000f); StatsManager.instance.isInvincible = true; }
-        yield return new WaitForSeconds(5f); // 5s buff miễn thương
+        yield return new WaitForSeconds(5f); 
         if (StatsManager.instance != null) StatsManager.instance.isInvincible = false;
         
         isCastingSkill2 = false;

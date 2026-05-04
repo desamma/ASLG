@@ -205,6 +205,7 @@ public class StatsManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            transform.SetParent(null); // Đảm bảo object là root để DontDestroyOnLoad hoạt động
             DontDestroyOnLoad(gameObject);
 
             AuthToken = PlayerPrefs.GetString("AuthToken", string.Empty);
@@ -262,11 +263,12 @@ public class StatsManager : MonoBehaviour
     // ==========================================
     // DÀNH CHO SAVE MANAGER NẠP DỮ LIỆU
     // ==========================================
-    public void LoadSavedStats(int savedLevel, int savedExp, int savedPts, float hp, float mana, float stam, string pName, float baseMaxHealth, float baseMaxMana, float baseMaxStamina, float baseDamage, float baseCooldown, float baseMoveSpeed)
+    public void LoadSavedStats(int savedLevel, int savedExp, int savedPts, int savedGold, float hp, float mana, float stam, string pName, float baseMaxHealth, float baseMaxMana, float baseMaxStamina, float baseDamage, float baseDefence, float baseCooldown, float baseMoveSpeed)
     {
         _level = savedLevel;
         _currentExp = savedExp;
         _upgradePoints = savedPts;
+        _gold = savedGold;
         _expToNextLevel = CalculateExpToNextLevel(savedLevel);
         
         _currentHealth = hp;
@@ -277,6 +279,7 @@ public class StatsManager : MonoBehaviour
         _baseMaxMana = baseMaxMana;
         _baseMaxStamina = baseMaxStamina;
         _baseDamage = baseDamage;
+        _baseDefence = baseDefence;
         _baseCooldown = baseCooldown;
         _baseMoveSpeed = baseMoveSpeed;
         
