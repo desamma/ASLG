@@ -52,11 +52,16 @@ public class LLMChatManager : MonoBehaviour
     public TMP_Text aiQuestText;      
 
     [Header("Game References")]
-    public NPCCompanion aliciaScript;
+    public NPCCompanion activeNPC;
+    private List<NPCCompanion> allCompanions = new List<NPCCompanion>();
+    
     public PlayerMovement playerMovement;
     public PlayerAttack playerAttack;
 
-    [SerializeField] private List<ChatMessage> chatHistory = new List<ChatMessage>();
+    // Bộ nhớ ký ức riêng biệt cho từng NPC (Key = npcID)
+    private Dictionary<string, List<ChatMessage>> allChatHistories = new Dictionary<string, List<ChatMessage>>();
+    private List<ChatMessage> CurrentChatHistory => GetChatHistory(activeNPC != null ? activeNPC.npcID : "");
+
     private bool isChatting = false;
     private const string ULTIMATE_GEMINI_KEY = "AIzaSyDYF3fqeTVOf-BXBFV5zSv70au5sJ1yKaI"; 
     private bool UseOfflineConversation => GameSettings.IsOfflineMode || !enableOnlineActivity;
@@ -91,23 +96,33 @@ public class LLMChatManager : MonoBehaviour
 
     void Update()
     {
-        if (aliciaScript == null) aliciaScript = FindObjectOfType<NPCCompanion>();
-        if (aliciaScript != null && (playerMovement == null || playerAttack == null))
-        {
-            if (aliciaScript.playerTransform != null)
-            {
-                playerMovement = aliciaScript.playerTransform.GetComponent<PlayerMovement>();
-                playerAttack = aliciaScript.playerTransform.GetComponent<PlayerAttack>();
-            }
-        }
+        // Tự động tìm Player nếu chưa có (Bảo vệ lỗi cho các Class không có Companion)
+        if (playerMovement == null) playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerAttack == null) playerAttack = FindObjectOfType<PlayerAttack>();
 
         if (isChatting && Input.GetKeyDown(KeyCode.Escape)) { CloseChat(); return; }
         if (playerInputField != null && playerInputField.isFocused) return;
 
-        if (!isChatting && Input.GetKeyDown(KeyCode.E) && aliciaScript != null && playerMovement != null)
+        if (!isChatting && Input.GetKeyDown(KeyCode.E) && playerMovement != null)
         {
-            float dist = Vector2.Distance(playerMovement.transform.position, aliciaScript.transform.position);
-            if (dist <= 2.5f) OpenChat();
+            // Tìm NPC gần nhất
+            NPCCompanion closestNPC = null;
+            float minDistance = 2.5f;
+            
+            allCompanions.RemoveAll(npc => npc == null);
+            foreach (var npc in allCompanions)
+            {
+                float dist = Vector2.Distance(playerMovement.transform.position, npc.transform.position);
+                if (dist <= minDistance)
+                {
+                    minDistance = dist;
+                    closestNPC = npc;
+                }
+            }
+            if (closestNPC != null) {
+                activeNPC = closestNPC;
+                OpenChat();
+            }
         }
 
         if (questCooldownTimer > 0) questCooldownTimer -= Time.deltaTime;
@@ -130,7 +145,7 @@ public class LLMChatManager : MonoBehaviour
         }
     }
 
-    public void OpenChat() { if (chatCanvas == null) return; isChatting = true; chatCanvas.SetActive(true); if (playerMovement != null) playerMovement.SetMovementLock(true); if (playerAttack != null) playerAttack.enabled = false; if (chatHistory.Count == 0) npcTextDisplay.text = "Alicia: Cậu cần gì sao?"; StartCoroutine(FocusInputDelay()); }
+    public void OpenChat() { if (chatCanvas == null || activeNPC == null) return; isChatting = true; chatCanvas.SetActive(true); if (playerMovement != null) playerMovement.SetMovementLock(true); if (playerAttack != null) playerAttack.enabled = false; if (CurrentChatHistory.Count == 0) npcTextDisplay.text = $"{activeNPC.npcName}: Cậu cần gì sao?"; StartCoroutine(FocusInputDelay()); }
     private IEnumerator FocusInputDelay() { yield return new WaitForEndOfFrame(); if (UnityEngine.EventSystems.EventSystem.current != null) UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(playerInputField.gameObject); if (playerInputField != null) playerInputField.ActivateInputField(); }
     public void CloseChat() { if (chatCanvas == null) return; isChatting = false; chatCanvas.SetActive(false); if (playerMovement != null) playerMovement.SetMovementLock(false); if (playerAttack != null) playerAttack.enabled = true; }
 
@@ -140,7 +155,7 @@ public class LLMChatManager : MonoBehaviour
         if (string.IsNullOrEmpty(userText)) return;
         playerInputField.text = "";
         StartCoroutine(FocusInputDelay());
-        npcTextDisplay.text = "<i>Alicia is thinking...</i>";
+        npcTextDisplay.text = $"<i>{activeNPC?.npcName} is thinking...</i>";
 
         if (hasActiveAiQuest && currentChatCount < targetChatCount) 
         {
@@ -153,15 +168,15 @@ public class LLMChatManager : MonoBehaviour
     private void OnQuestButtonClicked()
     {
         if (isGeneratingQuest) return;
-        if (hasActiveAiQuest) { npcTextDisplay.text = "Alicia: Cậu đang làm dở nhiệm vụ tôi giao mà!"; return; }
-        if (questCooldownTimer > 0) { npcTextDisplay.text = $"Alicia: Quay lại sau {Mathf.CeilToInt(questCooldownTimer)} giây nữa nhé."; return; }
+        if (hasActiveAiQuest) { npcTextDisplay.text = $"{activeNPC?.npcName}: Cậu đang làm dở nhiệm vụ tôi giao mà!"; return; }
+        if (questCooldownTimer > 0) { npcTextDisplay.text = $"{activeNPC?.npcName}: Quay lại sau {Mathf.CeilToInt(questCooldownTimer)} giây nữa nhé."; return; }
         StartCoroutine(GenerateAiQuestRoutine());
     }
 
     private IEnumerator GenerateAiQuestRoutine()
     {
         isGeneratingQuest = true;
-        npcTextDisplay.text = "<i>Alicia đang nghĩ ra thử thách...</i>";
+        npcTextDisplay.text = $"<i>{activeNPC?.npcName} đang nghĩ ra thử thách...</i>";
 
         targetChatCount = Random.Range(3, 9);      
         targetDistance = Random.Range(5f, 16f);    
@@ -188,7 +203,7 @@ public class LLMChatManager : MonoBehaviour
         else
         {
             string questStats = $"Target: Chat {targetChatCount} times, Walk {targetDistance:F0} meters. Rewards: {rewardExp} EXP, {rewardGold} Gold, {rewardRel} Relationship.";
-            string sysPrompt = $"You are Alicia, an adventurer. Give the player a mini-quest based on these exact stats: {questStats}. Speak directly in English (2-3 sentences).";
+            string sysPrompt = $"{activeNPC?.systemPrompt}. Give the player a mini-quest based on these exact stats: {questStats}. Speak directly in English (2-3 sentences).";
 
             foreach (string key in GetGeminiKeys())
             {
@@ -203,14 +218,14 @@ public class LLMChatManager : MonoBehaviour
         if (!string.IsNullOrEmpty(loreText))
         {
             currentQuestLore = loreText;
-            npcTextDisplay.text = "Alicia: " + loreText;
+            npcTextDisplay.text = $"{activeNPC?.npcName}: " + loreText;
             hasActiveAiQuest = true;
             questTimer = 60f; 
             questCooldownTimer = 60f; 
             lastPlayerPos = playerMovement != null ? playerMovement.transform.position : Vector2.zero;
             if (aiQuestPanel != null) aiQuestPanel.SetActive(true);
             UpdateQuestUI();
-            chatHistory.Add(new ChatMessage { role = "assistant", content = loreText });
+            CurrentChatHistory.Add(new ChatMessage { role = "assistant", content = loreText });
         }
     }
 
@@ -219,7 +234,7 @@ public class LLMChatManager : MonoBehaviour
         if (aiQuestText == null || !hasActiveAiQuest) return;
         string distColor = currentDistance >= targetDistance ? "green" : "white";
         string chatColor = currentChatCount >= targetChatCount ? "green" : "white";
-        aiQuestText.text = $"<b><color=yellow>Alicia's Request</color></b>\n<i>{currentQuestLore}</i>\n\n" +
+        aiQuestText.text = $"<b><color=yellow>{activeNPC?.npcName}'s Request</color></b>\n<i>{currentQuestLore}</i>\n\n" +
                            $"<color={distColor}>Walk: {currentDistance:F1} / {targetDistance:F0} m</color>\n" +
                            $"<color={chatColor}>Chat: {currentChatCount} / {targetChatCount}</color>\n" +
                            $"<color=red>Time: {Mathf.CeilToInt(questTimer)}s</color>";
@@ -233,38 +248,38 @@ public class LLMChatManager : MonoBehaviour
             hasActiveAiQuest = false;
             if (aiQuestPanel != null) aiQuestPanel.SetActive(false);
             if (StatsManager.instance != null) { StatsManager.instance.AddExp(rewardExp); StatsManager.instance.AddGold(rewardGold); }
-            if (aliciaScript != null) { aliciaScript.relationshipScore += rewardRel; aliciaScript.UpdateRelationshipUI(); }
-            if (isChatting) npcTextDisplay.text = "Alicia: Cậu làm tốt lắm! Đây là phần thưởng.";
+            if (activeNPC != null) { activeNPC.relationshipScore += rewardRel; activeNPC.UpdateRelationshipUI(); }
+            if (isChatting) npcTextDisplay.text = $"{activeNPC?.npcName}: Cậu làm tốt lắm! Đây là phần thưởng.";
         }
     }
 
-    private void FailAiQuest() { hasActiveAiQuest = false; if (aiQuestPanel != null) aiQuestPanel.SetActive(false); if (isChatting) npcTextDisplay.text = "Alicia: Thôi bỏ đi, cậu chậm quá."; }
+    private void FailAiQuest() { hasActiveAiQuest = false; if (aiQuestPanel != null) aiQuestPanel.SetActive(false); if (isChatting) npcTextDisplay.text = $"{activeNPC?.npcName}: Thôi bỏ đi, cậu chậm quá."; }
 
     private IEnumerator SendWithFallbackRoutine(string userText)
     {
         if (UseOfflineConversation)
         {
-            npcTextDisplay.text = "Alicia: <color=red>(Mất kết nối - Offline Mode đang bật)</color>";
+            npcTextDisplay.text = $"{activeNPC?.npcName}: <color=red>(Mất kết nối - Offline Mode đang bật)</color>";
             yield break;
         }
 
-        string systemPrompt = $"System: You are Alicia. Current Relationship Score: {aliciaScript.relationshipScore}. Reply strictly in English (1-3 sentences). Append [REL: X] at the end.";
-        chatHistory.Add(new ChatMessage { role = "user", content = userText + "\n\n(OOC: Append [REL: X])" });
+        string systemPrompt = $"System: {activeNPC?.systemPrompt}. Current Relationship Score: {activeNPC?.relationshipScore}. Reply strictly in English (1-3 sentences). Append [REL: X] at the end.";
+        CurrentChatHistory.Add(new ChatMessage { role = "user", content = userText + "\n\n(OOC: Append [REL: X])" });
         string aiRawResponse = null;
 
         foreach (string key in GetGeminiKeys())
         {
             if (string.IsNullOrWhiteSpace(key)) continue;
-            yield return StartCoroutine(CallGeminiAPI(key.Trim(), systemPrompt, chatHistory, (result) => aiRawResponse = result));
+            yield return StartCoroutine(CallGeminiAPI(key.Trim(), systemPrompt, CurrentChatHistory, (result) => aiRawResponse = result));
             if (!string.IsNullOrEmpty(aiRawResponse)) break; 
         }
 
         if (!string.IsNullOrEmpty(aiRawResponse))
         {
             ProcessAIResponse(aiRawResponse);
-            chatHistory[chatHistory.Count - 1].content = userText; 
+            CurrentChatHistory[CurrentChatHistory.Count - 1].content = userText; 
         }
-        else { npcTextDisplay.text = "<color=red>Lỗi kết nối toàn tập.</color>"; chatHistory.RemoveAt(chatHistory.Count - 1); }
+        else { npcTextDisplay.text = "<color=red>Lỗi kết nối toàn tập.</color>"; CurrentChatHistory.RemoveAt(CurrentChatHistory.Count - 1); }
     }
 
     private IEnumerator CallGeminiAPI(string apiKey, string sysPrompt, List<ChatMessage> history, System.Action<string> onComplete)
@@ -310,12 +325,20 @@ public class LLMChatManager : MonoBehaviour
     {
         Match match = Regex.Match(aiRawText, @"\[(?:REL|rel|Rel).*?([+-]?\d+)\]");
         string displayString = aiRawText;
-        if (match.Success) { int relChange = int.Parse(match.Groups[1].Value); aliciaScript.relationshipScore += relChange; if (relChange < 0 && aliciaScript.relationshipScore <= -500) aliciaScript.TriggerAngryState(); displayString = aiRawText.Replace(match.Value, "").Trim(); }
-        chatHistory.Add(new ChatMessage { role = "assistant", content = aiRawText });
-        npcTextDisplay.text = "Alicia: " + displayString;
-        aliciaScript.UpdateRelationshipUI();
+        if (match.Success && activeNPC != null) { int relChange = int.Parse(match.Groups[1].Value); activeNPC.relationshipScore += relChange; if (relChange < 0 && activeNPC.relationshipScore <= -500) activeNPC.TriggerAngryState(); displayString = aiRawText.Replace(match.Value, "").Trim(); }
+        CurrentChatHistory.Add(new ChatMessage { role = "assistant", content = aiRawText });
+        npcTextDisplay.text = $"{activeNPC?.npcName}: " + displayString;
+        if (activeNPC != null) activeNPC.UpdateRelationshipUI();
     }
 
-    public List<ChatMessage> GetChatHistory() => chatHistory;
-    public void SetChatHistory(List<ChatMessage> history) { chatHistory = history ?? new List<ChatMessage>(); }
+    // Đăng ký Companions khi sinh ra
+    public void RegisterCompanion(NPCCompanion npc)
+    {
+        if (!allCompanions.Contains(npc)) allCompanions.Add(npc);
+        if (playerMovement == null) playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerAttack == null) playerAttack = FindObjectOfType<PlayerAttack>();
+    }
+
+    public List<ChatMessage> GetChatHistory(string npcID) { if (!allChatHistories.ContainsKey(npcID)) allChatHistories[npcID] = new List<ChatMessage>(); return allChatHistories[npcID]; }
+    public void SetChatHistory(string npcID, List<ChatMessage> history) { allChatHistories[npcID] = history ?? new List<ChatMessage>(); }
 }

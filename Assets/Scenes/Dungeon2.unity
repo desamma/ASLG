@@ -7618,6 +7618,7 @@ MonoBehaviour:
   defaultSpawnPoint: {fileID: 1911016467}
   arrivalZoneName: Dungeon2
   aliciaPrefab: {fileID: 5123960915641433439, guid: c1c4031dc32ca644b98dedc80c0e8c68, type: 3}
+  johnsonPrefab: {fileID: 5123960915641433439, guid: 40e66030a8b7d5c44bd005b81aede976, type: 3}
 --- !u!4 &447308092
 Transform:
   m_ObjectHideFlags: 0
@@ -30806,8 +30807,6 @@ MonoBehaviour:
   inventoryCanvasGroup: {fileID: 0}
   itemSlotPrefab: {fileID: 3992982406673191109, guid: 2d744cd00b6277242853bb25312cdd46, type: 3}
   slotGrid: {fileID: 1736919098}
-  btn_nextPage: {fileID: 0}
-  btn_prevPage: {fileID: 0}
   txt_pageIndicator: {fileID: 0}
   slotsPerPage: 25
   emptyHint: {fileID: 1689624875}
@@ -30820,6 +30819,10 @@ MonoBehaviour:
   txt_previewStats: {fileID: 26824882}
   btn_equip: {fileID: 475855245}
   btn_drop: {fileID: 943734235}
+  slider_health: {fileID: 0}
+  slider_mana: {fileID: 0}
+  slider_stamina: {fileID: 0}
+  slider_exp: {fileID: 0}
 --- !u!114 &1482659884
 MonoBehaviour:
   m_ObjectHideFlags: 0

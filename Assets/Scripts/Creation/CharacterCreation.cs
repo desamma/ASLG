@@ -121,6 +121,15 @@ public class CharacterCreation : MonoBehaviour
         if (string.IsNullOrWhiteSpace(playerName)) return;
 
         StatsManager.instance.playerName = playerName;
+
+        // QUAN TRỌNG: Reset hoàn toàn Save Data để không bị dính dữ liệu (0 HP, lỗi cũ) từ file save trước
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.currentSaveData = new GameSaveData();
+            SaveManager.Instance.currentSaveData.playerName = playerName;
+            SaveManager.Instance.currentSaveData.playerClassIndex = (int)selectedClass;
+        }
+
         //SceneManager.LoadScene("StarterVillage");
         OnStartButtonClickEvent?.Invoke();
     }

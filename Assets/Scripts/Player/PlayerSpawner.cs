@@ -1,4 +1,4 @@
-﻿using Cinemachine;
+﻿﻿using Cinemachine;
 using UnityEngine;
 
 [System.Serializable]
@@ -24,6 +24,7 @@ public class PlayerSpawner : MonoBehaviour
 
     [Header("Summoner Settings")]
     [SerializeField] private GameObject aliciaPrefab;
+    [SerializeField] private GameObject johnsonPrefab; // Kéo thả Prefab của Johnson vào đây
 
     private void Start()
     {
@@ -76,16 +77,35 @@ public class PlayerSpawner : MonoBehaviour
         CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
         if (vcam != null) vcam.Follow = player.transform;
 
+        LLMChatManager llmManager = FindObjectOfType<LLMChatManager>();
+
+        // 1. Của Class Summoner - Spawn Alicia
         if (ClassManager.Instance.SelectedClass == PlayerClass.Summoner && aliciaPrefab != null)
         {
             Vector3 aliciaPos = player.transform.position + new Vector3(2f, 0, 0);
             GameObject alicia = Instantiate(aliciaPrefab, aliciaPos, Quaternion.identity);
-            LLMChatManager llmManager = FindObjectOfType<LLMChatManager>();
             if (llmManager != null)
             {
                 NPCCompanion companionScript = alicia.GetComponent<NPCCompanion>();
-                llmManager.aliciaScript = companionScript;
-                if (companionScript != null) companionScript.playerTransform = player.transform;
+                if (companionScript != null) {
+                    llmManager.RegisterCompanion(companionScript);
+                    companionScript.playerTransform = player.transform;
+                }
+            }
+        }
+
+        // 2. Spawn Johnson nếu đã từng được mua bằng Vàng
+        if (SaveManager.Instance != null && SaveManager.Instance.currentSaveData.unlockedCompanions != null && SaveManager.Instance.currentSaveData.unlockedCompanions.Contains("npc_johnson") && johnsonPrefab != null)
+        {
+            Vector3 johnsonPos = player.transform.position + new Vector3(-2f, 0, 0); // Đứng ở bên trái Player
+            GameObject johnson = Instantiate(johnsonPrefab, johnsonPos, Quaternion.identity);
+            if (llmManager != null)
+            {
+                NPCCompanion companionScript = johnson.GetComponent<NPCCompanion>();
+                if (companionScript != null) {
+                    llmManager.RegisterCompanion(companionScript);
+                    companionScript.playerTransform = player.transform;
+                }
             }
         }
     }

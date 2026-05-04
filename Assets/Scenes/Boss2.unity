@@ -61571,8 +61571,6 @@ MonoBehaviour:
   inventoryCanvasGroup: {fileID: 0}
   itemSlotPrefab: {fileID: 3992982406673191109, guid: 2d744cd00b6277242853bb25312cdd46, type: 3}
   slotGrid: {fileID: 455959596}
-  btn_nextPage: {fileID: 0}
-  btn_prevPage: {fileID: 0}
   txt_pageIndicator: {fileID: 0}
   slotsPerPage: 25
   emptyHint: {fileID: 702502162}
@@ -61585,6 +61583,10 @@ MonoBehaviour:
   txt_previewStats: {fileID: 1446016309}
   btn_equip: {fileID: 1922430945}
   btn_drop: {fileID: 668058986}
+  slider_health: {fileID: 0}
+  slider_mana: {fileID: 0}
+  slider_stamina: {fileID: 0}
+  slider_exp: {fileID: 0}
 --- !u!114 &1426425152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61846,6 +61848,7 @@ MonoBehaviour:
   defaultSpawnPoint: {fileID: 1173906107}
   arrivalZoneName: Boss2
   aliciaPrefab: {fileID: 5123960915641433439, guid: c1c4031dc32ca644b98dedc80c0e8c68, type: 3}
+  johnsonPrefab: {fileID: 5123960915641433439, guid: 40e66030a8b7d5c44bd005b81aede976, type: 3}
 --- !u!4 &1475814345
 Transform:
   m_ObjectHideFlags: 0

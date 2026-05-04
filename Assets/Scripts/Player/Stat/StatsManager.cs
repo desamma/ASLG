@@ -197,6 +197,9 @@ public class StatsManager : MonoBehaviour
     public event System.Action OnLevelUpEvent;
     public event System.Action OnPlayerDeathEvent;
 
+    [Header("Buffs")]
+    public bool isInvincible = false; // Phục vụ cho Skill của Johnson
+
     private void Awake()
     {
         if (instance == null)
@@ -307,6 +310,8 @@ public class StatsManager : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        if (isInvincible) return; // Đang được Johnson buff vô địch, bỏ qua sát thương!
+
         // ĐÃ SỬA: Tính sát thương sau khi trừ giáp, sau đó nhân hệ số của AI Director
         float damageAfterDefend = (amount - defence) * damageTakenMultiplier;
         float actualDamage = Mathf.Max(0f, damageAfterDefend); // Đảm bảo sát thương >= 0 (không bị bơm máu ngược)

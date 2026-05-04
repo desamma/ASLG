@@ -83,6 +83,9 @@ public class GameSaveData
     public List<CompanionSaveData> companions = new List<CompanionSaveData>();
 
     public List<string> discoveredZones = new List<string>();
+    
+    // Danh sách lưu những NPC đã được mua (như Johnson)
+    public List<string> unlockedCompanions = new List<string> { "npc_alicia" }; 
 }
 
 // ==================================================
@@ -307,9 +310,9 @@ public class SaveManager : MonoBehaviour
                 relationshipScore = npc.relationshipScore
             };
 
-            if (chatManager != null && chatManager.aliciaScript == npc)
+            if (chatManager != null)
             {
-                compData.chatHistory = new List<ChatMessage>(chatManager.GetChatHistory());
+                compData.chatHistory = new List<ChatMessage>(chatManager.GetChatHistory(npc.npcID));
             }
             currentSaveData.companions.Add(compData);
         }
@@ -401,6 +404,8 @@ public class SaveManager : MonoBehaviour
         currentSaveData = JsonConvert.DeserializeObject<GameSaveData>(json);
 
         currentSaveData.discoveredZones ??= new List<string>();
+        currentSaveData.unlockedCompanions ??= new List<string> { "npc_alicia" };
+        currentSaveData.companions ??= new List<CompanionSaveData>();
     }
 
     private void ApplyCurrentSaveDataAndLoadScene()
@@ -785,6 +790,8 @@ public class SaveManager : MonoBehaviour
         LLMChatManager chatManager = FindObjectOfType<LLMChatManager>();
         foreach (var npc in allNPCs)
         {
+            if (currentSaveData.companions == null) break;
+
             var savedNpc = currentSaveData.companions.Find(c => c.npcID == npc.npcID);
             if (savedNpc != null)
             {
@@ -792,8 +799,9 @@ public class SaveManager : MonoBehaviour
                 npc.transform.position = savedNpc.position.Get();
                 npc.relationshipScore = savedNpc.relationshipScore;
                 npc.UpdateRelationshipUI();
-                if (chatManager != null && chatManager.aliciaScript == npc)
-                    chatManager.SetChatHistory(savedNpc.chatHistory);
+                if (chatManager != null) {
+                    chatManager.SetChatHistory(npc.npcID, savedNpc.chatHistory);
+                }
             }
         }
     }
