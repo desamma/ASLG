@@ -69,9 +69,6 @@ public class Enemy_KaraWinterblade_Movement : MonoBehaviour, IEnemy_Movement, IE
         if (charCollider == null)
             charCollider = GetComponent<Collider2D>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
-
         if (health == null)
             health = GetComponent<Enemy_KaraWinterblade_Health>();
 

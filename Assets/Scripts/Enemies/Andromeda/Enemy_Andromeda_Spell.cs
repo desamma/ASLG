@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 
 public class Enemy_Andromeda_Spell : MonoBehaviour
 {
@@ -60,16 +60,22 @@ public class Enemy_Andromeda_Spell : MonoBehaviour
         if (collision == null)
             return;
 
-        if (collision.CompareTag("Player") && !hitPlayer)
+        if ((collision.CompareTag("Player") || collision.CompareTag("NPC")) && !hitPlayer)
         {
             if (boomAudioClip != null)
                 SoundFXManager.Instance.PlaySoundFXClip(boomAudioClip, transform, volume);
             hitPlayer = true;
-            //var playerHealth = collision.GetComponent<PlayerHealth>();
-            //if (playerHealth != null)
-            //{
-            //    playerHealth.ChangeHealth(-magicDamage);
-            //}
+            if (collision.CompareTag("Player"))
+            {
+                StatsManager.instance.TakeDamage(magicDamage);
+            }
+            else if (collision.CompareTag("NPC"))
+            {
+                if (collision.TryGetComponent<NPCCompanion>(out var npc))
+                {
+                    npc.TakeDamage(magicDamage, false);
+                }
+            }
         }
     }
 }

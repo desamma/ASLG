@@ -37,6 +37,33 @@ public class CompanionProjectile : MonoBehaviour
         StartCoroutine(AoERoutine(targetPos));
     }
 
+    public void SetupInstantAoE(float dmg, float radius, bool dmgPlayer)
+    {
+        isAoE = true;
+        damage = dmg;
+        aoeRadius = radius;
+        canDamagePlayer = dmgPlayer;
+        
+        // Tạo vòng tròn sóng âm ngay lập tức
+        CreateSonicWave();
+        
+        // Trừ máu quái xung quanh ngay lập tức
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Enemy"))
+            {
+                var enemyHealth = hit.GetComponent<IEnemy_Health>();
+                if (enemyHealth != null) enemyHealth.ChangeHealth(-damage);
+            }
+            else if (hit.CompareTag("Player") && canDamagePlayer)
+            {
+                StatsManager.instance.TakeDamage(damage);
+            }
+        }
+        // Không gọi IEnumerator bay lên trời nữa. Asset sẽ hiển thị tại chỗ và tự mất sau "destroyTime" giây.
+    }
+
     private void FixedUpdate()
     {
         if (isAoE) return; // Vô hiệu hóa vận tốc vật lý mặc định nếu đang là đạn bay theo chuỗi AoE

@@ -268,7 +268,7 @@ MonoBehaviour:
   animator: {fileID: 4126806499621230692}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   attackComponent: {fileID: 5889943482283814627}
   detectionPoint: {fileID: 1821178506232182321}
   idleToPatrolWaitTime: 2
@@ -327,9 +327,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackPoint: {fileID: 627969196164995371}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 64
   damageInterval: 1
   jumpForce: 8
   spinSpeed: 10

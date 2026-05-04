@@ -40,9 +40,6 @@ public class Enemy_Chakkram_Attack : MonoBehaviour
         if (movement == null)
             movement = GetComponent<Enemy_Chakkram_Movement>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
-
         difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
     }
 
@@ -52,11 +49,11 @@ public class Enemy_Chakkram_Attack : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (!hit.CompareTag("Player")) continue;
-
-            player = hit.transform;
-
-            DealDamage();
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
+            {
+                player = hit.transform;
+                DealDamage();
+            }
         }
         StartCoroutine(ThrowChakkramCoroutine());
     }
@@ -73,10 +70,11 @@ public class Enemy_Chakkram_Attack : MonoBehaviour
 
                 foreach (var hit in hits)
                 {
-                    if (!hit.CompareTag("Player")) continue;
-
-                    player = hit.transform;
-                    break;
+                    if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
+                    {
+                        player = hit.transform;
+                        break;
+                    }
                 }
             }
         }
@@ -98,11 +96,21 @@ public class Enemy_Chakkram_Attack : MonoBehaviour
     {
         if (player == null) return;
         float damage = health.stats.Magic * multiplier * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
-        StatsManager.instance.TakeDamage(damage);
-        player.TryGetComponent<PlayerMovement>(out var playerMovement);
-        if(playerMovement != null)
+        
+        if (player.CompareTag("Player"))
         {
-            playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
+            StatsManager.instance.TakeDamage(damage);
+            if(player.TryGetComponent<PlayerMovement>(out var playerMovement))
+            {
+                playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
+            }
+        }
+        else if (player.CompareTag("NPC"))
+        {
+            if (player.TryGetComponent<NPCCompanion>(out var npc))
+            {
+                npc.TakeDamage(damage, false);
+            }
         }
     }
 

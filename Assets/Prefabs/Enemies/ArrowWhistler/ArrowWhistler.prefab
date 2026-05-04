@@ -392,7 +392,7 @@ MonoBehaviour:
   animator: {fileID: 7497840411695822340}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   attackComponent: {fileID: 309854027843366346}
   detectionPoint: {fileID: 6345079078916269243}
 --- !u!114 &309854027843366346
@@ -411,7 +411,7 @@ MonoBehaviour:
   health: {fileID: 2083520546785987010}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   player: {fileID: 0}
   fireArrow: {fileID: 9054448269850884908, guid: 35911b6e7862e0540979bcf1ec3826dd, type: 3}
   arrowSpawnPoint: {fileID: 1798914133857239818}

@@ -79,12 +79,20 @@ public class Enemy_FaieBloodwingMK2_Attack : MonoBehaviour
         {
             foreach (var hit in hits)
             {
-                if (hit.CompareTag("Player"))
+                if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
                 {
                     player = hit.transform;
-                    StatsManager.instance.TakeDamage(health.stats.Strength);
 
-                    ApplySlowToPlayer(player, bladeSlowDuration);
+                    if (hit.CompareTag("Player"))
+                    {
+                        StatsManager.instance.TakeDamage(health.stats.Strength);
+                        ApplySlowToPlayer(player, bladeSlowDuration);
+                    }
+                    else if (hit.CompareTag("NPC"))
+                    {
+                        if (hit.TryGetComponent<NPCCompanion>(out var npc))
+                            npc.TakeDamage(health.stats.Strength, false);
+                    }
 
                     if (player.TryGetComponent<StatusEffectManager>(out var statusEffectManager))
                     {
@@ -116,7 +124,7 @@ public class Enemy_FaieBloodwingMK2_Attack : MonoBehaviour
         {
             foreach (var hit in hits)
             {
-                if (hit.CompareTag("Player"))
+                if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
                 {
                     player = hit.transform;
                     break;
@@ -133,19 +141,28 @@ public class Enemy_FaieBloodwingMK2_Attack : MonoBehaviour
 
         if (distanceToPlayer <= closeDistance)
         {
-            StatsManager.instance.TakeDamage(health.stats.Strength);
+            if (player.CompareTag("Player"))
+            {
+                StatsManager.instance.TakeDamage(health.stats.Strength);
+
+                if (player.TryGetComponent<PlayerMovement>(out var playerMovement))
+                {
+                    playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
+                }
+
+                ApplySlowToPlayer(player, slowTime);
+            }
+            else if (player.CompareTag("NPC"))
+            {
+                if (player.TryGetComponent<NPCCompanion>(out var npc))
+                    npc.TakeDamage(health.stats.Strength, false);
+            }
 
             if (knockbackEffect != null)
             {
                 knockbackEffect.SetActive(true);
             }
 
-            if (player.TryGetComponent<PlayerMovement>(out var playerMovement))
-            {
-                playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
-            }
-
-            ApplySlowToPlayer(player, slowTime);
             if (player.TryGetComponent<StatusEffectManager>(out var statusEffectManager))
             {
                 ApplyStatusFX(0, statusEffectManager, slowTime);
@@ -169,12 +186,15 @@ public class Enemy_FaieBloodwingMK2_Attack : MonoBehaviour
                 spellComponent.Initialize(health.stats, direction, true,
                     extraEffect: playerTransform =>
                     {
-                        if (playerTransform.TryGetComponent<StatusEffectManager>(out var statusEffectManager))
+                        if (playerTransform.CompareTag("Player"))
                         {
-                            ApplyStatusFX(0, statusEffectManager, slowTime);
-                        }
+                            if (playerTransform.TryGetComponent<StatusEffectManager>(out var statusEffectManager))
+                            {
+                                ApplyStatusFX(0, statusEffectManager, slowTime);
+                            }
 
-                        ApplySlowToPlayer(playerTransform, slowTime);
+                            ApplySlowToPlayer(playerTransform, slowTime);
+                        }
                     });
             }
 

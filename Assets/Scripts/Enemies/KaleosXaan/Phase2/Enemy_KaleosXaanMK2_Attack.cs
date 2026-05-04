@@ -182,10 +182,10 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
     {
         PlayAudio(1);
 
-        var hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, playerLayer);
+        var hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, 0f, playerLayer);
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
             {
                 player = hit.transform;
                 if (!hitPlayer)
@@ -194,7 +194,16 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
                     hitPlayer = true;
                 }
                 Instantiate(attackHitEffect, player.position, Quaternion.identity, player.transform);
-                DealDamage(false, withKnockback: true);
+                
+                if (hit.CompareTag("Player"))
+                {
+                    DealDamage(false, 1f, true);
+                }
+                else if (hit.CompareTag("NPC"))
+                {
+                    float damage = health.stats.Strength * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
+                    if (hit.TryGetComponent<NPCCompanion>(out var npc)) npc.TakeDamage(damage, false);
+                }
             }
         }
         movementComponent.FacingDirection = TransformHelper.FlipTowards(transform, player, movementComponent.FacingDirection);
@@ -287,7 +296,7 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
         var hits = Physics2D.OverlapCircleAll(sawAttackPoint.position, sawAttackRadius, playerLayer);
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
             {
                 player = hit.transform;
                 if (!hitPlayer)
@@ -297,7 +306,16 @@ public class Enemy_KaleosXaanMK2_Attack : MonoBehaviour
                     hitPlayer = true;
                 }
                 Instantiate(attackSwingAudioClip, player.position, Quaternion.identity, player.transform);
-                DealDamage(false, sawDamageMultiplier, false);
+                
+                if (hit.CompareTag("Player"))
+                {
+                    DealDamage(false, sawDamageMultiplier, false);
+                }
+                else if (hit.CompareTag("NPC"))
+                {
+                    float damage = health.stats.Strength * sawDamageMultiplier * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
+                    if (hit.TryGetComponent<NPCCompanion>(out var npc)) npc.TakeDamage(damage, false);
+                }
             }
         }
         hitPlayer = false;

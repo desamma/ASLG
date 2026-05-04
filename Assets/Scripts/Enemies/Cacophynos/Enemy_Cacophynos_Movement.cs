@@ -97,9 +97,6 @@ public class Enemy_Cacophynos_Movement : MonoBehaviour, IEnemy_Movement, IEnemyM
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
-
         if (health == null)
             health = GetComponent<Enemy_Cacophynos_Health>();
 

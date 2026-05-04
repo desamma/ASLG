@@ -39,19 +39,31 @@ public class Enemy_Dogehai_Attack : MonoBehaviour
     }
     public void NormalAttack()
     {
-        var hits = Physics2D.OverlapBoxAll(attackPoint.position, attackHitBox, playerLayer);
+        var hits = Physics2D.OverlapBoxAll(attackPoint.position, attackHitBox, 0f, playerLayer);
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
             {
                 player = hit.transform;
 
-                //TODO: Deal Damage to Player
                 if (hitEffectTimer <= 0)
                 {
                     hitEffectTimer = 2f;
                     SoundFXManager.Instance.PlaySoundFXClip(normalAttackHitAudioClip, transform, volume);
                     Instantiate(hitEffect, player.position, Quaternion.identity, player.transform);
+                    
+                    float damage = health.stats.Strength;
+                    if (player.CompareTag("Player"))
+                    {
+                        StatsManager.instance.TakeDamage(damage);
+                    }
+                    else if (player.CompareTag("NPC"))
+                    {
+                        if (player.TryGetComponent<NPCCompanion>(out var npc))
+                        {
+                            npc.TakeDamage(damage, false);
+                        }
+                    }
                 }
             }
         }

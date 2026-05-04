@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using UnityEngine;
 
 public class EnemyFaieBloodwingMK2_Warbird : MonoBehaviour
@@ -32,16 +32,24 @@ public class EnemyFaieBloodwingMK2_Warbird : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (hitPlayer) return;
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") || collision.CompareTag("NPC"))
         {
             var difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
 
             float damage = casterStats.Magic * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
 
-            StatsManager.instance.TakeDamage(damage);
-            if (collision.TryGetComponent<PlayerMovement>(out var playerMovement))
+            if (collision.CompareTag("Player"))
             {
-                playerMovement.StopMovement(stunDuration);
+                StatsManager.instance.TakeDamage(damage);
+                if (collision.TryGetComponent<PlayerMovement>(out var playerMovement))
+                {
+                    playerMovement.StopMovement(stunDuration);
+                }
+            }
+            else if (collision.CompareTag("NPC"))
+            {
+                if (collision.TryGetComponent<NPCCompanion>(out var npc))
+                    npc.TakeDamage(damage, false);
             }
             hitPlayer = true;
         }
@@ -66,5 +74,3 @@ public class EnemyFaieBloodwingMK2_Warbird : MonoBehaviour
             SoundFXManager.Instance.PlaySoundFXClip(slamAudio, transform, volume);
     }
 }
-
-

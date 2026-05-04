@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -65,9 +65,6 @@ public class Enemy_KaraWinterbladeMK2_Movement : MonoBehaviour, IEnemy_Movement,
 
         if (charCollider == null)
             charCollider = GetComponent<Collider2D>();
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
 
         if (health == null)
             health = GetComponent<Enemy_KaraWinterbladeMK2_Health>();

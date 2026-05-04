@@ -95,9 +95,6 @@ public class Enemy_AshMephyt_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMo
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
-
         if (health == null)
             health = GetComponent<Enemy_AshMephyt_Health>();
 

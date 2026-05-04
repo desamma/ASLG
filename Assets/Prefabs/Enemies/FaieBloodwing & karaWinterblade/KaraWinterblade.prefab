@@ -416,7 +416,7 @@ MonoBehaviour:
   animator: {fileID: 8588443312288148201}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   deathEffect: {fileID: 1806745825680017543, guid: 479a240cbfb072142be972346da868c6, type: 3}
   detectionPoint: {fileID: 8976672391893406442}
 --- !u!114 &9008514317642575300
@@ -476,7 +476,7 @@ MonoBehaviour:
   enemyCollider: {fileID: 97211203628566599}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   player: {fileID: 0}
   normalAttackPoint: {fileID: 8987211004249778741}
   normalAttackHitBox: {x: 2, y: 3.3, z: 0}

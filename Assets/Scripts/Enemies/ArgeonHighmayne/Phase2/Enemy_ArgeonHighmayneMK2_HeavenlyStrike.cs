@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using UnityEngine;
 
 public class Enemy_ArgeonHighmayneMK2_HeavenlyStrike : MonoBehaviour
@@ -34,20 +34,30 @@ public class Enemy_ArgeonHighmayneMK2_HeavenlyStrike : MonoBehaviour
     public void HeavenlyStrike()
     {
         bool hitPlayer = false;
-        var hits = Physics2D.OverlapBoxAll(centerPoint.position, attackHitBox, playerLayer);
+        var hits = Physics2D.OverlapBoxAll(centerPoint.position, attackHitBox, 0f, playerLayer);
         if (hits.Length > 0)
         {
             foreach (var hit in hits)
             {
-                if (hit.CompareTag("Player"))
+                if ((hit.CompareTag("Player") || hit.CompareTag("NPC")) && !hitPlayer)
                 {
-                    if (hitPlayer == false)
+                    if (attackHitEffect != null)
+                        Instantiate(attackHitEffect, hit.transform.position, Quaternion.identity);
+                    
+                    float damage = casterStats.Magic * attackDamageMultiplier;
+                    
+                    if (hit.CompareTag("Player"))
                     {
-                        if (attackHitEffect != null)
-                            Instantiate(attackHitEffect, hit.transform.position, Quaternion.identity);
-                        StatsManager.instance.TakeDamage(casterStats.Magic * attackDamageMultiplier);
-                        hitPlayer = true;
+                        StatsManager.instance.TakeDamage(damage);
                     }
+                    else if (hit.CompareTag("NPC"))
+                    {
+                        if (hit.TryGetComponent<NPCCompanion>(out var npc))
+                        {
+                            npc.TakeDamage(damage, false);
+                        }
+                    }
+                    hitPlayer = true;
                 }
             }
         }

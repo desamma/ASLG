@@ -367,7 +367,7 @@ public class NPCCompanion : MonoBehaviour
         {
             GameObject explosion = Instantiate(magicBulletPrefab, transform.position, Quaternion.identity);
             CompanionProjectile proj = explosion.GetComponent<CompanionProjectile>();
-            if (proj != null) proj.SetupAoE(transform.position, bulletDamage * 2f, 3f, angryTimer > 0f);
+            if (proj != null) proj.SetupInstantAoE(bulletDamage * 2f, 3f, angryTimer > 0f);
         }
         yield return null;
     }
@@ -381,7 +381,8 @@ public class NPCCompanion : MonoBehaviour
         // Hiển thị Asset 2 ảnh vụ nổ mà bạn kéo thả vào inspector
         if (ultimateEffectPrefab != null)
         {
-            Instantiate(ultimateEffectPrefab, transform.position, Quaternion.identity);
+            GameObject effect = Instantiate(ultimateEffectPrefab, transform.position, Quaternion.identity);
+            Destroy(effect, 2f); // Tự động xóa hiệu ứng sau 2 giây để tránh lag game
         }
 
         if (StatsManager.instance != null && !StatsManager.instance.IsDead) { StatsManager.instance.Heal(1000f); StatsManager.instance.isInvincible = true; }

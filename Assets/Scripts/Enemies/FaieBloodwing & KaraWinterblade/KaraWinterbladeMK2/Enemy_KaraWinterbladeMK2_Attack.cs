@@ -74,10 +74,10 @@ public class Enemy_KaraWinterbladeMK2_Attack : MonoBehaviour
         hitPlayer = false;
         PlayAudio(1);
 
-        var hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, playerLayer);
+        var hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, 0f, playerLayer);
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
             {
                 player = hit.transform;
                 if (!hitPlayer)
@@ -169,7 +169,7 @@ public class Enemy_KaraWinterbladeMK2_Attack : MonoBehaviour
         {
             foreach (var hit in hits)
             {
-                if (hit.CompareTag("Player"))
+                if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
                 {
                     player = hit.transform;
                     break;

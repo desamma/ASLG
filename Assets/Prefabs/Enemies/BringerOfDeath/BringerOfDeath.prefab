@@ -200,10 +200,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackPoint: {fileID: 7575139242310632378}
-  players: []
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   attackBoxSize: {x: 3, y: 3}
   spellPrefab: {fileID: 2533196488757132974, guid: b0a88a4895104f149b725c187d3304e6, type: 3}
   meleeAttackMissAudioClip: {fileID: 8300000, guid: ebc0e2607b7374f4a84fe50bf88e2bf3, type: 3}
@@ -229,7 +228,7 @@ MonoBehaviour:
   animator: {fileID: 7186685436872888126}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   attackComponent: {fileID: 3404049085707535281}
   detectionPoint: {fileID: 751109206023846643}
   idleToPatrolWaitTime: 2

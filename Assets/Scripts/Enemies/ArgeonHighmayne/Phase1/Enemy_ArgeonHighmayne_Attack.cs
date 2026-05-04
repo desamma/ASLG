@@ -62,7 +62,7 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
         var hits = Physics2D.OverlapCircleAll(normalAttackPoint.position, normalAttackRadius, playerLayer);
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
             {
                 player = hit.transform;
                 if (!hitPlayer)
@@ -72,7 +72,7 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
                 }
 
                 Instantiate(normalAttackHitEffect, player.position, Quaternion.identity, player.transform);
-                DealDamage(false, isKnockback: true);
+                DealDamage(false, 1f, true);
             }
         }
         hitPlayer = false;
@@ -84,7 +84,7 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
             {
                 player = hit.transform;
                 if (!hitPlayer)
@@ -134,7 +134,17 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
     }
     public void Decimate()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        if (TryGetComponent<Enemy_ArgeonHighmayne_Movement>(out var movement))
+        {
+            player = movement.PlayerTransform;
+        }
+        
+        if (player == null)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) player = p.transform;
+        }
+
         if (player != null)
         {
             GameObject spellInstance = Instantiate(decimateEffect, player.position, Quaternion.identity);
@@ -161,19 +171,24 @@ public class Enemy_ArgeonHighmayne_Attack : MonoBehaviour
 
     private void DealDamage(bool isMagic = false, float damageMultiplier = 1f, bool isKnockback = true)
     {
-        if(isMagic)
-        {
-            StatsManager.instance.TakeDamage(health.stats.Magic * damageMultiplier);
-        }
-        else
-        {
-            StatsManager.instance.TakeDamage(health.stats.Strength * damageMultiplier);
-        }
-        player.TryGetComponent<PlayerMovement>(out var playerMovement);
+        if (player == null) return;
+        
+        float damage = isMagic ? health.stats.Magic * damageMultiplier : health.stats.Strength * damageMultiplier;
 
-        if (playerMovement != null && isKnockback)
+        if (player.CompareTag("Player"))
         {
-            playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
+            StatsManager.instance.TakeDamage(damage);
+            if (isKnockback && player.TryGetComponent<PlayerMovement>(out var playerMovement))
+            {
+                playerMovement.KnockBack(transform, health.stats.KnockbackForce, health.stats.KnockbackTime, health.stats.StunTime);
+            }
+        }
+        else if (player.CompareTag("NPC"))
+        {
+            if (player.TryGetComponent<NPCCompanion>(out var npc))
+            {
+                npc.TakeDamage(damage, false);
+            }
         }
     }
 

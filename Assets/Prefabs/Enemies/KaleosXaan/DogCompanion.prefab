@@ -202,7 +202,7 @@ MonoBehaviour:
   health: {fileID: 3084889223599520419}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   player: {fileID: 0}
   attackPoint: {fileID: 264120200221060847}
   attackHitBox: {x: 1.5, y: 1.5, z: 0}
@@ -266,7 +266,7 @@ MonoBehaviour:
   animator: {fileID: 8129329632701960807}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   digChance: 0.2
   digDuration: 2
   detectionPoint: {fileID: 5321244384914622605}

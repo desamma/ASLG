@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 
 public class Enemy_KaraWinterbladeMK2_Cryogenesis : MonoBehaviour
 {
@@ -33,13 +33,21 @@ public class Enemy_KaraWinterbladeMK2_Cryogenesis : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (hitPlayer) return;
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") || collision.CompareTag("NPC"))
         {
             var difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
 
             float damage = casterStats.Magic * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
 
-            StatsManager.instance.TakeDamage(damage);
+            if (collision.CompareTag("Player"))
+            {
+                StatsManager.instance.TakeDamage(damage);
+            }
+            else if (collision.CompareTag("NPC"))
+            {
+                if (collision.TryGetComponent<NPCCompanion>(out var npc)) npc.TakeDamage(damage, false);
+            }
+
             hitPlayer = true;
             if (hitEffect != null)
                 Instantiate(hitEffect, transform.position, Quaternion.identity);
