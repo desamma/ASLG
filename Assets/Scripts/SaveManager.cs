@@ -57,12 +57,12 @@ public class StatsSaveData
     public int level;
     public int currentExp;
     public int upgradePoints;
-
-    // Base Stats (can be upgraded)
+    public int gold;
     public float baseMaxHealth;
     public float baseMaxMana;
     public float baseMaxStamina;
     public float baseDamage;
+    public float baseDefence;
     public float baseCooldown;
     public float baseMoveSpeed;
     public float baseDefence;
@@ -288,12 +288,12 @@ public class SaveManager : MonoBehaviour
             currentSaveData.stats.level = StatsManager.instance.level;
             currentSaveData.stats.currentExp = StatsManager.instance.currentExp;
             currentSaveData.stats.upgradePoints = StatsManager.instance.upgradePoints;
-
-            // Base Stats
+            currentSaveData.stats.gold = StatsManager.instance.gold;
             currentSaveData.stats.baseMaxHealth = StatsManager.instance.baseMaxHealth;
             currentSaveData.stats.baseMaxMana = StatsManager.instance.baseMaxMana;
             currentSaveData.stats.baseMaxStamina = StatsManager.instance.baseMaxStamina;
             currentSaveData.stats.baseDamage = StatsManager.instance.baseDamage;
+            currentSaveData.stats.baseDefence = StatsManager.instance.baseDefence;
             currentSaveData.stats.baseCooldown = StatsManager.instance.baseCooldown;
             currentSaveData.stats.baseMoveSpeed = StatsManager.instance.baseMoveSpeed;
             currentSaveData.stats.baseDefence = StatsManager.instance.baseDefence;
@@ -473,30 +473,10 @@ public class SaveManager : MonoBehaviour
         if (StatsManager.instance != null)
         {
             StatsManager.instance.LoadSavedStats(
-                currentSaveData.stats.level, 
-                currentSaveData.stats.currentExp, 
-                currentSaveData.stats.upgradePoints,
-                currentSaveData.stats.currentHealth, 
-                currentSaveData.stats.currentMana, 
-                currentSaveData.stats.currentStamina,
-                currentSaveData.playerName, 
-                currentSaveData.stats.baseMaxHealth, 
-                currentSaveData.stats.baseMaxMana, 
-                currentSaveData.stats.baseMaxStamina,
-                currentSaveData.stats.baseDamage, 
-                currentSaveData.stats.baseCooldown, 
-                currentSaveData.stats.baseMoveSpeed,
-                currentSaveData.stats.baseDefence,
-                currentSaveData.stats.bonusMaxHealth,
-                currentSaveData.stats.bonusMaxMana,
-                currentSaveData.stats.bonusMaxStamina,
-                currentSaveData.stats.bonusDamage,
-                currentSaveData.stats.bonusCooldown,
-                currentSaveData.stats.bonusMoveSpeed,
-                currentSaveData.stats.bonusDefence,
-                currentSaveData.stats.bonusWeaponRange,
-                currentSaveData.stats.bonusKnockbackForce,
-                currentSaveData.stats.bonusStaminaRegenRate
+                currentSaveData.stats.level, currentSaveData.stats.currentExp, currentSaveData.stats.upgradePoints, currentSaveData.stats.gold,
+                currentSaveData.stats.currentHealth, currentSaveData.stats.currentMana, currentSaveData.stats.currentStamina,
+                currentSaveData.playerName, currentSaveData.stats.baseMaxHealth, currentSaveData.stats.baseMaxMana, currentSaveData.stats.baseMaxStamina,
+                currentSaveData.stats.baseDamage, currentSaveData.stats.baseDefence, currentSaveData.stats.baseCooldown, currentSaveData.stats.baseMoveSpeed
             );
         }
 
@@ -846,6 +826,31 @@ public class SaveManager : MonoBehaviour
         {
             player.transform.position = currentSaveData.playerPosition.Get();
             _pendingPositionRestore = false;
+        }
+
+        // Phục hồi chỉ số Stats, Inventory, Quest nếu Player mới bị khởi tạo lại (mất dữ liệu do chuyển scene)
+        if (StatsManager.instance != null && currentSaveData != null && currentSaveData.stats != null && currentSaveData.stats.level > 0)
+        {
+            StatsManager.instance.LoadSavedStats(
+                currentSaveData.stats.level, currentSaveData.stats.currentExp, currentSaveData.stats.upgradePoints, currentSaveData.stats.gold,
+                currentSaveData.stats.currentHealth, currentSaveData.stats.currentMana, currentSaveData.stats.currentStamina,
+                currentSaveData.playerName, currentSaveData.stats.baseMaxHealth, currentSaveData.stats.baseMaxMana, currentSaveData.stats.baseMaxStamina,
+                currentSaveData.stats.baseDamage, currentSaveData.stats.baseDefence, currentSaveData.stats.baseCooldown, currentSaveData.stats.baseMoveSpeed
+            );
+        }
+
+        if (InventoryManager.instance != null && currentSaveData != null && currentSaveData.inventory != null)
+        {
+            InventoryManager.instance.bagItems = currentSaveData.inventory.bagItems ?? new List<ItemStack>();
+            InventoryManager.instance.equippedWeapon = currentSaveData.inventory.equippedWeapon;
+            InventoryManager.instance.equippedArmor = currentSaveData.inventory.equippedArmor ?? new Dictionary<string, string>();
+            InventoryManager.instance.equippedAccessories = currentSaveData.inventory.equippedAccessories ?? new List<string>();
+            InventoryManager.instance.ForceUIUpdate();
+        }
+
+        if (QuestManager.instance != null && currentSaveData != null && currentSaveData.quests != null)
+        {
+            QuestManager.instance.ImportSaveData(currentSaveData.quests);
         }
 
         // NPC restore

@@ -51,6 +51,9 @@ public class LLMChatManager : MonoBehaviour
     public GameObject aiQuestPanel;   
     public TMP_Text aiQuestText;      
 
+    [Header("Relationship UI")]
+    public TMP_Text relationshipTextDisplay;
+
     [Header("Game References")]
     public NPCCompanion activeNPC;
     private List<NPCCompanion> allCompanions = new List<NPCCompanion>();
@@ -72,6 +75,7 @@ public class LLMChatManager : MonoBehaviour
     private float questTimer = 0f;
     private float questCooldownTimer = 0f;
 
+    private int currentQuestType = 0; // 0: Chat, 1: Walk
     private int targetChatCount, currentChatCount;
     private float targetDistance, currentDistance;
     private int rewardExp, rewardGold, rewardRel;
@@ -145,9 +149,33 @@ public class LLMChatManager : MonoBehaviour
         }
     }
 
-    public void OpenChat() { if (chatCanvas == null || activeNPC == null) return; isChatting = true; chatCanvas.SetActive(true); if (playerMovement != null) playerMovement.SetMovementLock(true); if (playerAttack != null) playerAttack.enabled = false; if (CurrentChatHistory.Count == 0) npcTextDisplay.text = $"{activeNPC.npcName}: Cậu cần gì sao?"; StartCoroutine(FocusInputDelay()); }
+    public void OpenChat() 
+    { 
+        if (chatCanvas == null || activeNPC == null) return; 
+        isChatting = true; 
+        chatCanvas.SetActive(true); 
+        
+        if (playerMovement != null) playerMovement.SetMovementLock(true); 
+        if (playerAttack != null) playerAttack.enabled = false; 
+        
+        if (CurrentChatHistory.Count == 0) npcTextDisplay.text = $"{activeNPC.npcName}: Cậu cần gì sao?"; 
+        
+        StartCoroutine(FocusInputDelay()); 
+        
+        UpdateRelationshipUI();
+    }
+    
     private IEnumerator FocusInputDelay() { yield return new WaitForEndOfFrame(); if (UnityEngine.EventSystems.EventSystem.current != null) UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(playerInputField.gameObject); if (playerInputField != null) playerInputField.ActivateInputField(); }
+    
     public void CloseChat() { if (chatCanvas == null) return; isChatting = false; chatCanvas.SetActive(false); if (playerMovement != null) playerMovement.SetMovementLock(false); if (playerAttack != null) playerAttack.enabled = true; }
+
+    public void UpdateRelationshipUI()
+    {
+        if (relationshipTextDisplay == null || activeNPC == null) return;
+        
+        // Chỉ hiển thị đúng điểm số
+        relationshipTextDisplay.text = activeNPC.relationshipScore.ToString();
+    }
 
     public void OnSendClicked()
     {
@@ -178,8 +206,10 @@ public class LLMChatManager : MonoBehaviour
         isGeneratingQuest = true;
         npcTextDisplay.text = $"<i>{activeNPC?.npcName} đang nghĩ ra thử thách...</i>";
 
-        targetChatCount = Random.Range(3, 9);      
-        targetDistance = Random.Range(5f, 16f);    
+        currentQuestType = Random.Range(0, 2); // Random 0 (Chat) hoặc 1 (Walk)
+        
+        targetChatCount = (currentQuestType == 0) ? Random.Range(3, 9) : 0;      
+        targetDistance = (currentQuestType == 1) ? Random.Range(10f, 30f) : 0f;    
         rewardExp = Random.Range(50, 150);
         rewardGold = Random.Range(10, 50);
         rewardRel = Random.Range(1, 5);
@@ -191,25 +221,58 @@ public class LLMChatManager : MonoBehaviour
         // KIỂM TRA CHẾ ĐỘ OFFLINE
         if (UseOfflineConversation)
         {
-            string[] offlineLores = {
-                "Hey, let's stretch our legs. Walk with me and chat a bit!",
-                "I'm feeling adventurous. Can you handle a quick patrol?",
-                "I want to see more of this area. Follow me and keep me company.",
-                "Let's move! Exercise is essential for mages like us."
-            };
+            string[] offlineLores;
+            if (currentQuestType == 0) {
+                offlineLores = new string[] {
+                    "Let's stay here and talk for a bit.",
+                    "I want to know more about you. Tell me a story!"
+                };
+            } else {
+                offlineLores = new string[] {
+                    "Hey, let's stretch our legs. Walk with me!",
+                    "I'm feeling adventurous. Can you handle a quick patrol?"
+                };
+            }
             loreText = offlineLores[Random.Range(0, offlineLores.Length)];
             yield return new WaitForSeconds(0.5f);
         }
         else
         {
-            string questStats = $"Target: Chat {targetChatCount} times, Walk {targetDistance:F0} meters. Rewards: {rewardExp} EXP, {rewardGold} Gold, {rewardRel} Relationship.";
+            string questStats = "";
+            if (currentQuestType == 0) {
+                questStats = $"Target: Chat {targetChatCount} times. Rewards: {rewardExp} EXP, {rewardGold} Gold, {rewardRel} Relationship.";
+            } else {
+                questStats = $"Target: Walk {targetDistance:F0} meters. Rewards: {rewardExp} EXP, {rewardGold} Gold, {rewardRel} Relationship.";
+            }
             string sysPrompt = $"{activeNPC?.systemPrompt}. Give the player a mini-quest based on these exact stats: {questStats}. Speak directly in English (2-3 sentences).";
 
-            foreach (string key in GetGeminiKeys())
+            List<string> geminiKeys = GetGeminiKeys();
+            Debug.Log($"<color=cyan>[LLM Quest]</color> Quét thấy {geminiKeys.Count} Gemini API Keys. Bắt đầu gọi...");
+            foreach (string key in geminiKeys)
             {
                 if (string.IsNullOrWhiteSpace(key)) continue;
+                string maskedKey = key.Length > 10 ? key.Substring(0, 6) + "..." + key.Substring(key.Length - 4) : "***";
+                Debug.Log($"<color=cyan>[LLM Quest]</color> Đang thử Gemini Key: {maskedKey}");
                 yield return StartCoroutine(CallGeminiAPI_OneOff(key.Trim(), sysPrompt, (res) => loreText = res));
-                if (!string.IsNullOrEmpty(loreText)) break;
+                if (!string.IsNullOrEmpty(loreText)) 
+                {
+                    Debug.Log($"<color=green>[LLM Quest]</color> Gọi thành công với Key {maskedKey}!");
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(loreText))
+            {
+                List<string> colabUrls = GetColabUrls();
+                Debug.LogWarning($"<color=orange>[LLM Quest Fallback]</color> Gemini thất bại. Quét thấy {colabUrls.Count} Colab/OpenAI URLs để tạo Quest.");
+                foreach (string url in colabUrls)
+                {
+                    if (string.IsNullOrWhiteSpace(url)) continue;
+                    Debug.Log($"<color=orange>[LLM Quest Fallback]</color> Đang thử kết nối URL: {url}");
+                    List<ChatMessage> dummyHistory = new List<ChatMessage> { new ChatMessage { role = "user", content = sysPrompt } };
+                    yield return StartCoroutine(CallOpenAiAPI(url.Trim(), "System Admin", dummyHistory, (res) => loreText = res));
+                    if (!string.IsNullOrEmpty(loreText)) { Debug.Log($"<color=green>[LLM Quest Fallback]</color> Gọi thành công với URL: {url}"); break; }
+                }
             }
         }
 
@@ -232,18 +295,32 @@ public class LLMChatManager : MonoBehaviour
     private void UpdateQuestUI()
     {
         if (aiQuestText == null || !hasActiveAiQuest) return;
-        string distColor = currentDistance >= targetDistance ? "green" : "white";
-        string chatColor = currentChatCount >= targetChatCount ? "green" : "white";
+        
+        string objectiveText = "";
+        if (currentQuestType == 0) 
+        {
+            string chatColor = currentChatCount >= targetChatCount ? "green" : "white";
+            objectiveText = $"<color={chatColor}>Chat: {currentChatCount} / {targetChatCount}</color>\n";
+        }
+        else 
+        {
+            string distColor = currentDistance >= targetDistance ? "green" : "white";
+            objectiveText = $"<color={distColor}>Walk: {currentDistance:F1} / {targetDistance:F0} m</color>\n";
+        }
+
         aiQuestText.text = $"<b><color=yellow>{activeNPC?.npcName}'s Request</color></b>\n<i>{currentQuestLore}</i>\n\n" +
-                           $"<color={distColor}>Walk: {currentDistance:F1} / {targetDistance:F0} m</color>\n" +
-                           $"<color={chatColor}>Chat: {currentChatCount} / {targetChatCount}</color>\n" +
+                           objectiveText +
                            $"<color=red>Time: {Mathf.CeilToInt(questTimer)}s</color>";
     }
 
     private void CheckQuestCompletion()
     {
         if (!hasActiveAiQuest) return;
-        if (currentDistance >= targetDistance && currentChatCount >= targetChatCount)
+        
+        bool isComplete = (currentQuestType == 0 && currentChatCount >= targetChatCount) || 
+                          (currentQuestType == 1 && currentDistance >= targetDistance);
+
+        if (isComplete)
         {
             hasActiveAiQuest = false;
             if (aiQuestPanel != null) aiQuestPanel.SetActive(false);
@@ -267,11 +344,33 @@ public class LLMChatManager : MonoBehaviour
         CurrentChatHistory.Add(new ChatMessage { role = "user", content = userText + "\n\n(OOC: Append [REL: X])" });
         string aiRawResponse = null;
 
-        foreach (string key in GetGeminiKeys())
+        List<string> geminiKeys = GetGeminiKeys();
+        Debug.Log($"<color=cyan>[LLM Chat]</color> Quét thấy {geminiKeys.Count} Gemini API Keys. Bắt đầu gọi...");
+        foreach (string key in geminiKeys)
         {
             if (string.IsNullOrWhiteSpace(key)) continue;
+            string maskedKey = key.Length > 10 ? key.Substring(0, 6) + "..." + key.Substring(key.Length - 4) : "***";
+            Debug.Log($"<color=cyan>[LLM Chat]</color> Đang thử Gemini Key: {maskedKey}");
             yield return StartCoroutine(CallGeminiAPI(key.Trim(), systemPrompt, CurrentChatHistory, (result) => aiRawResponse = result));
-            if (!string.IsNullOrEmpty(aiRawResponse)) break; 
+            if (!string.IsNullOrEmpty(aiRawResponse)) 
+            {
+                Debug.Log($"<color=green>[LLM Chat]</color> Gọi thành công với Key {maskedKey}!");
+                break; 
+            }
+        }
+
+        // Nếu toàn bộ API Key Gemini chết (Lỗi 403), nhảy sang Fallback dùng URL Colab / Local AI
+        if (string.IsNullOrEmpty(aiRawResponse))
+        {
+            List<string> colabUrls = GetColabUrls();
+            Debug.LogWarning($"<color=orange>[LLM Chat Fallback]</color> Gemini sập. Quét thấy {colabUrls.Count} Colab/OpenAI URLs để chat.");
+            foreach (string url in colabUrls)
+            {
+                if (string.IsNullOrWhiteSpace(url)) continue;
+                Debug.Log($"<color=orange>[LLM Chat Fallback]</color> Đang thử kết nối URL: {url}");
+                yield return StartCoroutine(CallOpenAiAPI(url.Trim(), systemPrompt, CurrentChatHistory, (result) => aiRawResponse = result));
+                if (!string.IsNullOrEmpty(aiRawResponse)) { Debug.Log($"<color=green>[LLM Chat Fallback]</color> Gọi thành công với URL: {url}"); break; }
+            }
         }
 
         if (!string.IsNullOrEmpty(aiRawResponse))
@@ -296,7 +395,7 @@ public class LLMChatManager : MonoBehaviour
             request.SetRequestHeader("Content-Type", "application/json");
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.Success) { GeminiResponse res = JsonUtility.FromJson<GeminiResponse>(request.downloadHandler.text); if (res != null && res.candidates != null && res.candidates.Count > 0) onComplete?.Invoke(res.candidates[0].content.parts[0].text.Trim()); else onComplete?.Invoke(null); }
-            else { Debug.LogError($"[Gemini Chat LỖI] {request.error}"); onComplete?.Invoke(null); }
+            else { string errorDetail = request.downloadHandler != null ? request.downloadHandler.text : "No data"; Debug.LogError($"[Gemini Chat LỖI] Mã HTTP: {request.responseCode} - Lỗi: {request.error}\nChi tiết từ Server:\n{errorDetail}"); onComplete?.Invoke(null); }
         }
     }
 
@@ -314,7 +413,36 @@ public class LLMChatManager : MonoBehaviour
             request.SetRequestHeader("Content-Type", "application/json");
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.Success) { GeminiResponse res = JsonUtility.FromJson<GeminiResponse>(request.downloadHandler.text); if (res != null && res.candidates != null && res.candidates.Count > 0) onComplete?.Invoke(res.candidates[0].content.parts[0].text.Trim()); else onComplete?.Invoke(null); }
-            else { Debug.LogError($"[Gemini Quest LỖI] {request.error}"); onComplete?.Invoke(null); }
+            else { string errorDetail = request.downloadHandler != null ? request.downloadHandler.text : "No data"; Debug.LogError($"[Gemini Quest LỖI] Mã HTTP: {request.responseCode} - Lỗi: {request.error}\nChi tiết từ Server:\n{errorDetail}"); onComplete?.Invoke(null); }
+        }
+    }
+
+    private IEnumerator CallOpenAiAPI(string url, string sysPrompt, List<ChatMessage> history, System.Action<string> onComplete)
+    {
+        string endpoint = url.TrimEnd('/');
+        // Tự động thêm hậu tố /v1/chat/completions nếu bạn nhập thiếu ở URL
+        if (!endpoint.EndsWith("/v1/chat/completions")) endpoint += "/v1/chat/completions";
+
+        OpenAiRequest requestData = new OpenAiRequest();
+        requestData.messages.Add(new ChatMessage { role = "system", content = sysPrompt });
+        foreach (var msg in history) 
+        {
+            requestData.messages.Add(new ChatMessage { role = msg.role, content = msg.content });
+        }
+
+        using (UnityWebRequest request = new UnityWebRequest(endpoint, "POST"))
+        {
+            request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData)));
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+            
+            yield return request.SendWebRequest();
+            
+            if (request.result == UnityWebRequest.Result.Success) { 
+                OpenAiResponse res = JsonUtility.FromJson<OpenAiResponse>(request.downloadHandler.text); 
+                if (res != null && res.choices != null && res.choices.Count > 0 && res.choices[0].message != null) onComplete?.Invoke(res.choices[0].message.content.Trim()); else onComplete?.Invoke(null); 
+            }
+            else { string errorDetail = request.downloadHandler != null ? request.downloadHandler.text : "No data"; Debug.LogError($"[OpenAI/Colab Chat LỖI] Tại URL: {endpoint}\nMã HTTP: {request.responseCode} - Lỗi: {request.error}\nChi tiết từ Server:\n{errorDetail}"); onComplete?.Invoke(null); }
         }
     }
 
@@ -331,7 +459,6 @@ public class LLMChatManager : MonoBehaviour
         if (activeNPC != null) activeNPC.UpdateRelationshipUI();
     }
 
-    // Đăng ký Companions khi sinh ra
     public void RegisterCompanion(NPCCompanion npc)
     {
         if (!allCompanions.Contains(npc)) allCompanions.Add(npc);
