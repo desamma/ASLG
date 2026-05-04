@@ -76,6 +76,13 @@ public class PlayerSpawner : MonoBehaviour
         CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
         if (vcam != null) vcam.Follow = player.transform;
 
+        // Load persisted skill upgrade tier
+        var playerSkill = player.GetComponent<PlayerSkill>();
+        if (playerSkill != null && SaveManager.Instance != null)
+        {
+            playerSkill.LoadSkillTier(SaveManager.Instance.currentSaveData.stats.skillUpgradeTier);
+        }
+
         if (ClassManager.Instance.SelectedClass == PlayerClass.Summoner && aliciaPrefab != null)
         {
             Vector3 aliciaPos = player.transform.position + new Vector3(2f, 0, 0);

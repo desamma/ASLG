@@ -21868,11 +21868,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99a211b5d533eb14b8153f55a20fd3a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyFillIngredients: 286
-  keyClearInventory: 287
-  keyPrintRecipes: 288
-  keyPrintInventory: 289
-  fillAmount: 10
 --- !u!1 &1550585565
 GameObject:
   m_ObjectHideFlags: 0
@@ -24742,15 +24737,15 @@ PrefabInstance:
     - target: {fileID: 2088240897685045331, guid: 7d98c62469538694c8e9ab5d4799e0a9, type: 3}
       propertyPath: rogueData
       value: 
-      objectReference: {fileID: 11400000, guid: e59a0e8f5e0472a488e651ec6bfa5de0, type: 2}
+      objectReference: {fileID: 11400000, guid: 24a96bdd02c5eef4aa90959b7d9514ca, type: 2}
     - target: {fileID: 2088240897685045331, guid: 7d98c62469538694c8e9ab5d4799e0a9, type: 3}
       propertyPath: archerData
       value: 
-      objectReference: {fileID: 11400000, guid: 101137492b4f4114cac21754382895d6, type: 2}
+      objectReference: {fileID: 11400000, guid: d205db58c715c504daf61ab1305c4c6b, type: 2}
     - target: {fileID: 2088240897685045331, guid: 7d98c62469538694c8e9ab5d4799e0a9, type: 3}
       propertyPath: knightData
       value: 
-      objectReference: {fileID: 11400000, guid: 0a3dff05d0dbda9488f815d7f9ef4c32, type: 2}
+      objectReference: {fileID: 11400000, guid: 54d849994b21a7e409511b17b071485c, type: 2}
     - target: {fileID: 7052897822993540938, guid: 7d98c62469538694c8e9ab5d4799e0a9, type: 3}
       propertyPath: m_Name
       value: PlayerManagers

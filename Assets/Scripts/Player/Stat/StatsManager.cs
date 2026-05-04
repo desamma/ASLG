@@ -179,6 +179,18 @@ public class StatsManager : MonoBehaviour
         set { _baseCooldown = Mathf.Max(0.1f, value); OnStatsChanged(); }
     }
 
+    // ── PUBLIC BONUS STAT ACCESSORS ──
+    public float bonusMaxHealth { get => _bonusMaxHealth; set { _bonusMaxHealth = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float bonusMaxMana { get => _bonusMaxMana; set { _bonusMaxMana = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float bonusMaxStamina { get => _bonusMaxStamina; set { _bonusMaxStamina = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float bonusDamage { get => _bonusDamage; set { _bonusDamage = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float bonusMoveSpeed { get => _bonusMoveSpeed; set { _bonusMoveSpeed = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float bonusDefence { get => _bonusDefence; set { _bonusDefence = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float bonusWeaponRange { get => _bonusWeaponRange; set { _bonusWeaponRange = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float bonusCooldown { get => _bonusCooldown; set { _bonusCooldown = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float bonusKnockbackForce { get => _bonusKnockbackForce; set { _bonusKnockbackForce = Mathf.Max(0f, value); OnStatsChanged(); } }
+    public float bonusStaminaRegenRate { get => _bonusStaminaRegenRate; set { _bonusStaminaRegenRate = Mathf.Max(0f, value); OnStatsChanged(); } }
+
     [Header("Experience & Levelling")]
     [SerializeField] private int _level = 1;
     [SerializeField] private int _expToNextLevel = 100;
@@ -259,24 +271,40 @@ public class StatsManager : MonoBehaviour
     // ==========================================
     // DÀNH CHO SAVE MANAGER NẠP DỮ LIỆU
     // ==========================================
-    public void LoadSavedStats(int savedLevel, int savedExp, int savedPts, float hp, float mana, float stam, string pName, float baseMaxHealth, float baseMaxMana, float baseMaxStamina, float baseDamage, float baseCooldown, float baseMoveSpeed)
+    public void LoadSavedStats(int savedLevel, int savedExp, int savedPts, float hp, float mana, float stam, string pName, float baseMaxHealth, float baseMaxMana, float baseMaxStamina, float baseDamage, float baseCooldown, float baseMoveSpeed, float baseDefence, float bonusMaxHealth, float bonusMaxMana, float bonusMaxStamina, float bonusDamage, float bonusCooldown, float bonusMoveSpeed, float bonusDefence, float bonusWeaponRange, float bonusKnockbackForce, float bonusStaminaRegenRate)
     {
         _level = savedLevel;
         _currentExp = savedExp;
         _upgradePoints = savedPts;
         _expToNextLevel = CalculateExpToNextLevel(savedLevel);
-        
-        _currentHealth = hp;
-        _currentMana = mana;
-        _currentStamina = stam;
-        _playerName = pName;
+
+        // Base Stats
         _baseMaxHealth = baseMaxHealth;
         _baseMaxMana = baseMaxMana;
         _baseMaxStamina = baseMaxStamina;
         _baseDamage = baseDamage;
         _baseCooldown = baseCooldown;
         _baseMoveSpeed = baseMoveSpeed;
-        
+        _baseDefence = baseDefence;
+
+        // Bonus Stats
+        _bonusMaxHealth = bonusMaxHealth;
+        _bonusMaxMana = bonusMaxMana;
+        _bonusMaxStamina = bonusMaxStamina;
+        _bonusDamage = bonusDamage;
+        _bonusCooldown = bonusCooldown;
+        _bonusMoveSpeed = bonusMoveSpeed;
+        _bonusDefence = bonusDefence;
+        _bonusWeaponRange = bonusWeaponRange;
+        _bonusKnockbackForce = bonusKnockbackForce;
+        _bonusStaminaRegenRate = bonusStaminaRegenRate;
+
+        // Current Resources
+        _currentHealth = hp;
+        _currentMana = mana;
+        _currentStamina = stam;
+        _playerName = pName;
+
         OnStatsChanged();
     }
 

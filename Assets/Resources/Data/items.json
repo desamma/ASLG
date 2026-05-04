@@ -1,2652 +1,2652 @@
 {
-  "con_health_potion": {
-    "name": "Health Potion",
-    "rarity": "Common",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A swirling, translucent red liquid that smells faintly of hibiscus and iron.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/health_potion",
-    "statBonuses": {
-      "currentHealth": 50
-    }
-  },
-  "con_mana_potion": {
-    "name": "Mana Potion",
-    "rarity": "Uncommon",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A thick, viscous syrup extracted from resilient flora. It is bitter to the tongue but burns with a restorative heat once swallowed.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/mana_potion",
-    "statBonuses": {
-      "currentMana": 40
-    }
-  },
-  "acc_ring_of_speed": {
-    "name": "Ring of Speed",
-    "rarity": "Epic",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "Increase attack speed.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/ring_speed",
-    "statBonuses": {
-      "cooldown": -0.05
-    }
-  },
-  "arm_ironroot_legplates": {
-    "name": "Ironroot Legplates",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Plates of iron infused with the root system of an ancient deadwood tree. They flex like wood, hold like iron, and regrow minor damage over time somehow.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/ironroot_legplates",
-    "statBonuses": {
-      "defence": 24,
-      "maxHealth": 45,
-      "moveSpeed": 0.2
-    }
-  },
-  "arm_rangers_boots": {
-    "name": "Ranger's Boots",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Well-made leather boots designed for long travel across rough terrain. Thick soles, good ankle support, quiet on stone.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/rangers_boots",
-    "statBonuses": {
-      "defence": 4,
-      "moveSpeed": 0.05
-    }
-  },
-  "wpn_serrated_hatchet": {
-    "name": "Serrated Hatchet",
-    "rarity": "Uncommon",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A woodcutter's axe with teeth filed into the blade edge. Brutal in close quarters. The notches catch and tear.",
-    "isStackable": true,
-    "maxStack": 5,
-    "iconPath": "Icons/serrated_hatchet",
-    "statBonuses": {
-      "damage": 8
-    }
-  },
-  "wpn_venomcoil_whip": {
-    "name": "Venomcoil Whip",
-    "rarity": "Epic",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A serpentine whip with venom glands from three different serpents braided into its core. Each crack releases a mist of poison.",
-    "isStackable": true,
-    "maxStack": 2,
-    "iconPath": "Icons/venomcoil_whip",
-    "statBonuses": {
-      "damage": 18,
-      "moveSpeed": 0.02
-    }
-  },
-  "arm_ironstudded_leggings": {
-    "name": "Iron-Studded Leggings",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Leather leggings reinforced with a grid of iron studs along the thigh and shin. Heavier than soft leather but considerably harder to cut through.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/iron_studded_leggings",
-    "statBonuses": {
-      "defence": 6,
-      "maxHealth": 6
-    }
-  },
-  "arm_padded_coif": {
-    "name": "Padded Coif",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "Layers of padded cloth stitched into a tight coif. It won't stop iron but it cushions blows. Good enough for the desperate.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/padded_coif",
-    "statBonuses": {
-      "defence": 3,
-      "maxHealth": 5
-    }
-  },
-  "arm_plague_bearers_cowl": {
-    "name": "Plague Bearer's Cowl",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A full hood and mask of hardened leather soaked in alchemical compounds. Stinks of sulphur. Keeps toxins out \u2014 and keeps secrets in.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/plague_bearers_cowl",
-    "statBonuses": {
-      "defence": 10,
-      "maxHealth": 12,
-      "moveSpeed": 0.01
-    }
-  },
-  "wpn_shadowfang_sword": {
-    "name": "Shadowfang Sword",
-    "rarity": "Rare",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A slender blade that seems to blur in dim light. Strikes from shadow deal extra pain \u2014 enemies never see it coming.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/shadowfang_sword",
-    "statBonuses": {
-      "damage": 13,
-      "moveSpeed": 0.02
-    }
-  },
-  "arm_voidwalker_slippers": {
-    "name": "Voidwalker Slippers",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Crafted from the same formless material as the space between dimensions. You can walk on surfaces that technically can't support weight. Try not to think about the physics.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/voidwalker_slippers",
-    "statBonuses": {
-      "defence": 10,
-      "moveSpeed": 0.05
-    }
-  },
-  "acc_scratched_iron_ring": {
-    "name": "Scratched Iron Ring",
-    "rarity": "Common",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "An iron ring worn smooth on the inside from years of use. There was an inscription once. It's been rubbed away.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/scratched_iron_ring",
-    "statBonuses": {
-      "defence": 2
-    }
-  },
-  "arm_rough_hide_shoes": {
-    "name": "Rough Hide Shoes",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Shoes cut from a single piece of dried hide and laced up the front. Primitive but effective. Your feet will hate you. They'll survive.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/rough_hide_shoes",
-    "statBonuses": {
-      "defence": 2,
-      "moveSpeed": 0.01
-    }
-  },
-  "arm_ashwalker_halfplate": {
-    "name": "Ashwalker Halfplate",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Half-plate legguards salvaged from the ruins of a burned city. The iron has been cooled and retempered by the collapse \u2014 it's stronger for it.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/ashwalker_halfplate",
-    "statBonuses": {
-      "defence": 16,
-      "maxHealth": 22,
-      "maxStamina": 25
-    }
-  },
-  "arm_nightcallers_mask": {
-    "name": "Nightcaller's Mask",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A porcelain mask fused to a shadowsteel backing. The porcelain shows a serene, featureless face. Behind it, the wearer becomes something else entirely.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/nightcallers_mask",
-    "statBonuses": {
-      "defence": 20,
-      "maxMana": 40,
-      "moveSpeed": 0.04
-    }
-  },
-  "acc_crown_shard_circlet": {
-    "name": "Crown Shard Circlet",
-    "rarity": "Legendary",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A fragment of a legendary crown reassembled into a headband. The original crown could subjugate kingdoms. This fragment subjugates only the wearer's fear. That's enough.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/crown_shard_circlet",
-    "statBonuses": {
-      "damage": 18,
-      "maxHealth": 45,
-      "maxMana": 45,
-      "attackCooldown": -0.03
-    }
-  },
-  "arm_padded_breeches": {
-    "name": "Padded Breeches",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Quilted cloth breeches stuffed with scraps of wool. They cushion falls and moderate impacts. Fashion has not visited them.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/padded_breeches",
-    "statBonuses": {
-      "defence": 4,
-      "maxStamina": 5
-    }
-  },
-  "acc_the_endless_ring": {
-    "name": "The Endless Ring",
-    "rarity": "Legendary",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A ring with no visible seam \u2014 it looks as though it was simply formed already around a finger that no longer exists. Time inside the ring is slightly stretched. Cooldowns feel shorter.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/the_endless_ring",
-    "statBonuses": {
-      "cooldown": -0.03,
-      "maxMana": 45,
-      "maxHealth": 35
-    }
-  },
-  "acc_braided_grass_bracelet": {
-    "name": "Braided Grass Bracelet",
-    "rarity": "Common",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "Tightly braided dried grass soaked in resin. Charms woven into the braid by a hedge-witch. Faint magic \u2014 the kind that might or might not be real.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/braided_grass_bracelet",
-    "statBonuses": {
-      "maxMana": 8
-    }
-  },
-  "con_void_stamina_concentrate": {
-    "name": "Void Stamina Concentrate",
-    "rarity": "Legendary",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A jet-black gel sealed in an obsidian capsule. Stamina is restored beyond its natural maximum temporarily. Fatigue is not merely removed \u2014 it is reversed. You feel as though you haven't slept in days and are completely fine about it.",
-    "isStackable": true,
-    "maxStack": 1,
-    "iconPath": "Icons/void_stamina_concentrate",
-    "statBonuses": {
-      "currentStamina": 999
-    }
-  },
-  "arm_rough_cloth_trousers": {
-    "name": "Rough Cloth Trousers",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Crude trousers cut from burlap. They chafe. They offer almost no protection. But they're better than nothing \u2014 the battlefield is no place for bare legs.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/rough_cloth_trousers",
-    "statBonuses": {
-      "defence": 2
-    }
-  },
-  "con_titans_marrow_broth": {
-    "name": "Titan's Marrow Broth",
-    "rarity": "Epic",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A thick, warm broth rendered from the bones of something enormous. It smells of iron and old earth. One mouthful eliminates fatigue entirely. Two mouthfuls make you feel invincible. There is no third mouthful.",
-    "isStackable": true,
-    "maxStack": 2,
-    "iconPath": "Icons/titans_marrow_broth",
-    "statBonuses": {
-      "currentStamina": 150,
-      "maxStamina": 20
-    }
-  },
-  "arm_helm_of_the_last_siege": {
-    "name": "Helm of the Last Siege",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "Worn by the commander of the siege that ended the old empire. The iron bears marks from twelve direct strikes \u2014 none of which killed him. He died in his sleep, decades later, still wearing it.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/helm_of_the_last_siege",
-    "statBonuses": {
-      "defence": 25,
-      "maxHealth": 45,
-      "damage": 8
-    }
-  },
-  "arm_leather_cap": {
-    "name": "Leather Cap",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "Boiled leather shaped into a simple cap. Worn by farmers and sentries alike. Cheap to make, cheap to replace.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/leather_cap",
-    "statBonuses": {
-      "defence": 3
-    }
-  },
-  "arm_swamp_walker_boots": {
-    "name": "Swamp Walker Boots",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "High boots treated with multiple coats of waterproofing compound. Designed to move silently through wet terrain. Used by hunters, trappers, and worse.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/swamp_walker_boots",
-    "statBonuses": {
-      "defence": 4,
-      "moveSpeed": 0.01,
-      "maxStamina": 8
-    }
-  },
-  "arm_padded_gambeson": {
-    "name": "Padded Gambeson",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Thick quilted cloth worn under armour \u2014 or, for those who can't afford armour, instead of it. Absorbs blunt force reasonably well.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/padded_gambeson",
-    "statBonuses": {
-      "defence": 5,
-      "maxHealth": 5
-    }
-  },
-  "arm_titans_foundation": {
-    "name": "Titan's Foundation",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Sabatons so heavy that carrying them requires exceptional strength. Wearing them, the ground seems to push back with equal force \u2014 anchoring you, steadying you, refusing to let you fall.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/titans_foundation",
-    "statBonuses": {
-      "defence": 28,
-      "maxHealth": 60,
-      "moveSpeed": -0.02
-    }
-  },
-  "arm_berserkers_mantle": {
-    "name": "Berserker's Mantle",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Fur and iron fused into a brutal war-cloak. It offers less coverage than plate but allows total freedom of movement. For those who plan to end fights quickly or die trying.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/berserkers_mantle",
-    "statBonuses": {
-      "defence": 17,
-      "damage": 8,
-      "maxStamina": 30,
-      "moveSpeed": 0.01
-    }
-  },
-  "con_mudblood_tincture": {
-    "name": "Mudblood Tincture",
-    "rarity": "Common",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A foul-smelling brownish liquid drawn from a swamp herb known locally as mudblood root. Clots wounds. Tastes exactly as bad as it smells.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/mudblood_tincture",
-    "statBonuses": {
-      "currentHealth": 20
-    }
-  },
-  "arm_gravewalker_sabatons": {
-    "name": "Gravewalker Sabatons",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Iron sabatons taken from a burial site. The bones of their previous owner were found inside. They haven't been cleaned. Something about them discourages the attempt.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/gravewalker_sabatons",
-    "statBonuses": {
-      "defence": 8,
-      "maxHealth": 10
-    }
-  },
-  "wpn_godsbane_fragment": {
-    "name": "Godsbane Fragment",
-    "rarity": "Legendary",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A shard of what was once a divine weapon, reforged into a war blade by a blacksmith who then went blind. The divine power within it is corrupted, unstable \u2014 and devastating.",
-    "isStackable": true,
-    "maxStack": 1,
-    "iconPath": "Icons/godsbane_fragment",
-    "statBonuses": {
-      "damage": 45,
-      "maxHealth": -20,
-      "maxMana": 40,
-      "cooldown": -0.2
-    }
-  },
-  "arm_chainmail_shirt": {
-    "name": "Chainmail Shirt",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A shirt of interlocked iron rings. Heavy and loud. It catches blades well \u2014 but the weight tells on a long march.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/chainmail_shirt",
-    "statBonuses": {
-      "defence": 10,
-      "maxHealth": 8,
-      "moveSpeed": -0.15
-    }
-  },
-  "arm_fleetfoot_greaves": {
-    "name": "Fleetfoot Greaves",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Enchanted iron greaves that have somehow been made lighter by the enchanting process rather than heavier. The enchanter considered this proof of genius. The enchanter is dead, but not from arrogance.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/fleetfoot_greaves",
-    "statBonuses": {
-      "defence": 12,
-      "moveSpeed": 0.04,
-      "maxStamina": 25
-    }
-  },
-  "arm_scavengers_coat": {
-    "name": "Scavenger's Coat",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A long coat patched together from salvaged leathers. Mismatched seams and rough stitching throughout. It's ugly but it covers everything.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/scavengers_coat",
-    "statBonuses": {
-      "defence": 4,
-      "moveSpeed": 0.01
-    }
-  },
-  "acc_ring_of_the_black_sun": {
-    "name": "Ring of the Black Sun",
-    "rarity": "Epic",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A jet-black ring bearing a golden sun etched into the surface \u2014 but the sun's rays point inward rather than outward. Wearing it in sunlight produces no shadow.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/ring_of_the_black_sun",
-    "statBonuses": {
-      "damage": 10,
-      "maxMana": 25
-    }
-  },
-  "wpn_iron_shiv": {
-    "name": "Iron Shiv",
-    "rarity": "Common",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A sliver of scrap iron wrapped in cloth at the base to form a crude grip. Short, ugly, and practical.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/iron_shiv",
-    "statBonuses": {
-      "damage": 4
-    }
-  },
-  "con_blue_mist_vial": {
-    "name": "Blue Mist Vial",
-    "rarity": "Uncommon",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A squat vial of deep blue mist in liquid form \u2014 pressurised mana extracted from a leyline crack. Mana restoration at roughly three times the potency of a common draught.",
-    "isStackable": true,
-    "maxStack": 5,
-    "iconPath": "Icons/blue_mist_vial",
-    "statBonuses": {
-      "currentMana": 55
-    }
-  },
-  "wpn_bonebreaker_war_maul": {
-    "name": "Bonebreaker War Maul",
-    "rarity": "Epic",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A colossal iron maul with a head shaped from fused bones. It ignores armour. It ignores mercy.",
-    "isStackable": true,
-    "maxStack": 2,
-    "iconPath": "Icons/bonebreaker_war_maul",
-    "statBonuses": {
-      "damage": 28,
-      "moveSpeed": -0.013,
-      "maxHealth": 20
-    }
-  },
-  "con_the_last_drop": {
-    "name": "The Last Drop",
-    "rarity": "Legendary",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A single vial said to be the last remaining batch of a legendary healer's personal formula, lost for a generation. It was rediscovered in a collapsed cellar. There are five vials. There were never more.",
-    "isStackable": true,
-    "maxStack": 1,
-    "iconPath": "Icons/the_last_drop",
-    "statBonuses": {
-      "currentHealth": 250
-    }
-  },
-  "con_eternity_draught": {
-    "name": "Eternity Draught",
-    "rarity": "Legendary",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A perfectly clear liquid with no smell and no taste. It doesn't seem to do anything for a moment \u2014 and then everything repairs itself at once. Every wound, every depleted reserve, every ache.",
-    "isStackable": true,
-    "maxStack": 1,
-    "iconPath": "Icons/eternity_draught",
-    "statBonuses": {
-      "currentHealth": 300,
-      "currentMana": 200,
-      "currentStamina": 200
-    }
-  },
-  "arm_shadowwalker_boots": {
-    "name": "Shadowwalker Boots",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Leather boots soaked for three months in shadowmoss extract until the leather darkened permanently. They dampen sound to near silence. Ideal for those who prefer not to be heard.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/shadowwalker_boots",
-    "statBonuses": {
-      "defence": 6,
-      "moveSpeed": 0.035,
-      "maxStamina": 12
-    }
-  },
-  "arm_ironmaw_sabatons": {
-    "name": "Ironmaw Sabatons",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Sabatons with serrated lower edges, designed so a stomp does maximum damage. Not subtle. Not elegant. Extremely functional.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/ironmaw_sabatons",
-    "statBonuses": {
-      "defence": 8,
-      "damage": 5,
-      "moveSpeed": -0.015
-    }
-  },
-  "arm_wardens_haubergeon": {
-    "name": "Warden's Haubergeon",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A full-coverage hauberk of fine chainmail issued to prison wardens. Has seen use on both sides of the bars.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/wardens_haubergeon",
-    "statBonuses": {
-      "defence": 14,
-      "maxHealth": 12,
-      "moveSpeed": -0.01
-    }
-  },
-  "arm_voidstrider_leggings": {
-    "name": "Voidstrider Leggings",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Leggings woven from the same material as the space between worlds. Steps through rough terrain feel oddly smooth. Steps through dangerous terrain feel oddly exciting.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/voidstrider_leggings",
-    "statBonuses": {
-      "defence": 14,
-      "moveSpeed": 0.02,
-      "maxMana": 15
-    }
-  },
-  "arm_godflesh_armour": {
-    "name": "Godflesh Armour",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "No one knows which god this armour was flayed from. The iron-grey flesh that forms its surface is warm to the touch and does not decay. It pulses very slightly, like a sleeping heartbeat.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/godflesh_armour",
-    "statBonuses": {
-      "defence": 32,
-      "maxHealth": 55,
-      "damage": 10
-    }
-  },
-  "arm_wraithstride": {
-    "name": "Wraithstride",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Dark-iron sabatons that blur slightly when moving. The wearer leaves no tracks. No footprints in mud, no marks on snow, nothing in ash. Something that useful has a cost \u2014 it just hasn't announced itself yet.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/wraithstride",
-    "statBonuses": {
-      "defence": 20,
-      "moveSpeed": 0.05,
-      "maxMana": 30
-    }
-  },
-  "arm_wraithstep_greaves": {
-    "name": "Wraithstep Greaves",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Greaves that allow the wearer to briefly step through solid matter once per encounter. The sensation is described as cold and deeply wrong.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/wraithstep_greaves",
-    "statBonuses": {
-      "defence": 22,
-      "moveSpeed": 0.03,
-      "maxMana": 30
-    }
-  },
-  "arm_chainleg_wrappings": {
-    "name": "Chainleg Wrappings",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Chainmail wrapped around the legs like leggings and secured with leather cord. Unorthodox but protective where it matters.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/chainleg_wrappings",
-    "statBonuses": {
-      "defence": 8,
-      "maxHealth": 6,
-      "moveSpeed": -0.01
-    }
-  },
-  "acc_knuckle_rings": {
-    "name": "Knuckle Rings",
-    "rarity": "Uncommon",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "Four brass rings designed to be worn across all the knuckles of one hand at once. Not subtle. Very direct.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/knuckle_rings_set",
-    "statBonuses": {
-      "damage": 4,
-      "maxHealth": 8
-    }
-  },
-  "wpn_wooden_club": {
-    "name": "Wooden Club",
-    "rarity": "Common",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A gnarled branch ripped from a dead tree and stripped down to a crude bludgeon. No craft. No glory. Just blunt force.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/wooden_club",
-    "statBonuses": {
-      "damage": 4,
-      "moveSpeed": -0.01
-    }
-  },
-  "arm_bloodbound_cuirass": {
-    "name": "Bloodbound Cuirass",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Dark iron plates bound together with alchemically treated leather straps. The iron seems to drink light. Wounds heal faster while worn \u2014 but the cuirass needs the blood to do it.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/bloodbound_cuirass",
-    "statBonuses": {
-      "defence": 13,
-      "maxHealth": 18
-    }
-  },
-  "arm_nighthide_cuirass": {
-    "name": "Nighthide Cuirass",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Crafted from the hide of a creature that exists only in the dark between worlds. It bends shadows. Arrows shot at the wearer seem to arrive a hand's-width to the left.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/nighthide_cuirass",
-    "statBonuses": {
-      "defence": 25,
-      "moveSpeed": 0.03
-    }
-  },
-  "acc_soulchain_amulet": {
-    "name": "Soulchain Amulet",
-    "rarity": "Epic",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "An amulet on a chain of compressed souls \u2014 each link is a life. The weight is greater than the physical mass suggests. Whatever powers it, it works.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/soulchain_amulet",
-    "statBonuses": {
-      "maxMana": 35,
-      "maxHealth": 20
-    }
-  },
-  "arm_the_iron_march": {
-    "name": "The Iron March",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Sabatons worn by a conquering army's vanguard for forty years without rest. The iron absorbed so many miles it has become something more. The wearer never tires of walking \u2014 and walking never tires of them.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/the_iron_march",
-    "statBonuses": {
-      "defence": 24,
-      "maxStamina": 65,
-      "moveSpeed": 0.02,
-      "maxHealth": 35
-    }
-  },
-  "arm_godgrave_sabatons": {
-    "name": "Godgrave Sabatons",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Torn from the feet of a god who fell at the edge of the known world. Still warm. Still faintly divine. The soles never wear down.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/godgrave_sabatons",
-    "statBonuses": {
-      "defence": 25,
-      "maxHealth": 45,
-      "moveSpeed": 0.03
-    }
-  },
-  "arm_scrap_leather_pants": {
-    "name": "Scrap Leather Pants",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "A patchwork of leather scraps stitched together roughly. The work is poor but the coverage is complete.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/scrap_leather_pants",
-    "statBonuses": {
-      "defence": 3
-    }
-  },
-  "arm_marching_sabatons": {
-    "name": "Marching Sabatons",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Half-plate sabatons used by infantry. Articulated across the toes, solid on the heel and instep. A little heavy for running. Good for standing your ground.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/marching_sabatons",
-    "statBonuses": {
-      "defence": 6,
-      "maxHealth": 6,
-      "moveSpeed": -0.01
-    }
-  },
-  "con_iron_will_tonic": {
-    "name": "Iron Will Tonic",
-    "rarity": "Rare",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A bitter black liquid made from ironbark resin and endurance herbs fermented for forty days. Floods the body with stamina. Tastes of bark and poor decisions.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/iron_will_tonic",
-    "statBonuses": {
-      "currentStamina": 80
-    }
-  },
-  "arm_dreadwalker_legplates": {
-    "name": "Dreadwalker Legplates",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Heavy iron legplates engraved with sigils of dread that radiate fear in a radius around the wearer. Enemies hesitate. Sometimes that's enough.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/dreadwalker_legplates",
-    "statBonuses": {
-      "defence": 16,
-      "maxHealth": 20,
-      "moveSpeed": -0.01
-    }
-  },
-  "wpn_voidedge": {
-    "name": "Voidedge",
-    "rarity": "Legendary",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A blade that opens a small rift in reality with each swing. What lives in that rift is unknown. What comes out of the wounds is best not examined.",
-    "isStackable": true,
-    "maxStack": 1,
-    "iconPath": "Icons/voidedge",
-    "statBonuses": {
-      "damage": 42,
-      "maxHealth": 30,
-      "maxMana": 30
-    }
-  },
-  "arm_marauders_coat": {
-    "name": "Marauder's Coat",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A long coat of waxed leather studded along the shoulders and chest. Worn by raiders who travel light and fight hard.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/marauders_coat",
-    "statBonuses": {
-      "defence": 8,
-      "maxStamina": 12
-    }
-  },
-  "arm_riveted_leather_cuirass": {
-    "name": "Riveted Leather Cuirass",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Thick leather reinforced with iron rivets across the chest and shoulders. Heavier than it looks. Stops most slashing blows.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/riveted_leather_cuirass",
-    "statBonuses": {
-      "defence": 8,
-      "maxHealth": 8
-    }
-  },
-  "arm_executioners_tassets": {
-    "name": "Executioner's Tassets",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Heavy iron tassets hanging from a thick leather belt. They protect the hips and upper thighs. They were made for a much larger man \u2014 someone adapted them.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/executioners_tassets",
-    "statBonuses": {
-      "defence": 11,
-      "maxHealth": 10,
-      "damage": 3
-    }
-  },
-  "arm_scavenged_skullcap": {
-    "name": "Scavenged Skullcap",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A scrap of hammered iron bent into a rough skullcap. Unfinished edges, no padding, no lining. Uncomfortable \u2014 but solid enough.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/scavenged_skullcap",
-    "statBonuses": {
-      "defence": 4
-    }
-  },
-  "wpn_soldiers_spear": {
-    "name": "Soldier's Spear",
-    "rarity": "Uncommon",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A dead soldier's spear, still serviceable. The shaft has been re-wrapped in leather where it cracked. Reach is its only virtue.",
-    "isStackable": true,
-    "maxStack": 5,
-    "iconPath": "Icons/soldiers_spear",
-    "statBonuses": {
-      "damage": 7
-    }
-  },
-  "con_hardtack_biscuit": {
-    "name": "Hardtack Biscuit",
-    "rarity": "Common",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A square of dried flour and salt baked until indestructible. It lasts forever and tastes like it. Restores endurance, if not morale.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/hardtack_biscuit",
-    "statBonuses": {
-      "currentStamina": 25,
-      "currentHealth": 5
-    }
-  },
-  "acc_runeband_of_endurance": {
-    "name": "Runeband of Endurance",
-    "rarity": "Rare",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A wide iron band engraved with endurance runes in concentric circles. The carvings go all the way to the inner surface. The wearer's stamina regenerates faster.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/runeband_of_endurance",
-    "statBonuses": {
-      "maxStamina": 25,
-      "maxHealth": 12
-    }
-  },
-  "arm_nightstrider_leggings": {
-    "name": "Nightstrider Leggings",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Dark leather leggings treated with shadowmoss oil that muffles footsteps. Designed for infiltration. The silence they provide is worth more than the armour rating.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/nightstrider_leggings",
-    "statBonuses": {
-      "defence": 8,
-      "moveSpeed": 0.01,
-      "maxStamina": 15
-    }
-  },
-  "arm_the_faceless_helm": {
-    "name": "The Faceless Helm",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A helm with no eye slits, no visor, no seam \u2014 yet the wearer sees perfectly. No one has ever explained how. No one who wore it long enough cared to.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/the_faceless_helm",
-    "statBonuses": {
-      "defence": 30,
-      "maxHealth": 35,
-      "maxMana": 25
-    }
-  },
-  "arm_scavenged_work_boots": {
-    "name": "Scavenged Work Boots",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Heavy leather boots nailed together from mismatched pieces. The left and right don't quite match. The sole of one is thicker than the other. You adapt.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/scavenged_work_boots",
-    "statBonuses": {
-      "defence": 3
-    }
-  },
-  "arm_brigands_harness": {
-    "name": "Brigand's Harness",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A leather harness worn by road thugs. Straps crisscross the torso, holding pouches, spare blades, and a reasonable amount of protection.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/brigands_harness",
-    "statBonuses": {
-      "defence": 7,
-      "moveSpeed": 0.01
-    }
-  },
-  "acc_copper_band": {
-    "name": "Copper Band",
-    "rarity": "Common",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A plain copper ring, slightly green at the edges. Mass-produced. No magic. No mystery. But everyone needs a ring to start somewhere.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/copper_band",
-    "statBonuses": {
-      "maxHealth": 5
-    }
-  },
-  "wpn_gravediggers_pickaxe": {
-    "name": "Gravedigger's Pickaxe",
-    "rarity": "Rare",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "Once used to split earth. Now used on things that breathe. The iron head is stained darker than dirt.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/gravediggers_pickaxe",
-    "statBonuses": {
-      "damage": 14,
-      "maxHealth": 5
-    }
-  },
-  "acc_thornfinger_ring": {
-    "name": "Thornfinger Ring",
-    "rarity": "Rare",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A gold ring with a black thorn as its setting, extracted from a cursed briar that grew over an old battlefield. The thorn never dulls and occasionally draws blood on its own.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/thornfinger_ring",
-    "statBonuses": {
-      "damage": 6,
-      "maxHealth": 10
-    }
-  },
-  "con_soldiers_field_dressing": {
-    "name": "Soldier's Field Dressing",
-    "rarity": "Uncommon",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A treated bandage soaked in alchemical coagulant, rolled tight in a wax-sealed tube. Military issue. Apply to wound and wait. Works faster than prayer.",
-    "isStackable": true,
-    "maxStack": 5,
-    "iconPath": "Icons/soldiers_field_dressing",
-    "statBonuses": {
-      "currentHealth": 50
-    }
-  },
-  "arm_wraithforged_plate": {
-    "name": "Wraithforged Plate",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Hammered from metal reclaimed from a wraith's physical anchor. It cannot be penetrated by enchanted blades \u2014 they pass through as though hitting fog. Physical strikes, however, land normally.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/wraithforged_plate",
-    "statBonuses": {
-      "defence": 26,
-      "maxMana": 35
-    }
-  },
-  "arm_ironcapped_boots": {
-    "name": "Iron-Capped Boots",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Standard boots with iron toecaps bolted on. They hurt to kick with. They hurt more to be kicked by.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/iron_capped_boots",
-    "statBonuses": {
-      "defence": 5,
-      "damage": 2
-    }
-  },
-  "arm_corpsewarden_armour": {
-    "name": "Corpsewarden Armour",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Iron armour forged for those tasked with guarding plague burial sites. The iron has been treated to resist corruption. Something of the plague still clings to it regardless.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/corpsewarden_armour",
-    "statBonuses": {
-      "defence": 14,
-      "maxHealth": 10
-    }
-  },
-  "con_godblood_vial": {
-    "name": "Godblood Vial",
-    "rarity": "Epic",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A vial of dark red liquid with a golden sheen that settles at the top. Obtained from a wound in something much larger than a man. Heals nearly everything. The source is not a safe place to return to.",
-    "isStackable": true,
-    "maxStack": 2,
-    "iconPath": "Icons/godblood_vial",
-    "statBonuses": {
-      "currentHealth": 150
-    }
-  },
-  "wpn_bone_knife": {
-    "name": "Bone Knife",
-    "rarity": "Common",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "Carved from the leg bone of some large beast. The edge was filed sharp by someone patient and bored. Still serviceable.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/bone_knife",
-    "statBonuses": {
-      "damage": 3,
-      "moveSpeed": 0.01
-    }
-  },
-  "wpn_dreadfall": {
-    "name": "Dreadfall",
-    "rarity": "Legendary",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A blade that fell from the sky wrapped in dark lightning during the Cataclysm. No one remembers who forged it. The runes on the grip shift when no one is watching.",
-    "isStackable": true,
-    "maxStack": 1,
-    "iconPath": "Icons/dreadfall",
-    "statBonuses": {
-      "damage": 40,
-      "maxHealth": 25,
-      "cooldown": -0.1
-    }
-  },
-  "arm_travellers_leggings": {
-    "name": "Traveller's Leggings",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Well-worn leather leggings made for long roads. Patched at the knees and inner thigh. Practical and unremarkable.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/travellers_leggings",
-    "statBonuses": {
-      "defence": 3,
-      "moveSpeed": 0.01
-    }
-  },
-  "arm_hemp_work_shirt": {
-    "name": "Hemp Work Shirt",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A reinforced hemp work shirt soaked in diluted tar for a touch of protection. Not armour. Barely a deterrent.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/hemp_work_shirt",
-    "statBonuses": {
-      "defence": 3,
-      "maxStamina": 5
-    }
-  },
-  "arm_rough_cloth_tunic": {
-    "name": "Rough Cloth Tunic",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Coarse fabric stitched into a barely-functional garment. One tear away from falling apart \u2014 but it keeps the cold off.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/rough_cloth_tunic",
-    "statBonuses": {
-      "defence": 2
-    }
-  },
-  "wpn_rusty_dagger": {
-    "name": "Rusty Dagger",
-    "rarity": "Common",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A short blade eaten by rust and neglect. The edge chips more than it cuts, but it's better than bare fists \u2014 barely.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/rusty_dagger",
-    "statBonuses": {
-      "damage": 3
-    }
-  },
-  "arm_shadowmask": {
-    "name": "Shadowmask",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A sleek iron mask polished to a mirror finish, then painted over in flat black. The face inside it is impossible to read.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/shadowmask",
-    "statBonuses": {
-      "defence": 7,
-      "moveSpeed": 0.02
-    }
-  },
-  "wpn_the_last_rites": {
-    "name": "The Last Rites",
-    "rarity": "Legendary",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A ceremonial executioner's blade repurposed for war. Its edge has never needed sharpening. Legends say it knows when death is due.",
-    "isStackable": true,
-    "maxStack": 1,
-    "iconPath": "Icons/the_last_rites",
-    "statBonuses": {
-      "damage": 38,
-      "maxMana": 30,
-      "cooldown": -0.15
-    }
-  },
-  "arm_ironblight_helm": {
-    "name": "Ironblight Helm",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "The iron has been exposed to blight energy for so long it has darkened and grown faintly luminescent. Blight-touched creatures flinch from it.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/ironblight_helm",
-    "statBonuses": {
-      "defence": 13,
-      "maxHealth": 15
-    }
-  },
-  "con_essence_of_the_first_mage": {
-    "name": "Essence of the First Mage",
-    "rarity": "Legendary",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "Crystallised mana residue from the first mage who ever lived, dissolved into drinkable form by someone who really shouldn't have. The mana restoration is complete and instantaneous. So is the migraine.",
-    "isStackable": true,
-    "maxStack": 1,
-    "iconPath": "Icons/essence_of_the_first_mage",
-    "statBonuses": {
-      "currentMana": 999
-    }
-  },
-  "wpn_wraithblade": {
-    "name": "Wraithblade",
-    "rarity": "Epic",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A translucent blade forged from solidified shadow essence. It phases through armour on precise strikes, and the wound doesn't bleed \u2014 it drains.",
-    "isStackable": true,
-    "maxStack": 2,
-    "iconPath": "Icons/wraithblade",
-    "statBonuses": {
-      "damage": 20,
-      "maxMana": 15
-    }
-  },
-  "wpn_runecarved_axe": {
-    "name": "Runecarved Axe",
-    "rarity": "Rare",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "An axe with crude runes gouged into the flat of the blade. The runes glow faintly in the dark. The magic is unstable but real.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/runecarved_axe",
-    "statBonuses": {
-      "damage": 16,
-      "maxMana": -10
-    }
-  },
-  "arm_doomplate": {
-    "name": "Doomplate",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A massive black iron breastplate etched with scenes of slaughter. It amplifies aggression \u2014 most who wear it long enough stop wanting to take it off.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/doomplate",
-    "statBonuses": {
-      "defence": 20,
-      "maxHealth": 30,
-      "damage": 6,
-      "moveSpeed": -0.02
-    }
-  },
-  "arm_last_march_legplates": {
-    "name": "Last March Legplates",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Worn by a general who marched her army one thousand miles without stopping. The iron remembers the distance. The wearer's legs never tire.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/last_march_legplates",
-    "statBonuses": {
-      "defence": 25,
-      "maxStamina": 60,
-      "moveSpeed": 0.03,
-      "maxHealth": 30
-    }
-  },
-  "arm_soldiers_helm": {
-    "name": "Soldier's Helm",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "Standard infantry helmet. Dented, scratched, and beaten. The previous owner didn't survive to reclaim it.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/soldiers_helm",
-    "statBonuses": {
-      "defence": 6,
-      "maxHealth": 8
-    }
-  },
-  "arm_crown_of_the_damned": {
-    "name": "Crown of the Damned",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A jagged iron crown stained black with old blood. It carries the memories of every king who wore it \u2014 and every king who wore it died badly.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/crown_of_the_damned",
-    "statBonuses": {
-      "defence": 12,
-      "magicResist": 8,
-      "maxHealth": 20,
-      "maxMana": 15
-    }
-  },
-  "wpn_ashenwhisper": {
-    "name": "Ashenwhisper",
-    "rarity": "Legendary",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A slender sword that seems to burn cold rather than hot. Touch it bare-handed and your fingers go numb for hours. Its kill count is carved into the crossguard in marks too small to count.",
-    "isStackable": true,
-    "maxStack": 1,
-    "iconPath": "Icons/ashenwhisper",
-    "statBonuses": {
-      "damage": 35,
-      "moveSpeed": 0.04,
-      "maxHealth": -10
-    }
-  },
-  "acc_silver_chain_bracelet": {
-    "name": "Silver Chain Bracelet",
-    "rarity": "Uncommon",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A simple silver chain worn at the wrist. The links are silver-soldered, not cast. Someone took time with this. A faint ward lingers.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/silver_chain_bracelet",
-    "statBonuses": {
-      "maxMana": 12
-    }
-  },
-  "wpn_bloodreaper_scythe": {
-    "name": "Bloodreaper Scythe",
-    "rarity": "Epic",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A massive curved blade mounted on a bone-inlaid shaft. Each kill sends a pulse of heat up through the handle, like the weapon is feeding.",
-    "isStackable": true,
-    "maxStack": 2,
-    "iconPath": "Icons/bloodreaper_scythe",
-    "statBonuses": {
-      "damage": 22,
-      "maxHealth": -12,
-      "cooldown": -0.1
-    }
-  },
-  "arm_ironplated_vest": {
-    "name": "Iron-Plated Vest",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A leather vest with rectangular iron plates sewn into the front. Covers the vitals. The back is bare \u2014 mind your flanks.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/iron_plated_vest",
-    "statBonuses": {
-      "defence": 9,
-      "maxHealth": 6,
-      "moveSpeed": -0.01
-    }
-  },
-  "acc_pebble_pendant": {
-    "name": "Pebble Pendant",
-    "rarity": "Common",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A smooth stone on a leather cord. It is cold to the touch regardless of temperature. That's probably not a good sign, but nothing bad has happened yet.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/pebble_pendant",
-    "statBonuses": {
-      "magicResist": 2
-    }
-  },
-  "arm_thornweave_helm": {
-    "name": "Thornweave Helm",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A helm wrapped in iron thorns pressed from the outside in. The thorns bite headbutters. The padding inside is surprisingly soft.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/thornweave_helm",
-    "statBonuses": {
-      "defence": 8,
-      "damage": 4,
-      "maxHealth": 8
-    }
-  },
-  "arm_padded_foot_wraps": {
-    "name": "Padded Foot Wraps",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Thick cloth wound around the feet and secured with leather strips. What soldiers wear when boots aren't available. Which is often.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/padded_foot_wraps",
-    "statBonuses": {
-      "defence": 2,
-      "maxStamina": 5
-    }
-  },
-  "acc_grave_iron_knuckle_ring": {
-    "name": "Grave Iron Knuckle Ring",
-    "rarity": "Epic",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A single massive ring designed to cover three fingers. Forged from iron taken from a mass grave. The dead who supplied the ore have opinions about who wears it. They communicate through dreams.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/grave_iron_knuckle_ring",
-    "statBonuses": {
-      "damage": 12,
-      "maxHealth": 18,
-      "cooldown": -0.1
-    }
-  },
-  "arm_brigands_kickers": {
-    "name": "Brigand's Kickers",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Reinforced boots favoured by road brigands. Steel insole. Weighted heel. Designed equally for walking and for stomping things that are already down.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/brigands_kickers",
-    "statBonuses": {
-      "defence": 5,
-      "damage": 3,
-      "moveSpeed": 0.01
-    }
-  },
-  "arm_hexcloth_robe": {
-    "name": "Hexcloth Robe",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Thick robes woven with hex-thread that wards off minor enchantments. Favoured by those who fight mages \u2014 or are afraid of them.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/hexcloth_robe",
-    "statBonuses": {
-      "defence": 10,
-      "maxMana": 15
-    }
-  },
-  "arm_gravewarden_helm": {
-    "name": "Gravewarden Helm",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "Shaped like a grimacing iron skull with hollow black eye slots. Burial wards are carved along the crown. Those who wear it claim they no longer dream.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/gravewarden_helm",
-    "statBonuses": {
-      "defence": 8,
-      "maxHealth": 10
-    }
-  },
-  "arm_veilcrown": {
-    "name": "Veilcrown",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A crown forged from shadow-iron that bends light around the wearer's head in dim conditions. Royalty wore it. Their graves are unmarked.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/veilcrown",
-    "statBonuses": {
-      "defence": 18,
-      "moveSpeed": 0.03,
-      "maxMana": 30
-    }
-  },
-  "arm_chainmail_coif": {
-    "name": "Chainmail Coif",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A coif of interlocked iron rings that drapes over the head and neck. Heavy. Hot. But no blade slides through easily.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/chainmail_coif",
-    "statBonuses": {
-      "defence": 7,
-      "maxHealth": 6,
-      "moveSpeed": -0.01
-    }
-  },
-  "arm_dreadstrider_sabatons": {
-    "name": "Dreadstrider Sabatons",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Massive black iron sabatons carved with marching runes. Each step shakes the ground slightly. The sound announces your arrival. Some find this advantageous.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/dreadstrider_sabatons",
-    "statBonuses": {
-      "defence": 13,
-      "maxHealth": 22,
-      "moveSpeed": -0.015,
-      "damage": 5
-    }
-  },
-  "arm_scarred_ironplate": {
-    "name": "Scarred Ironplate",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A full iron breastplate deeply scored by weapons that failed to penetrate it. Each scar is its own story. The plate is still sound.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/scarred_ironplate",
-    "statBonuses": {
-      "defence": 16,
-      "maxHealth": 15,
-      "moveSpeed": -0.02
-    }
-  },
-  "arm_hexed_iron_masque": {
-    "name": "Hexed Iron Masque",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "An iron masque etched with hexing sigils. Whoever put the hex on it is long dead. The sigils still pulse on moonless nights.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/hexed_iron_masque",
-    "statBonuses": {
-      "defence": 7,
-      "maxMana": 15
-    }
-  },
-  "arm_crucible_sabatons": {
-    "name": "Crucible Sabatons",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Forged in a volcano's crucible from ore that hadn't solidified yet. The resulting iron is denser and stranger than anything smelted conventionally. The surface shimmers with trapped heat.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/crucible_sabatons",
-    "statBonuses": {
-      "defence": 15,
-      "maxHealth": 18
-    }
-  },
-  "arm_ironblight_lamellar": {
-    "name": "Ironblight Lamellar",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Lamellar plates made from blight-forged iron. They faintly hum in the presence of the undead \u2014 which is either reassuring or unsettling depending on your perspective.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/ironblight_lamellar",
-    "statBonuses": {
-      "defence": 19,
-      "maxHealth": 25
-    }
-  },
-  "arm_steelweave_leggings": {
-    "name": "Steelweave Leggings",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Tiny steel rings woven into heavy leather create a surface that distributes impact across the entire leg. The craftsmanship is obsessive. The protection is exceptional.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/steelweave_leggings",
-    "statBonuses": {
-      "defence": 10,
-      "maxHealth": 12
-    }
-  },
-  "arm_scouts_halfgreaves": {
-    "name": "Scout's Halfgreaves",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Greaves that protect only the shins, leaving the thigh free. Favoured by scouts who need to move fast and still protect the bones.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/scouts_halfgreaves",
-    "statBonuses": {
-      "defence": 5,
-      "moveSpeed": 0.025
-    }
-  },
-  "arm_cloth_wrappings": {
-    "name": "Cloth Wrappings",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "Strips of cloth wound tight around the head. No real protection. But they keep the blood out of your eyes.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/cloth_wrappings",
-    "statBonuses": {
-      "defence": 2,
-      "moveSpeed": 0.01
-    }
-  },
-  "arm_worn_sandals": {
-    "name": "Worn Sandals",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Flat leather sandals held together by a few knots of cord. The soles are thin as paper. They'll last another week, maybe.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/worn_sandals",
-    "statBonuses": {
-      "defence": 1,
-      "moveSpeed": 0.01
-    }
-  },
-  "con_blessing_of_the_fallen_gods": {
-    "name": "Blessing of the Fallen Gods",
-    "rarity": "Legendary",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A vial containing something that should not exist in liquid form \u2014 concentrated divine essence from five dead deities, reclaimed from their burial sites. It heals everything. It also raises several theological questions.",
-    "isStackable": true,
-    "maxStack": 1,
-    "iconPath": "Icons/blessing_of_the_fallen_gods",
-    "statBonuses": {
-      "currentHealth": 400,
-      "currentMana": 300,
-      "currentStamina": 300
-    }
-  },
-  "con_crimson_healing_draught": {
-    "name": "Crimson Healing Draught",
-    "rarity": "Rare",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A deep red potion in a sealed crystal vial, prepared by an alchemist who no longer practises. The formula was never written down. Each vial is irreplaceable.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/crimson_healing_draught",
-    "statBonuses": {
-      "currentHealth": 80
-    }
-  },
-  "acc_chain_of_whispers": {
-    "name": "Chain of Whispers",
-    "rarity": "Rare",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A necklace of small iron discs, each engraved with a different face. When no one else is nearby, faint voices come from it. The advice is generally sound.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/chain_of_whispers",
-    "statBonuses": {
-      "maxMana": 20
-    }
-  },
-  "acc_band_of_the_fallen_king": {
-    "name": "Band of the Fallen King",
-    "rarity": "Epic",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A wide gold band stained with old blood that will not wash out. It belonged to a king who died alone with his back to a wall. It carries the memory of a last stand.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/band_of_the_fallen_king",
-    "statBonuses": {
-      "damage": 9,
-      "maxHealth": 30,
-      "defence": 6
-    }
-  },
-  "arm_soulkeeper_visor": {
-    "name": "Soulkeeper Visor",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "The visor is engraved with a thousand tiny faces \u2014 the souls it has absorbed from those slain before its wearer. They seem to shift.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/soulkeeper_visor",
-    "statBonuses": {
-      "defence": 11,
-      "maxMana": 20
-    }
-  },
-  "wpn_twin_fang_daggers": {
-    "name": "Twin Fang Daggers",
-    "rarity": "Uncommon",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A mismatched pair of daggers looted from a fallen rogue. One is slightly longer. Both cut the same.",
-    "isStackable": true,
-    "maxStack": 5,
-    "iconPath": "Icons/twin_fang_daggers",
-    "statBonuses": {
-      "damage": 7,
-      "attackCooldown": -0.05
-    }
-  },
-  "arm_voidweave_armour": {
-    "name": "Voidweave Armour",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Armour woven from threads harvested at the edge of a dimensional rift. Lighter than iron, harder than steel, and faintly cold to the touch.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/voidweave_armour",
-    "statBonuses": {
-      "defence": 18,
-      "maxMana": 20
-    }
-  },
-  "arm_emberbrand_sabatons": {
-    "name": "Emberbrand Sabatons",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Iron sabatons etched with flame runes along the instep. Walking on fire does not damage the wearer. Walking on ice leaves scorch marks. The paradox is unexplained.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/emberbrand_sabatons",
-    "statBonuses": {}
-  },
-  "wpn_iron_longsword": {
-    "name": "Iron Longsword",
-    "rarity": "Uncommon",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "Standard issue iron longsword. The balance is mediocre and the pommel is cracked \u2014 but the edge holds.",
-    "isStackable": true,
-    "maxStack": 5,
-    "iconPath": "Icons/iron_longsword",
-    "statBonuses": {
-      "damage": 9
-    }
-  },
-  "con_thin_mana_draught": {
-    "name": "Thin Mana Draught",
-    "rarity": "Common",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A pale blue liquid in a cracked vial \u2014 the bottom of a mage's supply barrel, diluted heavily. Weak magic, weak restoration. Better than nothing.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/thin_mana_draught",
-    "statBonuses": {
-      "currentMana": 20
-    }
-  },
-  "arm_blightwalker_legplates": {
-    "name": "Blightwalker Legplates",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Iron plates stained dark by blight exposure. Walking through cursed terrain with these equipped feels lighter \u2014 as though the blight recognises kin.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/blightwalker_legplates",
-    "statBonuses": {
-      "defence": 9,
-      "moveSpeed": 0.02
-    }
-  },
-  "arm_eternitys_step": {
-    "name": "Eternity's Step",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "A pair of sabatons recovered from a tomb where time moved differently. The iron shows no age. The runes shift every time you look away. Wearing them, you feel unhurried \u2014 like you have all the time in the world.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/eternitys_step",
-    "statBonuses": {
-      "defence": 22,
-      "moveSpeed": 0.5,
-      "maxStamina": 50,
-      "attackCooldown": -0.15
-    }
-  },
-  "arm_bonewoven_greaves": {
-    "name": "Bonewoven Greaves",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Iron greaves with small bones mortared into the outer surface as hex-wards. Heavy and unsettling to look at. Effective at keeping spirits at bay, allegedly.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/bonewoven_greaves",
-    "statBonuses": {
-      "defence": 9,
-      "maxHealth": 8
-    }
-  },
-  "con_wraithblood_extract": {
-    "name": "Wraithblood Extract",
-    "rarity": "Epic",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A syrupy black-violet substance drawn from a captured wraith's residual essence. Mana is flooded into the body from an external source for several seconds. Those with weak constitutions should not use this.",
-    "isStackable": true,
-    "maxStack": 2,
-    "iconPath": "Icons/wraithblood_extract",
-    "statBonuses": {
-      "currentMana": 130,
-      "currentHealth": 40
-    }
-  },
-  "arm_militia_chausses": {
-    "name": "Militia Chausses",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Iron chausses issued to levy soldiers \u2014 not individual soldiers specifically, just levy soldiers generally. Mass-produced, imperfectly fitted, functional.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/militia_chausses",
-    "statBonuses": {
-      "defence": 7,
-      "maxHealth": 8,
-      "moveSpeed": -0.1
-    }
-  },
-  "acc_iron_signet_ring": {
-    "name": "Iron Signet Ring",
-    "rarity": "Uncommon",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A ring bearing a seal that once meant something important. The house it represented is gone. The iron remains.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/iron_signet_ring",
-    "statBonuses": {
-      "defence": 3,
-      "maxHealth": 10
-    }
-  },
-  "con_elixir_of_the_hollow_king": {
-    "name": "Elixir of the Hollow King",
-    "rarity": "Epic",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "Said to have been brewed by a king who died refusing to stop fighting. The elixir restores all three vital reserves simultaneously. It tastes like grief and stubborn pride.",
-    "isStackable": true,
-    "maxStack": 2,
-    "iconPath": "Icons/elixir_of_the_hollow_king",
-    "statBonuses": {
-      "currentHealth": 100,
-      "currentMana": 80,
-      "currentStamina": 80
-    }
-  },
-  "con_aetheric_mana_surge": {
-    "name": "Aetheric Mana Surge",
-    "rarity": "Epic",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A pressurised vial that, when shattered on the palm, floods the system with raw aetheric energy. Mana restores completely. Side effect: you see colours that don't have names for about ten minutes.",
-    "isStackable": true,
-    "maxStack": 2,
-    "iconPath": "Icons/aetheric_mana_surge",
-    "statBonuses": {
-      "currentMana": 160
-    }
-  },
-  "acc_coldstone_pendant": {
-    "name": "Coldstone Pendant",
-    "rarity": "Rare",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A blue-white gemstone that never warms, even held in a closed fist. It draws heat from magical attacks and radiates it away before it reaches the skin.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/coldstone_pendant",
-    "statBonuses": {
-      "maxMana": 18
-    }
-  },
-  "con_smoked_cave_fish": {
-    "name": "Smoked Cave Fish",
-    "rarity": "Uncommon",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A whole fish cold-smoked in a cave over black coal. Dense, salty, and calorie-rich. Road food for those who know what's coming.",
-    "isStackable": true,
-    "maxStack": 5,
-    "iconPath": "Icons/smoked_cave_fish",
-    "statBonuses": {
-      "currentHealth": 25,
-      "currentStamina": 35
-    }
-  },
-  "arm_dreadlords_visage": {
-    "name": "Dreadlord's Visage",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "An ancient war-mask that has absorbed the deaths of thousands of battlefields. Wearing it, you hear whispers. The whispers give good tactical advice.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/dreadlords_visage",
-    "statBonuses": {
-      "defence": 22,
-      "maxHealth": 40,
-      "cooldown": -0.15
-    }
-  },
-  "arm_the_last_bulwark": {
-    "name": "The Last Bulwark",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "The breastplate worn by the final defender of a fallen kingdom. The dents and gouges in the iron number more than a hundred. It never failed him \u2014 the numbers finally did.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/the_last_bulwark",
-    "statBonuses": {
-      "defence": 28,
-      "maxHealth": 60,
-      "moveSpeed": -0.1
-    }
-  },
-  "wpn_cracked_shortsword": {
-    "name": "Cracked Shortsword",
-    "rarity": "Common",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A shortsword that has seen too many fights. A hairline fracture runs along the spine \u2014 one bad swing from splitting in two.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/cracked_shortsword",
-    "statBonuses": {
-      "damage": 5
-    }
-  },
-  "acc_frayed_cord_necklace": {
-    "name": "Frayed Cord Necklace",
-    "rarity": "Common",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A rough cord with a small piece of carved bone threaded onto it. Someone made it for luck. Whether it worked is unclear.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/frayed_cord_necklace",
-    "statBonuses": {
-      "maxHealth": 5,
-      "maxMana": 5
-    }
-  },
-  "arm_spiked_iron_cap": {
-    "name": "Spiked Iron Cap",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A dome of iron with a single iron spike welded to the crown. Impractical but menacing. The spike once ended a fight before it started.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/spiked_iron_cap",
-    "statBonuses": {
-      "defence": 6,
-      "damage": 2
-    }
-  },
-  "arm_plague_doctors_coat": {
-    "name": "Plague Doctor's Coat",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A full-length alchemist coat reinforced with plates of treated bone. Sealed against contagion. Sealed against much else besides.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/plague_doctors_coat",
-    "statBonuses": {
-      "defence": 16,
-      "maxHealth": 20
-    }
-  },
-  "arm_hunters_mask": {
-    "name": "Hunter's Mask",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A carved wooden mask fitted to a leather backing. Painted in dark earth tones for stalking prey \u2014 or people.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/hunters_mask",
-    "statBonuses": {
-      "defence": 4,
-      "moveSpeed": 0.15
-    }
-  },
-  "arm_soulbound_boots": {
-    "name": "Soulbound Boots",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Boots that absorb a trace of the soul of anyone who dies within ten paces of the wearer. The accumulated weight of the dead makes your steps feel heavier. It also makes them more certain.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/soulbound_boots",
-    "statBonuses": {
-      "defence": 12,
-      "maxHealth": 20,
-      "maxMana": 20
-    }
-  },
-  "arm_brigands_visored_cap": {
-    "name": "Brigand's Visored Cap",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A light iron visor riveted to a leather cap. The visor flips up. Brigands favour them \u2014 protects the face without killing your peripheral vision.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/brigands_visored_cap",
-    "statBonuses": {
-      "defence": 5
-    }
-  },
-  "wpn_blackthorn_sword": {
-    "name": "Blackthorn Sword",
-    "rarity": "Rare",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "Forged with iron laced with powdered blackthorn crystal. The metal has a faint dark sheen. Each strike carries a trace of corruption.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/blackthorn_sword",
-    "statBonuses": {
-      "damage": 15
-    }
-  },
-  "wpn_jagged_cleaver": {
-    "name": "Jagged Cleaver",
-    "rarity": "Uncommon",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A heavy cleaver with a chipped, uneven edge that makes ragged wounds. Crude but effective \u2014 it doesn't need to be elegant.",
-    "isStackable": true,
-    "maxStack": 5,
-    "iconPath": "Icons/jagged_cleaver",
-    "statBonuses": {
-      "damage": 10,
-      "moveSpeed": -0.1
-    }
-  },
-  "con_ember_stamina_brew": {
-    "name": "Ember Stamina Brew",
-    "rarity": "Uncommon",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A hot, spiced drink brewed from ember-chilli and ironroot. Drunk warm, it burns all the way down and clears fatigue like smoke from a room.",
-    "isStackable": true,
-    "maxStack": 5,
-    "iconPath": "Icons/ember_stamina_brew",
-    "statBonuses": {
-      "currentStamina": 55
-    }
-  },
-  "con_voidblue_mana_elixir": {
-    "name": "Voidblue Mana Elixir",
-    "rarity": "Rare",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A swirling vial of dark blue liquid that smells of ozone and deep cold. Restores a large portion of mana in seconds. The rush lasts longer than expected.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/voidblue_mana_elixir",
-    "statBonuses": {
-      "currentMana": 90
-    }
-  },
-  "wpn_soulbrand_greatsword": {
-    "name": "Soulbrand Greatsword",
-    "rarity": "Epic",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A two-handed sword seared with sigils that bind the souls of the slain to the blade. It hums with trapped fury.",
-    "isStackable": true,
-    "maxStack": 2,
-    "iconPath": "Icons/soulbrand_greatsword",
-    "statBonuses": {
-      "damage": 25,
-      "maxMana": 20
-    }
-  },
-  "arm_bandits_kneeguards": {
-    "name": "Bandit's Kneeguards",
-    "rarity": "Uncommon",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Thick leather kneepads strapped onto lighter legwear. Lets you kneel on rubble without flinching. Useful for ambushes.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/bandits_kneeguards",
-    "statBonuses": {
-      "defence": 6,
-      "moveSpeed": 0.15,
-      "maxStamina": 10
-    }
-  },
-  "acc_voidcore_pendant": {
-    "name": "Voidcore Pendant",
-    "rarity": "Epic",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A pendant containing a small perfectly black sphere that seems to absorb rather than reflect light. Magical effects from outside sources are partially absorbed by it before reaching you.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/voidcore_pendant",
-    "statBonuses": {
-      "maxMana": 30,
-      "maxHealth": 15
-    }
-  },
-  "arm_crimson_warden_greaves": {
-    "name": "Crimson Warden Greaves",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Lacquered red iron greaves worn by elite prison guards who never lost a prisoner. The red is original. A reminder to those who consider running.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/crimson_warden_greaves",
-    "statBonuses": {
-      "defence": 17,
-      "maxHealth": 25
-    }
-  },
-  "con_dried_herbs_bundle": {
-    "name": "Dried Herbs Bundle",
-    "rarity": "Common",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A bundle of dried wild herbs tied with rough twine. Brewed into a weak tea or chewed directly, they ease pain and slow bleeding marginally.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/dried_herbs_bundle",
-    "statBonuses": {
-      "currentHealth": 10
-    }
-  },
-  "acc_abyss_eye_pendant": {
-    "name": "Abyss Eye Pendant",
-    "rarity": "Legendary",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A pendant containing a preserved eye from a creature that existed at the bottom of the ocean, in the dark, under pressure no living thing should survive. It still moves when no one is looking directly at it.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/abyss_eye_pendant",
-    "statBonuses": {
-      "maxMana": 50,
-      "damage": 8
-    }
-  },
-  "con_phoenix_ash_vial": {
-    "name": "Phoenix Ash Vial",
-    "rarity": "Rare",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "Ash harvested from the cooling nest of a phoenix, dissolved in purified water. The healing properties are not fully understood. The results are not subtle.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/phoenix_ash_vial",
-    "statBonuses": {
-      "currentHealth": 70,
-      "currentStamina": 50
-    }
-  },
-  "acc_inkstone_amulet": {
-    "name": "Inkstone Amulet",
-    "rarity": "Uncommon",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A flat black stone hung on a silver chain. The surface has faint carvings made with a mage's fingernail. Minor mana amplification \u2014 enough to notice.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/inkstone_amulet",
-    "statBonuses": {
-      "maxMana": 20
-    }
-  },
-  "arm_ghoststep_slippers": {
-    "name": "Ghoststep Slippers",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Thin-soled slippers woven from treated spiderweb silk reinforced with iron thread. Nearly silent on any surface. Light enough to run in. Surprisingly protective.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/ghoststep_slippers",
-    "statBonuses": {
-      "defence": 5,
-      "moveSpeed": 0.4,
-      "maxStamina": 15
-    }
-  },
-  "arm_ashen_warlords_helm": {
-    "name": "Ashen Warlord's Helm",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "The helm of a warlord who burned a city and then disappeared. It was found in the ashes, undamaged. The chin strap is still warm.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/ashen_warlords_helm",
-    "statBonuses": {
-      "defence": 14,
-      "maxHealth": 25,
-      "damage": 5
-    }
-  },
-  "arm_warmongers_greathelm": {
-    "name": "Warmonger's Greathelm",
-    "rarity": "Rare",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A full-face iron greathelm adorned with iron crests. Heavy and imposing. The narrow eye slit limits vision \u2014 but few enemies look you in the eye.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/warmongers_greathelm",
-    "statBonuses": {
-      "defence": 10,
-      "maxHealth": 15,
-      "moveSpeed": -0.2
-    }
-  },
-  "con_healers_distillate": {
-    "name": "Healer's Distillate",
-    "rarity": "Uncommon",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A clear liquid prepared by a hedge-physician from twelve different medicinal herbs reduced down to a single drop of concentrated healing. The reduction fills a small vial. Each vial took three days to make.",
-    "isStackable": true,
-    "maxStack": 5,
-    "iconPath": "Icons/healers_distillate",
-    "statBonuses": {
-      "currentHealth": 40,
-      "currentMana": 20
-    }
-  },
-  "arm_godgrave_tassets": {
-    "name": "Godgrave Tassets",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Tassets pried from the lower armour of a dead deity. They still radiate a faint warmth, as though the god has not entirely finished dying.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/godgrave_tassets",
-    "statBonuses": {
-      "defence": 28,
-      "maxHealth": 55
-    }
-  },
-  "con_restoration_compound": {
-    "name": "Restoration Compound",
-    "rarity": "Rare",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "An alchemical compound that simultaneously addresses blood loss, mana depletion, and fatigue. It was developed for battlefield medics and is no longer in legal production.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/restoration_compound",
-    "statBonuses": {
-      "currentHealth": 55,
-      "currentMana": 40,
-      "currentStamina": 35
-    }
-  },
-  "arm_tanned_leather_vest": {
-    "name": "Tanned Leather Vest",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "Basic vest of tanned hide. Stiff and smells faintly of animal fat. Stops a glancing blow at best.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/tanned_leather_vest",
-    "statBonuses": {
-      "defence": 4
-    }
-  },
-  "arm_marrow_legguards": {
-    "name": "Marrow Legguards",
-    "rarity": "Epic",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Iron greaves packed with rendered bone marrow between the plates. The padding is grim but shockingly effective. Reduces impact trauma substantially.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/marrow_legguards",
-    "statBonuses": {
-      "defence": 18,
-      "maxHealth": 30
-    }
-  },
-  "acc_bronze_torc": {
-    "name": "Bronze Torc",
-    "rarity": "Uncommon",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A thick bronze neck torc bent into shape by someone who knew what they were doing. Carries a minor ward against the first cut of a fight.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/bronze_torc",
-    "statBonuses": {
-      "defence": 4,
-      "maxHealth": 8
-    }
-  },
-  "arm_canvas_boots": {
-    "name": "Canvas Boots",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Shoes",
-    "description": "Heavy canvas boots sealed with pine tar. Waterproof-ish. The toes are reinforced with scraps of iron. Functional.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/canvas_boots",
-    "statBonuses": {
-      "defence": 2
-    }
-  },
-  "arm_legguards_of_the_undying": {
-    "name": "Legguards of the Undying",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Worn by a warrior who reportedly could not die. Eventually they stopped trying to kill them and just buried them alive. The legguards were found on the surface three years later.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/legguards_of_the_undying",
-    "statBonuses": {
-      "defence": 26,
-      "maxHealth": 50,
-      "maxStamina": 40
-    }
-  },
-  "acc_the_oath_ring": {
-    "name": "The Oath Ring",
-    "rarity": "Legendary",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A ring sworn on by the leaders of ten dead civilisations. The oaths are still binding in ways that defy explanation. The wearer inherits all of them.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/the_oath_ring",
-    "statBonuses": {
-      "damage": 15,
-      "maxHealth": 40,
-      "maxMana": 40
-    }
-  },
-  "acc_wardens_seal_ring": {
-    "name": "Warden's Seal Ring",
-    "rarity": "Rare",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A heavy iron ring carrying the seal of a defunct prison authority. Wearing it makes those of weak will slightly reluctant to approach you.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/wardens_seal_ring",
-    "statBonuses": {
-      "defence": 5,
-      "maxHealth": 12,
-      "damage": 3
-    }
-  },
-  "arm_eternitys_aegis": {
-    "name": "Eternity's Aegis",
-    "rarity": "Legendary",
-    "itemType": "Armor",
-    "armorSlot": "Body",
-    "description": "A breastplate recovered from the ruins of a god's temple. The etchings on it move \u2014 slowly, over years. No one has lived long enough to read what they spell out.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/eternitys_aegis",
-    "statBonuses": {
-      "defence": 30,
-      "maxHealth": 50,
-      "cooldown": -0.1
-    }
-  },
-  "acc_godbone_torc": {
-    "name": "Godbone Torc",
-    "rarity": "Legendary",
-    "itemType": "Accessory",
-    "armorSlot": "None",
-    "description": "A neck torc carved from a divine femur. The bone is ivory-white and almost weightless. The power within it is quiet and vast, like something sleeping very lightly.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/godbone_torc",
-    "statBonuses": {
-      "maxHealth": 60,
-      "defence": 12
-    }
-  },
-  "arm_worn_wool_leggings": {
-    "name": "Worn Wool Leggings",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Leg",
-    "description": "Felted wool leggings, damp-smelling and rough. They compress down to next to nothing in a pack. Nothing between you and a blade but a few layers of matted fibre.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/worn_wool_leggings",
-    "statBonuses": {
-      "defence": 2,
-      "moveSpeed": 0.1
-    }
-  },
-  "wpn_venomstrike_blade": {
-    "name": "Venomstrike Blade",
-    "rarity": "Rare",
-    "itemType": "Weapon",
-    "armorSlot": "None",
-    "description": "A blade coated in a slow-acting poison extracted from swamp serpents. The cut stings. The venom lingers.",
-    "isStackable": true,
-    "maxStack": 3,
-    "iconPath": "Icons/venomstrike_blade",
-    "statBonuses": {
-      "damage": 12,
-      "maxHealth": -5
-    }
-  },
-  "con_murky_water_flask": {
-    "name": "Murky Water Flask",
-    "rarity": "Common",
-    "itemType": "Consumable",
-    "armorSlot": "None",
-    "description": "A dented flask filled with water that has been boiled \u2014 mostly. It tastes of iron and sediment. It hydrates. That's all it does.",
-    "isStackable": true,
-    "maxStack": 10,
-    "iconPath": "Icons/murky_water_flask",
-    "statBonuses": {
-      "currentStamina": 15
-    }
-  },
-  "arm_tattered_hood": {
-    "name": "Tattered Hood",
-    "rarity": "Common",
-    "itemType": "Armor",
-    "armorSlot": "Head",
-    "description": "A hood of rough cloth, torn at the edges. It keeps the rain out \u2014 mostly. It won't stop a blade but it's better than nothing.",
-    "isStackable": false,
-    "maxStack": 1,
-    "iconPath": "Icons/tattered_hood",
-    "statBonuses": {
-      "defence": 2
-    }
-  },
-  "msc_iron_scrap": {
-    "name": "Iron Scrap",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "Twisted fragments of iron salvaged from broken weapons and armour.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/iron_scrap",
-    "statBonuses": {}
-  },
-  "msc_leather_strip": {
-    "name": "Leather Strip",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "A thin strip cut from tanned hide.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/leather_strip",
-    "statBonuses": {}
-  },
-  "msc_cloth_scraps": {
-    "name": "Cloth Scraps",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "Torn pieces of cloth in varying sizes.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/cloth_scraps",
-    "statBonuses": {}
-  },
-  "msc_iron_ingot": {
-    "name": "Iron Ingot",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "A bar of smelted iron, ready for forging.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/iron_ingot",
-    "statBonuses": {}
-  },
-  "msc_hardened_bone": {
-    "name": "Hardened Bone",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "A large bone treated in mineral brine until nearly as hard as iron.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/hardened_bone",
-    "statBonuses": {}
-  },
-  "msc_copper_wire": {
-    "name": "Copper Wire",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "Thin copper wire drawn through a die plate.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/copper_wire",
-    "statBonuses": {}
-  },
-  "msc_chain_links": {
-    "name": "Chain Links",
-    "rarity": "Uncommon",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "Small interlocked iron rings ready to be woven into chainmail.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/chain_links",
-    "statBonuses": {}
-  },
-  "msc_rivets": {
-    "name": "Iron Rivets",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "Small iron pins used to fasten plates and reinforce armour joints.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/rivets",
-    "statBonuses": {}
-  },
-  "msc_pine_tar": {
-    "name": "Pine Tar",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "Thick black tar rendered from pine wood. Waterproofs leather.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/pine_tar",
-    "statBonuses": {}
-  },
-  "msc_rough_twine": {
-    "name": "Rough Twine",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "A coil of twisted plant fibre. Cheap and plentiful.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/rough_twine",
-    "statBonuses": {}
-  },
-  "msc_whetstone": {
-    "name": "Whetstone",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "A block of fine-grained stone used to sharpen blade edges.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/whetstone",
-    "statBonuses": {}
-  },
-  "msc_tallow": {
-    "name": "Tallow",
-    "rarity": "Common",
-    "itemType": "Misc",
-    "armorSlot": "None",
-    "description": "Rendered animal fat. Used to waterproof leather.",
-    "isStackable": true,
-    "maxStack": 99,
-    "iconPath": "Icons/tallow",
-    "statBonuses": {}
-  }
+   "con_health_potion": {
+      "name": "Health Potion",
+      "rarity": "Common",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A swirling, translucent red liquid that smells faintly of hibiscus and iron.",
+      "isStackable": true,
+      "maxStack": 10,
+      "iconPath": "Icons/health_potion",
+      "statBonuses": {
+         "currentHealth": 50
+      }
+   },
+   "con_mana_potion": {
+      "name": "Mana Potion",
+      "rarity": "Uncommon",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A thick, viscous syrup extracted from resilient flora. It is bitter to the tongue but burns with a restorative heat once swallowed.",
+      "isStackable": true,
+      "maxStack": 3,
+      "iconPath": "Icons/mana_potion",
+      "statBonuses": {
+         "currentMana": 40
+      }
+   },
+   "acc_ring_of_speed": {
+      "name": "Ring of Speed",
+      "rarity": "Epic",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "Increase attack speed.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/ring_speed",
+      "statBonuses": {
+         "cooldown": -0.05
+      }
+   },
+   "arm_ironroot_legplates": {
+      "name": "Ironroot Legplates",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Plates of iron infused with the root system of an ancient deadwood tree. They flex like wood, hold like iron, and regrow minor damage over time somehow.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/ironroot_legplates",
+      "statBonuses": {
+         "defence": 24,
+         "maxHealth": 45,
+         "moveSpeed": 0.2
+      }
+   },
+   "arm_rangers_boots": {
+      "name": "Ranger's Boots",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Well-made leather boots designed for long travel across rough terrain. Thick soles, good ankle support, quiet on stone.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/rangers_boots",
+      "statBonuses": {
+         "defence": 4,
+         "moveSpeed": 0.05
+      }
+   },
+   "wpn_serrated_hatchet": {
+      "name": "Serrated Hatchet",
+      "rarity": "Uncommon",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A woodcutter's axe with teeth filed into the blade edge. Brutal in close quarters. The notches catch and tear.",
+      "isStackable": false,
+      "maxStack": 5,
+      "iconPath": "Icons/serrated_hatchet",
+      "statBonuses": {
+         "damage": 8
+      }
+   },
+   "wpn_venomcoil_whip": {
+      "name": "Venomcoil Whip",
+      "rarity": "Epic",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A serpentine whip with venom glands from three different serpents braided into its core. Each crack releases a mist of poison.",
+      "isStackable": false,
+      "maxStack": 2,
+      "iconPath": "Icons/venomcoil_whip",
+      "statBonuses": {
+         "damage": 18,
+         "moveSpeed": 0.02
+      }
+   },
+   "arm_ironstudded_leggings": {
+      "name": "Iron-Studded Leggings",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Leather leggings reinforced with a grid of iron studs along the thigh and shin. Heavier than soft leather but considerably harder to cut through.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/iron_studded_leggings",
+      "statBonuses": {
+         "defence": 6,
+         "maxHealth": 6
+      }
+   },
+   "arm_padded_coif": {
+      "name": "Padded Coif",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "Layers of padded cloth stitched into a tight coif. It won't stop iron but it cushions blows. Good enough for the desperate.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/padded_coif",
+      "statBonuses": {
+         "defence": 3,
+         "maxHealth": 5
+      }
+   },
+   "arm_plague_bearers_cowl": {
+      "name": "Plague Bearer's Cowl",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A full hood and mask of hardened leather soaked in alchemical compounds. Stinks of sulphur. Keeps toxins out \u2014 and keeps secrets in.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/plague_bearers_cowl",
+      "statBonuses": {
+         "defence": 10,
+         "maxHealth": 12,
+         "moveSpeed": 0.01
+      }
+   },
+   "wpn_shadowfang_sword": {
+      "name": "Shadowfang Sword",
+      "rarity": "Rare",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A slender blade that seems to blur in dim light. Strikes from shadow deal extra pain \u2014 enemies never see it coming.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/shadowfang_sword",
+      "statBonuses": {
+         "damage": 13,
+         "moveSpeed": 0.02
+      }
+   },
+   "arm_voidwalker_slippers": {
+      "name": "Voidwalker Slippers",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Crafted from the same formless material as the space between dimensions. You can walk on surfaces that technically can't support weight. Try not to think about the physics.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/voidwalker_slippers",
+      "statBonuses": {
+         "defence": 10,
+         "moveSpeed": 0.05
+      }
+   },
+   "acc_scratched_iron_ring": {
+      "name": "Scratched Iron Ring",
+      "rarity": "Common",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "An iron ring worn smooth on the inside from years of use. There was an inscription once. It's been rubbed away.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/scratched_iron_ring",
+      "statBonuses": {
+         "defence": 2
+      }
+   },
+   "arm_rough_hide_shoes": {
+      "name": "Rough Hide Shoes",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Shoes cut from a single piece of dried hide and laced up the front. Primitive but effective. Your feet will hate you. They'll survive.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/rough_hide_shoes",
+      "statBonuses": {
+         "defence": 2,
+         "moveSpeed": 0.01
+      }
+   },
+   "arm_ashwalker_halfplate": {
+      "name": "Ashwalker Halfplate",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Half-plate legguards salvaged from the ruins of a burned city. The iron has been cooled and retempered by the collapse \u2014 it's stronger for it.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/ashwalker_halfplate",
+      "statBonuses": {
+         "defence": 16,
+         "maxHealth": 22,
+         "maxStamina": 25
+      }
+   },
+   "arm_nightcallers_mask": {
+      "name": "Nightcaller's Mask",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A porcelain mask fused to a shadowsteel backing. The porcelain shows a serene, featureless face. Behind it, the wearer becomes something else entirely.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/nightcallers_mask",
+      "statBonuses": {
+         "defence": 20,
+         "maxMana": 40,
+         "moveSpeed": 0.04
+      }
+   },
+   "acc_crown_shard_circlet": {
+      "name": "Crown Shard Circlet",
+      "rarity": "Legendary",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A fragment of a legendary crown reassembled into a headband. The original crown could subjugate kingdoms. This fragment subjugates only the wearer's fear. That's enough.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/crown_shard_circlet",
+      "statBonuses": {
+         "damage": 18,
+         "maxHealth": 45,
+         "maxMana": 45,
+         "attackCooldown": -0.03
+      }
+   },
+   "arm_padded_breeches": {
+      "name": "Padded Breeches",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Quilted cloth breeches stuffed with scraps of wool. They cushion falls and moderate impacts. Fashion has not visited them.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/padded_breeches",
+      "statBonuses": {
+         "defence": 4,
+         "maxStamina": 5
+      }
+   },
+   "acc_the_endless_ring": {
+      "name": "The Endless Ring",
+      "rarity": "Legendary",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A ring with no visible seam \u2014 it looks as though it was simply formed already around a finger that no longer exists. Time inside the ring is slightly stretched. Cooldowns feel shorter.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/the_endless_ring",
+      "statBonuses": {
+         "cooldown": -0.03,
+         "maxMana": 45,
+         "maxHealth": 35
+      }
+   },
+   "acc_braided_grass_bracelet": {
+      "name": "Braided Grass Bracelet",
+      "rarity": "Common",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "Tightly braided dried grass soaked in resin. Charms woven into the braid by a hedge-witch. Faint magic \u2014 the kind that might or might not be real.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/braided_grass_bracelet",
+      "statBonuses": {
+         "maxMana": 8
+      }
+   },
+   "con_void_stamina_concentrate": {
+      "name": "Void Stamina Concentrate",
+      "rarity": "Legendary",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A jet-black gel sealed in an obsidian capsule. Stamina is restored beyond its natural maximum temporarily. Fatigue is not merely removed \u2014 it is reversed. You feel as though you haven't slept in days and are completely fine about it.",
+      "isStackable": true,
+      "maxStack": 1,
+      "iconPath": "Icons/void_stamina_concentrate",
+      "statBonuses": {
+         "currentStamina": 999
+      }
+   },
+   "arm_rough_cloth_trousers": {
+      "name": "Rough Cloth Trousers",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Crude trousers cut from burlap. They chafe. They offer almost no protection. But they're better than nothing \u2014 the battlefield is no place for bare legs.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/rough_cloth_trousers",
+      "statBonuses": {
+         "defence": 2
+      }
+   },
+   "con_titans_marrow_broth": {
+      "name": "Titan's Marrow Broth",
+      "rarity": "Epic",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A thick, warm broth rendered from the bones of something enormous. It smells of iron and old earth. One mouthful eliminates fatigue entirely. Two mouthfuls make you feel invincible. There is no third mouthful.",
+      "isStackable": true,
+      "maxStack": 2,
+      "iconPath": "Icons/titans_marrow_broth",
+      "statBonuses": {
+         "currentStamina": 150,
+         "maxStamina": 20
+      }
+   },
+   "arm_helm_of_the_last_siege": {
+      "name": "Helm of the Last Siege",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "Worn by the commander of the siege that ended the old empire. The iron bears marks from twelve direct strikes \u2014 none of which killed him. He died in his sleep, decades later, still wearing it.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/helm_of_the_last_siege",
+      "statBonuses": {
+         "defence": 25,
+         "maxHealth": 45,
+         "damage": 8
+      }
+   },
+   "arm_leather_cap": {
+      "name": "Leather Cap",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "Boiled leather shaped into a simple cap. Worn by farmers and sentries alike. Cheap to make, cheap to replace.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/leather_cap",
+      "statBonuses": {
+         "defence": 3
+      }
+   },
+   "arm_swamp_walker_boots": {
+      "name": "Swamp Walker Boots",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "High boots treated with multiple coats of waterproofing compound. Designed to move silently through wet terrain. Used by hunters, trappers, and worse.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/swamp_walker_boots",
+      "statBonuses": {
+         "defence": 4,
+         "moveSpeed": 0.01,
+         "maxStamina": 8
+      }
+   },
+   "arm_padded_gambeson": {
+      "name": "Padded Gambeson",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Thick quilted cloth worn under armour \u2014 or, for those who can't afford armour, instead of it. Absorbs blunt force reasonably well.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/padded_gambeson",
+      "statBonuses": {
+         "defence": 5,
+         "maxHealth": 5
+      }
+   },
+   "arm_titans_foundation": {
+      "name": "Titan's Foundation",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Sabatons so heavy that carrying them requires exceptional strength. Wearing them, the ground seems to push back with equal force \u2014 anchoring you, steadying you, refusing to let you fall.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/titans_foundation",
+      "statBonuses": {
+         "defence": 28,
+         "maxHealth": 60,
+         "moveSpeed": -0.02
+      }
+   },
+   "arm_berserkers_mantle": {
+      "name": "Berserker's Mantle",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Fur and iron fused into a brutal war-cloak. It offers less coverage than plate but allows total freedom of movement. For those who plan to end fights quickly or die trying.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/berserkers_mantle",
+      "statBonuses": {
+         "defence": 17,
+         "damage": 8,
+         "maxStamina": 30,
+         "moveSpeed": 0.01
+      }
+   },
+   "con_mudblood_tincture": {
+      "name": "Mudblood Tincture",
+      "rarity": "Common",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A foul-smelling brownish liquid drawn from a swamp herb known locally as mudblood root. Clots wounds. Tastes exactly as bad as it smells.",
+      "isStackable": true,
+      "maxStack": 10,
+      "iconPath": "Icons/mudblood_tincture",
+      "statBonuses": {
+         "currentHealth": 20
+      }
+   },
+   "arm_gravewalker_sabatons": {
+      "name": "Gravewalker Sabatons",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Iron sabatons taken from a burial site. The bones of their previous owner were found inside. They haven't been cleaned. Something about them discourages the attempt.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/gravewalker_sabatons",
+      "statBonuses": {
+         "defence": 8,
+         "maxHealth": 10
+      }
+   },
+   "wpn_godsbane_fragment": {
+      "name": "Godsbane Fragment",
+      "rarity": "Legendary",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A shard of what was once a divine weapon, reforged into a war blade by a blacksmith who then went blind. The divine power within it is corrupted, unstable \u2014 and devastating.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/godsbane_fragment",
+      "statBonuses": {
+         "damage": 45,
+         "maxHealth": -20,
+         "maxMana": 40,
+         "cooldown": -0.2
+      }
+   },
+   "arm_chainmail_shirt": {
+      "name": "Chainmail Shirt",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A shirt of interlocked iron rings. Heavy and loud. It catches blades well \u2014 but the weight tells on a long march.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/chainmail_shirt",
+      "statBonuses": {
+         "defence": 10,
+         "maxHealth": 8,
+         "moveSpeed": -0.15
+      }
+   },
+   "arm_fleetfoot_greaves": {
+      "name": "Fleetfoot Greaves",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Enchanted iron greaves that have somehow been made lighter by the enchanting process rather than heavier. The enchanter considered this proof of genius. The enchanter is dead, but not from arrogance.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/fleetfoot_greaves",
+      "statBonuses": {
+         "defence": 12,
+         "moveSpeed": 0.04,
+         "maxStamina": 25
+      }
+   },
+   "arm_scavengers_coat": {
+      "name": "Scavenger's Coat",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A long coat patched together from salvaged leathers. Mismatched seams and rough stitching throughout. It's ugly but it covers everything.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/scavengers_coat",
+      "statBonuses": {
+         "defence": 4,
+         "moveSpeed": 0.01
+      }
+   },
+   "acc_ring_of_the_black_sun": {
+      "name": "Ring of the Black Sun",
+      "rarity": "Epic",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A jet-black ring bearing a golden sun etched into the surface \u2014 but the sun's rays point inward rather than outward. Wearing it in sunlight produces no shadow.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/ring_of_the_black_sun",
+      "statBonuses": {
+         "damage": 10,
+         "maxMana": 25
+      }
+   },
+   "wpn_iron_shiv": {
+      "name": "Iron Shiv",
+      "rarity": "Common",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A sliver of scrap iron wrapped in cloth at the base to form a crude grip. Short, ugly, and practical.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/iron_shiv",
+      "statBonuses": {
+         "damage": 4
+      }
+   },
+   "con_blue_mist_vial": {
+      "name": "Blue Mist Vial",
+      "rarity": "Uncommon",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A squat vial of deep blue mist in liquid form \u2014 pressurised mana extracted from a leyline crack. Mana restoration at roughly three times the potency of a common draught.",
+      "isStackable": true,
+      "maxStack": 5,
+      "iconPath": "Icons/blue_mist_vial",
+      "statBonuses": {
+         "currentMana": 55
+      }
+   },
+   "wpn_bonebreaker_war_maul": {
+      "name": "Bonebreaker War Maul",
+      "rarity": "Epic",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A colossal iron maul with a head shaped from fused bones. It ignores armour. It ignores mercy.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/bonebreaker_war_maul",
+      "statBonuses": {
+         "damage": 28,
+         "moveSpeed": -0.013,
+         "maxHealth": 20
+      }
+   },
+   "con_the_last_drop": {
+      "name": "The Last Drop",
+      "rarity": "Legendary",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A single vial said to be the last remaining batch of a legendary healer's personal formula, lost for a generation. It was rediscovered in a collapsed cellar. There are five vials. There were never more.",
+      "isStackable": true,
+      "maxStack": 1,
+      "iconPath": "Icons/the_last_drop",
+      "statBonuses": {
+         "currentHealth": 250
+      }
+   },
+   "con_eternity_draught": {
+      "name": "Eternity Draught",
+      "rarity": "Legendary",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A perfectly clear liquid with no smell and no taste. It doesn't seem to do anything for a moment \u2014 and then everything repairs itself at once. Every wound, every depleted reserve, every ache.",
+      "isStackable": true,
+      "maxStack": 1,
+      "iconPath": "Icons/eternity_draught",
+      "statBonuses": {
+         "currentHealth": 300,
+         "currentMana": 200,
+         "currentStamina": 200
+      }
+   },
+   "arm_shadowwalker_boots": {
+      "name": "Shadowwalker Boots",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Leather boots soaked for three months in shadowmoss extract until the leather darkened permanently. They dampen sound to near silence. Ideal for those who prefer not to be heard.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/shadowwalker_boots",
+      "statBonuses": {
+         "defence": 6,
+         "moveSpeed": 0.035,
+         "maxStamina": 12
+      }
+   },
+   "arm_ironmaw_sabatons": {
+      "name": "Ironmaw Sabatons",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Sabatons with serrated lower edges, designed so a stomp does maximum damage. Not subtle. Not elegant. Extremely functional.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/ironmaw_sabatons",
+      "statBonuses": {
+         "defence": 8,
+         "damage": 5,
+         "moveSpeed": -0.015
+      }
+   },
+   "arm_wardens_haubergeon": {
+      "name": "Warden's Haubergeon",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A full-coverage hauberk of fine chainmail issued to prison wardens. Has seen use on both sides of the bars.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/wardens_haubergeon",
+      "statBonuses": {
+         "defence": 14,
+         "maxHealth": 12,
+         "moveSpeed": -0.01
+      }
+   },
+   "arm_voidstrider_leggings": {
+      "name": "Voidstrider Leggings",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Leggings woven from the same material as the space between worlds. Steps through rough terrain feel oddly smooth. Steps through dangerous terrain feel oddly exciting.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/voidstrider_leggings",
+      "statBonuses": {
+         "defence": 14,
+         "moveSpeed": 0.02,
+         "maxMana": 15
+      }
+   },
+   "arm_godflesh_armour": {
+      "name": "Godflesh Armour",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "No one knows which god this armour was flayed from. The iron-grey flesh that forms its surface is warm to the touch and does not decay. It pulses very slightly, like a sleeping heartbeat.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/godflesh_armour",
+      "statBonuses": {
+         "defence": 32,
+         "maxHealth": 55,
+         "damage": 10
+      }
+   },
+   "arm_wraithstride": {
+      "name": "Wraithstride",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Dark-iron sabatons that blur slightly when moving. The wearer leaves no tracks. No footprints in mud, no marks on snow, nothing in ash. Something that useful has a cost \u2014 it just hasn't announced itself yet.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/wraithstride",
+      "statBonuses": {
+         "defence": 20,
+         "moveSpeed": 0.05,
+         "maxMana": 30
+      }
+   },
+   "arm_wraithstep_greaves": {
+      "name": "Wraithstep Greaves",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Greaves that allow the wearer to briefly step through solid matter once per encounter. The sensation is described as cold and deeply wrong.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/wraithstep_greaves",
+      "statBonuses": {
+         "defence": 22,
+         "moveSpeed": 0.03,
+         "maxMana": 30
+      }
+   },
+   "arm_chainleg_wrappings": {
+      "name": "Chainleg Wrappings",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Chainmail wrapped around the legs like leggings and secured with leather cord. Unorthodox but protective where it matters.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/chainleg_wrappings",
+      "statBonuses": {
+         "defence": 8,
+         "maxHealth": 6,
+         "moveSpeed": -0.01
+      }
+   },
+   "acc_knuckle_rings": {
+      "name": "Knuckle Rings",
+      "rarity": "Uncommon",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "Four brass rings designed to be worn across all the knuckles of one hand at once. Not subtle. Very direct.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/knuckle_rings_set",
+      "statBonuses": {
+         "damage": 4,
+         "maxHealth": 8
+      }
+   },
+   "wpn_wooden_club": {
+      "name": "Wooden Club",
+      "rarity": "Common",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A gnarled branch ripped from a dead tree and stripped down to a crude bludgeon. No craft. No glory. Just blunt force.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/wooden_club",
+      "statBonuses": {
+         "damage": 4,
+         "moveSpeed": -0.01
+      }
+   },
+   "arm_bloodbound_cuirass": {
+      "name": "Bloodbound Cuirass",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Dark iron plates bound together with alchemically treated leather straps. The iron seems to drink light. Wounds heal faster while worn \u2014 but the cuirass needs the blood to do it.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/bloodbound_cuirass",
+      "statBonuses": {
+         "defence": 13,
+         "maxHealth": 18
+      }
+   },
+   "arm_nighthide_cuirass": {
+      "name": "Nighthide Cuirass",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Crafted from the hide of a creature that exists only in the dark between worlds. It bends shadows. Arrows shot at the wearer seem to arrive a hand's-width to the left.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/nighthide_cuirass",
+      "statBonuses": {
+         "defence": 25,
+         "moveSpeed": 0.03
+      }
+   },
+   "acc_soulchain_amulet": {
+      "name": "Soulchain Amulet",
+      "rarity": "Epic",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "An amulet on a chain of compressed souls \u2014 each link is a life. The weight is greater than the physical mass suggests. Whatever powers it, it works.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/soulchain_amulet",
+      "statBonuses": {
+         "maxMana": 35,
+         "maxHealth": 20
+      }
+   },
+   "arm_the_iron_march": {
+      "name": "The Iron March",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Sabatons worn by a conquering army's vanguard for forty years without rest. The iron absorbed so many miles it has become something more. The wearer never tires of walking \u2014 and walking never tires of them.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/the_iron_march",
+      "statBonuses": {
+         "defence": 24,
+         "maxStamina": 65,
+         "moveSpeed": 0.02,
+         "maxHealth": 35
+      }
+   },
+   "arm_godgrave_sabatons": {
+      "name": "Godgrave Sabatons",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Torn from the feet of a god who fell at the edge of the known world. Still warm. Still faintly divine. The soles never wear down.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/godgrave_sabatons",
+      "statBonuses": {
+         "defence": 25,
+         "maxHealth": 45,
+         "moveSpeed": 0.03
+      }
+   },
+   "arm_scrap_leather_pants": {
+      "name": "Scrap Leather Pants",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "A patchwork of leather scraps stitched together roughly. The work is poor but the coverage is complete.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/scrap_leather_pants",
+      "statBonuses": {
+         "defence": 3
+      }
+   },
+   "arm_marching_sabatons": {
+      "name": "Marching Sabatons",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Half-plate sabatons used by infantry. Articulated across the toes, solid on the heel and instep. A little heavy for running. Good for standing your ground.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/marching_sabatons",
+      "statBonuses": {
+         "defence": 6,
+         "maxHealth": 6,
+         "moveSpeed": -0.01
+      }
+   },
+   "con_iron_will_tonic": {
+      "name": "Iron Will Tonic",
+      "rarity": "Rare",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A bitter black liquid made from ironbark resin and endurance herbs fermented for forty days. Floods the body with stamina. Tastes of bark and poor decisions.",
+      "isStackable": true,
+      "maxStack": 3,
+      "iconPath": "Icons/iron_will_tonic",
+      "statBonuses": {
+         "currentStamina": 80
+      }
+   },
+   "arm_dreadwalker_legplates": {
+      "name": "Dreadwalker Legplates",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Heavy iron legplates engraved with sigils of dread that radiate fear in a radius around the wearer. Enemies hesitate. Sometimes that's enough.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/dreadwalker_legplates",
+      "statBonuses": {
+         "defence": 16,
+         "maxHealth": 20,
+         "moveSpeed": -0.01
+      }
+   },
+   "wpn_voidedge": {
+      "name": "Voidedge",
+      "rarity": "Legendary",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A blade that opens a small rift in reality with each swing. What lives in that rift is unknown. What comes out of the wounds is best not examined.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/voidedge",
+      "statBonuses": {
+         "damage": 42,
+         "maxHealth": 30,
+         "maxMana": 30
+      }
+   },
+   "arm_marauders_coat": {
+      "name": "Marauder's Coat",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A long coat of waxed leather studded along the shoulders and chest. Worn by raiders who travel light and fight hard.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/marauders_coat",
+      "statBonuses": {
+         "defence": 8,
+         "maxStamina": 12
+      }
+   },
+   "arm_riveted_leather_cuirass": {
+      "name": "Riveted Leather Cuirass",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Thick leather reinforced with iron rivets across the chest and shoulders. Heavier than it looks. Stops most slashing blows.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/riveted_leather_cuirass",
+      "statBonuses": {
+         "defence": 8,
+         "maxHealth": 8
+      }
+   },
+   "arm_executioners_tassets": {
+      "name": "Executioner's Tassets",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Heavy iron tassets hanging from a thick leather belt. They protect the hips and upper thighs. They were made for a much larger man \u2014 someone adapted them.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/executioners_tassets",
+      "statBonuses": {
+         "defence": 11,
+         "maxHealth": 10,
+         "damage": 3
+      }
+   },
+   "arm_scavenged_skullcap": {
+      "name": "Scavenged Skullcap",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A scrap of hammered iron bent into a rough skullcap. Unfinished edges, no padding, no lining. Uncomfortable \u2014 but solid enough.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/scavenged_skullcap",
+      "statBonuses": {
+         "defence": 4
+      }
+   },
+   "wpn_soldiers_spear": {
+      "name": "Soldier's Spear",
+      "rarity": "Uncommon",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A dead soldier's spear, still serviceable. The shaft has been re-wrapped in leather where it cracked. Reach is its only virtue.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/soldiers_spear",
+      "statBonuses": {
+         "damage": 7
+      }
+   },
+   "con_hardtack_biscuit": {
+      "name": "Hardtack Biscuit",
+      "rarity": "Common",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A square of dried flour and salt baked until indestructible. It lasts forever and tastes like it. Restores endurance, if not morale.",
+      "isStackable": true,
+      "maxStack": 10,
+      "iconPath": "Icons/hardtack_biscuit",
+      "statBonuses": {
+         "currentStamina": 25,
+         "currentHealth": 5
+      }
+   },
+   "acc_runeband_of_endurance": {
+      "name": "Runeband of Endurance",
+      "rarity": "Rare",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A wide iron band engraved with endurance runes in concentric circles. The carvings go all the way to the inner surface. The wearer's stamina regenerates faster.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/runeband_of_endurance",
+      "statBonuses": {
+         "maxStamina": 25,
+         "maxHealth": 12
+      }
+   },
+   "arm_nightstrider_leggings": {
+      "name": "Nightstrider Leggings",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Dark leather leggings treated with shadowmoss oil that muffles footsteps. Designed for infiltration. The silence they provide is worth more than the armour rating.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/nightstrider_leggings",
+      "statBonuses": {
+         "defence": 8,
+         "moveSpeed": 0.01,
+         "maxStamina": 15
+      }
+   },
+   "arm_the_faceless_helm": {
+      "name": "The Faceless Helm",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A helm with no eye slits, no visor, no seam \u2014 yet the wearer sees perfectly. No one has ever explained how. No one who wore it long enough cared to.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/the_faceless_helm",
+      "statBonuses": {
+         "defence": 30,
+         "maxHealth": 35,
+         "maxMana": 25
+      }
+   },
+   "arm_scavenged_work_boots": {
+      "name": "Scavenged Work Boots",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Heavy leather boots nailed together from mismatched pieces. The left and right don't quite match. The sole of one is thicker than the other. You adapt.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/scavenged_work_boots",
+      "statBonuses": {
+         "defence": 3
+      }
+   },
+   "arm_brigands_harness": {
+      "name": "Brigand's Harness",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A leather harness worn by road thugs. Straps crisscross the torso, holding pouches, spare blades, and a reasonable amount of protection.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/brigands_harness",
+      "statBonuses": {
+         "defence": 7,
+         "moveSpeed": 0.01
+      }
+   },
+   "acc_copper_band": {
+      "name": "Copper Band",
+      "rarity": "Common",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A plain copper ring, slightly green at the edges. Mass-produced. No magic. No mystery. But everyone needs a ring to start somewhere.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/copper_band",
+      "statBonuses": {
+         "maxHealth": 5
+      }
+   },
+   "wpn_gravediggers_pickaxe": {
+      "name": "Gravedigger's Pickaxe",
+      "rarity": "Rare",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "Once used to split earth. Now used on things that breathe. The iron head is stained darker than dirt.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/gravediggers_pickaxe",
+      "statBonuses": {
+         "damage": 14,
+         "maxHealth": 5
+      }
+   },
+   "acc_thornfinger_ring": {
+      "name": "Thornfinger Ring",
+      "rarity": "Rare",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A gold ring with a black thorn as its setting, extracted from a cursed briar that grew over an old battlefield. The thorn never dulls and occasionally draws blood on its own.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/thornfinger_ring",
+      "statBonuses": {
+         "damage": 6,
+         "maxHealth": 10
+      }
+   },
+   "con_soldiers_field_dressing": {
+      "name": "Soldier's Field Dressing",
+      "rarity": "Uncommon",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A treated bandage soaked in alchemical coagulant, rolled tight in a wax-sealed tube. Military issue. Apply to wound and wait. Works faster than prayer.",
+      "isStackable": true,
+      "maxStack": 5,
+      "iconPath": "Icons/soldiers_field_dressing",
+      "statBonuses": {
+         "currentHealth": 50
+      }
+   },
+   "arm_wraithforged_plate": {
+      "name": "Wraithforged Plate",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Hammered from metal reclaimed from a wraith's physical anchor. It cannot be penetrated by enchanted blades \u2014 they pass through as though hitting fog. Physical strikes, however, land normally.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/wraithforged_plate",
+      "statBonuses": {
+         "defence": 26,
+         "maxMana": 35
+      }
+   },
+   "arm_ironcapped_boots": {
+      "name": "Iron-Capped Boots",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Standard boots with iron toecaps bolted on. They hurt to kick with. They hurt more to be kicked by.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/iron_capped_boots",
+      "statBonuses": {
+         "defence": 5,
+         "damage": 2
+      }
+   },
+   "arm_corpsewarden_armour": {
+      "name": "Corpsewarden Armour",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Iron armour forged for those tasked with guarding plague burial sites. The iron has been treated to resist corruption. Something of the plague still clings to it regardless.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/corpsewarden_armour",
+      "statBonuses": {
+         "defence": 14,
+         "maxHealth": 10
+      }
+   },
+   "con_godblood_vial": {
+      "name": "Godblood Vial",
+      "rarity": "Epic",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A vial of dark red liquid with a golden sheen that settles at the top. Obtained from a wound in something much larger than a man. Heals nearly everything. The source is not a safe place to return to.",
+      "isStackable": true,
+      "maxStack": 2,
+      "iconPath": "Icons/godblood_vial",
+      "statBonuses": {
+         "currentHealth": 150
+      }
+   },
+   "wpn_bone_knife": {
+      "name": "Bone Knife",
+      "rarity": "Common",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "Carved from the leg bone of some large beast. The edge was filed sharp by someone patient and bored. Still serviceable.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/bone_knife",
+      "statBonuses": {
+         "damage": 3,
+         "moveSpeed": 0.01
+      }
+   },
+   "wpn_dreadfall": {
+      "name": "Dreadfall",
+      "rarity": "Legendary",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A blade that fell from the sky wrapped in dark lightning during the Cataclysm. No one remembers who forged it. The runes on the grip shift when no one is watching.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/dreadfall",
+      "statBonuses": {
+         "damage": 40,
+         "maxHealth": 25,
+         "cooldown": -0.1
+      }
+   },
+   "arm_travellers_leggings": {
+      "name": "Traveller's Leggings",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Well-worn leather leggings made for long roads. Patched at the knees and inner thigh. Practical and unremarkable.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/travellers_leggings",
+      "statBonuses": {
+         "defence": 3,
+         "moveSpeed": 0.01
+      }
+   },
+   "arm_hemp_work_shirt": {
+      "name": "Hemp Work Shirt",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A reinforced hemp work shirt soaked in diluted tar for a touch of protection. Not armour. Barely a deterrent.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/hemp_work_shirt",
+      "statBonuses": {
+         "defence": 3,
+         "maxStamina": 5
+      }
+   },
+   "arm_rough_cloth_tunic": {
+      "name": "Rough Cloth Tunic",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Coarse fabric stitched into a barely-functional garment. One tear away from falling apart \u2014 but it keeps the cold off.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/rough_cloth_tunic",
+      "statBonuses": {
+         "defence": 2
+      }
+   },
+   "wpn_rusty_dagger": {
+      "name": "Rusty Dagger",
+      "rarity": "Common",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A short blade eaten by rust and neglect. The edge chips more than it cuts, but it's better than bare fists \u2014 barely.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/rusty_dagger",
+      "statBonuses": {
+         "damage": 3
+      }
+   },
+   "arm_shadowmask": {
+      "name": "Shadowmask",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A sleek iron mask polished to a mirror finish, then painted over in flat black. The face inside it is impossible to read.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/shadowmask",
+      "statBonuses": {
+         "defence": 7,
+         "moveSpeed": 0.02
+      }
+   },
+   "wpn_the_last_rites": {
+      "name": "The Last Rites",
+      "rarity": "Legendary",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A ceremonial executioner's blade repurposed for war. Its edge has never needed sharpening. Legends say it knows when death is due.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/the_last_rites",
+      "statBonuses": {
+         "damage": 38,
+         "maxMana": 30,
+         "cooldown": -0.15
+      }
+   },
+   "arm_ironblight_helm": {
+      "name": "Ironblight Helm",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "The iron has been exposed to blight energy for so long it has darkened and grown faintly luminescent. Blight-touched creatures flinch from it.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/ironblight_helm",
+      "statBonuses": {
+         "defence": 13,
+         "maxHealth": 15
+      }
+   },
+   "con_essence_of_the_first_mage": {
+      "name": "Essence of the First Mage",
+      "rarity": "Legendary",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "Crystallised mana residue from the first mage who ever lived, dissolved into drinkable form by someone who really shouldn't have. The mana restoration is complete and instantaneous. So is the migraine.",
+      "isStackable": true,
+      "maxStack": 1,
+      "iconPath": "Icons/essence_of_the_first_mage",
+      "statBonuses": {
+         "currentMana": 999
+      }
+   },
+   "wpn_wraithblade": {
+      "name": "Wraithblade",
+      "rarity": "Epic",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A translucent blade forged from solidified shadow essence. It phases through armour on precise strikes, and the wound doesn't bleed \u2014 it drains.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/wraithblade",
+      "statBonuses": {
+         "damage": 20,
+         "maxMana": 15
+      }
+   },
+   "wpn_runecarved_axe": {
+      "name": "Runecarved Axe",
+      "rarity": "Rare",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "An axe with crude runes gouged into the flat of the blade. The runes glow faintly in the dark. The magic is unstable but real.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/runecarved_axe",
+      "statBonuses": {
+         "damage": 16,
+         "maxMana": -10
+      }
+   },
+   "arm_doomplate": {
+      "name": "Doomplate",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A massive black iron breastplate etched with scenes of slaughter. It amplifies aggression \u2014 most who wear it long enough stop wanting to take it off.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/doomplate",
+      "statBonuses": {
+         "defence": 20,
+         "maxHealth": 30,
+         "damage": 6,
+         "moveSpeed": -0.02
+      }
+   },
+   "arm_last_march_legplates": {
+      "name": "Last March Legplates",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Worn by a general who marched her army one thousand miles without stopping. The iron remembers the distance. The wearer's legs never tire.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/last_march_legplates",
+      "statBonuses": {
+         "defence": 25,
+         "maxStamina": 60,
+         "moveSpeed": 0.03,
+         "maxHealth": 30
+      }
+   },
+   "arm_soldiers_helm": {
+      "name": "Soldier's Helm",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "Standard infantry helmet. Dented, scratched, and beaten. The previous owner didn't survive to reclaim it.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/soldiers_helm",
+      "statBonuses": {
+         "defence": 6,
+         "maxHealth": 8
+      }
+   },
+   "arm_crown_of_the_damned": {
+      "name": "Crown of the Damned",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A jagged iron crown stained black with old blood. It carries the memories of every king who wore it \u2014 and every king who wore it died badly.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/crown_of_the_damned",
+      "statBonuses": {
+         "defence": 12,
+         "magicResist": 8,
+         "maxHealth": 20,
+         "maxMana": 15
+      }
+   },
+   "wpn_ashenwhisper": {
+      "name": "Ashenwhisper",
+      "rarity": "Legendary",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A slender sword that seems to burn cold rather than hot. Touch it bare-handed and your fingers go numb for hours. Its kill count is carved into the crossguard in marks too small to count.",
+      "isStackable": true,
+      "maxStack": 1,
+      "iconPath": "Icons/ashenwhisper",
+      "statBonuses": {
+         "damage": 35,
+         "moveSpeed": 0.04,
+         "maxHealth": -10
+      }
+   },
+   "acc_silver_chain_bracelet": {
+      "name": "Silver Chain Bracelet",
+      "rarity": "Uncommon",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A simple silver chain worn at the wrist. The links are silver-soldered, not cast. Someone took time with this. A faint ward lingers.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/silver_chain_bracelet",
+      "statBonuses": {
+         "maxMana": 12
+      }
+   },
+   "wpn_bloodreaper_scythe": {
+      "name": "Bloodreaper Scythe",
+      "rarity": "Epic",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A massive curved blade mounted on a bone-inlaid shaft. Each kill sends a pulse of heat up through the handle, like the weapon is feeding.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/bloodreaper_scythe",
+      "statBonuses": {
+         "damage": 22,
+         "maxHealth": -12,
+         "cooldown": -0.1
+      }
+   },
+   "arm_ironplated_vest": {
+      "name": "Iron-Plated Vest",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A leather vest with rectangular iron plates sewn into the front. Covers the vitals. The back is bare \u2014 mind your flanks.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/iron_plated_vest",
+      "statBonuses": {
+         "defence": 9,
+         "maxHealth": 6,
+         "moveSpeed": -0.01
+      }
+   },
+   "acc_pebble_pendant": {
+      "name": "Pebble Pendant",
+      "rarity": "Common",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A smooth stone on a leather cord. It is cold to the touch regardless of temperature. That's probably not a good sign, but nothing bad has happened yet.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/pebble_pendant",
+      "statBonuses": {
+         "magicResist": 2
+      }
+   },
+   "arm_thornweave_helm": {
+      "name": "Thornweave Helm",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A helm wrapped in iron thorns pressed from the outside in. The thorns bite headbutters. The padding inside is surprisingly soft.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/thornweave_helm",
+      "statBonuses": {
+         "defence": 8,
+         "damage": 4,
+         "maxHealth": 8
+      }
+   },
+   "arm_padded_foot_wraps": {
+      "name": "Padded Foot Wraps",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Thick cloth wound around the feet and secured with leather strips. What soldiers wear when boots aren't available. Which is often.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/padded_foot_wraps",
+      "statBonuses": {
+         "defence": 2,
+         "maxStamina": 5
+      }
+   },
+   "acc_grave_iron_knuckle_ring": {
+      "name": "Grave Iron Knuckle Ring",
+      "rarity": "Epic",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A single massive ring designed to cover three fingers. Forged from iron taken from a mass grave. The dead who supplied the ore have opinions about who wears it. They communicate through dreams.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/grave_iron_knuckle_ring",
+      "statBonuses": {
+         "damage": 12,
+         "maxHealth": 18,
+         "cooldown": -0.1
+      }
+   },
+   "arm_brigands_kickers": {
+      "name": "Brigand's Kickers",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Reinforced boots favoured by road brigands. Steel insole. Weighted heel. Designed equally for walking and for stomping things that are already down.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/brigands_kickers",
+      "statBonuses": {
+         "defence": 5,
+         "damage": 3,
+         "moveSpeed": 0.01
+      }
+   },
+   "arm_hexcloth_robe": {
+      "name": "Hexcloth Robe",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Thick robes woven with hex-thread that wards off minor enchantments. Favoured by those who fight mages \u2014 or are afraid of them.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/hexcloth_robe",
+      "statBonuses": {
+         "defence": 10,
+         "maxMana": 15
+      }
+   },
+   "arm_gravewarden_helm": {
+      "name": "Gravewarden Helm",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "Shaped like a grimacing iron skull with hollow black eye slots. Burial wards are carved along the crown. Those who wear it claim they no longer dream.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/gravewarden_helm",
+      "statBonuses": {
+         "defence": 8,
+         "maxHealth": 10
+      }
+   },
+   "arm_veilcrown": {
+      "name": "Veilcrown",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A crown forged from shadow-iron that bends light around the wearer's head in dim conditions. Royalty wore it. Their graves are unmarked.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/veilcrown",
+      "statBonuses": {
+         "defence": 18,
+         "moveSpeed": 0.03,
+         "maxMana": 30
+      }
+   },
+   "arm_chainmail_coif": {
+      "name": "Chainmail Coif",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A coif of interlocked iron rings that drapes over the head and neck. Heavy. Hot. But no blade slides through easily.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/chainmail_coif",
+      "statBonuses": {
+         "defence": 7,
+         "maxHealth": 6,
+         "moveSpeed": -0.01
+      }
+   },
+   "arm_dreadstrider_sabatons": {
+      "name": "Dreadstrider Sabatons",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Massive black iron sabatons carved with marching runes. Each step shakes the ground slightly. The sound announces your arrival. Some find this advantageous.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/dreadstrider_sabatons",
+      "statBonuses": {
+         "defence": 13,
+         "maxHealth": 22,
+         "moveSpeed": -0.015,
+         "damage": 5
+      }
+   },
+   "arm_scarred_ironplate": {
+      "name": "Scarred Ironplate",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A full iron breastplate deeply scored by weapons that failed to penetrate it. Each scar is its own story. The plate is still sound.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/scarred_ironplate",
+      "statBonuses": {
+         "defence": 16,
+         "maxHealth": 15,
+         "moveSpeed": -0.02
+      }
+   },
+   "arm_hexed_iron_masque": {
+      "name": "Hexed Iron Masque",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "An iron masque etched with hexing sigils. Whoever put the hex on it is long dead. The sigils still pulse on moonless nights.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/hexed_iron_masque",
+      "statBonuses": {
+         "defence": 7,
+         "maxMana": 15
+      }
+   },
+   "arm_crucible_sabatons": {
+      "name": "Crucible Sabatons",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Forged in a volcano's crucible from ore that hadn't solidified yet. The resulting iron is denser and stranger than anything smelted conventionally. The surface shimmers with trapped heat.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/crucible_sabatons",
+      "statBonuses": {
+         "defence": 15,
+         "maxHealth": 18
+      }
+   },
+   "arm_ironblight_lamellar": {
+      "name": "Ironblight Lamellar",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Lamellar plates made from blight-forged iron. They faintly hum in the presence of the undead \u2014 which is either reassuring or unsettling depending on your perspective.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/ironblight_lamellar",
+      "statBonuses": {
+         "defence": 19,
+         "maxHealth": 25
+      }
+   },
+   "arm_steelweave_leggings": {
+      "name": "Steelweave Leggings",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Tiny steel rings woven into heavy leather create a surface that distributes impact across the entire leg. The craftsmanship is obsessive. The protection is exceptional.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/steelweave_leggings",
+      "statBonuses": {
+         "defence": 10,
+         "maxHealth": 12
+      }
+   },
+   "arm_scouts_halfgreaves": {
+      "name": "Scout's Halfgreaves",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Greaves that protect only the shins, leaving the thigh free. Favoured by scouts who need to move fast and still protect the bones.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/scouts_halfgreaves",
+      "statBonuses": {
+         "defence": 5,
+         "moveSpeed": 0.025
+      }
+   },
+   "arm_cloth_wrappings": {
+      "name": "Cloth Wrappings",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "Strips of cloth wound tight around the head. No real protection. But they keep the blood out of your eyes.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/cloth_wrappings",
+      "statBonuses": {
+         "defence": 2,
+         "moveSpeed": 0.01
+      }
+   },
+   "arm_worn_sandals": {
+      "name": "Worn Sandals",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Flat leather sandals held together by a few knots of cord. The soles are thin as paper. They'll last another week, maybe.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/worn_sandals",
+      "statBonuses": {
+         "defence": 1,
+         "moveSpeed": 0.01
+      }
+   },
+   "con_blessing_of_the_fallen_gods": {
+      "name": "Blessing of the Fallen Gods",
+      "rarity": "Legendary",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A vial containing something that should not exist in liquid form \u2014 concentrated divine essence from five dead deities, reclaimed from their burial sites. It heals everything. It also raises several theological questions.",
+      "isStackable": true,
+      "maxStack": 1,
+      "iconPath": "Icons/blessing_of_the_fallen_gods",
+      "statBonuses": {
+         "currentHealth": 400,
+         "currentMana": 300,
+         "currentStamina": 300
+      }
+   },
+   "con_crimson_healing_draught": {
+      "name": "Crimson Healing Draught",
+      "rarity": "Rare",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A deep red potion in a sealed crystal vial, prepared by an alchemist who no longer practises. The formula was never written down. Each vial is irreplaceable.",
+      "isStackable": true,
+      "maxStack": 3,
+      "iconPath": "Icons/crimson_healing_draught",
+      "statBonuses": {
+         "currentHealth": 80
+      }
+   },
+   "acc_chain_of_whispers": {
+      "name": "Chain of Whispers",
+      "rarity": "Rare",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A necklace of small iron discs, each engraved with a different face. When no one else is nearby, faint voices come from it. The advice is generally sound.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/chain_of_whispers",
+      "statBonuses": {
+         "maxMana": 20
+      }
+   },
+   "acc_band_of_the_fallen_king": {
+      "name": "Band of the Fallen King",
+      "rarity": "Epic",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A wide gold band stained with old blood that will not wash out. It belonged to a king who died alone with his back to a wall. It carries the memory of a last stand.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/band_of_the_fallen_king",
+      "statBonuses": {
+         "damage": 9,
+         "maxHealth": 30,
+         "defence": 6
+      }
+   },
+   "arm_soulkeeper_visor": {
+      "name": "Soulkeeper Visor",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "The visor is engraved with a thousand tiny faces \u2014 the souls it has absorbed from those slain before its wearer. They seem to shift.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/soulkeeper_visor",
+      "statBonuses": {
+         "defence": 11,
+         "maxMana": 20
+      }
+   },
+   "wpn_twin_fang_daggers": {
+      "name": "Twin Fang Daggers",
+      "rarity": "Uncommon",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A mismatched pair of daggers looted from a fallen rogue. One is slightly longer. Both cut the same.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/twin_fang_daggers",
+      "statBonuses": {
+         "damage": 7,
+         "attackCooldown": -0.05
+      }
+   },
+   "arm_voidweave_armour": {
+      "name": "Voidweave Armour",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Armour woven from threads harvested at the edge of a dimensional rift. Lighter than iron, harder than steel, and faintly cold to the touch.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/voidweave_armour",
+      "statBonuses": {
+         "defence": 18,
+         "maxMana": 20
+      }
+   },
+   "arm_emberbrand_sabatons": {
+      "name": "Emberbrand Sabatons",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Iron sabatons etched with flame runes along the instep. Walking on fire does not damage the wearer. Walking on ice leaves scorch marks. The paradox is unexplained.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/emberbrand_sabatons",
+      "statBonuses": {}
+   },
+   "wpn_iron_longsword": {
+      "name": "Iron Longsword",
+      "rarity": "Uncommon",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "Standard issue iron longsword. The balance is mediocre and the pommel is cracked \u2014 but the edge holds.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/iron_longsword",
+      "statBonuses": {
+         "damage": 9
+      }
+   },
+   "con_thin_mana_draught": {
+      "name": "Thin Mana Draught",
+      "rarity": "Common",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A pale blue liquid in a cracked vial \u2014 the bottom of a mage's supply barrel, diluted heavily. Weak magic, weak restoration. Better than nothing.",
+      "isStackable": true,
+      "maxStack": 10,
+      "iconPath": "Icons/thin_mana_draught",
+      "statBonuses": {
+         "currentMana": 20
+      }
+   },
+   "arm_blightwalker_legplates": {
+      "name": "Blightwalker Legplates",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Iron plates stained dark by blight exposure. Walking through cursed terrain with these equipped feels lighter \u2014 as though the blight recognises kin.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/blightwalker_legplates",
+      "statBonuses": {
+         "defence": 9,
+         "moveSpeed": 0.02
+      }
+   },
+   "arm_eternitys_step": {
+      "name": "Eternity's Step",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "A pair of sabatons recovered from a tomb where time moved differently. The iron shows no age. The runes shift every time you look away. Wearing them, you feel unhurried \u2014 like you have all the time in the world.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/eternitys_step",
+      "statBonuses": {
+         "defence": 22,
+         "moveSpeed": 0.5,
+         "maxStamina": 50,
+         "attackCooldown": -0.15
+      }
+   },
+   "arm_bonewoven_greaves": {
+      "name": "Bonewoven Greaves",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Iron greaves with small bones mortared into the outer surface as hex-wards. Heavy and unsettling to look at. Effective at keeping spirits at bay, allegedly.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/bonewoven_greaves",
+      "statBonuses": {
+         "defence": 9,
+         "maxHealth": 8
+      }
+   },
+   "con_wraithblood_extract": {
+      "name": "Wraithblood Extract",
+      "rarity": "Epic",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A syrupy black-violet substance drawn from a captured wraith's residual essence. Mana is flooded into the body from an external source for several seconds. Those with weak constitutions should not use this.",
+      "isStackable": true,
+      "maxStack": 2,
+      "iconPath": "Icons/wraithblood_extract",
+      "statBonuses": {
+         "currentMana": 130,
+         "currentHealth": 40
+      }
+   },
+   "arm_militia_chausses": {
+      "name": "Militia Chausses",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Iron chausses issued to levy soldiers \u2014 not individual soldiers specifically, just levy soldiers generally. Mass-produced, imperfectly fitted, functional.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/militia_chausses",
+      "statBonuses": {
+         "defence": 7,
+         "maxHealth": 8,
+         "moveSpeed": -0.1
+      }
+   },
+   "acc_iron_signet_ring": {
+      "name": "Iron Signet Ring",
+      "rarity": "Uncommon",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A ring bearing a seal that once meant something important. The house it represented is gone. The iron remains.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/iron_signet_ring",
+      "statBonuses": {
+         "defence": 3,
+         "maxHealth": 10
+      }
+   },
+   "con_elixir_of_the_hollow_king": {
+      "name": "Elixir of the Hollow King",
+      "rarity": "Epic",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "Said to have been brewed by a king who died refusing to stop fighting. The elixir restores all three vital reserves simultaneously. It tastes like grief and stubborn pride.",
+      "isStackable": true,
+      "maxStack": 2,
+      "iconPath": "Icons/elixir_of_the_hollow_king",
+      "statBonuses": {
+         "currentHealth": 100,
+         "currentMana": 80,
+         "currentStamina": 80
+      }
+   },
+   "con_aetheric_mana_surge": {
+      "name": "Aetheric Mana Surge",
+      "rarity": "Epic",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A pressurised vial that, when shattered on the palm, floods the system with raw aetheric energy. Mana restores completely. Side effect: you see colours that don't have names for about ten minutes.",
+      "isStackable": true,
+      "maxStack": 2,
+      "iconPath": "Icons/aetheric_mana_surge",
+      "statBonuses": {
+         "currentMana": 160
+      }
+   },
+   "acc_coldstone_pendant": {
+      "name": "Coldstone Pendant",
+      "rarity": "Rare",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A blue-white gemstone that never warms, even held in a closed fist. It draws heat from magical attacks and radiates it away before it reaches the skin.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/coldstone_pendant",
+      "statBonuses": {
+         "maxMana": 18
+      }
+   },
+   "con_smoked_cave_fish": {
+      "name": "Smoked Cave Fish",
+      "rarity": "Uncommon",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A whole fish cold-smoked in a cave over black coal. Dense, salty, and calorie-rich. Road food for those who know what's coming.",
+      "isStackable": true,
+      "maxStack": 5,
+      "iconPath": "Icons/smoked_cave_fish",
+      "statBonuses": {
+         "currentHealth": 25,
+         "currentStamina": 35
+      }
+   },
+   "arm_dreadlords_visage": {
+      "name": "Dreadlord's Visage",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "An ancient war-mask that has absorbed the deaths of thousands of battlefields. Wearing it, you hear whispers. The whispers give good tactical advice.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/dreadlords_visage",
+      "statBonuses": {
+         "defence": 22,
+         "maxHealth": 40,
+         "cooldown": -0.15
+      }
+   },
+   "arm_the_last_bulwark": {
+      "name": "The Last Bulwark",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "The breastplate worn by the final defender of a fallen kingdom. The dents and gouges in the iron number more than a hundred. It never failed him \u2014 the numbers finally did.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/the_last_bulwark",
+      "statBonuses": {
+         "defence": 28,
+         "maxHealth": 60,
+         "moveSpeed": -0.1
+      }
+   },
+   "wpn_cracked_shortsword": {
+      "name": "Cracked Shortsword",
+      "rarity": "Common",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A shortsword that has seen too many fights. A hairline fracture runs along the spine \u2014 one bad swing from splitting in two.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/cracked_shortsword",
+      "statBonuses": {
+         "damage": 5
+      }
+   },
+   "acc_frayed_cord_necklace": {
+      "name": "Frayed Cord Necklace",
+      "rarity": "Common",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A rough cord with a small piece of carved bone threaded onto it. Someone made it for luck. Whether it worked is unclear.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/frayed_cord_necklace",
+      "statBonuses": {
+         "maxHealth": 5,
+         "maxMana": 5
+      }
+   },
+   "arm_spiked_iron_cap": {
+      "name": "Spiked Iron Cap",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A dome of iron with a single iron spike welded to the crown. Impractical but menacing. The spike once ended a fight before it started.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/spiked_iron_cap",
+      "statBonuses": {
+         "defence": 6,
+         "damage": 2
+      }
+   },
+   "arm_plague_doctors_coat": {
+      "name": "Plague Doctor's Coat",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A full-length alchemist coat reinforced with plates of treated bone. Sealed against contagion. Sealed against much else besides.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/plague_doctors_coat",
+      "statBonuses": {
+         "defence": 16,
+         "maxHealth": 20
+      }
+   },
+   "arm_hunters_mask": {
+      "name": "Hunter's Mask",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A carved wooden mask fitted to a leather backing. Painted in dark earth tones for stalking prey \u2014 or people.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/hunters_mask",
+      "statBonuses": {
+         "defence": 4,
+         "moveSpeed": 0.15
+      }
+   },
+   "arm_soulbound_boots": {
+      "name": "Soulbound Boots",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Boots that absorb a trace of the soul of anyone who dies within ten paces of the wearer. The accumulated weight of the dead makes your steps feel heavier. It also makes them more certain.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/soulbound_boots",
+      "statBonuses": {
+         "defence": 12,
+         "maxHealth": 20,
+         "maxMana": 20
+      }
+   },
+   "arm_brigands_visored_cap": {
+      "name": "Brigand's Visored Cap",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A light iron visor riveted to a leather cap. The visor flips up. Brigands favour them \u2014 protects the face without killing your peripheral vision.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/brigands_visored_cap",
+      "statBonuses": {
+         "defence": 5
+      }
+   },
+   "wpn_blackthorn_sword": {
+      "name": "Blackthorn Sword",
+      "rarity": "Rare",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "Forged with iron laced with powdered blackthorn crystal. The metal has a faint dark sheen. Each strike carries a trace of corruption.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/blackthorn_sword",
+      "statBonuses": {
+         "damage": 15
+      }
+   },
+   "wpn_jagged_cleaver": {
+      "name": "Jagged Cleaver",
+      "rarity": "Uncommon",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A heavy cleaver with a chipped, uneven edge that makes ragged wounds. Crude but effective \u2014 it doesn't need to be elegant.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/jagged_cleaver",
+      "statBonuses": {
+         "damage": 10,
+         "moveSpeed": -0.1
+      }
+   },
+   "con_ember_stamina_brew": {
+      "name": "Ember Stamina Brew",
+      "rarity": "Uncommon",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A hot, spiced drink brewed from ember-chilli and ironroot. Drunk warm, it burns all the way down and clears fatigue like smoke from a room.",
+      "isStackable": true,
+      "maxStack": 5,
+      "iconPath": "Icons/ember_stamina_brew",
+      "statBonuses": {
+         "currentStamina": 55
+      }
+   },
+   "con_voidblue_mana_elixir": {
+      "name": "Voidblue Mana Elixir",
+      "rarity": "Rare",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A swirling vial of dark blue liquid that smells of ozone and deep cold. Restores a large portion of mana in seconds. The rush lasts longer than expected.",
+      "isStackable": true,
+      "maxStack": 3,
+      "iconPath": "Icons/voidblue_mana_elixir",
+      "statBonuses": {
+         "currentMana": 90
+      }
+   },
+   "wpn_soulbrand_greatsword": {
+      "name": "Soulbrand Greatsword",
+      "rarity": "Epic",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A two-handed sword seared with sigils that bind the souls of the slain to the blade. It hums with trapped fury.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/soulbrand_greatsword",
+      "statBonuses": {
+         "damage": 25,
+         "maxMana": 20
+      }
+   },
+   "arm_bandits_kneeguards": {
+      "name": "Bandit's Kneeguards",
+      "rarity": "Uncommon",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Thick leather kneepads strapped onto lighter legwear. Lets you kneel on rubble without flinching. Useful for ambushes.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/bandits_kneeguards",
+      "statBonuses": {
+         "defence": 6,
+         "moveSpeed": 0.15,
+         "maxStamina": 10
+      }
+   },
+   "acc_voidcore_pendant": {
+      "name": "Voidcore Pendant",
+      "rarity": "Epic",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A pendant containing a small perfectly black sphere that seems to absorb rather than reflect light. Magical effects from outside sources are partially absorbed by it before reaching you.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/voidcore_pendant",
+      "statBonuses": {
+         "maxMana": 30,
+         "maxHealth": 15
+      }
+   },
+   "arm_crimson_warden_greaves": {
+      "name": "Crimson Warden Greaves",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Lacquered red iron greaves worn by elite prison guards who never lost a prisoner. The red is original. A reminder to those who consider running.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/crimson_warden_greaves",
+      "statBonuses": {
+         "defence": 17,
+         "maxHealth": 25
+      }
+   },
+   "con_dried_herbs_bundle": {
+      "name": "Dried Herbs Bundle",
+      "rarity": "Common",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A bundle of dried wild herbs tied with rough twine. Brewed into a weak tea or chewed directly, they ease pain and slow bleeding marginally.",
+      "isStackable": true,
+      "maxStack": 10,
+      "iconPath": "Icons/dried_herbs_bundle",
+      "statBonuses": {
+         "currentHealth": 10
+      }
+   },
+   "acc_abyss_eye_pendant": {
+      "name": "Abyss Eye Pendant",
+      "rarity": "Legendary",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A pendant containing a preserved eye from a creature that existed at the bottom of the ocean, in the dark, under pressure no living thing should survive. It still moves when no one is looking directly at it.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/abyss_eye_pendant",
+      "statBonuses": {
+         "maxMana": 50,
+         "damage": 8
+      }
+   },
+   "con_phoenix_ash_vial": {
+      "name": "Phoenix Ash Vial",
+      "rarity": "Rare",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "Ash harvested from the cooling nest of a phoenix, dissolved in purified water. The healing properties are not fully understood. The results are not subtle.",
+      "isStackable": true,
+      "maxStack": 3,
+      "iconPath": "Icons/phoenix_ash_vial",
+      "statBonuses": {
+         "currentHealth": 70,
+         "currentStamina": 50
+      }
+   },
+   "acc_inkstone_amulet": {
+      "name": "Inkstone Amulet",
+      "rarity": "Uncommon",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A flat black stone hung on a silver chain. The surface has faint carvings made with a mage's fingernail. Minor mana amplification \u2014 enough to notice.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/inkstone_amulet",
+      "statBonuses": {
+         "maxMana": 20
+      }
+   },
+   "arm_ghoststep_slippers": {
+      "name": "Ghoststep Slippers",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Thin-soled slippers woven from treated spiderweb silk reinforced with iron thread. Nearly silent on any surface. Light enough to run in. Surprisingly protective.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/ghoststep_slippers",
+      "statBonuses": {
+         "defence": 5,
+         "moveSpeed": 0.4,
+         "maxStamina": 15
+      }
+   },
+   "arm_ashen_warlords_helm": {
+      "name": "Ashen Warlord's Helm",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "The helm of a warlord who burned a city and then disappeared. It was found in the ashes, undamaged. The chin strap is still warm.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/ashen_warlords_helm",
+      "statBonuses": {
+         "defence": 14,
+         "maxHealth": 25,
+         "damage": 5
+      }
+   },
+   "arm_warmongers_greathelm": {
+      "name": "Warmonger's Greathelm",
+      "rarity": "Rare",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A full-face iron greathelm adorned with iron crests. Heavy and imposing. The narrow eye slit limits vision \u2014 but few enemies look you in the eye.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/warmongers_greathelm",
+      "statBonuses": {
+         "defence": 10,
+         "maxHealth": 15,
+         "moveSpeed": -0.2
+      }
+   },
+   "con_healers_distillate": {
+      "name": "Healer's Distillate",
+      "rarity": "Uncommon",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A clear liquid prepared by a hedge-physician from twelve different medicinal herbs reduced down to a single drop of concentrated healing. The reduction fills a small vial. Each vial took three days to make.",
+      "isStackable": true,
+      "maxStack": 5,
+      "iconPath": "Icons/healers_distillate",
+      "statBonuses": {
+         "currentHealth": 40,
+         "currentMana": 20
+      }
+   },
+   "arm_godgrave_tassets": {
+      "name": "Godgrave Tassets",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Tassets pried from the lower armour of a dead deity. They still radiate a faint warmth, as though the god has not entirely finished dying.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/godgrave_tassets",
+      "statBonuses": {
+         "defence": 28,
+         "maxHealth": 55
+      }
+   },
+   "con_restoration_compound": {
+      "name": "Restoration Compound",
+      "rarity": "Rare",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "An alchemical compound that simultaneously addresses blood loss, mana depletion, and fatigue. It was developed for battlefield medics and is no longer in legal production.",
+      "isStackable": true,
+      "maxStack": 3,
+      "iconPath": "Icons/restoration_compound",
+      "statBonuses": {
+         "currentHealth": 55,
+         "currentMana": 40,
+         "currentStamina": 35
+      }
+   },
+   "arm_tanned_leather_vest": {
+      "name": "Tanned Leather Vest",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "Basic vest of tanned hide. Stiff and smells faintly of animal fat. Stops a glancing blow at best.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/tanned_leather_vest",
+      "statBonuses": {
+         "defence": 4
+      }
+   },
+   "arm_marrow_legguards": {
+      "name": "Marrow Legguards",
+      "rarity": "Epic",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Iron greaves packed with rendered bone marrow between the plates. The padding is grim but shockingly effective. Reduces impact trauma substantially.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/marrow_legguards",
+      "statBonuses": {
+         "defence": 18,
+         "maxHealth": 30
+      }
+   },
+   "acc_bronze_torc": {
+      "name": "Bronze Torc",
+      "rarity": "Uncommon",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A thick bronze neck torc bent into shape by someone who knew what they were doing. Carries a minor ward against the first cut of a fight.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/bronze_torc",
+      "statBonuses": {
+         "defence": 4,
+         "maxHealth": 8
+      }
+   },
+   "arm_canvas_boots": {
+      "name": "Canvas Boots",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Shoes",
+      "description": "Heavy canvas boots sealed with pine tar. Waterproof-ish. The toes are reinforced with scraps of iron. Functional.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/canvas_boots",
+      "statBonuses": {
+         "defence": 2
+      }
+   },
+   "arm_legguards_of_the_undying": {
+      "name": "Legguards of the Undying",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Worn by a warrior who reportedly could not die. Eventually they stopped trying to kill them and just buried them alive. The legguards were found on the surface three years later.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/legguards_of_the_undying",
+      "statBonuses": {
+         "defence": 26,
+         "maxHealth": 50,
+         "maxStamina": 40
+      }
+   },
+   "acc_the_oath_ring": {
+      "name": "The Oath Ring",
+      "rarity": "Legendary",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A ring sworn on by the leaders of ten dead civilisations. The oaths are still binding in ways that defy explanation. The wearer inherits all of them.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/the_oath_ring",
+      "statBonuses": {
+         "damage": 15,
+         "maxHealth": 40,
+         "maxMana": 40
+      }
+   },
+   "acc_wardens_seal_ring": {
+      "name": "Warden's Seal Ring",
+      "rarity": "Rare",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A heavy iron ring carrying the seal of a defunct prison authority. Wearing it makes those of weak will slightly reluctant to approach you.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/wardens_seal_ring",
+      "statBonuses": {
+         "defence": 5,
+         "maxHealth": 12,
+         "damage": 3
+      }
+   },
+   "arm_eternitys_aegis": {
+      "name": "Eternity's Aegis",
+      "rarity": "Legendary",
+      "itemType": "Armor",
+      "armorSlot": "Body",
+      "description": "A breastplate recovered from the ruins of a god's temple. The etchings on it move \u2014 slowly, over years. No one has lived long enough to read what they spell out.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/eternitys_aegis",
+      "statBonuses": {
+         "defence": 30,
+         "maxHealth": 50,
+         "cooldown": -0.1
+      }
+   },
+   "acc_godbone_torc": {
+      "name": "Godbone Torc",
+      "rarity": "Legendary",
+      "itemType": "Accessory",
+      "armorSlot": "None",
+      "description": "A neck torc carved from a divine femur. The bone is ivory-white and almost weightless. The power within it is quiet and vast, like something sleeping very lightly.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/godbone_torc",
+      "statBonuses": {
+         "maxHealth": 60,
+         "defence": 12
+      }
+   },
+   "arm_worn_wool_leggings": {
+      "name": "Worn Wool Leggings",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Leg",
+      "description": "Felted wool leggings, damp-smelling and rough. They compress down to next to nothing in a pack. Nothing between you and a blade but a few layers of matted fibre.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/worn_wool_leggings",
+      "statBonuses": {
+         "defence": 2,
+         "moveSpeed": 0.1
+      }
+   },
+   "wpn_venomstrike_blade": {
+      "name": "Venomstrike Blade",
+      "rarity": "Rare",
+      "itemType": "Weapon",
+      "armorSlot": "None",
+      "description": "A blade coated in a slow-acting poison extracted from swamp serpents. The cut stings. The venom lingers.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/venomstrike_blade",
+      "statBonuses": {
+         "damage": 12,
+         "maxHealth": -5
+      }
+   },
+   "con_murky_water_flask": {
+      "name": "Murky Water Flask",
+      "rarity": "Common",
+      "itemType": "Consumable",
+      "armorSlot": "None",
+      "description": "A dented flask filled with water that has been boiled \u2014 mostly. It tastes of iron and sediment. It hydrates. That's all it does.",
+      "isStackable": true,
+      "maxStack": 10,
+      "iconPath": "Icons/murky_water_flask",
+      "statBonuses": {
+         "currentStamina": 15
+      }
+   },
+   "arm_tattered_hood": {
+      "name": "Tattered Hood",
+      "rarity": "Common",
+      "itemType": "Armor",
+      "armorSlot": "Head",
+      "description": "A hood of rough cloth, torn at the edges. It keeps the rain out \u2014 mostly. It won't stop a blade but it's better than nothing.",
+      "isStackable": false,
+      "maxStack": 1,
+      "iconPath": "Icons/tattered_hood",
+      "statBonuses": {
+         "defence": 2
+      }
+   },
+   "msc_iron_scrap": {
+      "name": "Iron Scrap",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "Twisted fragments of iron salvaged from broken weapons and armour.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/iron_scrap",
+      "statBonuses": {}
+   },
+   "msc_leather_strip": {
+      "name": "Leather Strip",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "A thin strip cut from tanned hide.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/leather_strip",
+      "statBonuses": {}
+   },
+   "msc_cloth_scraps": {
+      "name": "Cloth Scraps",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "Torn pieces of cloth in varying sizes.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/cloth_scraps",
+      "statBonuses": {}
+   },
+   "msc_iron_ingot": {
+      "name": "Iron Ingot",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "A bar of smelted iron, ready for forging.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/iron_ingot",
+      "statBonuses": {}
+   },
+   "msc_hardened_bone": {
+      "name": "Hardened Bone",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "A large bone treated in mineral brine until nearly as hard as iron.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/hardened_bone",
+      "statBonuses": {}
+   },
+   "msc_copper_wire": {
+      "name": "Copper Wire",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "Thin copper wire drawn through a die plate.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/copper_wire",
+      "statBonuses": {}
+   },
+   "msc_chain_links": {
+      "name": "Chain Links",
+      "rarity": "Uncommon",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "Small interlocked iron rings ready to be woven into chainmail.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/chain_links",
+      "statBonuses": {}
+   },
+   "msc_rivets": {
+      "name": "Iron Rivets",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "Small iron pins used to fasten plates and reinforce armour joints.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/rivets",
+      "statBonuses": {}
+   },
+   "msc_pine_tar": {
+      "name": "Pine Tar",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "Thick black tar rendered from pine wood. Waterproofs leather.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/pine_tar",
+      "statBonuses": {}
+   },
+   "msc_rough_twine": {
+      "name": "Rough Twine",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "A coil of twisted plant fibre. Cheap and plentiful.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/rough_twine",
+      "statBonuses": {}
+   },
+   "msc_whetstone": {
+      "name": "Whetstone",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "A block of fine-grained stone used to sharpen blade edges.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/whetstone",
+      "statBonuses": {}
+   },
+   "msc_tallow": {
+      "name": "Tallow",
+      "rarity": "Common",
+      "itemType": "Misc",
+      "armorSlot": "None",
+      "description": "Rendered animal fat. Used to waterproof leather.",
+      "isStackable": true,
+      "maxStack": 99,
+      "iconPath": "Icons/tallow",
+      "statBonuses": {}
+   }
 }

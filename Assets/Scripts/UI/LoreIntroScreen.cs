@@ -263,7 +263,18 @@ public class LoreIntroScreen : MonoBehaviour
         foreach (char ch in fullText)
         {
             tmp.text += ch;
-            yield return new WaitForSeconds(typewriterSpeed);
+
+            float elapsed = 0f;
+            while (elapsed < typewriterSpeed)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    tmp.text = fullText;
+                    yield break;
+                }
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
         }
     }
 
