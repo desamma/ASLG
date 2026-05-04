@@ -59,15 +59,32 @@ public class StatsSaveData
     public int upgradePoints;
     public int gold;
     public float baseMaxHealth;
-    public float currentHealth;
     public float baseMaxMana;
-    public float currentMana;
     public float baseMaxStamina;
-    public float currentStamina;
-    public float baseMoveSpeed;
     public float baseDamage;
     public float baseDefence;
     public float baseCooldown;
+    public float baseMoveSpeed;
+    public float baseDefence;
+
+    // Current Resource Values
+    public float currentHealth;
+    public float currentMana;
+    public float currentStamina;
+
+    // Bonus Stats (from equipment/buffs)
+    public float bonusMaxHealth;
+    public float bonusMaxMana;
+    public float bonusMaxStamina;
+    public float bonusDamage;
+    public float bonusCooldown;
+    public float bonusMoveSpeed;
+    public float bonusDefence;
+    public float bonusWeaponRange;
+    public float bonusKnockbackForce;
+    public float bonusStaminaRegenRate;
+
+    public int skillUpgradeTier;
 }
 
 [Serializable]
@@ -273,15 +290,37 @@ public class SaveManager : MonoBehaviour
             currentSaveData.stats.upgradePoints = StatsManager.instance.upgradePoints;
             currentSaveData.stats.gold = StatsManager.instance.gold;
             currentSaveData.stats.baseMaxHealth = StatsManager.instance.baseMaxHealth;
-            currentSaveData.stats.currentHealth = StatsManager.instance.currentHealth;
             currentSaveData.stats.baseMaxMana = StatsManager.instance.baseMaxMana;
-            currentSaveData.stats.currentMana = StatsManager.instance.currentMana;
             currentSaveData.stats.baseMaxStamina = StatsManager.instance.baseMaxStamina;
-            currentSaveData.stats.currentStamina = StatsManager.instance.currentStamina;
             currentSaveData.stats.baseDamage = StatsManager.instance.baseDamage;
             currentSaveData.stats.baseDefence = StatsManager.instance.baseDefence;
             currentSaveData.stats.baseCooldown = StatsManager.instance.baseCooldown;
             currentSaveData.stats.baseMoveSpeed = StatsManager.instance.baseMoveSpeed;
+            currentSaveData.stats.baseDefence = StatsManager.instance.baseDefence;
+
+            // Current Resources
+            currentSaveData.stats.currentHealth = StatsManager.instance.currentHealth;
+            currentSaveData.stats.currentMana = StatsManager.instance.currentMana;
+            currentSaveData.stats.currentStamina = StatsManager.instance.currentStamina;
+
+            // Bonus Stats (from equipment/buffs)
+            currentSaveData.stats.bonusMaxHealth = StatsManager.instance.bonusMaxHealth;
+            currentSaveData.stats.bonusMaxMana = StatsManager.instance.bonusMaxMana;
+            currentSaveData.stats.bonusMaxStamina = StatsManager.instance.bonusMaxStamina;
+            currentSaveData.stats.bonusDamage = StatsManager.instance.bonusDamage;
+            currentSaveData.stats.bonusCooldown = StatsManager.instance.bonusCooldown;
+            currentSaveData.stats.bonusMoveSpeed = StatsManager.instance.bonusMoveSpeed;
+            currentSaveData.stats.bonusDefence = StatsManager.instance.bonusDefence;
+            currentSaveData.stats.bonusWeaponRange = StatsManager.instance.bonusWeaponRange;
+            currentSaveData.stats.bonusKnockbackForce = StatsManager.instance.bonusKnockbackForce;
+            currentSaveData.stats.bonusStaminaRegenRate = StatsManager.instance.bonusStaminaRegenRate;
+        }
+
+        // 2.5 Dữ liệu Skill
+        var playerSkill = player.GetComponent<PlayerSkill>();
+        if (playerSkill != null)
+        {
+            currentSaveData.stats.skillUpgradeTier = playerSkill.CurrentTier;
         }
 
         // 3. Dữ liệu Inventory

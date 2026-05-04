@@ -419,15 +419,15 @@ public class PauseMenuManager : MonoBehaviour
     // ================== ĐỔI PHÍM ==================
     private void LoadKeybinds()
     {
-        keys["Forward"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Forward", "W"), KeyCode.W);
-        keys["Backward"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Backward", "S"), KeyCode.S);
-        keys["Left"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Left", "A"), KeyCode.A);
-        keys["Right"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Right", "D"), KeyCode.D);
-        keys["Inventory"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Inventory", "B"), KeyCode.B);
-        keys["Quests"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Quests", "J"), KeyCode.J);
-        keys["Skill1"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Skill1", "Alpha1"), KeyCode.Alpha1);
-        keys["Skill2"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Skill2", "Alpha2"), KeyCode.Alpha2);
-        keys["Skill3"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Skill3", "Alpha3"), KeyCode.Alpha3);
+        //keys["Forward"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Forward", "W"), KeyCode.W);
+        //keys["Backward"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Backward", "S"), KeyCode.S);
+        //keys["Left"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Left", "A"), KeyCode.A);
+        //keys["Right"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Right", "D"), KeyCode.D);
+        //keys["Inventory"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Inventory", "B"), KeyCode.B);
+        //keys["Quests"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Quests", "J"), KeyCode.J);
+        //keys["Skill1"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Skill1", "Alpha1"), KeyCode.Alpha1);
+        //keys["Skill2"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Skill2", "Alpha2"), KeyCode.Alpha2);
+        //keys["Skill3"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Skill3", "Alpha3"), KeyCode.Alpha3);
         UpdateAllKeybindUI();
     }
     private KeyCode ParseKeyOrDefault(string keyString, KeyCode defaultKey)

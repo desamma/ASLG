@@ -41,6 +41,7 @@ public class ShopKeeper : MonoBehaviour
             ShopManager.Instance.CurrentShopKeeper = this;
             if (shopkeeperCam == null) shopkeeperCam = GameObject.Find("ShopkeeperCamera").GetComponent<Camera>();
             shopkeeperCam.transform.position = transform.position + cameraOffset;
+            shopkeeperCam.cullingMask = LayerMask.GetMask("Shopkeeper");
             shopkeeperCam.gameObject.SetActive(true);
             OpenShopPage1();
         }
