@@ -76,7 +76,7 @@ public class Enemy_FaieBloodwingMK2_Health : MonoBehaviour, IEnemy_Health
         yield return new WaitForSeconds(2f);
         Instantiate(monolith, transform.position + new Vector3(6f, 0f, 0f), Quaternion.identity);
         statusEffectManager.RemoveAll();
-        Destroy(gameObject);
+        Destroy(gameObject, 2f);
     }
 
     public void OnDifficultyChanged(DifficultyModifier newModifier)

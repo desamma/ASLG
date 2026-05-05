@@ -174,7 +174,7 @@ public class LLMChatManager : MonoBehaviour
         if (relationshipTextDisplay == null || activeNPC == null) return;
         
         // Chỉ hiển thị đúng điểm số
-        relationshipTextDisplay.text = activeNPC.relationshipScore.ToString();
+        relationshipTextDisplay.text = "Relationship:\n" + activeNPC.relationshipScore.ToString();
     }
 
     public void OnSendClicked()
@@ -334,6 +334,12 @@ public class LLMChatManager : MonoBehaviour
 
     private IEnumerator SendWithFallbackRoutine(string userText)
     {
+        // At the start of SendWithFallbackRoutine, add:
+        if (ApiSettingsManager.Instance != null && !ApiSettingsManager.Instance.IsReady)
+        {
+            yield return new WaitUntil(() => ApiSettingsManager.Instance.IsReady);
+        }
+
         if (UseOfflineConversation)
         {
             npcTextDisplay.text = $"{activeNPC?.npcName}: <color=red>(Mất kết nối - Offline Mode đang bật)</color>";

@@ -73,6 +73,7 @@ public class Enemy_FaieBloodwing_Health : MonoBehaviour, IEnemy_Health
 
         sharedHealth.RegisterPosition(isFaie: true, transform.position, faiePhase2Prefab, transform);
         statusEffectManager.RemoveAll();
+        Destroy(gameObject, 10f);
     }
 
     public void OnDifficultyChanged(DifficultyModifier newModifier)

@@ -33,7 +33,7 @@ public class Enemy_KaraWinterblade_Health : MonoBehaviour, IEnemy_Health
         movementComponent = GetComponent<Enemy_KaraWinterblade_Movement>();
         statusEffectManager = GetComponent<StatusEffectManager>();
 
-        if (sharedHealth.maxHP == 0)
+        if (sharedHealth.currentHP == 0)
             sharedHealth.InitHP(stats.MaxHP);
 
         sharedHealth.OnDeath += HandleDeath;
@@ -76,6 +76,7 @@ public class Enemy_KaraWinterblade_Health : MonoBehaviour, IEnemy_Health
         statusEffectManager.RemoveAll();
 
         sharedHealth.RegisterPosition(isFaie: false, transform.position, faiePhase2Prefab, transform);
+        Destroy(gameObject, 10f);
     }
 
     public void SpawnPhase2() => sharedHealth.SpawnPhase2();

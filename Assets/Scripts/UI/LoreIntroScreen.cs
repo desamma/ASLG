@@ -309,13 +309,13 @@ public class LoreIntroScreen : MonoBehaviour
 
 #if UNITY_EDITOR
     // ── Quick reset key during play mode (press R) ──
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            PlayerPrefs.DeleteKey(SEEN_INTRO_KEY);
-            Debug.Log("[LoreIntroScreen] Intro flag reset — restart play mode to see it again.");
-        }
-    }
+    //private void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.R))
+    //    {
+    //        PlayerPrefs.DeleteKey(SEEN_INTRO_KEY);
+    //        Debug.Log("[LoreIntroScreen] Intro flag reset — restart play mode to see it again.");
+    //    }
+    //}
 #endif
 }

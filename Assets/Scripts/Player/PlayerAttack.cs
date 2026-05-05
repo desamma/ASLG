@@ -27,7 +27,7 @@ public class PlayerAttack : MonoBehaviour
         if (movement == null) movement = GetComponent<PlayerMovement>();
         if (enemyLayer == 0) enemyLayer = LayerMask.GetMask("Enemy");
 
-        ClassManager.Instance.ApplyToStatsManager();
+        //ClassManager.Instance.ApplyToStatsManager();
     }
 
     private void Update()

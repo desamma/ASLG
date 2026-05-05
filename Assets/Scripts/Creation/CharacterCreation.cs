@@ -120,6 +120,8 @@ public class CharacterCreation : MonoBehaviour
         string playerName = nameInput.text.Trim();
         if (string.IsNullOrWhiteSpace(playerName)) return;
 
+        ClassManager.Instance.ApplyToStatsManager();
+
         StatsManager.instance.playerName = playerName;
 
         // QUAN TRỌNG: Reset hoàn toàn Save Data để không bị dính dữ liệu (0 HP, lỗi cũ) từ file save trước

@@ -306,9 +306,9 @@ public class StatsManager : MonoBehaviour
         _bonusStaminaRegenRate = bonusStaminaRegenRate;
 
         // Current Resources
-        _currentHealth = hp;
-        _currentMana = mana;
-        _currentStamina = stam;
+        _currentHealth = maxHealth;
+        _currentMana = maxMana;
+        _currentStamina = maxStamina;
         _playerName = pName;
 
         OnStatsChanged();
