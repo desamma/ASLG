@@ -66,7 +66,8 @@ public class LLMChatManager : MonoBehaviour
     private List<ChatMessage> CurrentChatHistory => GetChatHistory(activeNPC != null ? activeNPC.npcID : "");
 
     private bool isChatting = false;
-    private const string ULTIMATE_GEMINI_KEY = "AIzaSyDYF3fqeTVOf-BXBFV5zSv70au5sJ1yKaI"; 
+    public bool IsChatting => isChatting;
+    private const string ULTIMATE_GEMINI_KEY = "AIzaSyDYF3fqeTVOf-BXBFV5zSv70au5sJ1yKaI";
     private bool UseOfflineConversation => GameSettings.IsOfflineMode || !enableOnlineActivity;
 
     private bool hasActiveAiQuest = false;

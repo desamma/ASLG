@@ -160,7 +160,7 @@ public class PauseMenuManager : MonoBehaviour
         if (!IsSettingsAvailable())
             return;
 
-        if (Input.GetKeyDown(KeyCode.Escape) && actionToRebind == null)
+        if (Input.GetKeyDown(KeyCode.Escape) && actionToRebind == null && !LLMChatManager.Instance.IsChatting)
             HandleEscape();
     }
 
