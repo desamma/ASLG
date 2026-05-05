@@ -1,4 +1,5 @@
 ﻿﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -12,7 +13,8 @@ public class Enemy_DrakeDowager_ChainLightning : MonoBehaviour
     [SerializeField] private Collider2D spellCollider;
     [SerializeField] private GameObject hitEffect;
 
-    private bool hitPlayer = false;
+    private List<Collider2D> hitTargets = new List<Collider2D>();
+    private List<Collider2D> overlapResults = new List<Collider2D>();
     private EnemyStats casterStats;
     private Vector2 direction;
 
@@ -51,14 +53,32 @@ public class Enemy_DrakeDowager_ChainLightning : MonoBehaviour
             spellCollider.enabled = true;
     }
 
+    private void Update()
+    {
+        // Quét thủ công để vượt qua mọi giới hạn của bảng Layer Collision Matrix trong Unity
+        if (spellCollider != null && spellCollider.enabled)
+        {
+            ContactFilter2D filter = new ContactFilter2D();
+            filter.useLayerMask = true;
+            filter.layerMask = Physics2D.AllLayers; // Cho phép quét mọi Layer!
+            filter.useTriggers = true;
+
+            Physics2D.OverlapCollider(spellCollider, filter, overlapResults);
+            foreach (var hit in overlapResults)
+            {
+                OnTriggerEnter2D(hit);
+            }
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision == null)
             return;
 
-        if ((collision.CompareTag("Player") || collision.CompareTag("NPC")) && !hitPlayer)
+        if ((collision.CompareTag("Player") || collision.CompareTag("NPC")) && !hitTargets.Contains(collision))
         {
-            hitPlayer = true;
+            hitTargets.Add(collision);
 
             var difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
 
@@ -68,7 +88,8 @@ public class Enemy_DrakeDowager_ChainLightning : MonoBehaviour
                 effect.transform.localScale = new Vector3(2f, 2f, 1f);
             }
 
-            float damage = casterStats.Strength * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
+            // SỬA Ở ĐÂY: Tia sét phải dùng sát thương phép (Magic) thay vì sát thương vật lý (Strength)
+            float damage = casterStats.Magic * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
 
             if (collision.CompareTag("Player"))
             {

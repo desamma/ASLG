@@ -576,7 +576,7 @@ MonoBehaviour:
   maxStack: 9999
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   player: {fileID: 0}
   normalAttackPhases:
   - attackPoint: {fileID: 4462620081739829259}
@@ -664,7 +664,7 @@ MonoBehaviour:
   animator: {fileID: 2708948377375565613}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   groundFire: {fileID: 6054722809446637969, guid: 4379f9407466d6646ae389d31573798f, type: 3}
   phase2TransitionEffect: {fileID: 4739939819097573182, guid: 324480e6b9acdc34e960988b39535e98, type: 3}
   groundFireSound: {fileID: 8300000, guid: 9d145b5c7e6e95c4e8a7b3edf6719ebf, type: 3}

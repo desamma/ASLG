@@ -38,7 +38,8 @@ public class Enemy_DrakeDowager_Attack : MonoBehaviour
                 player = movement.PlayerTransform;
             else
             {
-                var hits = Physics2D.OverlapCircleAll(movement.DetectionPoint.position, health.stats.AttackRange, playerLayer);
+                // Bỏ giới hạn playerLayer để Boss ngắm chuẩn xác được cả NPC
+                var hits = Physics2D.OverlapCircleAll(movement.DetectionPoint.position, health.stats.AttackRange);
 
                 foreach (var hit in hits)
                 {
