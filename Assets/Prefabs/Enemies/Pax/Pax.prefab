@@ -380,7 +380,7 @@ MonoBehaviour:
   animator: {fileID: 1120423228699530015}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   attackComponent: {fileID: 4076632972476789794}
   detectionPoint: {fileID: 6586915766639875064}
   idleToPatrolWaitTime: 10
@@ -406,7 +406,7 @@ MonoBehaviour:
   attackPoint: {fileID: 6514286991063687078}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   attackMultiplier: 0.3
   attackBoxSize: {x: 2.2, y: 1.9}
   jumpForce: 4

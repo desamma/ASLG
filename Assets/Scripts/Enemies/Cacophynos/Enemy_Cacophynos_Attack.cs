@@ -44,7 +44,8 @@ public class Enemy_Cacophynos_Attack : MonoBehaviour
 
     public void NormalAttack()
     {
-        var hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, 0f, playerLayer);
+        // Bỏ giới hạn playerLayer để quét toàn bộ các Layer, đảm bảo không bao giờ bỏ sót NPC
+        var hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, 0f);
 
         foreach (var hit in hits)
         {
@@ -63,7 +64,8 @@ public class Enemy_Cacophynos_Attack : MonoBehaviour
             StopCoroutine(flyingCoroutine);
         else
         {
-            var hits = Physics2D.OverlapCircleAll(normalAttackPoint.position, health.behavior.DetectionRange, playerLayer);
+            // Bỏ giới hạn playerLayer
+            var hits = Physics2D.OverlapCircleAll(normalAttackPoint.position, health.behavior.DetectionRange);
 
             foreach (var hit in hits)
             {
@@ -132,7 +134,8 @@ public class Enemy_Cacophynos_Attack : MonoBehaviour
     private void DealDamage(float multiplier = 1f)
     {
         if (player == null) return;
-        float damage = health.stats.Magic * multiplier * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
+        // SỬA Ở ĐÂY: Cacophynos là quái vật lý, dùng Strength thay vì Magic
+        float damage = health.stats.Strength * multiplier * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
         
         if (player.CompareTag("Player"))
         {
