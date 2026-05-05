@@ -61,7 +61,6 @@ public class LLMChatManager : MonoBehaviour
     public PlayerMovement playerMovement;
     public PlayerAttack playerAttack;
 
-    // Bộ nhớ ký ức riêng biệt cho từng NPC (Key = npcID)
     private Dictionary<string, List<ChatMessage>> allChatHistories = new Dictionary<string, List<ChatMessage>>();
     private List<ChatMessage> CurrentChatHistory => GetChatHistory(activeNPC != null ? activeNPC.npcID : "");
 
@@ -101,7 +100,6 @@ public class LLMChatManager : MonoBehaviour
 
     void Update()
     {
-        // Tự động tìm Player nếu chưa có (Bảo vệ lỗi cho các Class không có Companion)
         if (playerMovement == null) playerMovement = FindObjectOfType<PlayerMovement>();
         if (playerAttack == null) playerAttack = FindObjectOfType<PlayerAttack>();
 
@@ -110,7 +108,6 @@ public class LLMChatManager : MonoBehaviour
 
         if (!isChatting && Input.GetKeyDown(KeyCode.E) && playerMovement != null)
         {
-            // Tìm NPC gần nhất
             NPCCompanion closestNPC = null;
             float minDistance = 2.5f;
             
@@ -174,7 +171,6 @@ public class LLMChatManager : MonoBehaviour
     {
         if (relationshipTextDisplay == null || activeNPC == null) return;
         
-        // Chỉ hiển thị đúng điểm số
         relationshipTextDisplay.text = "Relationship:\n" + activeNPC.relationshipScore.ToString();
     }
 
@@ -219,7 +215,6 @@ public class LLMChatManager : MonoBehaviour
         
         string loreText = null;
 
-        // KIỂM TRA CHẾ ĐỘ OFFLINE
         if (UseOfflineConversation)
         {
             string[] offlineLores;
@@ -335,7 +330,6 @@ public class LLMChatManager : MonoBehaviour
 
     private IEnumerator SendWithFallbackRoutine(string userText)
     {
-        // At the start of SendWithFallbackRoutine, add:
         if (ApiSettingsManager.Instance != null && !ApiSettingsManager.Instance.IsReady)
         {
             yield return new WaitUntil(() => ApiSettingsManager.Instance.IsReady);

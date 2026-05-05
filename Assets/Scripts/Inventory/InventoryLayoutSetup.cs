@@ -17,16 +17,13 @@ public class InventoryLayoutSetup : MonoBehaviour
     [ContextMenu("Setup Layout")]
     public void SetupLayout()
     {
-        // ── 1. Setup bản thân InventoryPanel ──────────────────────────────
         var rt = GetComponent<RectTransform>();
-        // Anchor giữa màn hình
         rt.anchorMin = new Vector2(0.5f, 0.5f);
         rt.anchorMax = new Vector2(0.5f, 0.5f);
         rt.pivot     = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = Vector2.zero;
         rt.sizeDelta = new Vector2(totalWidth, totalHeight);
 
-        // ── 2. Tìm 3 panel con theo tên ───────────────────────────────────
         var statsPanel   = transform.Find("StatsPanel")?.GetComponent<RectTransform>();
         var bagPanel     = transform.Find("BagPanel")?.GetComponent<RectTransform>();
         var previewPanel = transform.Find("PreviewPanel")?.GetComponent<RectTransform>();
@@ -39,14 +36,13 @@ public class InventoryLayoutSetup : MonoBehaviour
 
         float bagWidth = totalWidth - statsWidth - previewWidth;
 
-        // Helper: set anchor top-left, pos tính từ góc trái trên của parent
         void SetPanel(RectTransform panel, float x, float w)
         {
             panel.anchorMin = new Vector2(0f, 0f);
-            panel.anchorMax = new Vector2(0f, 1f);  // stretch theo chiều dọc
+            panel.anchorMax = new Vector2(0f, 1f);  
             panel.pivot     = new Vector2(0f, 1f);
             panel.anchoredPosition = new Vector2(x, 0f);
-            panel.sizeDelta = new Vector2(w, 0f);   // height = 0 vì đang stretch
+            panel.sizeDelta = new Vector2(w, 0f);   
         }
 
         SetPanel(statsPanel,   0f,                          statsWidth);

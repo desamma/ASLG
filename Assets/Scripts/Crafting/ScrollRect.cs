@@ -1,5 +1,3 @@
-// ScrollRectNoBubbleBlock.cs
-// G?n vào cùng GameObject v?i ScrollRect
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,7 +9,6 @@ public class ScrollRectNoBubbleBlock : MonoBehaviour, IBeginDragHandler, IDragHa
 
     void Awake() => _scroll = GetComponent<ScrollRect>();
 
-    // Cho phép drag scroll bình th??ng
     public void OnBeginDrag(PointerEventData e) => _scroll.OnBeginDrag(e);
     public void OnDrag(PointerEventData e) => _scroll.OnDrag(e);
     public void OnEndDrag(PointerEventData e) => _scroll.OnEndDrag(e);

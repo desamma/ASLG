@@ -53,7 +53,7 @@ public class MapMusic : MonoBehaviour
     private AudioSource _audioSource;
     private AudioClip _currentClip;
     private Coroutine _fadeCoroutine;
-    private bool _pendingDestroy; // prevents double-destroy during fade
+    private bool _pendingDestroy;
 
     /// <summary>Clip currently loaded (may or may not be playing).</summary>
     public AudioClip CurrentClip => _currentClip;
@@ -91,7 +91,6 @@ public class MapMusic : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
 
-        // Unregister only if this is still the tracked instance
         if (s_persistentInstances.TryGetValue(groupName, out MapMusic tracked) && tracked == this)
             s_persistentInstances.Remove(groupName);
     }
@@ -201,7 +200,6 @@ public class MapMusic : MonoBehaviour
     {
         if (_pendingDestroy) return;
 
-        // Already playing this exact clip — nothing to do
         if (_currentClip == clip && _audioSource.isPlaying) return;
 
         if (_fadeCoroutine != null) StopCoroutine(_fadeCoroutine);
@@ -210,7 +208,6 @@ public class MapMusic : MonoBehaviour
 
     private IEnumerator CrossfadeToClip(AudioClip newClip, float targetVolume)
     {
-        // --- FADE OUT ---
         if (_audioSource.isPlaying && fadeOutDuration > 0f)
         {
             float startVol = _audioSource.volume;
@@ -227,13 +224,11 @@ public class MapMusic : MonoBehaviour
         _audioSource.Stop();
         _audioSource.volume = 0f;
 
-        // --- SWAP CLIP ---
         _currentClip = newClip;
         _audioSource.clip = newClip;
         _audioSource.loop = true;
         _audioSource.Play();
 
-        // --- FADE IN ---
         if (fadeInDuration > 0f)
         {
             float elapsed = 0f;

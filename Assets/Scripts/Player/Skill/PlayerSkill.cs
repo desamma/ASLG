@@ -54,14 +54,13 @@ public class PlayerSkill : MonoBehaviour
         StatsManager.instance.currentMana -= GetCurrentManaCost();
         cooldownTimer = GetCurrentCooldown();
 
-        // Lấy Class trực tiếp từ Data để luôn gọi đúng Skill kể cả khi mượn Data
         switch (ClassData.playerClass)
         {
             case PlayerClass.Knight: StartCoroutine(KnightSkillRoutine()); break;
             case PlayerClass.Archer: StartCoroutine(ArcherSkillRoutine()); break;
             case PlayerClass.Rogue: StartCoroutine(RogueSkillRoutine()); break;
             case PlayerClass.Summoner: StartCoroutine(SummonerSkillRoutine()); break;
-            default: StartCoroutine(KnightSkillRoutine()); break; // Fallback an toàn
+            default: StartCoroutine(KnightSkillRoutine()); break;
         }
     }
 
@@ -114,9 +113,6 @@ public class PlayerSkill : MonoBehaviour
         return Mathf.RoundToInt(StatsManager.instance.damage * pct);
     }
 
-    // ====================================================================
-    // CƠ CHẾ ĐỒNG BỘ ANIMATION THÔNG MINH
-    // ====================================================================
     private IEnumerator WaitAnimationFinish()
     {
         Animator anim = GetComponentInChildren<Animator>();
@@ -139,7 +135,7 @@ public class PlayerSkill : MonoBehaviour
     {
         isUsingSkill = true;
         var sm = movement.GetStateManager();
-        sm.ChangeState(PlayerState.KnightSkill); // Bật Animation
+        sm.ChangeState(PlayerState.KnightSkill);
 
         yield return new WaitForSeconds(SkillData.chargeTime);
 
@@ -202,7 +198,7 @@ public class PlayerSkill : MonoBehaviour
         var sm = movement.GetStateManager();
         sm.ChangeState(PlayerState.ArcherSkill); 
 
-        yield return new WaitForSeconds(0.2f); // Chờ giương cung
+        yield return new WaitForSeconds(0.2f);
 
         if (SkillData.arrowPrefab != null)
         {
@@ -313,7 +309,7 @@ public class PlayerSkill : MonoBehaviour
 
         movement.FaceToward(closest.transform.position.x);
 
-        yield return new WaitForSeconds(0.4f); // Chờ đâm lén (Timing chuẩn xác của đòn đánh)
+        yield return new WaitForSeconds(0.4f);
 
         closest.GetComponent<IEnemy_Health>()?.ChangeHealth(-GetCurrentDamage());
         closest.GetComponent<IEnemy_Movement>()?.KnockBack(transform, StatsManager.instance.knockbackForce, StatsManager.instance.knockbackTime, StatsManager.instance.stunTime);
@@ -331,26 +327,22 @@ public class PlayerSkill : MonoBehaviour
         isUsingSkill = true;
         var sm = movement.GetStateManager();
         
-        // Bật Animation niệm chú của Summoner
         sm.ChangeState(PlayerState.SummonerSkill); 
 
-        // Tìm Alicia đang đứng ở đâu trên màn hình
         NPCCompanion alicia = FindObjectOfType<NPCCompanion>();
 
         if (alicia != null && SkillData.summonerBulletPrefab != null)
         {
             if (ClassData.swingClip != null) SoundFXManager.Instance.PlaySoundFXClip(ClassData.swingClip, transform, volume);
 
-            Vector3 origin = alicia.transform.position; // Lấy tâm phát nổ là Alicia
+            Vector3 origin = alicia.transform.position; 
             int count = SkillData.summonerBulletCount;
             int damage = GetCurrentDamage();
             
-            // Nếu có nâng cấp Skill, tăng thêm số lượng đạn (Mỗi Tier + 4 viên)
             for (int i = 0; i < currentUpgradeTier; i++) count += 4; 
 
-            float angleStep = 360f / count; // Chia đều góc 360 độ
+            float angleStep = 360f / count; 
 
-            // Bắn đạn tỏa ra xung quanh Alicia
             for (int i = 0; i < count; i++)
             {
                 float angle = i * angleStep;
@@ -362,7 +354,6 @@ public class PlayerSkill : MonoBehaviour
                 
                 if (projScript != null) 
                 {
-                    // Truyền sát thương của Player vào đạn. "false" = Không làm hại Player
                     projScript.Setup(dir, damage, false); 
                 }
             }
@@ -370,12 +361,10 @@ public class PlayerSkill : MonoBehaviour
         else
         {
             Debug.LogWarning("Không tìm thấy Alicia hoặc chưa kéo Prefab đạn vào SkillData của Summoner!");
-            // Trả lại mana nếu bấm xịt (giống Rogue)
             StatsManager.instance.currentMana += GetCurrentManaCost();
             cooldownTimer = 0f;
         }
 
-        // Đợi Animation niệm chú của Summoner xong mới cho di chuyển tiếp
         yield return StartCoroutine(WaitAnimationFinish());
     }
 }

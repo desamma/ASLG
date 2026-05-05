@@ -44,7 +44,7 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             Sprite s = _itemDef.GetIcon();
             icon.sprite = s;
-            icon.enabled = (s != null); // Chống lỗi ô vuông trắng
+            icon.enabled = (s != null);
             icon.preserveAspect = true;
         }
 

@@ -45,7 +45,6 @@ public class ApiSettingsManager : MonoBehaviour
         
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
-            // Lấy Token từ TokenManager của bạn
             string token = TokenManager.GetToken();
             if (!string.IsNullOrEmpty(token))
             {
@@ -82,7 +81,6 @@ public class ApiSettingsManager : MonoBehaviour
         IsReady = true;
     }
 
-    // Các class con dùng để Parse JSON trả về từ backend của bạn
     public class ApiSettingResponse
     {
         public bool Success { get; set; }

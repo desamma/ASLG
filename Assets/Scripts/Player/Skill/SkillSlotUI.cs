@@ -35,7 +35,6 @@ public class SkillSlotUI : MonoBehaviour
 
     private void Update()
     {
-        // ĐÃ SỬA: Tự động tìm kiếm Player liên tục cho đến khi tìm thấy, chống đơ UI
         if (playerSkill == null)
         {
             playerGameObject = GameObject.FindGameObjectWithTag("Player");
@@ -44,7 +43,7 @@ public class SkillSlotUI : MonoBehaviour
                 playerSkill = playerGameObject.GetComponent<PlayerSkill>();
                 RefreshSkillUI();
             }
-            if (playerSkill == null) return; // Nếu vẫn chưa có Player thì ngừng chạy Update
+            if (playerSkill == null) return; 
         }
 
         cooldownOverlay.fillAmount = playerSkill.CooldownFraction;

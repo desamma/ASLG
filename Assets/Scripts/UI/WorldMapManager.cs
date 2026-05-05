@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement; // MỚI: Thêm thư viện để load scene
+using UnityEngine.SceneManagement; 
 
 [System.Serializable]
 public class MapZone
 {
     public string zoneName;
-    public string sceneName; // MỚI: Nhập tên Scene (ví dụ: Dungeon1)
-    public Button teleportButton; // MỚI: Kéo cái Button bạn tự tạo trên UI Map vào đây
+    public string sceneName; 
+    public Button teleportButton; 
     public RectTransform marker;
     public Image fogCloud;
     [HideInInspector] public bool discovered = false;
@@ -28,8 +28,8 @@ public class WorldMapManager : MonoBehaviour
     public MapZone[] zones;
 
     [Header("Player Pin")]
-    public RectTransform playerPin;    // Small icon showing current location
-    public TMP_Text locationLabel;     // Text showing current zone name
+    public RectTransform playerPin;    
+    public TMP_Text locationLabel;     
     public Vector2 locationLabelOffset = new Vector2(0f, 50f);
 
     [Header("Marker Bounce")]
@@ -43,7 +43,7 @@ public class WorldMapManager : MonoBehaviour
     private RectTransform activeMarker;
     private Vector2 activeMarkerBase;
 
-    private bool isTeleportMode = false; // MỚI: Cờ đánh dấu đang mở bằng Tế đàn
+    private bool isTeleportMode = false; 
 
     public bool IsMapOpen => isMapOpen;
 
@@ -63,7 +63,6 @@ public class WorldMapManager : MonoBehaviour
         worldMapPanel.SetActive(false);
         minimapPanel.SetActive(true);
 
-        // MỚI: Cài đặt cho các nút Teleport (Mặc định ẩn, gán sự kiện Click)
         foreach (var zone in zones)
         {
             if (zone.teleportButton != null)
@@ -71,7 +70,7 @@ public class WorldMapManager : MonoBehaviour
                 zone.teleportButton.gameObject.SetActive(false);
                 zone.teleportButton.onClick.RemoveAllListeners();
                 
-                MapZone currentZone = zone; // Copy biến để dùng trong lambda
+                MapZone currentZone = zone; 
                 zone.teleportButton.onClick.AddListener(() => OnTeleportButtonClicked(currentZone));
             }
         }
@@ -82,7 +81,6 @@ public class WorldMapManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M) && !LLMChatManager.Instance.IsChatting)
             ToggleMap();
 
-        // Bounce the active marker while map is open
         if (activeMarker != null && isMapOpen)
         {
             float offsetY = Mathf.Sin(Time.time * bounceSpeed) * bounceHeight;
@@ -93,17 +91,14 @@ public class WorldMapManager : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // CÁC HÀM MỚI CHO TẾ ĐÀN (PORTAL)
-    // ==========================================
+  
     public void OpenMapForTeleport()
     {
         isTeleportMode = true;
         
         if (!isMapOpen) ToggleMap();
-        else UpdateTeleportButtons(); // Nếu map đang mở sẵn thì chỉ cần update nút
+        else UpdateTeleportButtons(); 
         
-        // Khóa di chuyển Player
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null) player.GetComponent<PlayerMovement>()?.SetMovementLock(true);
     }
@@ -116,7 +111,6 @@ public class WorldMapManager : MonoBehaviour
             {
                 if (isTeleportMode && isMapOpen)
                 {
-                    // CHỈ HIỆN NÚT NẾU ĐÃ KHÁM PHÁ (Check SaveManager)
                     bool isDiscovered = SaveManager.Instance != null && 
                                         SaveManager.Instance.currentSaveData.discoveredZones != null && 
                                         SaveManager.Instance.currentSaveData.discoveredZones.Contains(zone.zoneName);
@@ -136,13 +130,11 @@ public class WorldMapManager : MonoBehaviour
         if (!isTeleportMode) return;
         if (string.IsNullOrEmpty(zone.sceneName) || zone.sceneName == SceneManager.GetActiveScene().name) return;
 
-        // Tận dụng MapZoneSetter: Chuyển scene với ID "PORTAL_TRAVEL"
         MapSceneTransitionState.BeginTransition(2f, "PORTAL_TRAVEL");
         
-        ToggleMap(); // Đóng map
+        ToggleMap(); 
         SceneManager.LoadScene(zone.sceneName);
     }
-    // ==========================================
 
     public void ToggleMap()
     {
@@ -163,7 +155,6 @@ public class WorldMapManager : MonoBehaviour
     {
         isMapOpen = visible;
 
-        // MỚI: Xử lý tắt chế độ Teleport và mở khóa di chuyển khi đóng Map
         if (!isMapOpen) 
         {
             isTeleportMode = false;
@@ -172,16 +163,15 @@ public class WorldMapManager : MonoBehaviour
         }
 
         Canvas c = this.GetComponent<Canvas>();
-        c.sortingOrder = isMapOpen ? 100 : 0; // Ensure map renders above other UI when open  
+        c.sortingOrder = isMapOpen ? 100 : 0; 
 
         worldMapPanel.SetActive(isMapOpen);
-        minimapPanel.SetActive(!isMapOpen);   // hide minimap while map is open
+        minimapPanel.SetActive(!isMapOpen);   
 
-        // Reset marker to base so it doesn't freeze mid-bounce when closing
         if (!isMapOpen && playerPin != null)
             playerPin.anchoredPosition = activeMarkerBase;
 
-        UpdateTeleportButtons(); // MỚI: Gọi hàm cập nhật ẩn/hiện nút
+        UpdateTeleportButtons(); 
     }
 
     /// <summary>

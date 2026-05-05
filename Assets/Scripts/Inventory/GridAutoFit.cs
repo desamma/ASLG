@@ -1,10 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// GridAutoFit - T? ??ng fit kích th??c khe item theo container.
-/// Attach vào object ch?a GridLayoutGroup.
-/// </summary>
 [RequireComponent(typeof(GridLayoutGroup))]
 public class GridAutoFit : MonoBehaviour
 {

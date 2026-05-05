@@ -1,15 +1,10 @@
 using UnityEngine;
 
-/// <summary>
-/// Change the overall or each individual stats, and optionally modify behavior profiles
-/// </summary>
 [System.Serializable]
 public class DifficultyModifier
 {
-    // Overall stats multiplier
     public float Overall = 1f;
 
-    // Per-stat overrides (nullable = optional)
     public float? MaxHPMultiplier;
     public float? StrengthMultiplier;
     public float? MagicMultiplier;
@@ -19,7 +14,6 @@ public class DifficultyModifier
     public float? AttackSpeedMultiplier;
     public float? GoldRewardMultiplier;
 
-    // Per-behavior overrides (nullable = optional)
     public float? DetectionRangeMultiplier;
     public float? ChaseRangeMultiplier;
     public float? SpecialAttackFrequencyMultiplier;

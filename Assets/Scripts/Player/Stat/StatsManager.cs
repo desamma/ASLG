@@ -2,7 +2,6 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 
-// ĐÃ XÓA DÒNG KHAI BÁO enum StatType Ở ĐÂY ĐỂ TRÁNH TRÙNG LẶP VỚI FILE StatType.cs CỦA BẠN
 
 public class StatsManager : MonoBehaviour
 {
@@ -11,10 +10,9 @@ public class StatsManager : MonoBehaviour
     [Header("Player")]
     [SerializeField] private string _playerName;
 
-    // --- BIẾN ĐIỀU PHỐI ĐỘ KHÓ CỦA AI DIRECTOR ---
     [Header("Difficulty Multipliers")]
-    public float damageDealtMultiplier = 1f; // Nhân vào sát thương Player gây ra
-    public float damageTakenMultiplier = 1f; // Nhân vào sát thương Player nhận vào
+    public float damageDealtMultiplier = 1f; 
+    public float damageTakenMultiplier = 1f; 
 
     [Header("Session Data")]
     [SerializeField] private string authToken;
@@ -145,7 +143,6 @@ public class StatsManager : MonoBehaviour
     [SerializeField] private float _baseCooldown = 0.5f;
     [SerializeField] private float _bonusCooldown = 0f;
 
-    // ĐÃ SỬA: Sát thương đầu ra giờ sẽ được nhân thêm hệ số của AI Director
     public float damage
     {
         get => (_baseDamage + _bonusDamage) * damageDealtMultiplier;
@@ -204,20 +201,19 @@ public class StatsManager : MonoBehaviour
     public int gold { get => _gold; private set { _gold = Mathf.Max(0, value); OnStatsChanged(); } }
     public int upgradePoints { get => _upgradePoints; private set { _upgradePoints = Mathf.Max(0, value); OnStatsChanged(); } }
 
-    // --- SỰ KIỆN ---
     public event System.Action OnStatsChangedEvent;
     public event System.Action OnLevelUpEvent;
     public event System.Action OnPlayerDeathEvent;
 
     [Header("Buffs")]
-    public bool isInvincible = false; // Phục vụ cho Skill của Johnson
+    public bool isInvincible = false; 
 
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
-            transform.SetParent(null); // Đảm bảo object là root để DontDestroyOnLoad hoạt động
+            transform.SetParent(null); 
             DontDestroyOnLoad(gameObject);
 
             AuthToken = PlayerPrefs.GetString("AuthToken", string.Empty);
@@ -231,9 +227,6 @@ public class StatsManager : MonoBehaviour
         }
     }
 
-    // =========================================================
-    // HÀM LƯU / XÓA SESSION
-    // =========================================================
     public void SaveSession(string token, string userId)
     {
         AuthToken = token;
@@ -272,9 +265,6 @@ public class StatsManager : MonoBehaviour
 
     public bool HasToken() => !string.IsNullOrEmpty(AuthToken);
 
-    // ==========================================
-    // DÀNH CHO SAVE MANAGER NẠP DỮ LIỆU
-    // ==========================================
     public void LoadSavedStats(int savedLevel, int savedExp, int savedPts, int savedGold, float hp, float mana, float stam, string pName, float baseMaxHealth, float baseMaxMana, float baseMaxStamina, float baseDamage, float baseDefence, float baseCooldown, float baseMoveSpeed)
     {
         _level = savedLevel;
@@ -332,7 +322,6 @@ public class StatsManager : MonoBehaviour
         _currentStamina = maxStamina;
         _currentMana = maxMana;
         
-        // Reset luôn cả hệ số AI Director khi khởi tạo
         damageDealtMultiplier = 1f;
         damageTakenMultiplier = 1f;
         
@@ -341,13 +330,11 @@ public class StatsManager : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        if (isInvincible) return; // Đang được Johnson buff vô địch, bỏ qua sát thương!
+        if (isInvincible) return; 
 
-        // ĐÃ SỬA: Tính sát thương sau khi trừ giáp, sau đó nhân hệ số của AI Director
         float damageAfterDefend = (amount - defence) * damageTakenMultiplier;
         float actualDamage = Mathf.Max(0f, damageAfterDefend); // Đảm bảo sát thương >= 0 (không bị bơm máu ngược)
         
-        // Báo cho AI biết Player vừa mất bao nhiêu máu
         if (AIDifficultyManager.Instance != null) 
             AIDifficultyManager.Instance.LogDamageTaken(actualDamage);
 
@@ -359,7 +346,6 @@ public class StatsManager : MonoBehaviour
 
     public void AddExp(int amount)
     {
-        // ĐÃ SỬA: Cứ mỗi lần nhận EXP tức là quái đã chết, báo cho AI ghi nhận số Kill
         if (AIDifficultyManager.Instance != null) 
             AIDifficultyManager.Instance.LogKill();
 
@@ -406,7 +392,6 @@ public class StatsManager : MonoBehaviour
         OnStatsChanged();
     }
 
-    // ── ITEM STATS BONUSES (HỆ THỐNG JSON MỚI) ───────────────────────────────────
     public void ApplyItemBonus(string itemID)
     {
         ItemDefinition def = ItemDatabase.GetItem(itemID);
@@ -439,7 +424,6 @@ public class StatsManager : MonoBehaviour
 
         switch (statName.ToLower())
         {
-            // CÁC CHỈ SỐ GỐC (Dành cho Trang bị)
             case "maxhealth": _bonusMaxHealth += bonus; break;
             case "maxmana": _bonusMaxMana += bonus; break;
             case "maxstamina": _bonusMaxStamina += bonus; break;
@@ -453,12 +437,10 @@ public class StatsManager : MonoBehaviour
                 _bonusCooldown += bonus;
                 break;
 
-            // CÁC CHỈ SỐ HIỆN TẠI (Dành cho Bình Máu/Bình Mana)
             case "currenthealth": case "hp": case "health": currentHealth += bonus; break;
             case "currentmana": case "mp": case "mana": currentMana += bonus; break;
             case "currentstamina": case "sp": case"stamina": currentStamina += bonus; break;
             
-            // ĐIỂM KINH NGHIỆM
             case "currentexp": case "exp": AddExp(Mathf.RoundToInt(bonus)); break;
             case "upgradepoints": _upgradePoints += Mathf.RoundToInt(bonus); break;
 
@@ -488,7 +470,6 @@ public class StatsManager : MonoBehaviour
     {
         Debug.Log("[StatsManager] Player died!");
         
-        // ĐÃ SỬA: Báo cho AI biết Player vừa tèo
         if (AIDifficultyManager.Instance != null) 
             AIDifficultyManager.Instance.LogDeath();
 

@@ -5,11 +5,10 @@ public class GameSetup : MonoBehaviour
 {
     [Header("Player Settings")]
     public Transform playerTransform;
-    public TMP_Text playerNameText; // Kéo Text trên đầu Player vào đây
+    public TMP_Text playerNameText;
 
     void Start()
     {
-        // 1. Cập nhật tên lên đầu Player
         if (playerNameText != null)
         {
             playerNameText.text = GameSession.PlayerName;
@@ -17,7 +16,6 @@ public class GameSetup : MonoBehaviour
 
         if (StatsManager.instance == null) return;
 
-        // 2. XỬ LÝ: ĐẤU SĨ (Nhân đôi Máu và Sát thương)
         if (GameSession.PlayerClass == 1)
         {
             StatsManager.instance.maxHealth *= 2;

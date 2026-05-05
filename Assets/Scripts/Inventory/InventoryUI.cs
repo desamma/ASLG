@@ -55,7 +55,6 @@ public class InventoryUI : MonoBehaviour
         SpawnSlots();
         SetCanvas(inventoryCanvasGroup, false);
 
-        // Lắng nghe thay đổi từ túi đồ gốc
         if (InventoryManager.instance != null)
             InventoryManager.instance.OnInventoryChanged += RenderPage;
 
@@ -142,7 +141,6 @@ public class InventoryUI : MonoBehaviour
             else slot.SetEmpty();
         }
 
-        // Refresh lại Preview nếu món đồ đang chọn bị dùng hoặc trang bị
         if (selectedStack != null) ShowPreview(selectedStack);
     }
 
@@ -229,7 +227,6 @@ public class InventoryUI : MonoBehaviour
     {
         if (selectedStack == null) return;
 
-        // Tháo đồ trước khi vứt (nếu đang mặc)
         if (InventoryManager.instance.IsEquipped(selectedStack.itemID))
             InventoryManager.instance.ToggleEquip(selectedStack.itemID);
 

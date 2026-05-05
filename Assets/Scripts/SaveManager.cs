@@ -8,7 +8,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
-// Biến Vector3 thành dạng an toàn cho JSON
 [Serializable]
 public class SVector3
 {
@@ -18,9 +17,6 @@ public class SVector3
     public Vector3 Get() => new Vector3(x, y, z);
 }
 
-// ==================================================
-// CÁC LỚP DỮ LIỆU TRUNG GIAN ĐỂ LƯU THÀNH JSON
-// ==================================================
 [Serializable]
 public class CompanionSaveData
 {
@@ -28,7 +24,7 @@ public class CompanionSaveData
     public bool isActive;
     public SVector3 position;
     public int relationshipScore;
-    public List<ChatMessage> chatHistory; // Ký ức LLM
+    public List<ChatMessage> chatHistory;
 }
 
 [Serializable]
@@ -102,13 +98,9 @@ public class GameSaveData
 
     public List<string> discoveredZones = new List<string>();
     
-    // Danh sách lưu những NPC đã được mua (như Johnson)
     public List<string> unlockedCompanions = new List<string> { "npc_alicia" }; 
 }
 
-// ==================================================
-// SAVE MANAGER CORE
-// ==================================================
 public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance;
@@ -236,7 +228,6 @@ public class SaveManager : MonoBehaviour
         _isSaving = false;
     }
 
-    // --- LƯU GAME ---
     public void SaveGame()
     {
         if (_isSaving) return;
@@ -267,20 +258,17 @@ public class SaveManager : MonoBehaviour
     private void SaveGameToLocalFile()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null) return; // Chặn lưu nếu chưa sinh ra Player
+        if (player == null) return; 
 
-        // 1. Dữ liệu Cơ bản
         currentSaveData.userId = string.IsNullOrEmpty(TokenManager.GetUserId()) ? "guest" : TokenManager.GetUserId();
         currentSaveData.sceneName = SceneManager.GetActiveScene().name;
         currentSaveData.playerPosition = new SVector3(player.transform.position);
 
-        // ĐÃ FIX: Báo cho Save File biết bạn đang chơi Class nào
         if (ClassManager.Instance != null)
         {
             currentSaveData.playerClassIndex = (int)ClassManager.Instance.SelectedClass;
         }
 
-        // 2. Dữ liệu Stats
         if (StatsManager.instance != null)
         {
             currentSaveData.playerName = StatsManager.instance.playerName;
@@ -314,14 +302,12 @@ public class SaveManager : MonoBehaviour
             currentSaveData.stats.bonusStaminaRegenRate = StatsManager.instance.bonusStaminaRegenRate;
         }
 
-        // 2.5 Dữ liệu Skill
         var playerSkill = player.GetComponent<PlayerSkill>();
         if (playerSkill != null)
         {
             currentSaveData.stats.skillUpgradeTier = playerSkill.CurrentTier;
         }
 
-        // 3. Dữ liệu Inventory
         if (InventoryManager.instance != null)
         {
             currentSaveData.inventory.bagItems = new List<ItemStack>(InventoryManager.instance.bagItems);
@@ -330,13 +316,11 @@ public class SaveManager : MonoBehaviour
             currentSaveData.inventory.equippedAccessories = new List<string>(InventoryManager.instance.equippedAccessories);
         }
 
-        // 4. Dữ liệu Quests
         if (QuestManager.instance != null)
         {
             currentSaveData.quests = QuestManager.instance.ExportSaveData();
         }
 
-        // 5. Dữ liệu NPC & AI
         currentSaveData.companions.Clear();
         NPCCompanion[] allNPCs = FindObjectsOfType<NPCCompanion>();
         LLMChatManager chatManager = FindObjectOfType<LLMChatManager>();
@@ -458,13 +442,11 @@ public class SaveManager : MonoBehaviour
             return;
         }
 
-        // ĐÃ FIX: Nhét thông tin Class vào ClassManager TRƯỚC KHI chuyển Scene
         if (ClassManager.Instance != null)
         {
             ClassManager.Instance.SelectClass((PlayerClass)currentSaveData.playerClassIndex);
         }
 
-        // Backup phòng hờ cho GameSession cũ của bạn
         GameSession.PlayerName = currentSaveData.playerName;
         GameSession.PlayerClass = currentSaveData.playerClassIndex;
 
@@ -829,7 +811,6 @@ public class SaveManager : MonoBehaviour
             _pendingPositionRestore = false;
         }
 
-        // Phục hồi chỉ số Stats, Inventory, Quest nếu Player mới bị khởi tạo lại (mất dữ liệu do chuyển scene)
         if (StatsManager.instance != null && currentSaveData != null && currentSaveData.stats != null && currentSaveData.stats.level > 0)
         {
             StatsManager.instance.LoadSavedStats(
@@ -877,8 +858,8 @@ public class SaveManager : MonoBehaviour
 
     private IEnumerator AutoSaveRoutine()
     {
-        const float saveIntervalSeconds = 10f; // 10s
-        const float cloudSaveIntervalSeconds = 600f; // 10 mins
+        const float saveIntervalSeconds = 10f; 
+        const float cloudSaveIntervalSeconds = 600f; 
 
         var elapsed = 0f;
         while (true)

@@ -61,7 +61,6 @@ public class ItemData : ScriptableObject
     [Tooltip("Prefab spawn khi drop ra đất")]
     public GameObject worldPrefab;
 
-    // ── Helpers ────────────────────────────────────────────────────────────
     public bool IsEquippable =>
         itemType == ItemType.Weapon ||
         itemType == ItemType.Armor ||

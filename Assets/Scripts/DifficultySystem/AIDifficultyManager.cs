@@ -60,13 +60,11 @@ public class AIDifficultyManager : MonoBehaviour
         isEvaluating = true;
         string aiResponse = null;
 
-        // KIỂM TRA CHẾ ĐỘ OFFLINE
         if (UseOfflineEvaluation)
         {
             Debug.Log("<color=cyan>[AI Director]</color> Đang dùng thuật toán Offline...");
-            yield return new WaitForSeconds(1f); // Giả lập độ trễ
+            yield return new WaitForSeconds(1f);
 
-            // THUẬT TOÁN THUẦN
             if (totalDeaths >= 1 || (totalDamageTaken > totalDamageDealt && totalKills < 5))
                 aiResponse = "[DIFF: EASY]";
             else if (totalKills > 15 || totalDamageDealt > (totalDamageTaken * 2))

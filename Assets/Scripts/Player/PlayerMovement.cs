@@ -31,9 +31,7 @@ public class PlayerMovement : MonoBehaviour
         animator = animator != null ? animator : GetComponent<Animator>();
         if (animator != null) animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
         
-        // ====================================================================
-        // ĐÃ FIX: Ngăn Rigidbody ngủ đông làm chết Animator AnimatePhysics!
-        // ====================================================================
+
         rb.sleepMode = RigidbodySleepMode2D.NeverSleep; 
     }
 

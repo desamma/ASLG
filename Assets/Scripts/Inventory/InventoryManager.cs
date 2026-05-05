@@ -50,7 +50,6 @@ public class InventoryManager : MonoBehaviour
         Debug.Log("<color=green>[Inventory]</color> Đã làm sạch túi đồ và phát Quà Tân Thủ!");
     }
 
-    // ── THÊM / XÓA ───────────────────────────────────────────────────────
 
     public void AddItem(string itemID, int amount)
     {
@@ -78,7 +77,6 @@ public class InventoryManager : MonoBehaviour
         if (bagItems.Contains(stack)) { bagItems.Remove(stack); OnInventoryChanged?.Invoke(); }
     }
 
-    /// <summary>Tổng số lượng của itemID trong túi.</summary>
     public int GetItemCount(string itemID)
     {
         if (string.IsNullOrEmpty(itemID)) return 0;
@@ -87,7 +85,6 @@ public class InventoryManager : MonoBehaviour
         return total;
     }
 
-    /// <summary>Trừ đúng số lượng itemID. Trả về true nếu thành công.</summary>
     public bool TryConsume(string itemID, int amount)
     {
         if (GetItemCount(itemID) < amount) return false;
@@ -104,7 +101,6 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
-    // ── TRANG BỊ ─────────────────────────────────────────────────────────
 
     public bool IsEquipped(string itemID)
     {
@@ -144,7 +140,6 @@ public class InventoryManager : MonoBehaviour
         OnInventoryChanged?.Invoke();
     }
 
-    // ── DÙNG ĐỒ ──────────────────────────────────────────────────────────
 
     public void UseConsumable(ItemStack stack)
     {

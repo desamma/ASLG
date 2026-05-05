@@ -15,15 +15,12 @@ public class ItemDefinition
     public string iconPath;
     public Dictionary<string, float> statBonuses = new Dictionary<string, float>();
 
-    // Hàm load ảnh an toàn
     public Sprite GetIcon()
     {
         Sprite s = null;
         
-        // 1. Thử load ảnh thật
         if (!string.IsNullOrEmpty(iconPath)) s = Resources.Load<Sprite>(iconPath);
         
-        // 2. Nếu lỗi, load ảnh dấu "?"
         if (s == null) 
         {
             s = Resources.Load<Sprite>("Icons/missing_icon");
