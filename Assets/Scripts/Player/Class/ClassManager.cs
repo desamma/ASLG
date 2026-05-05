@@ -25,7 +25,7 @@ public class ClassManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             // Default to knight so the game works even without a selection screen
-            SelectClass(SelectedClass);
+            //SelectClass(SelectedClass);
         }
         else
         {

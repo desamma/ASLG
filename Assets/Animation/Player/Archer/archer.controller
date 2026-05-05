@@ -46,7 +46,7 @@ AnimatorStateMachine:
     m_Position: {x: 270, y: 130, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -5794241689677414772}
-    m_Position: {x: 305, y: 195, z: 0}
+    m_Position: {x: 300, y: 200, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2572706607417570339}
     m_Position: {x: 340, y: 260, z: 0}
@@ -73,7 +73,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: archer_slowWalk
+  m_Name: archer_slowwalk
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -199,7 +199,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: archer_grabMonolith
+  m_Name: archer_monolithpickup
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []

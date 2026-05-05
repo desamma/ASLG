@@ -296,10 +296,10 @@ public class SaveManager : MonoBehaviour
             currentSaveData.stats.baseCooldown = StatsManager.instance.baseCooldown;
             currentSaveData.stats.baseMoveSpeed = StatsManager.instance.baseMoveSpeed;
 
-            // Current Resources
-            currentSaveData.stats.currentHealth = StatsManager.instance.currentHealth;
-            currentSaveData.stats.currentMana = StatsManager.instance.currentMana;
-            currentSaveData.stats.currentStamina = StatsManager.instance.currentStamina;
+            //// Current Resources
+            //currentSaveData.stats.currentHealth = StatsManager.instance.currentHealth;
+            //currentSaveData.stats.currentMana = StatsManager.instance.currentMana;
+            //currentSaveData.stats.currentStamina = StatsManager.instance.currentStamina;
 
             // Bonus Stats (from equipment/buffs)
             currentSaveData.stats.bonusMaxHealth = StatsManager.instance.bonusMaxHealth;
@@ -793,6 +793,9 @@ public class SaveManager : MonoBehaviour
     {
         StopCoroutine(nameof(AutoSaveRoutine));
         StartCoroutine(nameof(AutoSaveRoutine));
+
+        // Refresh Physics2D to ensure tilemap colliders work after scene transitions
+        MapSceneTransitionState.RefreshPhysics2D();
 
         StartCoroutine(ApplySceneDataRoutine());
     }

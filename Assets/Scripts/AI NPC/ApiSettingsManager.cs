@@ -11,8 +11,8 @@ public class ApiSettingsManager : MonoBehaviour
     [SerializeField] private bool enableOnlineActivity = true;
 
     [Header("Backend Config")]
-    public string backendUrl = "https://aslfe.azurewebsites.net";
-    public string apiPath = "api/admin/settings/api-keys";
+    public string backendUrl = "https://aslbe-gsetazbeg8f2g9b0.indonesiacentral-01.azurewebsites.net";
+    public string apiPath = "api/user/settings/api-keys";
 
     // Danh sách lưu trữ trên RAM sau khi tải từ Web
     public List<string> WebGeminiKeys { get; private set; } = new List<string>();

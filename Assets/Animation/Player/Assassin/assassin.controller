@@ -7,7 +7,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: assassin_dash
+  m_Name: rogue_dash
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -73,7 +73,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: assassin_grabMonolith
+  m_Name: rogue_monolithpickup
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -173,7 +173,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: assassin_slowWalk
+  m_Name: rogue_slowwalk
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
