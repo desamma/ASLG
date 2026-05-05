@@ -50,7 +50,7 @@ public class PlayerSpawner : MonoBehaviour
         var huds = FindObjectsOfType<StatusEffectHUD>();
         for (int i = 0; i < huds.Length; i++)
         {
-            if (huds[i] != null)
+            if (huds[i] != null && huds[i].gameObject.name == "BossStatusEffectContainer")
                 huds[i].Clear();
         }
     }

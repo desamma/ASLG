@@ -44,7 +44,13 @@ public class PlayerAttack : MonoBehaviour
     private bool CanAttack()
     {
         var sm = movement.GetStateManager();
-        return sm != null && attackCooldownTimer <= 0f && !sm.IsInState(PlayerState.Attack) && !sm.IsInState(PlayerState.Knockback) && !sm.IsInState(PlayerState.Death) && !sm.IsInState(PlayerState.Dash);
+        return sm != null && attackCooldownTimer <= 0f && 
+            !sm.IsInState(PlayerState.Attack) && 
+            !sm.IsInState(PlayerState.Knockback) && 
+            !sm.IsInState(PlayerState.Death) && 
+            !sm.IsInState(PlayerState.Dash) &&
+            !sm.IsInState(PlayerState.SlowWalk) && 
+            !sm.IsInState(PlayerState.MonolithPickup);
     }
 
     private void TriggerAttack()
@@ -52,7 +58,6 @@ public class PlayerAttack : MonoBehaviour
         attackCooldownTimer = StatsManager.instance.cooldown;
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         movement.FaceToward(mouseWorld.x);
-
         movement.GetStateManager().ChangeState(PlayerState.Attack);
 
         if (ClassData.swingClip != null) SoundFXManager.Instance.PlaySoundFXClip(ClassData.swingClip, transform, volume);
