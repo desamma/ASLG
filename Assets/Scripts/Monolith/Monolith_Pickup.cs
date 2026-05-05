@@ -82,6 +82,8 @@ public class Monolith_Pickup : MonoBehaviour
 
         // Step 3: Move to pickupTransform
         yield return StartCoroutine(MoveToPickupTransform());
+
+        MonolithEndingScreen.Instance.TriggerEnding();
     }
 
     private IEnumerator WalkToBeginTransform()
@@ -135,7 +137,7 @@ public class Monolith_Pickup : MonoBehaviour
         // Play grabMonolith animation
         playerStateManager.ChangeState(PlayerState.MonolithPickup);
         yield return new WaitForSeconds(4f);
-        monolithStateManager.ChangeState(Monolith_State.Disappear);
+        //monolithStateManager.ChangeState(Monolith_State.Disappear);
 
         playerMovement.SetMovementLock(false);
         isPickupActive = false;

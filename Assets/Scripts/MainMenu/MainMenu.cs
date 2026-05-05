@@ -47,6 +47,7 @@ public class MainMenu : MonoBehaviour
             // SỬA: Reset dữ liệu dính của người trước VÀ tự động phát Quà Tân Thủ
             if (InventoryManager.instance != null) InventoryManager.instance.ClearAndLoadStarterItems();
             if (StatsManager.instance != null) StatsManager.instance.ResetStats();
+            PlayerPrefs.DeleteKey(SEEN_INTRO_KEY);
 
             SceneManager.LoadScene("Creation"); // Chuyển sang Scene Creation (ID 1)
         }
