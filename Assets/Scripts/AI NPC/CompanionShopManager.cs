@@ -38,8 +38,8 @@ public class CompanionShopManager : MonoBehaviour
 
     void Update()
     {
-        // Chỉ cho phép mở Shop khi đang ở trong Game (có Player)
-        if (Input.GetKeyDown(KeyCode.L) && GameObject.FindGameObjectWithTag("Player") != null)
+        // Chỉ cho phép mở Shop khi đang ở trong Game (có Player) và không đang chat
+        if (!LLMChatManager.Instance.IsChatting && Input.GetKeyDown(KeyCode.L) && GameObject.FindGameObjectWithTag("Player") != null)
         {
             ToggleShop();
         }

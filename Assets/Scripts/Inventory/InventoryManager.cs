@@ -38,7 +38,7 @@ public class InventoryManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { AddItem("con_blood_potion", 5); AddItem("wp_iron_sword", 1); }
+        //if (Input.GetKeyDown(KeyCode.Alpha1)) { AddItem("con_blood_potion", 5); AddItem("wp_iron_sword", 1); }
     }
 
     public void ForceUIUpdate() => OnInventoryChanged?.Invoke();

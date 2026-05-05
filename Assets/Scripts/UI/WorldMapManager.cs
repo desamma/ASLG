@@ -79,7 +79,7 @@ public class WorldMapManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.M) && !LLMChatManager.Instance.IsChatting)
             ToggleMap();
 
         // Bounce the active marker while map is open

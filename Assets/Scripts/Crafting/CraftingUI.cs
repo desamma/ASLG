@@ -122,7 +122,7 @@ public class CraftingUI : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("Crafting")) Toggle();
+        if (Input.GetButtonDown("Crafting") && !LLMChatManager.Instance.IsChatting) Toggle();
     }
 
     private void OnDestroy()

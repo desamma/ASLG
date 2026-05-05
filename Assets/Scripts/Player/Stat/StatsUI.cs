@@ -40,7 +40,7 @@ public class StatsUI : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("ToggleStats"))
+        if (Input.GetButtonDown("ToggleStats") && !LLMChatManager.Instance.IsChatting)
         {
             Toggle();
         }

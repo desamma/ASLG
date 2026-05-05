@@ -66,7 +66,7 @@ public class QuestLogUI : MonoBehaviour
     private void Update()
     {
         // Press 'J' to open/close the Quest Log
-        if (Input.GetKeyDown(KeyCode.J))
+        if (Input.GetKeyDown(KeyCode.J) && !LLMChatManager.Instance.IsChatting)
             ToggleQuestUI();
     }
 

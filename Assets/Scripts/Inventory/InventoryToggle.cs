@@ -13,7 +13,7 @@ public class InventoryToggle : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B) && SceneManager.GetActiveScene() != SceneManager.GetSceneByName("Start"))
+        if (Input.GetKeyDown(KeyCode.B) && SceneManager.GetActiveScene() != SceneManager.GetSceneByName("Start") && !LLMChatManager.Instance.IsChatting)
             InventoryUI.instance.Toggle();
     }
 }
