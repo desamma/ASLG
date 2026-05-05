@@ -202,7 +202,7 @@ public class LoreIntroScreen : MonoBehaviour
 
         OnIntroComplete();
 
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 
     protected virtual void OnIntroComplete()

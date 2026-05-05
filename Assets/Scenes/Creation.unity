@@ -1267,7 +1267,6 @@ MonoBehaviour:
   movespeedText: {fileID: 1532154491}
   attackCooldownText: {fileID: 1222638826}
   attatckTypeText: {fileID: 875692813}
-  previewSpawnPoint: {fileID: 1476312758}
 --- !u!1 &787225537
 GameObject:
   m_ObjectHideFlags: 0
@@ -5082,11 +5081,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 292847966}
-  - {fileID: 1541879696}
   - {fileID: 1594403691}
   - {fileID: 1788354697}
   - {fileID: 1693828504}
   - {fileID: 393421340}
+  - {fileID: 1541879696}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
