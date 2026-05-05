@@ -4,6 +4,8 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class Enemy_FaieBloodwingMK2_Health : MonoBehaviour, IEnemy_Health
 {
+    [SerializeField] private GameObject monolith;
+
     [Header("Shared Pool")]
     [SerializeField] private Enemy_Faie_Kara_ShareHealth sharedHealth;
 
@@ -72,6 +74,7 @@ public class Enemy_FaieBloodwingMK2_Health : MonoBehaviour, IEnemy_Health
     {
         SoundFXManager.Instance.PlaySoundFXClip(deathAudio, transform, volume);
         yield return new WaitForSeconds(2f);
+        Instantiate(monolith, transform.position + new Vector3(6f, 0f, 0f), Quaternion.identity);
         statusEffectManager.RemoveAll();
         Destroy(gameObject);
     }
