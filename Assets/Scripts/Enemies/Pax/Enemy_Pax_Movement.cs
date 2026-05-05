@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -68,11 +68,6 @@ public class Enemy_Pax_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMovement
 
         if (attackComponent == null)
             attackComponent = GetComponent<Enemy_Pax_Attack>();
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-        {
-            playerLayer = LayerMask.GetMask("Player");
-        }
 
         if (health == null)
             health = GetComponent<Enemy_Pax_Health>();

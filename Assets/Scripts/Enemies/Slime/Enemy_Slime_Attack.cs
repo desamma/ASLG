@@ -10,7 +10,6 @@ public class Enemy_Slime_Attack : MonoBehaviour
 {
     [Header("Attack Settings")]
     [SerializeField] private Transform attackPoint;
-    [SerializeField] private LayerMask playerLayer;
     [SerializeField] private float damageInterval = 1f;
 
     [Header("Jump Attack")]
@@ -28,57 +27,51 @@ public class Enemy_Slime_Attack : MonoBehaviour
 
     private EnemyStats stats;
     private Rigidbody2D rb;
-    private Transform player;
     private float lastDamageTime = 0f;
 
     private Vector2 velocity;
     private BehaviorProfile behaviorProfile;
+    private Enemy_Slime_Movement movement;
+
     private void Start()
     {
         stats = GetComponent<Enemy_Slime_Health>().stats;
         rb = GetComponent<Rigidbody2D>();
-
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-        {
-            player = playerObj.transform;
-        }
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-        {
-            playerLayer = LayerMask.GetMask("Player");
-        }
-        behaviorProfile = GetComponent<Enemy_Slime_Movement>().GetBehavior();
+        movement = GetComponent<Enemy_Slime_Movement>();
+        behaviorProfile = movement.GetBehavior();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("NPC"))
         {
-            TryDealDamageToPlayer();
+            TryDealDamageToTarget(collision.transform);
         }
         else
         {
-            Vector2 bounceDirection = Vector2.Reflect(velocity.normalized, collision.contacts[0].normal);
-            rb.velocity = bounceDirection * spinSpeed;
-            velocity = rb.velocity;
-
-            if (bounceAudioClip != null)
+            if (collision.contacts.Length > 0)
             {
-                SoundFXManager.Instance.PlayRandomSoundFXClips(bounceAudioClip, transform, volume);
+                Vector2 bounceDirection = Vector2.Reflect(velocity.normalized, collision.contacts[0].normal);
+                rb.velocity = bounceDirection * spinSpeed;
+                velocity = rb.velocity;
+
+                if (bounceAudioClip != null)
+                {
+                    SoundFXManager.Instance.PlayRandomSoundFXClips(bounceAudioClip, transform, volume);
+                }
             }
         }
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("NPC"))
         {
-            TryDealDamageToPlayer();
+            TryDealDamageToTarget(collision.transform);
         }
     }
 
-    private void TryDealDamageToPlayer()
+    private void TryDealDamageToTarget(Transform target)
     {
         if (Time.time - lastDamageTime >= damageInterval)
         {
@@ -87,13 +80,21 @@ public class Enemy_Slime_Attack : MonoBehaviour
                 SoundFXManager.Instance.PlayRandomSoundFXClips(hitAudioClip, transform, volume);
             }
 
-            StatsManager.instance.TakeDamage(stats.Strength);
-
-            player.TryGetComponent<PlayerMovement>(out var playerMovement);
-
-            if (playerMovement != null)
+            if (target.CompareTag("Player"))
             {
-                playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                StatsManager.instance.TakeDamage(stats.Strength);
+
+                if (target.TryGetComponent<PlayerMovement>(out var playerMovement))
+                {
+                    playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                }
+            }
+            else if (target.CompareTag("NPC"))
+            {
+                if (target.TryGetComponent<NPCCompanion>(out var npc))
+                {
+                    npc.TakeDamage(stats.Strength, false); // isFromPlayer = false
+                }
             }
 
             lastDamageTime = Time.time;
@@ -102,14 +103,15 @@ public class Enemy_Slime_Attack : MonoBehaviour
 
     public void JumpAttack()
     {
-        if (player == null) return;
+        Transform target = movement.PlayerTransform;
+        if (target == null) return;
 
         if (jumpAttackAudioClip != null)
         {
             SoundFXManager.Instance.PlaySoundFXClip(jumpAttackAudioClip, transform, volume);
         }
 
-        Vector2 direction = (player.position - transform.position).normalized;
+        Vector2 direction = (target.position - transform.position).normalized;
         direction.x *= jumpForce * behaviorProfile.Aggression;
         direction.y *= jumpForce * behaviorProfile.Aggression;
 
@@ -118,14 +120,15 @@ public class Enemy_Slime_Attack : MonoBehaviour
 
     public void StartSpinAttack()
     {
+        Transform target = movement.PlayerTransform;
         if (spinAttackAudioClip != null)
         {
             SoundFXManager.Instance.PlaySoundFXClip(spinAttackAudioClip, transform, volume);
         }
 
-        if (player != null)
+        if (target != null)
         {
-            Vector2 direction = (player.position - transform.position).normalized;
+            Vector2 direction = (target.position - transform.position).normalized;
             rb.velocity = direction * spinSpeed * behaviorProfile.Aggression;
         }
         velocity = rb.velocity;

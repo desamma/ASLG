@@ -74,13 +74,13 @@ public class Enemy_KaraWinterblade_Attack : MonoBehaviour
         PlayAudio(1);
         Collider2D[] hits;
         if (num != 0)
-            hits = Physics2D.OverlapBoxAll(comboAttackPoint.position, comboAttackHitBox, playerLayer);
+            hits = Physics2D.OverlapBoxAll(comboAttackPoint.position, comboAttackHitBox, 0f, playerLayer);
         else
-            hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, playerLayer);
+            hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, 0f, playerLayer);
 
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
             {
                 player = hit.transform;
                 if (!hitPlayer)
@@ -90,30 +90,31 @@ public class Enemy_KaraWinterblade_Attack : MonoBehaviour
                     hitPlayer = true;
                 }
 
-                switch (num)
+                float multiplier = num switch
                 {
-                    case 1:
-                        DealDamage(false, firstHitMultiplier);
-                        break;
-                    case 2:
-                        DealDamage(false, secondHitMultiplier);
-                        break;
-                    case 3:
-                        DealDamage(false, thirdHitMultiplier);
-                        break;
-                    default:
-                        DealDamage(false, isKnockback: true);
-                        break;
-                }
+                    1 => firstHitMultiplier,
+                    2 => secondHitMultiplier,
+                    3 => thirdHitMultiplier,
+                    _ => 1f
+                };
 
-                if (isChromaticColdActive)
+                if (hit.CompareTag("Player"))
                 {
-                    player.TryGetComponent<StatusEffectManager>(out var playerStatusManager);
-                    if (playerStatusManager != null)
+                    DealDamage(false, multiplier, num == 0);
+
+                    if (isChromaticColdActive)
                     {
-                        ApplyStatusFX(1, playerStatusManager);
-                        ApplySlowToPlayer(player, frostFireDuration);
+                        if (player.TryGetComponent<StatusEffectManager>(out var playerStatusManager))
+                        {
+                            ApplyStatusFX(1, playerStatusManager);
+                            ApplySlowToPlayer(player, frostFireDuration);
+                        }
                     }
+                }
+                else if (hit.CompareTag("NPC"))
+                {
+                    float damage = health.stats.Strength * multiplier * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
+                    if (hit.TryGetComponent<NPCCompanion>(out var npc)) npc.TakeDamage(damage, false);
                 }
             }
         }

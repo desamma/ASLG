@@ -65,10 +65,6 @@ public class Enemy_Slime_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMoveme
         if (attackComponent == null)
             attackComponent = GetComponent<Enemy_Slime_Attack>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-        {
-            playerLayer = LayerMask.GetMask("Player");
-        }
         if (health == null)
             health = GetComponent<Enemy_Slime_Health>();
 

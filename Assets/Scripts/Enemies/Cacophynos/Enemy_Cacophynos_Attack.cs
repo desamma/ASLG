@@ -39,9 +39,6 @@ public class Enemy_Cacophynos_Attack : MonoBehaviour
         if (health == null)
             health = GetComponent<Enemy_Cacophynos_Health>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
-
         difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
     }
 
@@ -51,7 +48,7 @@ public class Enemy_Cacophynos_Attack : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (!hit.CompareTag("Player")) continue;
+            if (!hit.CompareTag("Player") && !hit.CompareTag("NPC")) continue;
 
             player = hit.transform;
 
@@ -70,7 +67,7 @@ public class Enemy_Cacophynos_Attack : MonoBehaviour
 
             foreach (var hit in hits)
             {
-                if (!hit.CompareTag("Player")) continue;
+                if (!hit.CompareTag("Player") && !hit.CompareTag("NPC")) continue;
 
                 player = hit.transform;
                 break;
@@ -136,7 +133,18 @@ public class Enemy_Cacophynos_Attack : MonoBehaviour
     {
         if (player == null) return;
         float damage = health.stats.Magic * multiplier * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
-        StatsManager.instance.TakeDamage(damage);
+        
+        if (player.CompareTag("Player"))
+        {
+            StatsManager.instance.TakeDamage(damage);
+        }
+        else if (player.CompareTag("NPC"))
+        {
+            if (player.TryGetComponent<NPCCompanion>(out var npc))
+            {
+                npc.TakeDamage(damage, false);
+            }
+        }
     }
 
     public void PlayAudio(int num, float volumeOverride = -1f)

@@ -42,7 +42,7 @@ public class Enemy_DrakeDowager_Attack : MonoBehaviour
 
                 foreach (var hit in hits)
                 {
-                    if (!hit.CompareTag("Player")) continue;
+                    if (!hit.CompareTag("Player") && !hit.CompareTag("NPC")) continue;
 
                     player = hit.transform;
                     break;

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -67,11 +67,6 @@ public class Enemy_BringerOfDeath_Movement : MonoBehaviour, IEnemy_Movement, IEn
         if (animator == null)
             animator = GetComponent<Animator>();
 
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-        {
-            playerLayer = LayerMask.GetMask("Player");
-        }
 
         if (health == null)
         {

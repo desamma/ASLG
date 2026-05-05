@@ -367,7 +367,7 @@ MonoBehaviour:
   hitBox2: {fileID: 7459926797068245559}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   player: {fileID: 0}
   normalAttackPoint: {fileID: 540199898776489687}
   normalAttackHitBox: {x: 2, y: 2}
@@ -441,7 +441,7 @@ MonoBehaviour:
   animator: {fileID: 55567293406573303}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   detectionPoint: {fileID: 722183836987121982}
   idleToPatrolWaitTime: 5
   patrolDistance: 3

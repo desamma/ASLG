@@ -58,7 +58,7 @@ public class Enemy_FaieBloodwing_Attack : MonoBehaviour
         {
             foreach (var hit in hits)
             {
-                if (hit.CompareTag("Player"))
+                if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
                 {
                     player = hit.transform;
                     break;
@@ -80,12 +80,15 @@ public class Enemy_FaieBloodwing_Attack : MonoBehaviour
             spellComponent.Initialize(health.stats, direction, true,
                 extraEffect: playerTransform =>
                 {
-                    if (playerTransform.TryGetComponent<StatusEffectManager>(out var statusEffectManager))
+                    if (playerTransform.CompareTag("Player"))
                     {
-                        ApplyStatusFX(0, statusEffectManager);
-                    }
+                        if (playerTransform.TryGetComponent<StatusEffectManager>(out var statusEffectManager))
+                        {
+                            ApplyStatusFX(0, statusEffectManager);
+                        }
 
-                    ApplySlowToPlayer(playerTransform, slowTime);
+                        ApplySlowToPlayer(playerTransform, slowTime);
+                    }
                 });
         }
 

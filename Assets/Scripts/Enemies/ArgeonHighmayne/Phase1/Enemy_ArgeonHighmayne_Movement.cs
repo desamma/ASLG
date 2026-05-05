@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -89,9 +89,6 @@ public class Enemy_ArgeonHighmayne_Movement : MonoBehaviour, IEnemy_Movement, IE
 
         if (charCollider == null)
             charCollider = GetComponent<Collider2D>();
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
 
         if (health == null)
             health = GetComponent<Enemy_ArgeonHighmayne_Health>();

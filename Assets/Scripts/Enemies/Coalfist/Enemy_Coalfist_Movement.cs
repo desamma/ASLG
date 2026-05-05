@@ -96,9 +96,6 @@ public class Enemy_Coalfist_Movement : MonoBehaviour, IEnemy_Movement, IEnemyMov
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
-
         if (health == null)
             health = GetComponent<Enemy_Coalfist_Health>();
 

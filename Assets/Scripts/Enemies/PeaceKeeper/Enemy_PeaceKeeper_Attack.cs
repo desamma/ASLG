@@ -31,18 +31,15 @@ public class Enemy_PeaceKeeper_Attack : MonoBehaviour
         if (health == null)
             health = GetComponent<Enemy_PeaceKeeper_Health>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
-
         difficultyModifier = DifficultyManager.Instance.CurrentDifficulty;
     }
 
     public void NormalAttack()
     {
-        var hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, playerLayer);
+        var hits = Physics2D.OverlapBoxAll(normalAttackPoint.position, normalAttackHitBox, 0f, playerLayer);
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (hit.CompareTag("Player") || hit.CompareTag("NPC"))
             {
                 player = hit.transform;
                 if (!hitPlayer)
@@ -50,7 +47,20 @@ public class Enemy_PeaceKeeper_Attack : MonoBehaviour
                     PlayAudio(0, volume * 0.4f);
                     hitPlayer = true;
                 }
-                DealDamage(true);
+                
+                if (hit.CompareTag("Player"))
+                {
+                    DealDamage(true);
+                }
+                else if (hit.CompareTag("NPC"))
+                {
+                    float damage = health.stats.Magic * difficultyModifier.Resolve(difficultyModifier.MagicMultiplier);
+                    if (hit.TryGetComponent<NPCCompanion>(out var npc))
+                    {
+                        npc.TakeDamage(damage, false);
+                    }
+                    hitEffect.SetActive(true);
+                }
             }
         }
         hitPlayer = false;

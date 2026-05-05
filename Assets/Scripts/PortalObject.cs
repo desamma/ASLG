@@ -24,6 +24,12 @@ public class PortalObject : MonoBehaviour
 
         if (dist <= interactDistance && Input.GetKeyDown(KeyCode.F))
         {
+            // Bắt buộc lưu dữ liệu các chỉ số trước khi mở map để chuẩn bị chuyển scene
+            if (SaveManager.Instance != null)
+            {
+                SaveManager.Instance.ForceSaveNow();
+            }
+
             if (WorldMapManager.Instance != null)
             {
                 WorldMapManager.Instance.OpenMapForTeleport();

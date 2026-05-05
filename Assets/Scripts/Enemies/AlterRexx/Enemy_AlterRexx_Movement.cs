@@ -45,11 +45,6 @@ public class Enemy_AlterRexx_Movement : MonoBehaviour, IEnemy_Movement
         if (attackComponent == null)
             attackComponent = GetComponent<Enemy_AlterRexx_Attack>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-        {
-            playerLayer = LayerMask.GetMask("Player");
-        }
-
         if (health == null)
             health = GetComponent<Enemy_AlterRexx_Health>();
 

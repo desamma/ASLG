@@ -10,7 +10,6 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
 {
     [Header("Attack Settings")]
     [SerializeField] private Transform attackPoint;
-    [SerializeField] private List<Transform> players;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private Vector2 attackBoxSize;
 
@@ -24,26 +23,12 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
     [SerializeField] private float volume = 1f;
 
     private EnemyStats stats;
-    private GameObject player;
+    private Enemy_BringerOfDeath_Movement movement;
+
     private void Start()
     {
         stats = GetComponent<Enemy_BringerOfDeath_Health>().stats;
-
-        if (players == null || players.Count == 0)
-        {
-            players = new List<Transform>();
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-
-            if (playerObj != null)
-            {
-                players.Add(playerObj.transform);
-            }
-        }
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-        {
-            playerLayer = LayerMask.GetMask("Player");
-        }
+        movement = GetComponent<Enemy_BringerOfDeath_Movement>();
         attackBoxSize = new Vector2(4, 3);
     }
 
@@ -54,17 +39,24 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player") && !audioPlayed)
+            if ((hit.CompareTag("Player") || hit.CompareTag("NPC")) && !audioPlayed)
             {
-                player = hit.gameObject;
                 SoundFXManager.Instance.PlaySoundFXClip(meleeAttackHitAudioClip, transform, volume);
-                StatsManager.instance.TakeDamage(stats.Strength);
 
-                player.TryGetComponent<PlayerMovement>(out var playerMovement);
-
-                if (playerMovement != null)
+                if (hit.CompareTag("Player"))
                 {
-                    playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                    StatsManager.instance.TakeDamage(stats.Strength);
+                    if (hit.TryGetComponent<PlayerMovement>(out var playerMovement))
+                    {
+                        playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                    }
+                }
+                else if (hit.CompareTag("NPC"))
+                {
+                    if (hit.TryGetComponent<NPCCompanion>(out var npc))
+                    {
+                        npc.TakeDamage(stats.Strength, false);
+                    }
                 }
 
                 audioPlayed = true;
@@ -78,19 +70,14 @@ public class Enemy_BringerOfDeath_Attack : MonoBehaviour
 
     public void CastSpell()
     {
-        if (players == null || players.Count == 0)
-        {
-            return;
-        }
+        Transform target = movement.PlayerTransform;
+        if (target == null) return;
 
-        foreach (var player in players)
-        {
-            float xOffset = player.position.x < transform.position.x ? -2.7f : 2.7f;
-            float yOffset = -0.8f;
-            var spawnPosition = new Vector3(player.position.x + xOffset, player.position.y + yOffset, player.position.z);
+        float xOffset = target.position.x < transform.position.x ? -2.7f : 2.7f;
+        float yOffset = -0.8f;
+        var spawnPosition = new Vector3(target.position.x + xOffset, target.position.y + yOffset, target.position.z);
 
-            SoundFXManager.Instance.PlaySoundFXClip(CastAudioClip, transform, volume);
-            Instantiate(spellPrefab, spawnPosition, Quaternion.identity);
-        }
+        SoundFXManager.Instance.PlaySoundFXClip(CastAudioClip, transform, volume);
+        Instantiate(spellPrefab, spawnPosition, Quaternion.identity);
     }
 }

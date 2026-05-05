@@ -81,9 +81,6 @@ public class Enemy_ArgeonHighmayneMK2_Movement : MonoBehaviour, IEnemy_Movement,
         if (charCollider == null)
             charCollider = GetComponent<Collider2D>();
 
-        if (playerLayer != LayerMask.GetMask("Player"))
-            playerLayer = LayerMask.GetMask("Player");
-
         if (health == null)
             health = GetComponent<Enemy_ArgeonHighmayneMK2_Health>();
 

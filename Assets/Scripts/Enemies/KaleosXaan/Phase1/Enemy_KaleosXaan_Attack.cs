@@ -132,7 +132,7 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (!hit.CompareTag("Player")) continue;
+            if (!hit.CompareTag("Player") && !hit.CompareTag("NPC")) continue;
 
             player = hit.transform;
 
@@ -145,7 +145,15 @@ public class Enemy_KaleosXaan_Attack : MonoBehaviour
             if (hitEffect != null)
                 Instantiate(hitEffect, player.position, Quaternion.identity, player.transform);
 
-            DealDamage(false, normalAttackDamageMultiplier);
+            if (hit.CompareTag("Player"))
+            {
+                DealDamage(false, normalAttackDamageMultiplier);
+            }
+            else if (hit.CompareTag("NPC"))
+            {
+                float damage = health.stats.Strength * normalAttackDamageMultiplier * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
+                if (hit.TryGetComponent<NPCCompanion>(out var npc)) npc.TakeDamage(damage, false);
+            }
         }
     }
 

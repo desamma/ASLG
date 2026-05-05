@@ -12,7 +12,6 @@ public class Enemy_Andromeda_Attack : MonoBehaviour
 
     [Header("Spell Cast")]
     [SerializeField] private GameObject spellPrefab;
-    [SerializeField] private List<Transform> players;
 
     [Header("Audio")]
     [SerializeField] private AudioClip aoeAttackAudioClip;
@@ -20,27 +19,12 @@ public class Enemy_Andromeda_Attack : MonoBehaviour
     [SerializeField] private float volume = 1f;
 
     private EnemyStats stats;
-    private GameObject player;
+    private Enemy_Andromeda_Movement movement;
 
     private void Start()
     {
         stats = GetComponent<Enemy_Andromeda_Health>().stats;
-
-        if (players == null || players.Count == 0)
-        {
-            players = new List<Transform>();
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            
-            if (playerObj != null)
-            {
-                players.Add(playerObj.transform);
-            }
-        }
-
-        if (playerLayer != LayerMask.GetMask("Player"))
-        {
-            playerLayer = LayerMask.GetMask("Player");
-        }
+        movement = GetComponent<Enemy_Andromeda_Movement>();
 
         if (spellPrefab == null)
         {
@@ -62,14 +46,18 @@ public class Enemy_Andromeda_Attack : MonoBehaviour
         {
             if (hit.CompareTag("Player"))
             {
-                player = hit.gameObject;
                 StatsManager.instance.TakeDamage(stats.Magic);
 
-                player.TryGetComponent<PlayerMovement>(out var playerMovement);
-
-                if (playerMovement != null)
+                if (hit.TryGetComponent<PlayerMovement>(out var playerMovement))
                 {
                     playerMovement.KnockBack(transform, stats.KnockbackForce, stats.KnockbackTime, stats.StunTime);
+                }
+            }
+            else if (hit.CompareTag("NPC"))
+            {
+                if (hit.TryGetComponent<NPCCompanion>(out var npc))
+                {
+                    npc.TakeDamage(stats.Magic, false);
                 }
             }
         }
@@ -77,10 +65,8 @@ public class Enemy_Andromeda_Attack : MonoBehaviour
 
     public void CastSpell()
     {
-        if (players == null || players.Count == 0)
-        {
-            return;
-        }
+        Transform target = movement.PlayerTransform;
+        if (target == null) return;
 
         if (spellPrefab == null)
         {
@@ -88,23 +74,17 @@ public class Enemy_Andromeda_Attack : MonoBehaviour
             return;
         }
 
-        foreach (var player in players)
+        var spawnPosition = new Vector3(
+            target.position.x, 
+            target.position.y, 
+            target.position.z
+        );
+
+        if (castAudioClip != null)
         {
-            if (player == null) continue;
-
-            // Spawn spell at player's exact position
-            var spawnPosition = new Vector3(
-                player.position.x, 
-                player.position.y, 
-                player.position.z
-            );
-
-            if (castAudioClip != null)
-            {
-                SoundFXManager.Instance.PlaySoundFXClip(castAudioClip, transform, volume);
-            }
-
-            Instantiate(spellPrefab, spawnPosition, Quaternion.identity);
+            SoundFXManager.Instance.PlaySoundFXClip(castAudioClip, transform, volume);
         }
+
+        Instantiate(spellPrefab, spawnPosition, Quaternion.identity);
     }
 }

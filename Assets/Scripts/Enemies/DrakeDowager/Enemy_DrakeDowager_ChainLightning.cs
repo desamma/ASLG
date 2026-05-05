@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -56,7 +56,7 @@ public class Enemy_DrakeDowager_ChainLightning : MonoBehaviour
         if (collision == null)
             return;
 
-        if (collision.CompareTag("Player") && !hitPlayer)
+        if ((collision.CompareTag("Player") || collision.CompareTag("NPC")) && !hitPlayer)
         {
             hitPlayer = true;
 
@@ -70,8 +70,17 @@ public class Enemy_DrakeDowager_ChainLightning : MonoBehaviour
 
             float damage = casterStats.Strength * difficultyModifier.Resolve(difficultyModifier.StrengthMultiplier);
 
-            StatsManager.instance.TakeDamage(damage);
+            if (collision.CompareTag("Player"))
+            {
+                StatsManager.instance.TakeDamage(damage);
+            }
+            else if (collision.CompareTag("NPC"))
+            {
+                if (collision.TryGetComponent<NPCCompanion>(out var npc))
+                {
+                    npc.TakeDamage(damage, false);
+                }
+            }
         }
     }
 }
-

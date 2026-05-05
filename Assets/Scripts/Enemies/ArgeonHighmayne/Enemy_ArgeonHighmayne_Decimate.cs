@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -116,7 +116,7 @@ public class Enemy_ArgeonHighmayne_Decimate : MonoBehaviour
         if (collision == null)
             return;
 
-        if (collision.CompareTag("Player") && !hitPlayer)
+        if ((collision.CompareTag("Player") || collision.CompareTag("NPC")) && !hitPlayer)
         {
             hitPlayer = true;
 
@@ -131,7 +131,17 @@ public class Enemy_ArgeonHighmayne_Decimate : MonoBehaviour
 
             var totalDamage = totalMagicDamage + totalPhysicalDamage;
 
-            StatsManager.instance.TakeDamage(totalDamage);
+            if (collision.CompareTag("Player"))
+            {
+                StatsManager.instance.TakeDamage(totalDamage);
+            }
+            else if (collision.CompareTag("NPC"))
+            {
+                if (collision.TryGetComponent<NPCCompanion>(out var npc))
+                {
+                    npc.TakeDamage(totalDamage, false);
+                }
+            }
         }
     }
 }
