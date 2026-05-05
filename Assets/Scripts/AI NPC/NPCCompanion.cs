@@ -24,7 +24,7 @@ public class NPCCompanion : MonoBehaviour
     [Header("Movement & Target")]
     public Transform playerTransform;
     public float followDistance = 2f;
-    public float moveSpeed = 4f;
+    public float moveSpeed = 100f;
     public float maxTeleportDistance = 50f;
 
     [Header("Combat")]
@@ -61,11 +61,13 @@ public class NPCCompanion : MonoBehaviour
 
     private string originalTag;
     private int originalLayer;
+    private Rigidbody2D rb;
 
     private void Start()
     {
         originalTag = gameObject.tag;
         originalLayer = gameObject.layer;
+        rb = GetComponent<Rigidbody2D>();
 
         currentHealth = maxHealth;
         if (healthSlider != null)
@@ -77,6 +79,26 @@ public class NPCCompanion : MonoBehaviour
         if (nameText != null) nameText.text = npcName;
         if (talkIcon != null) talkIcon.SetActive(false);
         if (playerTransform == null) playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+
+        // Bỏ qua va chạm giữa NPC và Player để không chắn đường (Collision)
+        if (playerTransform != null)
+        {
+            Collider2D[] npcColliders = GetComponentsInChildren<Collider2D>();
+            Collider2D[] playerColliders = playerTransform.GetComponentsInChildren<Collider2D>();
+            foreach (var nCol in npcColliders)
+            {
+                foreach (var pCol in playerColliders)
+                {
+                    Physics2D.IgnoreCollision(nCol, pCol, true);
+                }
+            }
+        }
+
+        // Tự động đăng ký NPC này vào LLMChatManager khi khởi chạy
+        if (LLMChatManager.Instance != null)
+        {
+            LLMChatManager.Instance.RegisterCompanion(this);
+        }
 
         UpdateRelationshipUI();
     }
@@ -95,6 +117,23 @@ public class NPCCompanion : MonoBehaviour
         HandleMovement();
         HandleRelationshipBehaviors();
         HandleCombat();
+    }
+
+    private void LateUpdate()
+    {
+        // Giữ cho các Canvas UI (chứa tên, thanh máu) không bị lật ngược khi NPC quay mặt
+        if (transform.localScale.x != 0)
+        {
+            foreach (Transform child in transform)
+            {
+                if (child.GetComponent<Canvas>() != null)
+                {
+                    Vector3 childScale = child.localScale;
+                    childScale.x = Mathf.Sign(transform.localScale.x) * Mathf.Abs(childScale.x);
+                    child.localScale = childScale;
+                }
+            }
+        }
     }
 
     private void CheckDistanceAndTeleport()
@@ -185,6 +224,7 @@ public class NPCCompanion : MonoBehaviour
 
         GetComponent<SpriteRenderer>().enabled = false;
         GetComponent<Collider2D>().enabled = false;
+        StopNPC();
 
         foreach (Transform child in transform)
         {
@@ -225,7 +265,11 @@ public class NPCCompanion : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (isCastingSkill2) return; 
+        if (isCastingSkill2) 
+        {
+            StopNPC();
+            return; 
+        }
 
         if (relationshipScore <= -500 && angryTimer <= 0f) 
         {
@@ -235,10 +279,7 @@ public class NPCCompanion : MonoBehaviour
                 wanderTarget = (Vector2)transform.position + Random.insideUnitCircle * 5f;
                 wanderTimer = 3f; 
             }
-            transform.position = Vector2.MoveTowards(transform.position, wanderTarget, moveSpeed * 0.5f * Time.deltaTime);
-            Vector3 wScale = transform.localScale;
-            wScale.x = (wanderTarget.x > transform.position.x) ? Mathf.Abs(wScale.x) : -Mathf.Abs(wScale.x);
-            transform.localScale = wScale;
+            MoveNPC(wanderTarget, moveSpeed);
             return; 
         }
 
@@ -253,22 +294,68 @@ public class NPCCompanion : MonoBehaviour
 
             if (distanceToTarget > stopDistance)
             {
-                transform.position = Vector2.MoveTowards(transform.position, currentTarget.position, moveSpeed * Time.deltaTime);
-                Vector3 scale = transform.localScale;
-                scale.x = (currentTarget.position.x > transform.position.x) ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
-                transform.localScale = scale;
+                MoveNPC(currentTarget.position, moveSpeed);
+            }
+            else
+            {
+                StopNPC();
             }
         }
         else 
         {
-            if (distanceToPlayer > followDistance)
+            // Lượn lờ xung quanh Player thay vì đi theo thụ động
+            wanderTimer -= Time.deltaTime;
+            
+            float currentMoveSpeed = moveSpeed * 0.75f; // Tốc độ lượn lờ là 75%
+
+            if (distanceToPlayer > followDistance * 1.5f)
             {
-                transform.position = Vector2.MoveTowards(transform.position, playerTransform.position, moveSpeed * Time.deltaTime);
-                Vector3 scale = transform.localScale;
-                scale.x = (playerTransform.position.x > transform.position.x) ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
-                transform.localScale = scale;
+                wanderTarget = playerTransform.position;
+                wanderTimer = 0.5f; // Liên tục cập nhật khi ở xa
+                currentMoveSpeed = moveSpeed; // Tăng tốc tối đa (100%) để đuổi kịp Player
             }
+            else if (wanderTimer <= 0f || Vector2.Distance(transform.position, wanderTarget) < 0.5f)
+            {
+                Vector2 randomOffset = Random.insideUnitCircle.normalized * Random.Range(followDistance * 0.5f, followDistance);
+                wanderTarget = (Vector2)playerTransform.position + randomOffset;
+                wanderTimer = Random.Range(1.5f, 3.5f);
+            }
+
+            MoveNPC(wanderTarget, currentMoveSpeed);
         }
+    }
+
+    private void MoveNPC(Vector2 targetPosition, float speed)
+    {
+        float distance = Vector2.Distance(transform.position, targetPosition);
+        if (distance <= 0.1f)
+        {
+            StopNPC();
+            return;
+        }
+        
+        if (rb != null)
+        {
+            Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
+            rb.velocity = direction * speed;
+        }
+        else
+        {
+            transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+        }
+
+        // Tránh lật mặt liên tục khi mục tiêu ở vị trí xấp xỉ X
+        if (Mathf.Abs(targetPosition.x - transform.position.x) > 0.05f)
+        {
+            Vector3 scale = transform.localScale;
+            scale.x = (targetPosition.x > transform.position.x) ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
+            transform.localScale = scale;
+        }
+    }
+
+    private void StopNPC()
+    {
+        if (rb != null) rb.velocity = Vector2.zero;
     }
 
     private void HandleRelationshipBehaviors()

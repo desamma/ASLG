@@ -33,4 +33,12 @@ public class PersistentUIMenuButtons : MonoBehaviour
     {
         FindFirstObjectByType<WorldMapManager>(FindObjectsInactive.Include)?.ToggleMap();
     }
+
+    public void ToggleCompanionShop()
+    {
+        if (CompanionShopManager.Instance != null)
+        {
+            CompanionShopManager.Instance.ToggleShop();
+        }
+    }
 }

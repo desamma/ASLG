@@ -2081,8 +2081,6 @@ MonoBehaviour:
   inventoryCanvasGroup: {fileID: 0}
   itemSlotPrefab: {fileID: 3992982406673191109, guid: 2d744cd00b6277242853bb25312cdd46, type: 3}
   slotGrid: {fileID: 676701095}
-  btn_nextPage: {fileID: 0}
-  btn_prevPage: {fileID: 0}
   txt_pageIndicator: {fileID: 0}
   slotsPerPage: 25
   emptyHint: {fileID: 391310969}
@@ -2095,6 +2093,10 @@ MonoBehaviour:
   txt_previewStats: {fileID: 282378863}
   btn_equip: {fileID: 1250093544}
   btn_drop: {fileID: 165004326}
+  slider_health: {fileID: 0}
+  slider_mana: {fileID: 0}
+  slider_stamina: {fileID: 0}
+  slider_exp: {fileID: 0}
 --- !u!114 &504029470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3051,6 +3053,99 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 676701094}
   m_CullTransparentMesh: 1
+--- !u!1001 &684999239
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2490069932326579920, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_Name
+      value: CompanionShopSystem
+      objectReference: {fileID: 0}
+    - target: {fileID: 2893403579869819666, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3303568986515796969, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_text
+      value: 'Name: Alicia
+
+        Price: None
+
+        Description: She is the
+        summoned ally from the void. Bring the color of nebula to the death.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438036707100945563, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 41.17132
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438036707100945563, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 17.570694
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438036707100945563, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.27563325
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438036707100945563, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438036707100945563, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438036707100945563, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438036707100945563, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438036707100945563, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438036707100945563, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438036707100945563, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7089845584693112003, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7089845584693112003, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7789599471979533903, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+      propertyPath: johnsonButtonText
+      value: 
+      objectReference: {fileID: 684999240}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+--- !u!114 &684999240 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 197707187194828753, guid: 8f6c6307a544f40428ff78d0f46838c4, type: 3}
+  m_PrefabInstance: {fileID: 684999239}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &686189257
 GameObject:
   m_ObjectHideFlags: 0
@@ -4330,6 +4425,7 @@ MonoBehaviour:
   defaultSpawnPoint: {fileID: 0}
   arrivalZoneName: 
   aliciaPrefab: {fileID: 5123960915641433439, guid: c1c4031dc32ca644b98dedc80c0e8c68, type: 3}
+  johnsonPrefab: {fileID: 0}
 --- !u!4 &1123538557
 Transform:
   m_ObjectHideFlags: 0
@@ -112262,6 +112358,7 @@ SceneRoots:
   - {fileID: 1859064847}
   - {fileID: 703236712}
   - {fileID: 87382171}
+  - {fileID: 684999239}
   - {fileID: 1954447761}
   - {fileID: 1421146842}
   - {fileID: 1123538557}
