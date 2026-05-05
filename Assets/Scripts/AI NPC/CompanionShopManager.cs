@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class CompanionShopManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class CompanionShopManager : MonoBehaviour
     public GameObject shopUIPanel;
     public GameObject johnsonPrefab;
     public int johnsonCost = 500;
+    public TMP_Text johnsonButtonText;
 
     private bool isShopOpen = false;
 
@@ -29,6 +31,7 @@ public class CompanionShopManager : MonoBehaviour
     {
         if (shopUIPanel != null) shopUIPanel.SetActive(false);
         SceneManager.sceneLoaded += OnSceneLoaded;
+        UpdateShopUI();
     }
 
     private void OnDestroy()
@@ -49,10 +52,14 @@ public class CompanionShopManager : MonoBehaviour
         }
     }
 
-    private void ToggleShop()
+    public void ToggleShop()
     {
         isShopOpen = !isShopOpen;
         if (shopUIPanel != null) shopUIPanel.SetActive(isShopOpen);
+        if (isShopOpen)
+        {
+            UpdateShopUI();
+        }
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -82,6 +89,7 @@ public class CompanionShopManager : MonoBehaviour
             
             LLMChatManager.Instance?.RegisterCompanion(npcScript);
             Debug.Log("Đã mua Johnson thành công!");
+            UpdateShopUI();
         }
         else { Debug.Log("Không đủ Vàng!"); }
     }
@@ -90,5 +98,17 @@ public class CompanionShopManager : MonoBehaviour
     {
         isShopOpen = false;
         if (shopUIPanel != null) shopUIPanel.SetActive(false);
+    }
+
+    private void UpdateShopUI()
+    {
+        if (SaveManager.Instance != null && SaveManager.Instance.currentSaveData != null)
+        {
+            if (SaveManager.Instance.currentSaveData.unlockedCompanions.Contains("npc_johnson"))
+            {
+                if (johnsonButtonText != null)
+                    johnsonButtonText.text = "HIRED";
+            }
+        }
     }
 }

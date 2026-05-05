@@ -96,6 +96,12 @@ public class LLMChatManager : MonoBehaviour
         if (exitButton != null) exitButton.onClick.AddListener(CloseChat);
         if (questButton != null) questButton.onClick.AddListener(OnQuestButtonClicked);
         if (playerInputField != null) playerInputField.onSubmit.AddListener(delegate { OnSendClicked(); });
+
+        // Fallback: Đảm bảo activeNPC (ví dụ: Alicia) đã gán trên Inspector được thêm vào danh sách
+        if (activeNPC != null)
+        {
+            RegisterCompanion(activeNPC);
+        }
     }
 
     void Update()
@@ -156,7 +162,26 @@ public class LLMChatManager : MonoBehaviour
         if (playerMovement != null) playerMovement.SetMovementLock(true); 
         if (playerAttack != null) playerAttack.enabled = false; 
         
-        if (CurrentChatHistory.Count == 0) npcTextDisplay.text = $"{activeNPC.npcName}: Cậu cần gì sao?"; 
+        if (CurrentChatHistory.Count == 0) 
+        {
+            npcTextDisplay.text = $"{activeNPC.npcName}: Cậu cần gì sao?"; 
+        }
+        else
+        {
+            string lastMsg = $"{activeNPC.npcName}: Cậu cần gì sao?";
+            for (int i = CurrentChatHistory.Count - 1; i >= 0; i--)
+            {
+                if (CurrentChatHistory[i].role == "assistant")
+                {
+                    string rawText = CurrentChatHistory[i].content;
+                    Match match = Regex.Match(rawText, @"\[(?:REL|rel|Rel).*?([+-]?\d+)\]");
+                    if (match.Success) rawText = rawText.Replace(match.Value, "").Trim();
+                    lastMsg = $"{activeNPC.npcName}: " + rawText;
+                    break;
+                }
+            }
+            npcTextDisplay.text = lastMsg;
+        }
         
         StartCoroutine(FocusInputDelay()); 
         
@@ -275,17 +300,20 @@ public class LLMChatManager : MonoBehaviour
         isGeneratingQuest = false;
 
         if (!string.IsNullOrEmpty(loreText))
-        {
-            currentQuestLore = loreText;
-            npcTextDisplay.text = $"{activeNPC?.npcName}: " + loreText;
-            hasActiveAiQuest = true;
-            questTimer = 60f; 
-            questCooldownTimer = 60f; 
-            lastPlayerPos = playerMovement != null ? playerMovement.transform.position : Vector2.zero;
-            if (aiQuestPanel != null) aiQuestPanel.SetActive(true);
-            UpdateQuestUI();
-            CurrentChatHistory.Add(new ChatMessage { role = "assistant", content = loreText });
-        }
+{
+    currentQuestLore = loreText;
+    // Sửa dòng này thành một câu mồi cố định hoặc ghép chuỗi ngắn gọn
+    npcTextDisplay.text = $"{activeNPC?.npcName}: Tôi vừa giao một nhiệm vụ cho cậu, hãy xem trên bảng thông báo nhé!";
+    
+    hasActiveAiQuest = true;
+    questTimer = 60f; 
+    questCooldownTimer = 60f; 
+    lastPlayerPos = playerMovement != null ? playerMovement.transform.position : Vector2.zero;
+    
+    if (aiQuestPanel != null) aiQuestPanel.SetActive(true);
+    UpdateQuestUI();
+    CurrentChatHistory.Add(new ChatMessage { role = "assistant", content = loreText });
+}
     }
 
     private void UpdateQuestUI()
@@ -310,21 +338,58 @@ public class LLMChatManager : MonoBehaviour
     }
 
     private void CheckQuestCompletion()
-    {
-        if (!hasActiveAiQuest) return;
-        
-        bool isComplete = (currentQuestType == 0 && currentChatCount >= targetChatCount) || 
-                          (currentQuestType == 1 && currentDistance >= targetDistance);
+{
+    if (!hasActiveAiQuest) return;
+    
+    bool isComplete = (currentQuestType == 0 && currentChatCount >= targetChatCount) || 
+                      (currentQuestType == 1 && currentDistance >= targetDistance);
 
-        if (isComplete)
-        {
-            hasActiveAiQuest = false;
-            if (aiQuestPanel != null) aiQuestPanel.SetActive(false);
-            if (StatsManager.instance != null) { StatsManager.instance.AddExp(rewardExp); StatsManager.instance.AddGold(rewardGold); }
-            if (activeNPC != null) { activeNPC.relationshipScore += rewardRel; activeNPC.UpdateRelationshipUI(); }
-            if (isChatting) npcTextDisplay.text = $"{activeNPC?.npcName}: Cậu làm tốt lắm! Đây là phần thưởng.";
-        }
+    if (isComplete)
+    {
+        hasActiveAiQuest = false; // Đánh dấu false ngay để tránh trigger nhiều lần
+        StartCoroutine(QuestCompleteRoutine());
     }
+}
+
+private IEnumerator QuestCompleteRoutine()
+{
+    // 1. Trả thưởng cho Player
+    if (StatsManager.instance != null) { 
+        StatsManager.instance.AddExp(rewardExp); 
+        StatsManager.instance.AddGold(rewardGold); 
+    }
+    if (activeNPC != null) { 
+        activeNPC.relationshipScore += rewardRel; 
+        activeNPC.UpdateRelationshipUI(); 
+    }
+
+    // 2. Tạo chuỗi thông báo phần thưởng
+    string rewardDetails = $"+{rewardExp} EXP, +{rewardGold} Gold, +{rewardRel} Relationship";
+
+    // 3. Hiển thị lên Panel Quest thay vì đóng luôn
+    if (aiQuestText != null) 
+    {
+        aiQuestText.text = $"<b><color=yellow>{activeNPC?.npcName}'s Request</color></b>\n\n" +
+                           $"<color=green><b>Nhiệm vụ hoàn thành!</b></color>\n" +
+                           $"Phần thưởng:\n{rewardDetails}";
+    }
+
+    // 4. Nếu đang chat, NPC sẽ nói ra và lưu vào lịch sử
+    if (isChatting && npcTextDisplay != null) 
+    {
+        string npcDialogue = $"{activeNPC?.npcName}: Tuyệt vời! Cậu làm tốt lắm. Đây là phần thưởng của cậu: {rewardDetails}.";
+        npcTextDisplay.text = npcDialogue;
+        
+        // Lưu câu khen ngợi này vào bộ nhớ để ngữ cảnh LLM tự nhiên hơn
+        CurrentChatHistory.Add(new ChatMessage { role = "assistant", content = $"Tuyệt vời! Cậu làm tốt lắm. Đây là phần thưởng của cậu: {rewardDetails}." });
+    }
+
+    // 5. Đợi 10 giây để Player kịp đọc
+    yield return new WaitForSeconds(10f);
+
+    // 6. Đóng Panel Quest
+    if (aiQuestPanel != null) aiQuestPanel.SetActive(false);
+}
 
     private void FailAiQuest() { hasActiveAiQuest = false; if (aiQuestPanel != null) aiQuestPanel.SetActive(false); if (isChatting) npcTextDisplay.text = $"{activeNPC?.npcName}: Thôi bỏ đi, cậu chậm quá."; }
 
@@ -341,7 +406,8 @@ public class LLMChatManager : MonoBehaviour
             yield break;
         }
 
-        string systemPrompt = $"System: {activeNPC?.systemPrompt}. Current Relationship Score: {activeNPC?.relationshipScore}. Reply strictly in English (1-3 sentences). Append [REL: X] at the end.";
+        //string systemPrompt = $"System: {activeNPC?.systemPrompt}. Current Relationship Score: {activeNPC?.relationshipScore}. Reply strictly in English (1-3 sentences). Append [REL: X] at the end.";
+        string systemPrompt = $"System: {activeNPC?.systemPrompt}. Evaluate the user's latest message and append [REL: X] at the very end, where X is the relationship score CHANGE integer from -5 to +5 (e.g., [REL: -2] or [REL: +3]). Reply strictly in English (1-3 sentences).";
         CurrentChatHistory.Add(new ChatMessage { role = "user", content = userText + "\n\n(OOC: Append [REL: X])" });
         string aiRawResponse = null;
 
@@ -375,10 +441,13 @@ public class LLMChatManager : MonoBehaviour
         }
 
         if (!string.IsNullOrEmpty(aiRawResponse))
-        {
-            ProcessAIResponse(aiRawResponse);
-            CurrentChatHistory[CurrentChatHistory.Count - 1].content = userText; 
-        }
+{
+    // Cập nhật lại tin nhắn của User đang ở cuối mảng (trước khi AI xen vào)
+    CurrentChatHistory[CurrentChatHistory.Count - 1].content = userText; 
+    
+    // Thêm tin nhắn của AI vào lịch sử
+    ProcessAIResponse(aiRawResponse);
+}
         else { npcTextDisplay.text = "<color=red>Lỗi kết nối toàn tập.</color>"; CurrentChatHistory.RemoveAt(CurrentChatHistory.Count - 1); }
     }
 
