@@ -10,7 +10,6 @@ public class CompanionProjectile : MonoBehaviour
     private float damage;
     private Rigidbody2D rb;
 
-    // Biến hỗ trợ Skill AoE Giant Ball
     private bool isAoE = false;
     private float aoeRadius = 4f;
     private bool canDamagePlayer = false;
@@ -18,7 +17,7 @@ public class CompanionProjectile : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        Destroy(gameObject, destroyTime); // Tự hủy sau 2s để tránh rác RAM
+        Destroy(gameObject, destroyTime); 
     }
 
     public void Setup(Vector2 direction, float dmg, bool dmgPlayer = false)
@@ -44,10 +43,8 @@ public class CompanionProjectile : MonoBehaviour
         aoeRadius = radius;
         canDamagePlayer = dmgPlayer;
         
-        // Tạo vòng tròn sóng âm ngay lập tức
         CreateSonicWave();
         
-        // Trừ máu quái xung quanh ngay lập tức
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
         foreach (var hit in hits)
         {
@@ -61,30 +58,27 @@ public class CompanionProjectile : MonoBehaviour
                 StatsManager.instance.TakeDamage(damage);
             }
         }
-        // Không gọi IEnumerator bay lên trời nữa. Asset sẽ hiển thị tại chỗ và tự mất sau "destroyTime" giây.
     }
 
     private void FixedUpdate()
     {
-        if (isAoE) return; // Vô hiệu hóa vận tốc vật lý mặc định nếu đang là đạn bay theo chuỗi AoE
+        if (isAoE) return;
         rb.velocity = moveDirection * speed;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isAoE) return; // Bỏ qua va chạm thường nếu là đạn AoE
+        if (isAoE) return; 
 
-        // Bắn trúng quái
         if (collision.CompareTag("Enemy"))
         {
             var enemyHealth = collision.GetComponent<IEnemy_Health>();
             if (enemyHealth != null)
             {
-                enemyHealth.ChangeHealth(-damage); // Trừ máu giống hệt PlayerAttack.cs
+                enemyHealth.ChangeHealth(-damage);
             }
             Destroy(gameObject);
         }
-        // Bắn trúng Player (Khi đang bị dỗi / Relationship âm)
         else if (collision.CompareTag("Player") && canDamagePlayer)
         {
             StatsManager.instance.TakeDamage(damage);
@@ -94,7 +88,6 @@ public class CompanionProjectile : MonoBehaviour
 
     private IEnumerator AoERoutine(Vector2 targetPos)
     {
-        // Bước 1: Bay lên ngay phía trên mục tiêu
         Vector2 startPos = transform.position;
         Vector2 hoverPos = targetPos + new Vector2(0f, 6f);
         
@@ -106,10 +99,8 @@ public class CompanionProjectile : MonoBehaviour
             yield return null;
         }
 
-        // Bước 2: Treo lơ lửng chờ 1 giây
         yield return new WaitForSeconds(1f);
 
-        // Bước 3: Giáng xuống cực nhanh (0.15s)
         t = 0;
         Vector2 fallStart = transform.position;
         while (t < 0.15f)
@@ -119,10 +110,8 @@ public class CompanionProjectile : MonoBehaviour
             yield return null;
         }
 
-        // Tới đích -> Nổ + Vẽ sóng Sonic
         CreateSonicWave();
         
-        // Trừ máu vòng tròn
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
         foreach (var hit in hits)
         {
@@ -137,24 +126,22 @@ public class CompanionProjectile : MonoBehaviour
             }
         }
 
-        // Hủy quả cầu gốc
         Destroy(gameObject);
     }
 
     private void CreateSonicWave()
     {
-        // Render đường tròn Sonic bằng LineRenderer
         GameObject wave = new GameObject("SonicWave");
         wave.transform.position = transform.position;
         LineRenderer lr = wave.AddComponent<LineRenderer>();
         
         lr.startWidth = 0.5f;
         lr.endWidth = 0.5f;
-        lr.startColor = new Color(0, 1f, 1f, 1f);   // Màu Cyan
-        lr.endColor = new Color(0, 1f, 1f, 0f);     // Phai dần đi
+        lr.startColor = new Color(0, 1f, 1f, 1f);   
+        lr.endColor = new Color(0, 1f, 1f, 0f);     
         lr.material = new Material(Shader.Find("Sprites/Default"));
         lr.useWorldSpace = true;
-        lr.positionCount = 51; // 50 phân đoạn mượt mà
+        lr.positionCount = 51; 
         
         for (int i = 0; i <= 50; i++)
         {
@@ -162,6 +149,6 @@ public class CompanionProjectile : MonoBehaviour
             lr.SetPosition(i, new Vector3(Mathf.Cos(angle) * aoeRadius, Mathf.Sin(angle) * aoeRadius, 0) + wave.transform.position);
         }
         
-        Destroy(wave, 0.4f); // Xóa hiệu ứng sau 0.4s
+        Destroy(wave, 0.4f); 
     }
 }

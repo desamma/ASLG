@@ -11,13 +11,13 @@ public class BossHealthUI : MonoBehaviour
     [SerializeField] private Image sliderFill;
 
     [Header("Health Colors")]
-    [SerializeField] private Color highHealthColor = new(0.2f, 0.85f, 0.3f);   // green
-    [SerializeField] private Color midHealthColor = new(1.0f, 0.75f, 0.1f);   // yellow
-    [SerializeField] private Color lowHealthColor = new(0.9f, 0.2f, 0.1f);    // red
+    [SerializeField] private Color highHealthColor = new(0.2f, 0.85f, 0.3f);   
+    [SerializeField] private Color midHealthColor = new(1.0f, 0.75f, 0.1f);   
+    [SerializeField] private Color lowHealthColor = new(0.9f, 0.2f, 0.1f);    
     [SerializeField] private Color hitFlashColor = Color.white;
 
     [Header("Slider Settings")]
-    [SerializeField] private float smoothSpeed = 6f;    // lerp speed for smooth bar movement
+    [SerializeField] private float smoothSpeed = 6f;   
 
     [Header("Text Effects")]
     [SerializeField] private bool enableNamePulse = true;

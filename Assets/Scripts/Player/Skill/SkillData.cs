@@ -35,12 +35,9 @@ public class SkillData : ScriptableObject
     public float teleportRange = 7f;
     public GameObject teleportFxPrefab; 
 
-    // ==========================================
-    // ĐÃ THÊM: Dữ liệu đạn cho chiêu của Summoner
-    // ==========================================
     [Header("Summoner — Alicia's Wrath")]
-    public GameObject summonerBulletPrefab; // Kéo thả magicBulletPrefab của Alicia vào đây
-    public int summonerBulletCount = 12;    // Số lượng đạn mặc định bắn ra
+    public GameObject summonerBulletPrefab;
+    public int summonerBulletCount = 12;    
 
     [Header("Upgrades (up to 3 tiers)")]
     public SkillUpgradeTier[] upgrades = new SkillUpgradeTier[3];

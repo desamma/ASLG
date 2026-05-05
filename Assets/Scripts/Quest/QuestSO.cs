@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Định nghĩa các loại nhiệm vụ
 public enum QuestType
 {
     MainQuest,
@@ -42,11 +41,9 @@ public class QuestObjective
     [SerializeField] private Object target;
     public EnemyType targetEnemyType;
 
-    // Giữ lại từ bài học chuyển map trước đó để hệ thống của bạn không bị lỗi
     [Tooltip("Tên Map cần đến (Dành cho nhiệm vụ đi qua cổng chuyển cảnh)")]
     public string targetMapName;
 
-    // THÊM MỚI CHO TRỤ ĐÁ
     [Tooltip("Đánh dấu nếu mục tiêu là tương tác với Trụ Dịch Chuyển")]
     public bool requiresTeleport;
 

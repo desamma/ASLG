@@ -24,7 +24,7 @@ public class PlayerSpawner : MonoBehaviour
 
     [Header("Summoner Settings")]
     [SerializeField] private GameObject aliciaPrefab;
-    [SerializeField] private GameObject johnsonPrefab; // Kéo thả Prefab của Johnson vào đây
+    [SerializeField] private GameObject johnsonPrefab; 
 
     private void Start()
     {
@@ -73,7 +73,6 @@ public class PlayerSpawner : MonoBehaviour
         if (WorldMapManager.Instance != null && !string.IsNullOrWhiteSpace(arrivalZoneName))
             WorldMapManager.Instance.SetCurrentZone(arrivalZoneName);
 
-        // 2. Tự động tìm Camera và gán Player vào ô Follow
         CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
         if (vcam != null) vcam.Follow = player.transform;
         
@@ -86,7 +85,6 @@ public class PlayerSpawner : MonoBehaviour
 
         LLMChatManager llmManager = FindObjectOfType<LLMChatManager>();
 
-        // 1. Của Class Summoner - Spawn Alicia
         if (ClassManager.Instance.SelectedClass == PlayerClass.Summoner && aliciaPrefab != null)
         {
             Vector3 aliciaPos = player.transform.position + new Vector3(2f, 0, 0);
@@ -101,7 +99,6 @@ public class PlayerSpawner : MonoBehaviour
             }
         }
 
-        // 2. Spawn Johnson nếu đã từng được mua bằng Vàng
         if (SaveManager.Instance != null && SaveManager.Instance.currentSaveData.unlockedCompanions != null && SaveManager.Instance.currentSaveData.unlockedCompanions.Contains("npc_johnson") && johnsonPrefab != null)
         {
             Vector3 johnsonPos = player.transform.position + new Vector3(-2f, 0, 0); // Đứng ở bên trái Player

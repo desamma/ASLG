@@ -24,7 +24,6 @@ public class ClassManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            // Default to knight so the game works even without a selection screen
             //SelectClass(SelectedClass);
         }
         else
@@ -33,7 +32,6 @@ public class ClassManager : MonoBehaviour
         }
     }
 
-    // ── Public API ────────────────────────────────────────────────────────────
 
     public void SelectClass(PlayerClass playerClass)
     {
@@ -44,7 +42,7 @@ public class ClassManager : MonoBehaviour
             PlayerClass.Archer => archerData,
             PlayerClass.Rogue => rogueData,
             //PlayerClass.Test => testData,
-            PlayerClass.Summoner => summonerData != null ? summonerData : knightData, // Dùng tạm data Knight nếu quên kéo thả
+            PlayerClass.Summoner => summonerData != null ? summonerData : knightData,
             _ => knightData
         };
 
@@ -52,10 +50,6 @@ public class ClassManager : MonoBehaviour
             Debug.LogWarning($"[ClassManager] No data asset assigned for {playerClass}.");
     }
 
-    /// <summary>
-    /// Returns the data asset for a class without changing SelectedClass.
-    /// Used by UI screens that need to preview all classes.
-    /// </summary>
     public PlayerClassData GetDataFor(PlayerClass playerClass) => playerClass switch
     {
         PlayerClass.Knight => knightData,
@@ -66,10 +60,6 @@ public class ClassManager : MonoBehaviour
         _ => knightData
     };
 
-    /// <summary>
-    /// Push class stats into StatsManager. Call this once gameplay begins
-    /// (e.g. from a game-start controller, or let PlayerMovement call it in Start).
-    /// </summary>
     public void ApplyToStatsManager()
     {
         if (CurrentClassData == null || StatsManager.instance == null)
@@ -95,7 +85,7 @@ public class ClassManager : MonoBehaviour
         s.knockbackTime = d.knockbackTime;
         s.stunTime = d.stunTime;
 
-        s.ResetStats();   // refills HP/Stamina to new maximums
+        s.ResetStats();
 
         Debug.Log($"[ClassManager] Applied {d.playerClass} stats to StatsManager.");
     }

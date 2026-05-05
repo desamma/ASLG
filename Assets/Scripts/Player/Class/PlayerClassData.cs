@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerClassData : ScriptableObject
 {
     [Header("Prefab")]
-    public GameObject playerPrefab; // Giữ nguyên tên biến cũ
+    public GameObject playerPrefab;
 
     [Header("Identity")]
     public PlayerClass playerClass;

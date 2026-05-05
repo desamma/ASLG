@@ -37,7 +37,6 @@ public class CharacterCreation : MonoBehaviour
 
     private PlayerClass selectedClass = PlayerClass.Knight;
 
-    // ── Unity ─────────────────────────────────────────────────────────────────
 
     private void Start()
     {
@@ -63,7 +62,6 @@ public class CharacterCreation : MonoBehaviour
         startButton.onClick.RemoveAllListeners();
     }
 
-    // ── Class selection ───────────────────────────────────────────────────────
 
     private void SelectClass(PlayerClass playerClass)
     {
@@ -89,7 +87,6 @@ public class CharacterCreation : MonoBehaviour
             image.color = isSelected ? selectedColor : deselectedColor;
     }
 
-    // ── Preview panel ─────────────────────────────────────────────────────────
 
     private void RefreshPreview()
     {
@@ -107,7 +104,6 @@ public class CharacterCreation : MonoBehaviour
         attatckTypeText.text = "Attack Type: " + data.attackType.ToString();
     }
 
-    // ── Start button ──────────────────────────────────────────────────────────
 
     private void RefreshStartButton()
     {
@@ -124,7 +120,6 @@ public class CharacterCreation : MonoBehaviour
 
         StatsManager.instance.playerName = playerName;
 
-        // QUAN TRỌNG: Reset hoàn toàn Save Data để không bị dính dữ liệu (0 HP, lỗi cũ) từ file save trước
         if (SaveManager.Instance != null)
         {
             SaveManager.Instance.currentSaveData = new GameSaveData();

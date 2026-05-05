@@ -60,7 +60,6 @@ public class PauseMenuManager : MonoBehaviour
     [Header("Sound Effects")]
     public AudioClip buttonClickSound;
 
-    // === CONSTANTS ===
     private const float BGM_MIN = 0.0001f;
     private const float BGM_MAX = 1f;
     private const float MOUSE_MIN = 0.1f;
@@ -79,7 +78,6 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Button pauseButton;
     void Awake()
     {
-        // Singleton guard — destroy duplicate, keep original
         if (FindObjectsOfType<PauseMenuManager>().Length > 1)
         {
             Destroy(gameObject);
@@ -91,11 +89,9 @@ public class PauseMenuManager : MonoBehaviour
 
     void Start()
     {
-        // Wire buttons immediately on Start, not only inside HandleEscape
         if (resumeButton != null) resumeButton.onClick.AddListener(Resume);
         if (pauseButton != null) pauseButton.onClick.AddListener(OpenSettings);
 
-        // Load Audio
         if (volumeSlider != null)
         {
             float savedVolume = PlayerPrefs.GetFloat("MasterVolumePref", 1f);
@@ -107,11 +103,9 @@ public class PauseMenuManager : MonoBehaviour
             SetMasterVolume(savedVolume);
         }
 
-        // Load Background Music
         if (bgmSlider != null)
         {
             float savedBGM = PlayerPrefs.GetFloat("BGMVolumePref", 1f);
-            // Ép slider đúng range ngay từ đầu
             bgmSlider.minValue = BGM_MIN;
             bgmSlider.maxValue = BGM_MAX;
             bgmSlider.value = Mathf.Clamp(savedBGM, BGM_MIN, BGM_MAX);
@@ -120,11 +114,9 @@ public class PauseMenuManager : MonoBehaviour
             SetBGMVolume(bgmSlider.value);
         }
 
-        // Load Mouse
         if (mouseSlider != null)
         {
             float savedMouseSense = PlayerPrefs.GetFloat("MouseSensePref", 1f);
-            // Ép slider đúng range ngay từ đầu
             mouseSlider.minValue = MOUSE_MIN;
             mouseSlider.maxValue = MOUSE_MAX;
             mouseSlider.value = Mathf.Clamp(savedMouseSense, MOUSE_MIN, MOUSE_MAX);
@@ -133,7 +125,6 @@ public class PauseMenuManager : MonoBehaviour
             SetMouseSensitivity(mouseSlider.value);
         }
 
-        // Try to auto-find example camera controller and apply mouse sensitivity
         if (autoApplyToExampleCamera)
         {
             exampleCameraController = FindObjectOfType<TMPro.Examples.CameraController>();
@@ -144,7 +135,6 @@ public class PauseMenuManager : MonoBehaviour
             }
         }
 
-        // Auto-hook optional buttons
         if (volumeIncreaseButton != null) volumeIncreaseButton.onClick.AddListener(() => IncreaseVolume());
         if (volumeDecreaseButton != null) volumeDecreaseButton.onClick.AddListener(() => DecreaseVolume());
         if (bgmIncreaseButton != null) bgmIncreaseButton.onClick.AddListener(() => IncreaseBGMVolume());
@@ -212,7 +202,6 @@ public class PauseMenuManager : MonoBehaviour
         return canvasGroup != null && canvasGroup.alpha > 0f;
     }
 
-    // ================== MENU CHÍNH ==================
     public void Resume()
     {
         PlayClickSound();
@@ -308,7 +297,6 @@ public class PauseMenuManager : MonoBehaviour
         canvasGroup.blocksRaycasts = visible;
     }
 
-    // ================== ÂM LƯỢNG TỔNG ==================
     public void SetMasterVolume(float sliderValue)
     {
         sliderValue = Mathf.Clamp(sliderValue, BGM_MIN, BGM_MAX);
@@ -321,7 +309,6 @@ public class PauseMenuManager : MonoBehaviour
     {
         PlayClickSound();
         if (volumeSlider != null) volumeSlider.value = Mathf.Clamp(volumeSlider.value + 0.1f, BGM_MIN, BGM_MAX);
-        // slider.onValueChanged sẽ tự gọi SetMasterVolume
     }
     public void DecreaseVolume()
     {
@@ -329,7 +316,6 @@ public class PauseMenuManager : MonoBehaviour
         if (volumeSlider != null) volumeSlider.value = Mathf.Clamp(volumeSlider.value - 0.1f, BGM_MIN, BGM_MAX);
     }
 
-    // ================== ÂM LƯỢNG NHẠC NỀN ==================
     public void SetBGMVolume(float sliderValue)
     {
         // Clamp về đúng range, tránh log10(0)
@@ -351,12 +337,10 @@ public class PauseMenuManager : MonoBehaviour
         PlayClickSound();
         if (bgmSlider != null)
         {
-            // Chỉ set slider, onValueChanged tự gọi SetBGMVolume — tránh gọi 2 lần
             bgmSlider.value = Mathf.Clamp(bgmSlider.value + 0.1f, BGM_MIN, BGM_MAX);
         }
         else
         {
-            // Không có slider thì gọi thẳng
             float current = Mathf.Clamp(PlayerPrefs.GetFloat("BGMVolumePref", 1f) + 0.1f, BGM_MIN, BGM_MAX);
             SetBGMVolume(current);
         }
@@ -376,10 +360,8 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
-    // ================== ĐỘ NHẠY CHUỘT ==================
     public void SetMouseSensitivity(float sliderValue)
     {
-        // Clamp về đúng range 0.1 - 5
         sliderValue = Mathf.Clamp(sliderValue, MOUSE_MIN, MOUSE_MAX);
         mouseSensitivity = sliderValue;
         PlayerPrefs.SetFloat("MouseSensePref", sliderValue);
@@ -392,7 +374,6 @@ public class PauseMenuManager : MonoBehaviour
         PlayClickSound();
         if (mouseSlider != null)
         {
-            // Chỉ set slider, onValueChanged tự gọi SetMouseSensitivity
             mouseSlider.value = Mathf.Clamp(mouseSlider.value + 0.1f, MOUSE_MIN, MOUSE_MAX);
         }
         else
@@ -416,7 +397,6 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
-    // ================== ĐỔI PHÍM ==================
     private void LoadKeybinds()
     {
         //keys["Forward"] = ParseKeyOrDefault(PlayerPrefs.GetString("Key_Forward", "W"), KeyCode.W);

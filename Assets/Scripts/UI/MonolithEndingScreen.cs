@@ -4,20 +4,6 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// MonolithEndingScreen — shown after the final boss is defeated.
-/// Player stands before the Monolith of the Sun and must choose its fate.
-///
-/// SCENE FLOW:
-///   1. Fade in → arrival narration (player reaches the Monolith)
-///   2. Choice UI appears  →  [RETURN]  or  [DESTROY]
-///   3. Player chooses → choice lore typewriters in
-///   4. Epilogue card → credits roll or main menu
-///
-/// HOW TO TRIGGER:
-///   EndingScreenManager.Instance.TriggerEnding();
-///   — call this from your FinalBoss death handler.
-/// </summary>
 public class MonolithEndingScreen : MonoBehaviour
 {
     public static MonolithEndingScreen Instance { get; private set; }

@@ -78,7 +78,6 @@ public class AutoFixUI : MonoBehaviour
     [ContextMenu("Fix Recipe Item UI")]
     public void FixMyUI()
     {
-        // 1) Root height
         var rootRt = GetComponent<RectTransform>();
         var le = GetComponent<LayoutElement>();
         if (le == null) le = gameObject.AddComponent<LayoutElement>();
@@ -90,7 +89,6 @@ public class AutoFixUI : MonoBehaviour
         if (rootRt != null)
             rootRt.sizeDelta = new Vector2(rootRt.sizeDelta.x, rowHeight);
 
-        // 2) Parent VerticalLayoutGroup (avoid oversized rows)
         if (transform.parent != null)
         {
             var vlg = transform.parent.GetComponent<VerticalLayoutGroup>();
@@ -102,7 +100,6 @@ public class AutoFixUI : MonoBehaviour
             }
         }
 
-        // 3) Background full stretch
         var bg = transform.Find("Background");
         if (bg != null)
         {
@@ -121,7 +118,6 @@ public class AutoFixUI : MonoBehaviour
                 bgImage.raycastTarget = true;
         }
 
-        // 4) IconImage
         var icon = transform.Find("IconImage");
         if (icon != null)
         {
@@ -136,7 +132,6 @@ public class AutoFixUI : MonoBehaviour
             }
         }
 
-        // 5) InfoGroup (stretch to available space)
         var info = transform.Find("InfoGroup");
         if (info != null)
         {
@@ -156,7 +151,6 @@ public class AutoFixUI : MonoBehaviour
             }
         }
 
-        // 6) StatusDot
         var dot = transform.Find("StatusDot");
         if (dot != null)
         {

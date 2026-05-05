@@ -15,7 +15,7 @@ public class AuthManager : MonoBehaviour
     public TMP_Text notificationText;
 
     [Header("Login UI")]
-    public TMP_InputField loginUsernameInput; // Giả sử dùng Email để đăng nhập
+    public TMP_InputField loginUsernameInput;
     public TMP_InputField loginPasswordInput;
 
     [Header("Register UI")]
@@ -99,20 +99,15 @@ public class AuthManager : MonoBehaviour
 
         Debug.Log($"[Login] Dữ liệu chuẩn bị gửi: {jsonData}");
 
-        // Bắt đầu gửi API
         StartCoroutine(SendApiRequest(baseUrl + "/login", jsonData, OnLoginSuccess));
     }
 
-    // ĐÃ SỬA: Chuyển dữ liệu cho StatsManager
     private void OnLoginSuccess(string responseText)
     {
-        // 1. Dịch JSON từ Server trả về thành Object C#
         LoginResponseData responseData = JsonUtility.FromJson<LoginResponseData>(responseText);
 
-        // 2. Kiểm tra xem có token hay không
         if (responseData != null && !string.IsNullOrEmpty(responseData.token))
         {
-            // 3. LƯU TOKEN VÀ USER ID VÀO TOKEN MANAGER (Gọn gàng và an toàn tuyệt đối)
             TokenManager.SaveSession(responseData.token, responseData.userId);
             ShowNotification("Đăng nhập thành công!", Color.green);
             //PlayerPrefs.SetString("CurrentUser", loginUsernameInput.text);
@@ -123,7 +118,6 @@ public class AuthManager : MonoBehaviour
 
             SaveManager.OnLogin();
 
-            // Chuyển Scene vào Game
             SceneManager.LoadScene("Start");
             return;
         }
@@ -155,7 +149,6 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
-        // Tạo dữ liệu JSON
         PrepareOnlineSession();
         RegisterRequestData requestData = new RegisterRequestData
         {
@@ -167,7 +160,6 @@ public class AuthManager : MonoBehaviour
 
         Debug.Log($"[Register] Dữ liệu chuẩn bị gửi: {jsonData}");
 
-        // Bắt đầu gửi API
         StartCoroutine(SendApiRequest(baseUrl + "/register", jsonData, OnRegisterSuccess));
     }
 
@@ -179,7 +171,6 @@ public class AuthManager : MonoBehaviour
     #endregion
 
     #region UnityWebRequest Core
-    // Hàm dùng chung để gửi API POST
     private IEnumerator SendApiRequest(string url, string jsonData, System.Action<string> onSuccess)
     {
         ShowNotification("Đang xử lý...", Color.white);
@@ -195,13 +186,11 @@ public class AuthManager : MonoBehaviour
 
         using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
-            // Chuyển string JSON thành mảng byte
             byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 
-            // Chờ phản hồi từ Server
             yield return request.SendWebRequest();
 
             Debug.Log($"[API] Mã phản hồi từ Server (Response Code): {request.responseCode}");
@@ -210,7 +199,6 @@ public class AuthManager : MonoBehaviour
             {
                 Debug.LogError($"[API LỖI KẾT NỐI] {request.error}");
 
-                // Trích xuất chi tiết nội dung lỗi từ Backend trả về
                 string errorDetail = request.downloadHandler != null ? request.downloadHandler.text : "Không có dữ liệu trả về";
                 Debug.LogError($"[API CHI TIẾT LỖI TỪ SERVER] {errorDetail}");
 
@@ -218,7 +206,6 @@ public class AuthManager : MonoBehaviour
             }
             else
             {
-                // Thành công gọi hàm callback
                 string responseText = request.downloadHandler.text;
                 Debug.Log($"[API THÀNH CÔNG] Dữ liệu Server trả về: {responseText}");
 

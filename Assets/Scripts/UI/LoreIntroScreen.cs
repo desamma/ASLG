@@ -96,7 +96,6 @@ public class LoreIntroScreen : MonoBehaviour
 
     private void Start()
     {
-        // Uncomment the line below to always show the intro
         // PlayerPrefs.DeleteKey(SEEN_INTRO_KEY);
 
         if (PlayerPrefs.GetInt(SEEN_INTRO_KEY, 0) == 1)

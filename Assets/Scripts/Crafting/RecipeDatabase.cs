@@ -2,9 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-/// <summary>
-/// Một ingredient trong recipe JSON.
-/// </summary>
+
 [System.Serializable]
 public class RecipeIngredient
 {
@@ -14,9 +12,7 @@ public class RecipeIngredient
     public ItemDefinition GetDefinition() => ItemDatabase.GetItem(itemKey);
 }
 
-/// <summary>
-/// Một recipe đọc từ recipes.json.
-/// </summary>
+
 [System.Serializable]
 public class RecipeDefinition
 {
@@ -26,7 +22,6 @@ public class RecipeDefinition
     public bool requiresUnlock = false;
     public List<RecipeIngredient> ingredients = new List<RecipeIngredient>();
 
-    // ── Helpers ──────────────────────────────────────────────────────────
 
     public ItemDefinition GetResultDefinition() => ItemDatabase.GetItem(resultItemKey);
 
@@ -39,7 +34,6 @@ public class RecipeDefinition
         }
     }
 
-    /// <summary>Kiểm tra InventoryManager có đủ nguyên liệu không.</summary>
     public bool CanCraft(int multiplier = 1)
     {
         if (InventoryManager.instance == null) return false;

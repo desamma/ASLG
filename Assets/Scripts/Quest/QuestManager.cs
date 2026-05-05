@@ -10,10 +10,8 @@ public class QuestManager : MonoBehaviour
     public List<QuestSO> completedQuests = new List<QuestSO>();
 
     [Header("Database (Auto-load)")]
-    // List containing ALL quests available in the game
     public List<QuestSO> allQuestsInGame = new List<QuestSO>();
 
-    // Tracking dictionaries
     private Dictionary<QuestSO, Dictionary<QuestObjective, int>> questProgress = new();
     private Dictionary<QuestObjective, float> movementTimers = new();
     public Dictionary<string, long> dailyQuestCompletionTimes = new();
@@ -22,7 +20,6 @@ public class QuestManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton setup to keep this manager across scene loads
         if (instance == null)
         {
             instance = this;
@@ -33,12 +30,10 @@ public class QuestManager : MonoBehaviour
 
     private void Start()
     {
-        // Load all QuestSO files located in the Resources/Quests folder
         QuestSO[] loadedQuests = Resources.LoadAll<QuestSO>("Quests");
         allQuestsInGame.Clear();
         allQuestsInGame.AddRange(loadedQuests);
 
-        // Initialize progress tracking for quests that are already active
         foreach (var quest in activeQuests)
         {
             if (!questProgress.ContainsKey(quest))
@@ -54,7 +49,6 @@ public class QuestManager : MonoBehaviour
 
     public List<QuestSO> GetActiveQuests() => activeQuests;
 
-    // Subscribe to enemy death events
     private void OnEnable() => EnemyQuestTarget.OnEnemyDied += HandleEnemyKill;
     private void OnDisable() => EnemyQuestTarget.OnEnemyDied -= HandleEnemyKill;
 
@@ -65,15 +59,12 @@ public class QuestManager : MonoBehaviour
 
         foreach (var quest in allQuestsInGame)
         {
-            // 1. Skip if the quest is already active or completed
             if (activeQuests.Contains(quest) || completedQuests.Contains(quest))
                 continue;
 
-            // 2. Filter by quest tab type (Main or Daily)
             if (quest.questType != type)
                 continue;
 
-            // 3. Check if player meets all unlock conditions
             if (IsQuestUnlocked(quest))
             {
                 availableQuests.Add(quest);
@@ -85,13 +76,11 @@ public class QuestManager : MonoBehaviour
 
     private bool IsQuestUnlocked(QuestSO quest)
     {
-        // 1. Check Level Requirement
         if (StatsManager.instance != null)
         {
             if (StatsManager.instance.level < quest.requiredLevel) return false;
         }
 
-        // 2. Check Map Unlock Requirement
         if (!string.IsNullOrEmpty(quest.requiredMapUnlocked))
         {
             if (quest.requiredMapUnlocked.Trim() == "") return false;
@@ -113,26 +102,22 @@ public class QuestManager : MonoBehaviour
             else return false;
         }
 
-        // 3. Check Prerequisite Quest Requirement
         if (quest.requiredPreviousQuest != null)
         {
             if (!HasCompletedQuest(quest.requiredPreviousQuest)) return false;
         }
 
-        // 4. Check Boss Killed Requirement (To be implemented later)
         if (quest.requiredBossKilled != EnemyType.None)
         {
             // Placeholder for future boss kill logic
         }
 
-        // Passes all checks
         return true;
     }
 
 
     public void AcceptQuest(QuestSO questSO)
     {
-        // Add to active list and initialize progress dictionary
         if (!activeQuests.Contains(questSO)) activeQuests.Add(questSO);
         if (!questProgress.ContainsKey(questSO)) questProgress[questSO] = new Dictionary<QuestObjective, int>();
 
@@ -147,19 +132,16 @@ public class QuestManager : MonoBehaviour
 
     public void CompleteQuest(QuestSO questSO)
     {
-        // Move quest from active to completed list and clear progress
         if (activeQuests.Contains(questSO)) activeQuests.Remove(questSO);
         if (!completedQuests.Contains(questSO)) completedQuests.Add(questSO);
         if (questProgress.ContainsKey(questSO)) questProgress.Remove(questSO);
 
-        // 1. Grant Gold and Exp Rewards
         if (StatsManager.instance != null)
         {
             if (questSO.rewardGold > 0) StatsManager.instance.AddGold(questSO.rewardGold);
             if (questSO.rewardExp > 0) StatsManager.instance.AddExp(questSO.rewardExp);
         }
 
-        // 2. Grant Item Rewards
         if (InventoryManager.instance != null)
         {
             foreach (var reward in questSO.rewards)
@@ -174,7 +156,6 @@ public class QuestManager : MonoBehaviour
             }
         }
 
-        // 3. Record completion time for Daily Quests to handle future resets
         if (questSO.questType == QuestType.DailyQuest && !string.IsNullOrEmpty(questSO.questID))
         {
             dailyQuestCompletionTimes[questSO.questID] = System.DateTime.Now.Ticks;
@@ -185,7 +166,6 @@ public class QuestManager : MonoBehaviour
 
     public void AbandonQuest(QuestSO questSO)
     {
-        // Remove from active list and clear progress tracking
         if (activeQuests.Contains(questSO)) activeQuests.Remove(questSO);
         if (questProgress.ContainsKey(questSO)) questProgress.Remove(questSO);
 
@@ -194,7 +174,6 @@ public class QuestManager : MonoBehaviour
 
     public void AddMovementProgress(float deltaTime)
     {
-        // Track movement time for quests requiring movement
         foreach (var quest in activeQuests)
         {
             if (!questProgress.ContainsKey(quest)) continue;
@@ -225,7 +204,6 @@ public class QuestManager : MonoBehaviour
 
     private void HandleEnemyKill(EnemyType deadEnemyType)
     {
-        // Update kill count for quests targeting the specific enemy type
         foreach (var quest in activeQuests)
         {
             if (!questProgress.ContainsKey(quest)) continue;
@@ -248,7 +226,6 @@ public class QuestManager : MonoBehaviour
 
     public int GetCurrentAmount(QuestSO questSO, QuestObjective objective)
     {
-        // Retrieve current progress amount for UI display
         if (questProgress.TryGetValue(questSO, out var objDict))
         {
             if (objDict.TryGetValue(objective, out var amount)) return amount;
@@ -258,7 +235,6 @@ public class QuestManager : MonoBehaviour
 
     public string GetProgressText(QuestSO questSO, QuestObjective objective)
     {
-        // Format progress text (e.g., "3/5" or "Complete")
         int currentAmount = GetCurrentAmount(questSO, objective);
         if (currentAmount >= objective.requiredAmount) return "Complete";
         return $"{currentAmount}/{objective.requiredAmount}";
@@ -271,7 +247,6 @@ public class QuestManager : MonoBehaviour
 
     public void AdvanceQuestByReference(QuestSO targetQuest)
     {
-        // Advance progress manually by interacting with specific objects (e.g., doors)
         if (!activeQuests.Contains(targetQuest)) return;
         if (!questProgress.ContainsKey(targetQuest)) return;
 
@@ -290,7 +265,6 @@ public class QuestManager : MonoBehaviour
 
     public void OnPlayerTeleported()
     {
-        // Advance progress for teleport-related objectives
         bool hasUpdated = false;
 
         foreach (var quest in activeQuests)
@@ -317,7 +291,6 @@ public class QuestManager : MonoBehaviour
 
     public QuestSaveData ExportSaveData()
     {
-        // Package active, completed, and daily quest completion times for saving
         QuestSaveData data = new QuestSaveData();
 
         foreach (var q in activeQuests)
@@ -337,7 +310,6 @@ public class QuestManager : MonoBehaviour
 
     public void ImportSaveData(QuestSaveData data)
     {
-        // Restore quest states from save data and handle daily quest resets
         if (data == null || data.questStatus == null) return;
 
         activeQuests.Clear();
@@ -360,7 +332,6 @@ public class QuestManager : MonoBehaviour
             {
                 if (isCompleted)
                 {
-                    // Handle Daily Quest resets if 24 hours have passed since completion
                     if (q.questType == QuestType.DailyQuest)
                     {
                         if (dailyQuestCompletionTimes.TryGetValue(qID, out long ticks))
@@ -370,7 +341,7 @@ public class QuestManager : MonoBehaviour
                             if (System.DateTime.Now.Date > completionTime.Date)
                             {
                                 dailyQuestCompletionTimes.Remove(qID);
-                                continue; // Skip adding to completed list so it can be accepted again
+                                continue;
                             }
                         }
                     }
@@ -379,7 +350,6 @@ public class QuestManager : MonoBehaviour
                 }
                 else
                 {
-                    // Restore active quests and initialize their progress to 0
                     activeQuests.Add(q);
                     questProgress[q] = new Dictionary<QuestObjective, int>();
                     foreach (var obj in q.questObjectives)

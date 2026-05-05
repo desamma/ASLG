@@ -38,13 +38,11 @@ public class CompanionShopManager : MonoBehaviour
 
     void Update()
     {
-        // Chỉ cho phép mở Shop khi đang ở trong Game (có Player) và không đang chat
         if (!LLMChatManager.Instance.IsChatting && Input.GetKeyDown(KeyCode.L) && GameObject.FindGameObjectWithTag("Player") != null)
         {
             ToggleShop();
         }
         
-        // Đóng shop nếu bấm phím Esc
         if (isShopOpen && Input.GetKeyDown(KeyCode.Escape))
         {
             ToggleShop();
@@ -59,12 +57,10 @@ public class CompanionShopManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Luôn ẩn Shop khi vừa chuyển sang scene mới
         isShopOpen = false;
         if (shopUIPanel != null) shopUIPanel.SetActive(false);
     }
 
-    // Gọi hàm này bằng UI Button Event trong Unity Inspector
     public void PurchaseJohnson()
     {
         if (SaveManager.Instance.currentSaveData.unlockedCompanions.Contains("npc_johnson"))
@@ -75,10 +71,9 @@ public class CompanionShopManager : MonoBehaviour
 
         if (StatsManager.instance != null && StatsManager.instance.gold >= johnsonCost)
         {
-            StatsManager.instance.AddGold(-johnsonCost); // Trừ tiền
+            StatsManager.instance.AddGold(-johnsonCost);
             SaveManager.Instance.currentSaveData.unlockedCompanions.Add("npc_johnson");
 
-            // Sinh ra Johnson bên cạnh Player
             Transform player = GameObject.FindGameObjectWithTag("Player").transform;
             GameObject johnson = Instantiate(johnsonPrefab, player.position + new Vector3(-2f, 0, 0), Quaternion.identity);
             
@@ -91,7 +86,6 @@ public class CompanionShopManager : MonoBehaviour
         else { Debug.Log("Không đủ Vàng!"); }
     }
 
-    // Gọi hàm này bằng UI Button "X" (Close Button) trong Inspector
     public void CloseShop()
     {
         isShopOpen = false;

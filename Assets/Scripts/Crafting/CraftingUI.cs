@@ -70,7 +70,6 @@ public class CraftingUI : MonoBehaviour
     private bool _isOpen = false;
     public bool IsOpen => _isOpen;
 
-    // ── Unity ────────────────────────────────────────────────────────────
 
     private void Start()
     {
@@ -137,7 +136,6 @@ public class CraftingUI : MonoBehaviour
         }
     }
 
-    // ── Layout ───────────────────────────────────────────────────────────
 
     private void EnsureRecipeListLayout()
     {
@@ -170,7 +168,6 @@ public class CraftingUI : MonoBehaviour
         fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
     }
 
-    // ── Recipe List ──────────────────────────────────────────────────────
 
     private void RefreshRecipeList()
     {
@@ -234,7 +231,6 @@ public class CraftingUI : MonoBehaviour
         RefreshRecipeList();
     }
 
-    // ── Selection ────────────────────────────────────────────────────────
 
     private void SelectRecipe(RecipeDefinition recipe)
     {
@@ -331,7 +327,6 @@ public class CraftingUI : MonoBehaviour
         if (resultIconImage) { resultIconImage.sprite = null; resultIconImage.enabled = false; }
     }
 
-    // ── Craft ────────────────────────────────────────────────────────────
 
     private void OnCraftClicked()
     {
@@ -359,7 +354,6 @@ public class CraftingUI : MonoBehaviour
         resultIconImage.color = original;
     }
 
-    // ── Qty ──────────────────────────────────────────────────────────────
 
     private void ChangeCraftQty(int delta)
     {
@@ -400,7 +394,6 @@ public class CraftingUI : MonoBehaviour
         _ => Color.white
     };
 
-    // ── Toggle ───────────────────────────────────────────────────────────
 
     public void Toggle() => SetOpen(!_isOpen);
     public void Open() => SetOpen(true);

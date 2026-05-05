@@ -14,13 +14,10 @@ public class CraftingRaycastFixer : MonoBehaviour
         {
             if (img == null) continue;
 
-            // Chỉ xử lý các nền dễ gây chặn click
             if (!IsBackgroundName(img.gameObject.name)) continue;
 
-            // Nếu nằm trong RecipeListItem thì giữ lại để item vẫn click được
             if (img.GetComponentInParent<RecipeListItem>() != null) continue;
 
-            // Nếu chính nó là control tương tác thì bỏ qua
             if (HasInteractiveComponent(img.gameObject)) continue;
 
             if (img.raycastTarget)

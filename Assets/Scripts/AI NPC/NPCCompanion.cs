@@ -25,7 +25,7 @@ public class NPCCompanion : MonoBehaviour
     public Transform playerTransform;
     public float followDistance = 2f;
     public float moveSpeed = 4f;
-    public float maxTeleportDistance = 50f; // MỚI: Khoảng cách tối đa trước khi tự dịch chuyển về
+    public float maxTeleportDistance = 50f;
 
     [Header("Combat")]
     [Tooltip("Alicia: Prefab Đạn ma thuật.\nJohnson: Prefab Vụ nổ AOE cho Skill 1.")]
@@ -85,7 +85,7 @@ public class NPCCompanion : MonoBehaviour
     {
         if (isDead || playerTransform == null) return;
 
-        CheckDistanceAndTeleport(); // MỚI: Kiểm tra khoảng cách và dịch chuyển nếu cần
+        CheckDistanceAndTeleport();
 
         if (angryTimer > 0f) angryTimer -= Time.deltaTime;
         skill1Timer -= Time.deltaTime;
@@ -99,13 +99,12 @@ public class NPCCompanion : MonoBehaviour
 
     private void CheckDistanceAndTeleport()
     {
-        if (isCastingSkill2) return; // Không dịch chuyển nếu đang cast skill đặc biệt
+        if (isCastingSkill2) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
         if (distanceToPlayer > maxTeleportDistance)
         {
             Debug.Log($"<color=cyan>[Hệ thống]</color> {npcName} đã đi quá xa, dịch chuyển về bên cạnh Player.");
-            // Dịch chuyển về bên trái Player để tránh đứng chồng lên nhau
             transform.position = playerTransform.position + new Vector3(-1.5f, 0, 0); 
         }
     }
@@ -138,7 +137,6 @@ public class NPCCompanion : MonoBehaviour
 
     public void UpdateRelationshipUI()
     {
-        // Gửi tín hiệu sang LLMChatManager để cập nhật chữ lên màn hình (chỉ khi đang chat với NPC này)
         if (LLMChatManager.Instance != null && LLMChatManager.Instance.activeNPC == this)
         {
             LLMChatManager.Instance.UpdateRelationshipUI();
@@ -193,9 +191,8 @@ public class NPCCompanion : MonoBehaviour
             if (child.GetComponent<Canvas>() != null) child.gameObject.SetActive(false);
         }
 
-        // Cập nhật Tag, Layer và ném AI ra ngoài map để toàn bộ Quái tự động mất dấu mục tiêu
         gameObject.tag = "Untagged";
-        gameObject.layer = 2; // Layer 2 mặc định là Ignore Raycast
+        gameObject.layer = 2;
         transform.position = new Vector3(9999f, 9999f, 0f);
 
         isCastingSkill2 = false;
@@ -208,7 +205,6 @@ public class NPCCompanion : MonoBehaviour
     {
         yield return new WaitForSeconds(respawnTime);
 
-        // Khôi phục lại dữ liệu Layer và Tag ban đầu
         gameObject.tag = originalTag;
         gameObject.layer = originalLayer;
         transform.position = playerTransform.position;

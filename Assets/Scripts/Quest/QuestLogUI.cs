@@ -44,11 +44,9 @@ public class QuestLogUI : MonoBehaviour
 
     private void Start()
     {
-        // Listen to quest progress updates to refresh UI automatically
         if (questManager != null)
             questManager.OnQuestProgressUpdated += RefreshCurrentQuestDisplay;
 
-        // Setup tab button listeners
         if (btnMainTab != null)
             btnMainTab.onClick.AddListener(() => SwitchTab(QuestType.MainQuest));
 
@@ -58,14 +56,12 @@ public class QuestLogUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        // Always unsubscribe from events to prevent memory leaks
         if (questManager != null)
             questManager.OnQuestProgressUpdated -= RefreshCurrentQuestDisplay;
     }
 
     private void Update()
     {
-        // Press 'J' to open/close the Quest Log
         if (Input.GetKeyDown(KeyCode.J) && !LLMChatManager.Instance.IsChatting)
             ToggleQuestUI();
     }
@@ -87,7 +83,6 @@ public class QuestLogUI : MonoBehaviour
 
         SetCanvasState(questCanvas, true);
 
-        // Reset to show all quests when the UI is opened
         isShowingAllQuests = true;
         UpdateButtonVisuals();
         LoadQuestsForCurrentTab();
@@ -95,7 +90,6 @@ public class QuestLogUI : MonoBehaviour
 
     private void SwitchTab(QuestType newTabType)
     {
-        // Change the active tab and reload the quest list
         isShowingAllQuests = false;
         currentTabType = newTabType;
         UpdateButtonVisuals();
@@ -104,7 +98,6 @@ public class QuestLogUI : MonoBehaviour
 
     private void UpdateButtonVisuals()
     {
-        // Disable the button of the currently active tab
         if (btnMainTab != null)
             btnMainTab.interactable = isShowingAllQuests || currentTabType != QuestType.MainQuest;
 
@@ -116,7 +109,6 @@ public class QuestLogUI : MonoBehaviour
     {
         if (questManager == null || questContentContainer == null || questSlotPrefab == null) return;
 
-        // 1. Clear old UI slots before spawning new ones
         foreach (var slotUI in activeSlotUIs)
         {
             if (slotUI != null) Destroy(slotUI.gameObject);
@@ -124,7 +116,6 @@ public class QuestLogUI : MonoBehaviour
         activeSlotUIs.Clear();
         ClearRightPanel();
 
-        // 2. Filter quests based on the current tab (All, Main, or Daily)
         var questsToShow = new List<QuestSO>();
 
         if (isShowingAllQuests)
@@ -142,7 +133,6 @@ public class QuestLogUI : MonoBehaviour
             questsToShow.AddRange(questManager.GetAvailableQuests(currentTabType));
         }
 
-        // 3. Instantiate UI prefabs for each filtered quest
         foreach (var quest in questsToShow)
         {
             GameObject newSlotObj = Instantiate(questSlotPrefab, questContentContainer);
@@ -156,7 +146,6 @@ public class QuestLogUI : MonoBehaviour
             if (newSlotObj.GetComponent<StopScrollPropagation>() == null)
                 newSlotObj.AddComponent<StopScrollPropagation>();
 
-            // Setup click event for the quest slot
             Button slotBtn = newSlotObj.GetComponent<Button>();
             if (slotBtn != null)
             {
@@ -182,7 +171,6 @@ public class QuestLogUI : MonoBehaviour
             activeSlotUIs.Add(slotScript);
         }
 
-        // Auto-select the first quest in the list if available
         if (questsToShow.Count > 0)
             OnQuestSlotClicked(questsToShow[0]);
     }
@@ -192,10 +180,8 @@ public class QuestLogUI : MonoBehaviour
     {
         if (clickedQuestSO == null || questManager == null) return;
 
-        // Display quest details on the right panel
         HandleQuestClick(clickedQuestSO);
 
-        // Check quest status to show the correct action buttons (Accept/Decline/Complete)
         bool isAccepted = questManager.activeQuests.Contains(clickedQuestSO);
         bool isComplete = IsQuestComplete(clickedQuestSO);
 
@@ -244,7 +230,6 @@ public class QuestLogUI : MonoBehaviour
 
     private void HandleQuestClick(QuestSO targetQuestSO)
     {
-        // Update Title and Description
         if (targetQuestSO == null) return;
 
         questSO = targetQuestSO;
@@ -256,7 +241,6 @@ public class QuestLogUI : MonoBehaviour
 
     private void RefreshCurrentQuestDisplay()
     {
-        // Automatically updates the objectives and complete button when progress changes
         if (!IsOpen || questSO == null) return;
 
         DisplayObjectives();
@@ -271,7 +255,6 @@ public class QuestLogUI : MonoBehaviour
 
     private void ClearRightPanel()
     {
-        // Hides all data when no quest is selected
         questSO = null;
 
         if (questNameText != null) questNameText.text = "NO QUEST SELECTED";
@@ -287,7 +270,6 @@ public class QuestLogUI : MonoBehaviour
 
     private void DisplayObjectives()
     {
-        // Maps quest objectives to UI slots and updates their progress text
         if (questSO == null || objectiveSlots == null || questManager == null) return;
 
         for (int i = 0; i < objectiveSlots.Length; i++)
@@ -314,7 +296,6 @@ public class QuestLogUI : MonoBehaviour
 
     private void DisplayRewards()
     {
-        // Populates the reward slots with Gold, Exp, and Items dynamically
         if (questSO == null || rewardSlots == null) return;
 
         int idx = 0;
@@ -355,7 +336,6 @@ public class QuestLogUI : MonoBehaviour
             idx++;
         }
 
-        // Hide unused reward slots
         for (int i = idx; i < rewardSlots.Length; i++)
         {
             if (rewardSlots[i] != null) rewardSlots[i].gameObject.SetActive(false);
@@ -364,7 +344,6 @@ public class QuestLogUI : MonoBehaviour
 
     private bool IsQuestComplete(QuestSO quest)
     {
-        // Checks if all objectives in the quest have met their required amount
         if (quest == null || questManager == null) return false;
 
         foreach (var objective in quest.questObjectives)
@@ -378,7 +357,6 @@ public class QuestLogUI : MonoBehaviour
 
     private void SetCanvasState(CanvasGroup canvasGroup, bool state)
     {
-        // Utility method to easily show/hide UI CanvasGroups
         if (canvasGroup == null) return;
 
         canvasGroup.alpha = state ? 1f : 0f;
