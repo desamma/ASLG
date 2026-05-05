@@ -10,6 +10,7 @@ public enum PlayerState
     [StateAnimator("isKnightSkill")] KnightSkill,
     [StateAnimator("isArcherSkill")] ArcherSkill,
     [StateAnimator("isRogueSkill")] RogueSkill,
-    // ĐỒNG ĐỘI BẠN ĐÃ XÓA DÒNG NÀY:
-    [StateAnimator("isSummonerSkill")] SummonerSkill
+    [StateAnimator("isSummonerSkill")] SummonerSkill,
+    [StateAnimator("isMonolithPickup")] MonolithPickup,
+    [StateAnimator("isSlowWalk")] SlowWalk
 }

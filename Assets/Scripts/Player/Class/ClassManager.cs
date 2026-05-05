@@ -16,7 +16,7 @@ public class ClassManager : MonoBehaviour
     //[SerializeField] private PlayerClassData testData;
 
     public PlayerClassData CurrentClassData { get; private set; }
-    public PlayerClass SelectedClass { get; private set; } = PlayerClass.Test;
+    public PlayerClass SelectedClass { get; private set; } = PlayerClass.Knight;
 
     private void Awake()
     {
@@ -25,7 +25,7 @@ public class ClassManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             // Default to knight so the game works even without a selection screen
-            //SelectClass(SelectedClass);
+            SelectClass(SelectedClass);
         }
         else
         {

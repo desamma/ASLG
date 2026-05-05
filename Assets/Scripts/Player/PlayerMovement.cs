@@ -123,7 +123,9 @@ public class PlayerMovement : MonoBehaviour
             stateManager.IsInState(PlayerState.KnightSkill) ||
             stateManager.IsInState(PlayerState.ArcherSkill) ||
             stateManager.IsInState(PlayerState.RogueSkill) ||
-            stateManager.IsInState(PlayerState.SummonerSkill))
+            stateManager.IsInState(PlayerState.SummonerSkill) ||
+            stateManager.IsInState(PlayerState.SlowWalk) ||
+            stateManager.IsInState(PlayerState.MonolithPickup))
             return;
         
         if (moveInput.sqrMagnitude > 0) stateManager.ChangeState(PlayerState.Move);
