@@ -65,7 +65,6 @@ public class StatsSaveData
     public float baseDefence;
     public float baseCooldown;
     public float baseMoveSpeed;
-    public float baseDefence;
 
     // Current Resource Values
     public float currentHealth;
@@ -296,7 +295,6 @@ public class SaveManager : MonoBehaviour
             currentSaveData.stats.baseDefence = StatsManager.instance.baseDefence;
             currentSaveData.stats.baseCooldown = StatsManager.instance.baseCooldown;
             currentSaveData.stats.baseMoveSpeed = StatsManager.instance.baseMoveSpeed;
-            currentSaveData.stats.baseDefence = StatsManager.instance.baseDefence;
 
             // Current Resources
             currentSaveData.stats.currentHealth = StatsManager.instance.currentHealth;
