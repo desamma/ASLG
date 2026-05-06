@@ -110,6 +110,24 @@ public class LLMChatManager : MonoBehaviour
         if (playerAttack == null) playerAttack = FindObjectOfType<PlayerAttack>();
 
         if (isChatting && Input.GetKeyDown(KeyCode.Escape)) { CloseChat(); return; }
+
+        // Cheat code hỗ trợ test game: Ctrl + { để trừ, Ctrl + } để cộng 100 điểm Relationship
+        if (isChatting && activeNPC != null)
+        {
+            bool isCtrlPressed = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            if (isCtrlPressed && Input.GetKeyDown(KeyCode.LeftBracket)) // Phím [ hoặc {
+            {
+                activeNPC.relationshipScore -= 100;
+                if (activeNPC.relationshipScore <= -500) activeNPC.TriggerAngryState();
+                UpdateRelationshipUI();
+            }
+            else if (isCtrlPressed && Input.GetKeyDown(KeyCode.RightBracket)) // Phím ] hoặc }
+            {
+                activeNPC.relationshipScore += 100;
+                UpdateRelationshipUI();
+            }
+        }
+
         if (playerInputField != null && playerInputField.isFocused) return;
 
         if (!isChatting && Input.GetKeyDown(KeyCode.E) && playerMovement != null)
@@ -205,6 +223,45 @@ public class LLMChatManager : MonoBehaviour
         if (string.IsNullOrEmpty(userText)) return;
         playerInputField.text = "";
         StartCoroutine(FocusInputDelay());
+
+        // Cheat/Debug: Thêm URL OpenAI/Colab thủ công qua khung chat để phòng API web lỗi
+        if (userText.StartsWith("api-url:", System.StringComparison.OrdinalIgnoreCase))
+        {
+            string newUrl = userText.Substring(8).Trim();
+            if (!string.IsNullOrEmpty(newUrl) && !openAiUrls.Contains(newUrl))
+            {
+                openAiUrls.Insert(0, newUrl); // Nhét lên vị trí ưu tiên (index 0)
+            }
+            
+            // Nạp luôn cho hệ thống đánh giá độ khó (AI Director)
+            if (AIDifficultyManager.Instance != null && !string.IsNullOrEmpty(newUrl) && !AIDifficultyManager.Instance.openAiUrls.Contains(newUrl))
+            {
+                AIDifficultyManager.Instance.openAiUrls.Insert(0, newUrl);
+            }
+
+            npcTextDisplay.text = $"<color=green>[System]</color> Đã nạp thành công API URL dự phòng:\n{newUrl}";
+            return;
+        }
+        
+        // Cheat/Debug: Thêm Gemini API Key thủ công qua khung chat
+        if (userText.StartsWith("api-gemini:", System.StringComparison.OrdinalIgnoreCase))
+        {
+            string newKey = userText.Substring(11).Trim();
+            if (!string.IsNullOrEmpty(newKey) && !geminiApiKeys.Contains(newKey))
+            {
+                geminiApiKeys.Insert(0, newKey); // Nhét lên vị trí ưu tiên (index 0)
+            }
+            
+            // Nạp luôn cho hệ thống đánh giá độ khó (AI Director)
+            if (AIDifficultyManager.Instance != null && !string.IsNullOrEmpty(newKey) && !AIDifficultyManager.Instance.geminiApiKeys.Contains(newKey))
+            {
+                AIDifficultyManager.Instance.geminiApiKeys.Insert(0, newKey);
+            }
+
+            npcTextDisplay.text = $"<color=green>[System]</color> Đã nạp thành công Gemini API Key dự phòng:\n{newKey}";
+            return;
+        }
+
         npcTextDisplay.text = $"<i>{activeNPC?.npcName} is thinking...</i>";
 
         if (hasActiveAiQuest && currentChatCount < targetChatCount) 
