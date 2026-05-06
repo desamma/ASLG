@@ -164,11 +164,11 @@ public class LLMChatManager : MonoBehaviour
         
         if (CurrentChatHistory.Count == 0) 
         {
-            npcTextDisplay.text = $"{activeNPC.npcName}: Cậu cần gì sao?"; 
+            npcTextDisplay.text = $"{activeNPC.npcName}: Hello dear Adventurer! What brings you here?"; 
         }
         else
         {
-            string lastMsg = $"{activeNPC.npcName}: Cậu cần gì sao?";
+            string lastMsg = $"{activeNPC.npcName}: Hello dear Adventurer! What brings you here?";
             for (int i = CurrentChatHistory.Count - 1; i >= 0; i--)
             {
                 if (CurrentChatHistory[i].role == "assistant")
@@ -218,15 +218,15 @@ public class LLMChatManager : MonoBehaviour
     private void OnQuestButtonClicked()
     {
         if (isGeneratingQuest) return;
-        if (hasActiveAiQuest) { npcTextDisplay.text = $"{activeNPC?.npcName}: Cậu đang làm dở nhiệm vụ tôi giao mà!"; return; }
-        if (questCooldownTimer > 0) { npcTextDisplay.text = $"{activeNPC?.npcName}: Quay lại sau {Mathf.CeilToInt(questCooldownTimer)} giây nữa nhé."; return; }
+        if (hasActiveAiQuest) { npcTextDisplay.text = $"{activeNPC?.npcName}: You still not finished the quest!"; return; }
+        if (questCooldownTimer > 0) { npcTextDisplay.text = $"{activeNPC?.npcName}: Comeback after {Mathf.CeilToInt(questCooldownTimer)} seconds."; return; }
         StartCoroutine(GenerateAiQuestRoutine());
     }
 
     private IEnumerator GenerateAiQuestRoutine()
     {
         isGeneratingQuest = true;
-        npcTextDisplay.text = $"<i>{activeNPC?.npcName} đang nghĩ ra thử thách...</i>";
+        npcTextDisplay.text = $"<i>{activeNPC?.npcName} is thinking...</i>";
 
         currentQuestType = Random.Range(0, 2); // Random 0 (Chat) hoặc 1 (Walk)
         
@@ -303,7 +303,7 @@ public class LLMChatManager : MonoBehaviour
 {
     currentQuestLore = loreText;
     // Sửa dòng này thành một câu mồi cố định hoặc ghép chuỗi ngắn gọn
-    npcTextDisplay.text = $"{activeNPC?.npcName}: Tôi vừa giao một nhiệm vụ cho cậu, hãy xem trên bảng thông báo nhé!";
+    npcTextDisplay.text = $"{activeNPC?.npcName}: I just gave you a quest, check the notification panel!";
     
     hasActiveAiQuest = true;
     questTimer = 60f; 
@@ -370,18 +370,18 @@ private IEnumerator QuestCompleteRoutine()
     if (aiQuestText != null) 
     {
         aiQuestText.text = $"<b><color=yellow>{activeNPC?.npcName}'s Request</color></b>\n\n" +
-                           $"<color=green><b>Nhiệm vụ hoàn thành!</b></color>\n" +
-                           $"Phần thưởng:\n{rewardDetails}";
+                           $"<color=green><b>Quest Completed!</b></color>\n" +
+                           $"Reward:\n{rewardDetails}";
     }
 
     // 4. Nếu đang chat, NPC sẽ nói ra và lưu vào lịch sử
     if (isChatting && npcTextDisplay != null) 
     {
-        string npcDialogue = $"{activeNPC?.npcName}: Tuyệt vời! Cậu làm tốt lắm. Đây là phần thưởng của cậu: {rewardDetails}.";
+        string npcDialogue = $"{activeNPC?.npcName}: Excellent! You did a great job. Here is your reward: {rewardDetails}.";
         npcTextDisplay.text = npcDialogue;
         
         // Lưu câu khen ngợi này vào bộ nhớ để ngữ cảnh LLM tự nhiên hơn
-        CurrentChatHistory.Add(new ChatMessage { role = "assistant", content = $"Tuyệt vời! Cậu làm tốt lắm. Đây là phần thưởng của cậu: {rewardDetails}." });
+        CurrentChatHistory.Add(new ChatMessage { role = "assistant", content = $"Excellent! You did a great job. Here is your reward: {rewardDetails}." });
     }
 
     // 5. Đợi 10 giây để Player kịp đọc
@@ -402,7 +402,7 @@ private IEnumerator QuestCompleteRoutine()
 
         if (UseOfflineConversation)
         {
-            npcTextDisplay.text = $"{activeNPC?.npcName}: <color=red>(Mất kết nối - Offline Mode đang bật)</color>";
+            npcTextDisplay.text = $"{activeNPC?.npcName}: <color=red>(Offline Mode - No Connection)</color>";
             yield break;
         }
 
@@ -448,7 +448,7 @@ private IEnumerator QuestCompleteRoutine()
     // Thêm tin nhắn của AI vào lịch sử
     ProcessAIResponse(aiRawResponse);
 }
-        else { npcTextDisplay.text = "<color=red>Lỗi kết nối toàn tập.</color>"; CurrentChatHistory.RemoveAt(CurrentChatHistory.Count - 1); }
+        else { npcTextDisplay.text = "<color=red>No Connection - Offline Mode</color>"; CurrentChatHistory.RemoveAt(CurrentChatHistory.Count - 1); }
     }
 
     private IEnumerator CallGeminiAPI(string apiKey, string sysPrompt, List<ChatMessage> history, System.Action<string> onComplete)

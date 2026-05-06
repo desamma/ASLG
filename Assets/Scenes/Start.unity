@@ -13713,7 +13713,7 @@ PrefabInstance:
       objectReference: {fileID: 853650301}
     - target: {fileID: 1490095582081615502, guid: b07db48a5bfe38345a0f187a9f4ae5d7, type: 3}
       propertyPath: openAiUrls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1490095582081615502, guid: b07db48a5bfe38345a0f187a9f4ae5d7, type: 3}
       propertyPath: relationshipTextDisplay
@@ -13721,7 +13721,11 @@ PrefabInstance:
       objectReference: {fileID: 2105761819}
     - target: {fileID: 1490095582081615502, guid: b07db48a5bfe38345a0f187a9f4ae5d7, type: 3}
       propertyPath: openAiUrls.Array.data[0]
-      value: https://flashing-concluded-expensive-oclc.trycloudflare.com/v1/chat/completions
+      value: https://info-race-superior-sherman.trycloudflare.com/v1/chat/completions
+      objectReference: {fileID: 0}
+    - target: {fileID: 1490095582081615502, guid: b07db48a5bfe38345a0f187a9f4ae5d7, type: 3}
+      propertyPath: openAiUrls.Array.data[1]
+      value: http://localhost:5001/v1/chat/completions
       objectReference: {fileID: 0}
     - target: {fileID: 5941481858937294940, guid: b07db48a5bfe38345a0f187a9f4ae5d7, type: 3}
       propertyPath: m_Pivot.x
@@ -13842,7 +13846,8 @@ MonoBehaviour:
   enableOnlineActivity: 1
   geminiApiKeys: []
   openAiUrls:
-  - https://media-amounts-spam-situations.trycloudflare.com//v1/chat/completions
+  - https://info-race-superior-sherman.trycloudflare.com/v1/chat/completions
+  - http://localhost:5001/v1/chat/completions
   cycleDurationMinutes: 1
   totalDamageTaken: 0
   totalDamageDealt: 0
