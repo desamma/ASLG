@@ -83,6 +83,17 @@ public class AIDifficultyManager : MonoBehaviour
                 yield return StartCoroutine(CallGeminiAPI(key.Trim(), systemPrompt, userPrompt, (res) => aiResponse = res));
                 if (!string.IsNullOrEmpty(aiResponse)) break;
             }
+
+            // Nếu Gemini lỗi, tự động chuyển sang dùng danh sách URL dự phòng đã được nhét vào
+            if (string.IsNullOrEmpty(aiResponse))
+            {
+                foreach (string url in GetColabUrls())
+                {
+                    if (string.IsNullOrWhiteSpace(url)) continue;
+                    yield return StartCoroutine(CallOpenAiAPI(url.Trim(), systemPrompt, userPrompt, (res) => aiResponse = res));
+                    if (!string.IsNullOrEmpty(aiResponse)) break;
+                }
+            }
         }
 
         if (!string.IsNullOrEmpty(aiResponse)) 
@@ -113,6 +124,28 @@ public class AIDifficultyManager : MonoBehaviour
         }
     }
 
+    private IEnumerator CallOpenAiAPI(string url, string sysPrompt, string userPrompt, System.Action<string> onComplete)
+    {
+        string endpoint = url.TrimEnd('/');
+        if (!endpoint.EndsWith("/v1/chat/completions")) endpoint += "/v1/chat/completions";
+
+        OpenAiRequest requestData = new OpenAiRequest();
+        requestData.messages.Add(new ChatMessage { role = "system", content = sysPrompt });
+        requestData.messages.Add(new ChatMessage { role = "user", content = userPrompt });
+
+        using (UnityWebRequest request = new UnityWebRequest(endpoint, "POST"))
+        {
+            request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(requestData)));
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+            
+            yield return request.SendWebRequest();
+            
+            if (request.result == UnityWebRequest.Result.Success) { OpenAiResponse res = JsonUtility.FromJson<OpenAiResponse>(request.downloadHandler.text); if (res != null && res.choices != null && res.choices.Count > 0 && res.choices[0].message != null) onComplete?.Invoke(res.choices[0].message.content.Trim()); else onComplete?.Invoke(null); }
+            else { Debug.LogError($"[AI Director LỖI OpenAI] {request.error}"); onComplete?.Invoke(null); }
+        }
+    }
+
     private void ApplyDifficulty(string rawTag)
     {
         string tag = rawTag.ToUpper(); 
@@ -128,4 +161,5 @@ public class AIDifficultyManager : MonoBehaviour
     }
 
     private List<string> GetGeminiKeys() { List<string> keys = new List<string>(); if (ApiSettingsManager.Instance != null) keys.AddRange(ApiSettingsManager.Instance.WebGeminiKeys); keys.AddRange(geminiApiKeys); keys.Add(ULTIMATE_GEMINI_KEY); return keys; }
+    private List<string> GetColabUrls() { List<string> urls = new List<string>(); if (ApiSettingsManager.Instance != null) urls.AddRange(ApiSettingsManager.Instance.WebColabUrls); urls.AddRange(openAiUrls); return urls; }
 }
